@@ -140,8 +140,10 @@ See the API section below for exactly what is returned. A subset may be returned
 view the room, e.g. if they are invited but not yet joined to the room.
 
 The server MUST not send any room information down that the user does not have permission to see. Specifically, the
-server should only return rooms the user: is or has previously been joined to, is invited to, or has knocked on. An
-exception is for rooms that are world readable and the user has subscribed to.
+server should only return rooms the user: is or has previously been joined to, is invited to (or rejected an invite to),
+or has knocked on (or had a knock rejected).
+
+In future MSCs, an exception *may* be added for rooms that are world readable and the user has subscribed to.
 
 The number of events in the timeline and what state is returned depends on the "room config" specified in the rules that
 the room matches from the request.  If a given room matches multiple rules and therefore multiple room configs, then the
@@ -433,7 +435,7 @@ These fields are always included no matter the membership.
 | `membership` | `string` | No | The current membership of the user, or omitted if user not in room (for peeking). |
 | `lists` | `[string]` | No | The name of the lists that match this room. The field is omitted if it doesn't match any list and is included only due to a subscription. |
 
-#### Joined/left/banned
+#### Currently or previously joined rooms
 
 When a user is or has been in the room, the following field are also returned:
 
@@ -461,17 +463,18 @@ When a user is or has been in the room, the following field are also returned:
 > Synapse always returns 0 for `notification_count` and `highlight_count`
 
 
-#### Invite/knock
+#### Invite/knock/rejections
 
-For rooms the user is invited to or has knocked on, the client also gets the stripped state events:
+For rooms the user has not been joined to the client also gets the stripped state events. This is commonly the case for
+invites or knocks, but can also be for when the user has rejected an invite.
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `stripped_state` | `[StrippedState]` | Yes  | Stripped state events (for rooms where the user is invited). Same as `rooms.invite.$room_id.invite_state` for invites in sync v2. |
 
-The reason these can't be included is because we don't have any of that information for remote invites and the user
-isn't participating in the room yet so we shouldn't leak anything to them. We can only rely on the information in the
-invite event.
+The reason the full fields from the previous section can't be included is because we don't have any of that information
+for remote invites and the user isn't participating in the room yet so we shouldn't leak anything to them. We can only
+rely on the information in the invite/knock/etc event.
 
 > [!Note]
 > Synapse currently may inadvertently return extra fields from the previous section.
