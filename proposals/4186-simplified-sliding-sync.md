@@ -112,7 +112,9 @@ the room's index in the filtered list is within the list's range.
 #### Activity ordering
 
 Rooms are ordered by last activity, based on when the last event in the room was received by the server. The exact
-ordering is determined by the server implementation.
+ordering is determined by the server implementation. (Typically, this would be essentially based on when the "server
+received" the last event in the room, however the preside definition depends on the server architecture, especially for
+servers that are "distributed").
 
 > [!Important]
 > Rooms are ***not*** ordered by "`bump_stamp`", a field returned in the room response.
