@@ -9,7 +9,7 @@ nor what you can use it for.
 This proposal defines how that discovery happens and a way to deep-link to the account management capabilities of the
 homeserver to allow the user to complete the account management operations in a browser independently of the client.
 
-In doing so, this proposal also resolves the issue that the is currently no specced way to delete devices using the
+In doing so, this proposal also resolves the issue that there is currently no specced way to delete devices using the
 OAuth 2.0 API (because the API endpoints to delete devices are not supported when using the OAuth 2.0 API).
 
 ## Proposal
@@ -59,7 +59,7 @@ advertised in the `account_management_actions_supported` array.
 
 ### Add UIA support to OAuth 2.0 API so that the existing delete devices endpoints can be used
 
-n.b. This isn't a complete alternative to this full MSC and is instead just considers an alternative way for device
+n.b. This isn't a complete alternative to this full MSC and instead just considers an alternative way for device
 deletion to happen.
 
 The following endpoints are currently not supported when using the OAuth 2.0 API:
