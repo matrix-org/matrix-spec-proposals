@@ -28,32 +28,39 @@ least formally registered in the
 [IANA Registry for Server Metadata](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#authorization-server-metadata).
 This is why the metadata fields are not prefixed with `org.matrix.`, but the actions themselves are.
 
-### Possible actions
-
-The following actions are defined by this MSC:
-
-- `org.matrix.profile` - The user wishes to view/edit their profile (name, avatar, contact details).
-- `org.matrix.sessions_list` - The user wishes to view a list of their sessions.
-- `org.matrix.session_view` - The user wishes to view the details of a specific session.
-- `org.matrix.session_end` - The user wishes to end/logout a specific session.
-- `org.matrix.account_deactivate` - The user wishes to deactivate their account.
-
-Subsequent MSCs may extend this list.
-
 ### Account management URL parameters
 
 The account management URL (as provided above) may accept the following additional query parameters:
 
-- `action` - Can be used to indicate the action that the user wishes to take, as defined above.
-- `device_id` - This can be used to identify a particular session for `org.matrix.session_view` and
-  `org.matrix.session_end`. This is the Matrix device ID.
+- `action` - Can be used to indicate the action that the user wishes to take, as defined below.
+- `device_id` - This can be used to identify a particular session for `org.matrix.device_view` and
+  `org.matrix.device_delete`. This is the Matrix device ID.
 
 For example, if a user wishes to sign out a session for the device `ABCDEFGH` where the advertised
 `account_management_uri` was `https://account.example.com/myaccount` the client could open a link to
 `https://account.example.com/myaccount?action=org.matrix.session_end&device_id=ABCDEFGH`.
 
 Not all actions need to be supported by the account management URL, and the client should only use the actions
-advertised in the `account_management_actions_supported` array.
+advertised in the `account_management_actions_supported` array from above.
+
+If the `org.matrix.device_view` or `org.matrix.device_delete` are advertised as supported by the
+server then the server should support the `device_id` parameter.
+
+### Possible actions
+
+The following account management actions are defined by this MSC:
+
+- `org.matrix.profile` - The user wishes to view/edit their profile (name, avatar, contact details).
+- `org.matrix.devices_list` - The user wishes to view a list of their devices.
+- `org.matrix.device_view` - The user wishes to view the details of a specific device.
+- `org.matrix.device_delete` - The user wishes to delete/logout a specific device.
+- `org.matrix.account_deactivate` - The user wishes to deactivate their account.
+
+Subsequent MSCs may extend this list.
+
+These actions are prefixed with the full `org.matrix.` (rather than the more compact `m.`) because
+if the IANA registration/OIDC adoption goes ahead then these values would be more clearly namespaced
+to Matrix.
 
 ## Alternatives
 
@@ -113,3 +120,11 @@ Whilst in development the fields in the server metadata discovery should be pref
 
 - `org.matrix.msc4191.account_management_uri` instead of `account_management_uri`
 - `org.matrix.msc4191.account_management_actions_supported` instead of `account_management_actions_supported`
+
+For future reference, the following unstable action values are known to have been used in prototype
+implementations:
+
+- `org.matrix.profile`: `profile`
+- `org.matrix.devices_list`: `sessions_list`, `org.matrix.sessions_list`
+- `org.matrix.device_view`: `session_view`, `org.matrix.session_view`
+- `org.matrix.device_delete` - `session_end`, `org.matrix.session_end`
