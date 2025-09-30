@@ -69,9 +69,8 @@ Rather than approving cross-signing reset specifically, the authorization server
 mechanisms for temporary scope elevation. An example of a potential mechanism that could help
 achieve this is the [RFC 9470 OAuth 2.0 Step Up Authentication Challenge Protocol]. Theoretically
 such a mechanism could act as full replacement for UIA in the CS API where protection is needed for
-sensitive actions. However, there is no proposal on how this would be applied to the CS API and
-therefore it is proposed to codify this present mechanism that does allow for the specific
-cross-signing reset action.
+sensitive actions. [MSC4363] attempts to adapt this protocol to Matrix. This MSC is, however,
+nascent and more complex. Therefore it is proposed to codify this present mechanism into the spec.
 
 ## Security considerations
 
@@ -98,5 +97,6 @@ This proposal doesn't strictly depend on but works better with [MSC4191].
   [`/_matrix/client/v3/keys/device_signing/upload`]: https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3keysdevice_signingupload
   [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
   [RFC 9470 OAuth 2.0 Step Up Authentication Challenge Protocol]: https://datatracker.ietf.org/doc/rfc9470/
+  [MSC4363]: https://github.com/matrix-org/matrix-spec-proposals/pull/4363
   [matrix-authentication-service]: https://github.com/element-hq/matrix-authentication-service
   [Synapse admin API]: https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#allow-replacing-master-cross-signing-key-without-user-interactive-auth
