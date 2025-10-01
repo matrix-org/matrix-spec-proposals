@@ -20,8 +20,8 @@ documents these workarounds as a low-effort interim workaround until better solu
 
 Clients that have authenticated via the new [OAuth APIs] continue to use
 [`/_matrix/client/v3/keys/device_signing/upload`] to replace cross-signing keys. Homeservers
-continue to enforce UIA on the endpoint but MUST only use a single stage `m.oauth` together with a
-URL that points to the authorization server's account management UI.
+continue to enforce UIA on the endpoint but MUST only use a single stage `m.oauth`[^1] together with
+a URL that points to the authorization server's account management UI.
 
 ``` json5
 {
@@ -39,7 +39,7 @@ URL that points to the authorization server's account management UI.
 
 The client then instructs the user to approve the reset of their cross-signing keys using the
 provided URL. How exactly that approval is achieved is an implementation detail between the
-authorization server and the homeserver[^1]. The required end result is that after approving, the
+authorization server and the homeserver[^2]. The required end result is that after approving, the
 client can complete the stage without further parameters.
 
 ``` json5
@@ -94,7 +94,10 @@ of `m.oauth` and `org.matrix.cross_signing_reset`).
 
 This proposal doesn't strictly depend on but works better with [MSC4191].
 
-[^1]: [matrix-authentication-service], for instance, uses a [Synapse admin API] to temporarily lift
+[^1]: Previous versions of this proposal used `m.cross_signing_reset` for the stage name. This was
+    generalised into `m.oauth` to enable future reuse of the mechanism for other endpoints.
+
+[^2]: [matrix-authentication-service], for instance, uses a [Synapse admin API] to temporarily lift
     UIA on the endpoint.
 
   [OAuth APIs]: https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api
