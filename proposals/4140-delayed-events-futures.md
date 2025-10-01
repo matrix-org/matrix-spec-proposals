@@ -205,8 +205,8 @@ action. However, servers can choose to rate limit the the management endpoints t
 
 ### Getting delayed events
 
-New authenticated client-server API endpoints `GET /_matrix/client/v1/delayed_events/scheduled` and
-`GET /_matrix/client/v1/delayed_events/finalised` allows clients to get a list of
+New authenticated client-server API endpoints `GET /_matrix/client/v1/delayed_events?status=scheduled` and
+`GET /_matrix/client/v1/delayed_events?status=finalised` allows clients to get a list of
 all the delayed events owned by the requesting user that have been scheduled to send, have been sent, or failed to be sent.
 
 The endpoints accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as
@@ -215,7 +215,7 @@ page size.
 
 The response is a JSON object containing the following fields:
 
-- For the `GET /_matrix/client/v1/delayed_events/scheduled` endpoint:
+- For the `GET /_matrix/client/v1/delayed_events?status=scheduled` endpoint:
   - `scheduled` - Required. An array of delayed events that have been scheduled to be sent,
   sorted by `running_since + delay` in increasing order (event that will timeout soonest first).
     - `delay_id` - Required. The ID of the delayed event.
@@ -229,7 +229,7 @@ The response is a JSON object containing the following fields:
       of the full event after sending.
   - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
 
-- For the `GET /_matrix/client/v1/delayed_events/finalised` endpoint:
+- For the `GET /_matrix/client/v1/delayed_events?status=finalised` endpoint:
   - `finalised` - Required. An array of finalised delayed events, that have either been sent or resulted in an error,
   sorted by `origin_server_ts` in decreasing order (latest finalised event first).
     - `delayed_event` - Required. Describes the original delayed event in the same format as the `delayed_events` array.
@@ -252,12 +252,12 @@ The recommended values are:
 There is no guarantee for a client that all events will be available in the
 finalised events list if they exceed the limits of their homeserver.
 Additionally, a homeserver may discard finalised delayed events that have been returned by a
-`GET /_matrix/client/v1/delayed_events/finalised` response.
+`GET /_matrix/client/v1/delayed_events?status=finalised` response.
 
 The homeserver **should** apply rate limiting to the `finalised` and `scheduled` delayed events `GET` endpoints.
 Both most likely require (dependent on the implementation) serialization steps and can be used to slow down the server.
 
-An example for a response to the `GET /_matrix/client/v1/delayed_events/scheduled` endpoint:
+An example for a response to the `GET /_matrix/client/v1/delayed_events?status=scheduled` endpoint:
 
 ```http
 200 OK
@@ -327,7 +327,7 @@ If a new state event is sent to the same room at the same entry (`event_type`, `
 This only happens if its a state update from a different user. If it is from the same user, the delayed event will not
 get cancelled.
 If the same user is updating the state which has associated delayed events, this user is in control of those delayed events.
-They can just cancel and check the events manually using the `/delayed_events` and the `/delayed_events/scheduled` endpoint.
+They can just cancel and check the events manually using the `/delayed_events?status=scheduled` and the `/delayed_events?status=finalised` endpoint.
 
 In the case where the delayed event gets cancelled due to a different user updating the same state, there
 is no race condition here since a possible race between timeout and the _new state event_ will always converge to
