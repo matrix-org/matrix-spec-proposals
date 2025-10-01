@@ -71,8 +71,8 @@ deletion to happen.
 
 The following endpoints are currently not supported when using the OAuth 2.0 API:
 
-- `POST /_matrix/client/v3/delete_devices`
-- `DELETE /_matrix/client/v3/devices/{deviceId}`
+- [`POST /_matrix/client/v3/delete_devices`](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3delete_devices)
+- [`DELETE /_matrix/client/v3/devices/{deviceId}`](https://spec.matrix.org/v1.16/client-server-api/#delete_matrixclientv3devicesdeviceid)
 
 The reason given in the spec is:
 
