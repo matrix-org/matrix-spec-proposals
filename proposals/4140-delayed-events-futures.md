@@ -245,8 +245,7 @@ These objects contain the following fields:
   - `outcome`: `"send"|"cancel"` - Whether the delayed event was sent, or was cancelled by an error or [the management endpoint](#managing-delayed-events) with an `action` of `"cancel"`.
   - `reason`: `"error"|"action"|"delay"` - What caused the delayed event to become finalised. `"error"` means the delayed event failed to be sent due to an error; `"action"` means it was sent or cancelled by [the management endpoint](#managing-delayed-events); and `"delay"` means it was sent automatically on its scheduled delivery time.
   - `error`: Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
-  to explain why this event failed to be sent. The Error can either be the `M_CANCELLED_BY_STATE_UPDATE` or any of the
-  Errors from the client server send and state endpoints.
+  to explain why this event failed to be sent.
   - `event_id` - Optional. The `event_id` this event got in case it was sent.
   - `origin_server_ts` - Optional. The timestamp of when the event was sent.
 - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
@@ -751,6 +750,20 @@ will be stored with the following outcome:
 }
 ```
 
+Whilst the MSC is in the proposal stage,
+The `M_UNKNOWN` `errcode` should be used instead of `M_CANCELLED_BY_STATE_UPDATE` as follows:
+
+```json
+"outcome": "cancel",
+"reason": "error",
+"error": {
+  "errcode": "M_UNKNOWN",
+  "org.matrix.msc4140.errcode": "M_CANCELLED_BY_STATE_UPDATE",
+  "error":"The delayed event did not get send because a different user updated the same state event.
+  So the scheduled event might change it in an undesired way."
+}
+```
+
 Note that this behaviour does not apply to regular (non-state) events as there is no concept of a (`event_type`, `state_key`)
 pair that could be overwritten.
 
@@ -827,27 +840,6 @@ instead of:
   "errcode": "M_MAX_DELAYED_EVENTS_EXCEEDED",
   "error": "The maximum number of delayed events has been reached."
 }
-```
-
-- The `M_UNKNOWN` `errcode` should be used instead of `M_CANCELLED_BY_STATE_UPDATE` as follows:
-
-```json
-{
-  "errcode": "M_UNKNOWN",
-  "org.matrix.msc4140.errcode": "M_CANCELLED_BY_STATE_UPDATE",
-  "error":"The delayed event did not get send because a different user updated the same state event.
-  So the scheduled event might change it in an undesired way."
-  }
-```
-
-instead of:
-
-```json
-{
-  "errcode": "M_CANCELLED_BY_STATE_UPDATE",
-  "error":"The delayed event did not get send because a different user updated the same state event.
-  So the scheduled event might change it in an undesired way."
-  }
 ```
 
 Additionally, the feature is to be advertised as an unstable feature in the `GET /_matrix/client/versions` response, with
