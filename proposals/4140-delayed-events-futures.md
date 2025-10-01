@@ -8,48 +8,6 @@ The client does not have to be running or in contact with the homeserver at the 
 Once the event has been scheduled, the user's homeserver is responsible for actually sending the event at the appropriate
 time and then distributing it as normal via federation.
 
-<!-- TOC -->
-- [Background and motivation](#background-and-motivation)
-- [Proposal](#proposal)
-  - [Scheduling a delayed event](#scheduling-a-delayed-event)
-  - [Managing delayed events](#managing-delayed-events)
-  - [Getting delayed events](#getting-delayed-events)
-    - [On demand](#on-demand)
-    - [On push](#on-push)
-  - [Homeserver implementation details](#homeserver-implementation-details)
-    - [Power levels are evaluated at the point of sending](#power-levels-are-evaluated-at-the-point-of-sending)
-    - [Rate-limiting at the point of sending](#rate-limiting-at-the-point-of-sending)
-  - [Guest accounts](#guest-accounts)
-- [Use case specific considerations](#use-case-specific-considerations)
-  - [MatrixRTC](#matrixrtc)
-    - [Background](#background)
-    - [How this MSC would be used for MatrixRTC](#how-this-msc-would-be-used-for-matrixrtc)
-  - [Self-destructing messages](#self-destructing-messages)
-- [Potential issues](#potential-issues)
-  - [Compatibility with Cryptographic Identities](#compatibility-with-cryptographic-identities)
-- [Alternatives](#alternatives)
-  - [Delegating delayed events](#delegating-delayed-events)
-  - [Batch sending](#batch-sending)
-  - [Not reusing the `send`/`state` endpoint](#not-reusing-the-sendstate-endpoint)
-  - [Batch delayed events with custom endpoint](#batch-delayed-events-with-custom-endpoint)
-    - [Batch Response](#batch-response)
-    - [EventId template variable](#eventid-template-variable)
-  - [Allocating the event ID at the point of scheduling the send](#allocating-the-event-id-at-the-point-of-scheduling-the-send)
-  - [MSC4018 (use client sync loop)](#msc4018-use-client-sync-loop)
-  - [Federated delayed events](#federated-delayed-events)
-  - [MQTT style Last Will](#mqtt-style-last-will)
-  - [`M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`](#m_invalid_param-instead-of-m_max_delay_exceeded)
-  - [Naming](#naming)
-  - [Don't provide a `send` action](#dont-provide-a-send-action)
-  - [Use `DELETE` HTTP method for `cancel` action](#use-delete-http-method-for-cancel-action)
-  - [[Ab]use typing notifications](#abuse-typing-notifications)
-  - [Syncing failed delayed events](#syncing-failed-delayed-events)
-  - [Cancelling delayed state events by a more recent state event](#cancelling-delayed-state-events-by-a-more-recent-state-event)
-- [Security considerations](#security-considerations)
-- [Unstable prefix](#unstable-prefix)
-- [Dependencies](#dependencies)
-<!-- /TOC -->
-
 ## Background and motivation
 
 This proposal originates from the needs of VoIP signalling in Matrix:
