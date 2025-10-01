@@ -215,6 +215,9 @@ Without this parameter, both scheduled and finalised delayed events are included
 Requests that set this parameter to multiple values (e.g. `?status=scheduled&status=finalised`) or an unsupported value
 will respond with HTTP 400 and `M_UNKNOWN`.
 
+The endpoint accepts a query parameter of `delay_id=<delay_id>` to filter the response on delayed events with a matching ID.
+This parameter may be specified multiple times to filter on multiple matching IDs.
+
 The endpoint accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as
 per the [pagination convention](https://spec.matrix.org/v1.11/appendices/#pagination). The homeserver can choose a suitable
 page size.
