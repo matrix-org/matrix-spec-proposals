@@ -235,7 +235,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | `pos` | string | No | Omitted if this is the first request of a connection (initial sync). Otherwise, the `pos` token from the previous call to `/sync` |
 | `timeout` | int | No | How long to wait for new events in milliseconds. If omitted the response is always returned immediately, even if there are no changes. Ignored when no `pos` is set. |
 | `set_presence` | string | No | Same as in sync v2, controls whether the client is automatically marked as online by polling this API. <br/><br/> If this parameter is omitted then the client is automatically marked as online when it uses this API. Otherwise if the parameter is set to “offline” then the client is not marked as being online when it uses this API. When set to “unavailable”, the client is marked as being idle. |
-| `lists` | `{string: SyncListConfig}` | No | Sliding window API. A map of list key to list information (`SyncListConfig`). The list keys should be arbitrary strings which the client is using to refer to the list.  <br/><br/>If omitted, the server will reuse the last `lists` field specified in the connection, if any. See "Sticky `lists` field" section below.<br/><br/> Max lists: 100. <br/> Max list name length: 64 bytes. |
+| `lists` | `{string: SyncListConfig}` | No | Sliding window API. A map of list key to list information (`SyncListConfig`). The list keys should be arbitrary strings which the client is using to refer to the list.  <br/><br/> Max lists: 100. <br/> Max list name length: 64 bytes. |
 | `room_subscriptions` | `{string: RoomSubscription}` | No | A map of room ID to room subscription information. Used to subscribe to a specific room. Sometimes clients know exactly which room they want to get information about e.g by following a permalink or by refreshing a webapp currently viewing a specific room. The sliding window API alone is insufficient for this use case because there's no way to say "please track this room explicitly". |
 | `extensions` | `{string: ExtensionConfig}` | No | A map of extension key to extension config. Different extensions have different configuration formats. |
 
@@ -344,24 +344,6 @@ An example that returns all the state except the create event:
 | `not_room_types` | `[string \| null]` | No | Same as `room_types` but inverted.<br/><br/> This can be used to filter out spaces from the room list. If a type is in both `room_types` and `not_room_types`, then `not_room_types` wins and they are not included in the result. |
 | `tags` | `[string]` | No | Filter the room based on its room tags.<br/><br/> If multiple tags are  present, a room can have any one of the listed tags (OR'd). |
 | `not_tags` | `[string]` | No | Filter the room based on its [room tags](https://spec.matrix.org/v1.16/client-server-api/#room-tagging).<br/><br/> Takes priority over `tags`. For example, a room with tags A and B with filters `tags: [A]` `not_tags: [B]` would NOT be included because `not_tags` takes priority over `tags`. This filter is useful if your rooms list does NOT include the list of favourite rooms again. |
-
-
-### Sticky `lists` field
-
-Typically, most sliding sync requests from a client will contain the same `lists` config each time, which can be quite
-large. To improve efficiency, clients MAY omit the `lists` field in requests if it the same as the previous request. To update the config clients simply send the full updated `lists` field in the next request.
-
-Servers MUST track the latest `lists` fields that are used in the connection, and use it if the client omits the `lists`
-field in subsequent sections.
-
-Care must be taken server-side to handle "cancelled"/"lost" requests (c.f. "Connections" section above), in the same way
-as other per-connection state. As discussed in the "Connections" section, a client MAY send multiple requests reusing
-the latest `pos` token, but with different `lists` fields. In this case the server MUST:
-  1. retain the tracked `lists` field of the original request; and
-  1. track each new `lists` field from the requests.
-
-Once the client uses a `pos` from one of the requests, the server can delete all the tracked `lists` from the other
-requests.
 
 
 ### Example request
@@ -687,4 +669,4 @@ Changes from the initial implementation of simplified sliding sync.
 8. Move URL parameters to the request body. This is so that on web every request doesn't need to be pre-flighted for
    CORS.
 9. Convert `ranges` to `range` in `SyncListConfig` in the request.
-10. Make the `lists` request field "sticky".
+10. <del>Make the `lists` request field "sticky".</del>
