@@ -54,7 +54,7 @@ as a normal event.
 }
 ```
 
-This key can be set by clients in the CS API by a new query parameter `stick_duration_ms`, which is
+This key can be set by clients in the CS API by a new query parameter `sticky_duration_ms`, which is
 added to the following endpoints:
 
 * `PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`
@@ -67,7 +67,7 @@ To calculate if any sticky event is still sticky:
     specify start times in the future.  
   * If the event is pushed via `/send`, servers MAY use the current time as the start time. This minimises
     the risk of clock skew causing the start time to be too far in the past. See “Potential issues \> Time”.  
-* Calculate the end time as `start_time + min(stick_duration_ms, 3600000)`.  
+* Calculate the end time as `start_time + min(sticky_duration_ms, 3600000)`.  
 * If the end time is in the future, the event remains sticky.
 
 Sticky events are like normal message events and are authorised using normal PDU checks. They have the
@@ -323,7 +323,7 @@ In the common case, it provides protection against clock skew when clients have 
 
 ## Unstable Prefix
 
-- The `stick_duration_ms` query param is `msc4354_stick_duration_ms`.
+- The `sticky_duration_ms` query param is `org.matrix.msc4354.sticky_duration_ms`.
 - The `sticky` key in the PDU is `msc4354_sticky`.
 - The `/sync` response section is `msc4354_sticky`.
 - The sticky key in the `content` of the PDU is `msc4354_sticky_key`.
