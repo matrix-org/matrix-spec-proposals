@@ -85,6 +85,11 @@ attacker with an access token could take over the account.
 While this MSC is not considered stable, `m.oauth` should be referred to as
 `org.matrix.cross_signing_reset`.
 
+Since this proposal is already used in production, for instance, on matrix.org, some care is
+required by servers when migrating from the unstable to the stable identifier. To prevent breaking
+clients that have implemented the unstable identifier, servers SHOULD offer two flows (one with each
+of `m.oauth` and `org.matrix.cross_signing_reset`).
+
 ## Dependencies
 
 This proposal doesn't strictly depend on but works better with [MSC4191].
