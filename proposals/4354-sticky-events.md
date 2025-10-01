@@ -140,6 +140,9 @@ Sticky messages MAY be sent in the timeline section of the `/sync` response, reg
 or not they exceed the timeline limit[^ordering]. If a sticky event is in the timeline, it MAY be
 omitted from the `sticky.events` section. This ensures we minimise duplication in the `/sync` response JSON.
 
+Sticky events follow the same 'stream-like' behaviour as the `timeline`. This means clients will receive a sticky
+event S _once_, and subsequent requests with an advanced `since` token will not return the same sticky event S.
+
 When sending sticky events down `/sync`, the `unsigned` section SHOULD have a `sticky_duration_ttl_ms` to indicate
 how many milliseconds until the sticky event expires. This provides a way to reduce clock skew between a local homeserver
 and their connected clients. Clients SHOULD use this value to determine when the sticky event expires.
@@ -181,6 +184,7 @@ To implement this, servers MUST return a non-2xx status code from `/send` such t
 *retries the request* in order to guarantee that the sticky event is eventually delivered. Servers MUST NOT
 silently drop sticky events and return 200 OK from `/send`, as this breaks the eventual delivery guarantee.
 Care must be taken with this approach as all the PDUs in the transaction will be retried, even ones for different rooms / not sticky events.
+Servers solely relying on this option will need to consider that sticky events may be transitively delivered by a 3rd server.
 
 Option B means servers have to store the sticky event in their database, protecting bandwidth at the cost of more disk usage.
 This provides fine-grained control over when to deliver the sticky events to clients as the server doesn't need
