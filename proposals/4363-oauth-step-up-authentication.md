@@ -36,7 +36,7 @@ authentication of 5 minutes is required. The ACR values were taken from [Okta's 
   "errcode": "M_INSUFFICIENT_USER_AUTHENTICATION",
   "error": "Additional authentication required to complete request",
   "acr_values": "urn:okta:loa:2fa:any urn:okta:loa:1fa:pwd",
-  "max_age": 300,
+  "max_age": 300
 }
 ```
 
@@ -69,9 +69,30 @@ None apparent.
 
 ## Alternatives
 
-The scheme proposed in [MSC4312] (ab)uses UIA to deeplink into the authorization server's account
-management UI. This is less flexible and powerful than OAuth step up authentication, however. It is
-also contrary to the idea of standardizing authentication in Matrix on OAuth mechanisms.
+Rather than extending the existing [standard error response], the error and parameters could be
+communicated via the `WWW-Authenticate` header as suggested in [RFC9470]. Reusing the example from
+above, the header would look like this:
+
+``` http
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Bearer error="insufficient_user_authentication",
+  error_description="Additional authentication required to complete request",
+  acr_values="urn:okta:loa:2fa:any urn:okta:loa:1fa:pwd",
+  max_age="300"
+```
+
+Switching to the header would break with the established error mechanism in Matrix, however. As a
+middleground, the header could also be used *on* standard error responses. It's unclear though what
+advantages it would bring to have two different mechanisms that convey the same information.
+
+A [previous version] of [MSC2967] used the `insufficient_scope` error code from [RFC6750] (The OAuth
+2.0 Authorization Framework: Bearer Token Usage) to communicate missing scopes back to the client.
+This is comparable to but less flexible than the present proposal as it lacks ACRs and token age.
+
+Finally, the scheme proposed in [MSC4312] (ab)uses UIA to deeplink into the authorization server's
+account management UI. This is less flexible and powerful than OAuth step up authentication,
+however. It is also contrary to the idea of standardizing authentication in Matrix on OAuth
+mechanisms.
 
 ## Security considerations
 
@@ -107,4 +128,8 @@ The new authorization request parameters should not use prefixes since they foll
   [RFC9470]: https://datatracker.ietf.org/doc/rfc9470/
   [Okta's reference]: https://developer.okta.com/docs/guides/step-up-authentication/main/
   [current list of request parameters]: https://spec.matrix.org/v1.15/client-server-api/#login-flow
+  [standard error response]: https://spec.matrix.org/v1.16/client-server-api/#standard-error-response
+  [previous version]: https://github.com/matrix-org/matrix-spec-proposals/pull/2967/commits/544d75b413277f14393a635ea17be3d0d49529c5
+  [MSC2967]: github.com/matrix-org/matrix-doc/pull/2967
+  [RFC6750]: https://datatracker.ietf.org/doc/html/rfc6750
   [OIDC core specification]: https://openid.net/specs/openid-connect-core-1_0.html#Terminology
