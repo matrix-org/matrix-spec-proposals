@@ -362,8 +362,8 @@ a standardised mechanism for determining keys on sticky events, the `content.sti
 ```
 
 `content.sticky_key` is ignored server-side[^encryption] and is purely informational. Clients which
-receive a sticky event with a `sticky_key` SHOULD keep a map with keys determined via the 3-uple[^4uple]
-`(room_id, sender, content.sticky_key)` to track the current values in the map. Nothing stops
+receive a sticky event with a `sticky_key` SHOULD keep a map with keys determined via the 4-uple[^3uple]
+`(room_id, sender, type, content.sticky_key)` to track the current values in the map. Nothing stops
 users sending multiple events with the same `sticky_key`. To deterministically tie-break, clients which
 implement this behaviour MUST:
 
@@ -504,6 +504,12 @@ Malicious servers could set the TTL to be 0 ~ `sticky.duration_ms` , ensuring ma
 on whether or not an event was sticky. In contrast, using `origin_server_ts` is a consistent reference point
 that all servers are guaranteed to see, limiting the ability for malicious servers to cause divergence as all
 servers approximately track NTP.
-[^4uple]: Earlier versions of this proposal had the key be the 4-uple `(room_id, sender, **type**, content.sticky_key)`, but there may
-be valid use cases for a key to have different event types as values. Given you can emulate the 4-uple by string-packing the event type
-into the `content.sticky_key`, for proposing a standard map mechanism it makes sense to just use the 3-uple form.
+[^3uple]: Earlier versions of this proposal removed the event type and had the key be the 3-uple `(room_id, sender, content.sticky_key)`.
+Conceptually, this made a per-user per-room map that looked like `Map<StickyKey, Event[Any]>`. In contrast, the 4-uple format is
+`Map<EventType, Map<StickyKey, Event[EventType]>>`. This proposal has flip-flopped on 4-uple vs 3-uple because they are broadly speaking
+equivalent: the 3-uple form can string pack the event type in the sticky key and the 4-uple form can loop over the outer event type map
+looking for the same sticky key and apply tie-breaking rules to the resulting events. We do not have any use cases for the 3-uple form
+as all use cases expect the values for a given key to be of the same type e.g `m.rtc.member`. Furthermore, it's not clear how this MSC
+could safely propose a delimiter when both the event type and sticky key would be freeform unicode decided by the application. For these
+reasons, this MSC chooses the 4-uple format. This makes implementing `Map<StickyKey, Event[Any]>` behaviour _slightly_ harder, and makes
+implementing `Map<EventType, Map<StickyKey, Event[EventType]>>` _slightly_ easier.
