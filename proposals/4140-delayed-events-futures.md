@@ -189,7 +189,7 @@ Content-Type: application/json
 Where the `action` is `send`, the homeserver **should** apply rate limiting to provide mitigation against the
 [High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat.
 
-The server will return a `M_NOT_FOUND` error if the `delay_id` is not recognized or was already canceled.
+The server will respond with HTTP 404 and an `M_NOT_FOUND` error if the `delay_id` is not recognized or was already canceled.
 
 The success response body is always an empty object. A future MSC may define additional keys, such as returning
 the event ID for `send` or the new expected send time for `restart`.
@@ -198,7 +198,7 @@ To allow safely retrying requests, the `send` action should return HTTP 200 even
 successfully by a previous request or by the delay timing out.
 
 If sending the event via a `send` call fails, or if the event already failed previously, the endpoint returns the error
-that happened while sending the event (e.g. `M_FORBIDDEN` if the user doesn't have permission to send the event).
+that happened while sending the event (e.g. HTTP 403 and `M_FORBIDDEN` if the user doesn't have permission to send the event).
 
 The primary point of rate limiting is event sending when the delay times out or the event is sent using the `send`
 action. However, servers can choose to rate limit the the management endpoints themselves as well if necessary.
