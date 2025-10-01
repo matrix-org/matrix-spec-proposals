@@ -184,10 +184,12 @@ perform encryption on their behalf.
 
 If a user has devices that are not cross-signed, they will not be able to
 communicate with other users whose clients implement this proposal completely,
-due to the last two points.  Thus we encourage clients to implement
-cross-signing as soon as possible, and to encourage users to cross-sign their
-devices, and clients should delay the implementation of the last two points (or
-make it optional) until most clients have implemented cross-signing.
+due to the "Encrypted to-device messages MUST NOT be sent to non-cross-signed
+devices" and "Encrypted messages from non-cross-signed devices SHOULD be
+ignored" sections.  Thus we encourage clients to implement cross-signing as soon
+as possible, and to encourage users to cross-sign their devices, and clients
+should delay the implementation of those two sections (or make it optional)
+until most clients have implemented cross-signing.
 
 The following clients support cross-signing:
 
