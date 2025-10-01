@@ -233,8 +233,8 @@ The response is a JSON object containing the following fields:
   - `finalised` - Required. An array of finalised delayed events, that have either been sent or resulted in an error,
   sorted by `origin_server_ts` in decreasing order (latest finalised event first).
     - `delayed_event` - Required. Describes the original delayed event in the same format as the `delayed_events` array.
-    - `outcome`: `"send"|"cancel"`
-    - `reason`: `"error"|"action"|"delay"`
+    - `outcome`: `"send"|"cancel"` - Whether the delayed event was sent, or was cancelled by an error or [the management endpoint](#managing-delayed-events) with an `action` of `"cancel"`.
+    - `reason`: `"error"|"action"|"delay"` - What caused the delayed event to become finalised. `"error"` means the delayed event failed to be sent due to an error; `"action"` means it was sent or cancelled by [the management endpoint](#managing-delayed-events); and `"delay"` means it was sent automatically on its scheduled delivery time.
     - `error`: Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
     to explain why this event failed to be sent. The Error can either be the `M_CANCELLED_BY_STATE_UPDATE` or any of the
     Errors from the client server send and state endpoints.
