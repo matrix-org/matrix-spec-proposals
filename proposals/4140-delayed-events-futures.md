@@ -205,42 +205,48 @@ action. However, servers can choose to rate limit the the management endpoints t
 
 ### Getting delayed events
 
-New authenticated client-server API endpoints `GET /_matrix/client/v1/delayed_events?status=scheduled` and
-`GET /_matrix/client/v1/delayed_events?status=finalised` allows clients to get a list of
+The new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allows clients to get a list of
 all the delayed events owned by the requesting user that have been scheduled to send, have been sent, or failed to be sent.
 
-The endpoints accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as
+The endpoint accepts a query parameter of `status` with a value of either `scheduled` or `status=finalised`
+to filter the response on either delayed events that are scheduled to be sent,
+or ones that have been sent or failed be sent due to cancellation or an error.
+Without this parameter, both scheduled and finalised delayed events are included in the response.
+Requests that set this parameter to multiple values (e.g. `?status=scheduled&status=finalised`) or an unsupported value
+will respond with HTTP 400 and `M_UNKNOWN`.
+
+The endpoint accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as
 per the [pagination convention](https://spec.matrix.org/v1.11/appendices/#pagination). The homeserver can choose a suitable
 page size.
 
 The response is a JSON object containing the following fields:
 
-- For the `GET /_matrix/client/v1/delayed_events?status=scheduled` endpoint:
-  - `scheduled` - Required. An array of delayed events that have been scheduled to be sent,
-  sorted by `running_since + delay` in increasing order (event that will timeout soonest first).
-    - `delay_id` - Required. The ID of the delayed event.
-    - `room_id` - Required. The room ID of the delayed event.
-    - `type` - Required. The event type of the delayed event.
-    - `state_key` - Optional. The state key of the delayed event if it is a state event.
-    - `delay` - Required. The delay in milliseconds before the event is to be sent.
-    - `running_since` - Required. The timestamp (as Unix time in milliseconds) when the delayed event was scheduled or
-      last restarted.
-    - `content` - Required. The content of the delayed event. This is the body of the original `PUT` request, not a preview
-      of the full event after sending.
-  - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
-
-- For the `GET /_matrix/client/v1/delayed_events?status=finalised` endpoint:
-  - `finalised` - Required. An array of finalised delayed events, that have either been sent or resulted in an error,
-  sorted by `origin_server_ts` in decreasing order (latest finalised event first).
-    - `delayed_event` - Required. Describes the original delayed event in the same format as the `delayed_events` array.
-    - `outcome`: `"send"|"cancel"` - Whether the delayed event was sent, or was cancelled by an error or [the management endpoint](#managing-delayed-events) with an `action` of `"cancel"`.
-    - `reason`: `"error"|"action"|"delay"` - What caused the delayed event to become finalised. `"error"` means the delayed event failed to be sent due to an error; `"action"` means it was sent or cancelled by [the management endpoint](#managing-delayed-events); and `"delay"` means it was sent automatically on its scheduled delivery time.
-    - `error`: Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
-    to explain why this event failed to be sent. The Error can either be the `M_CANCELLED_BY_STATE_UPDATE` or any of the
-    Errors from the client server send and state endpoints.
-    - `event_id` - Optional EventId. The `event_id` this event got in case it was sent.
-    - `origin_server_ts` - Optional Timestamp. The timestamp the event was sent.
-  - `next_batch` - Optional. A token that can be used to paginate the list of finalised events.
+- `scheduled` - Required, unless the request includes a query parameter of `status=finalised`.
+An array of objects describing delayed events that have been scheduled to be sent,
+sorted by `running_since + delay` in increasing order (event that will timeout soonest first).
+These objects contain the following fields:
+  - `delay_id` - Required. The ID of the delayed event.
+  - `room_id` - Required. The room ID of the delayed event.
+  - `type` - Required. The event type of the delayed event.
+  - `state_key` - Optional. The state key of the delayed event if it is a state event.
+  - `delay` - Required. The delay in milliseconds before the event is to be sent.
+  - `running_since` - Required. The timestamp (as Unix time in milliseconds) when the delayed event was scheduled or
+    last restarted.
+  - `content` - Required. The content of the delayed event. This is the body of the original `PUT` request, not a preview
+  of the full event after sending.
+- `finalised` - Required, unless the request includes a query parameter of `status=scheduled`.
+An array of objects describing delayed events that have either been sent, cancelled, or were not sent due to an error,
+sorted by `origin_server_ts` in decreasing order (latest finalised event first).
+These objects contain the following fields:
+  - `delayed_event` - Required. Describes the original delayed event in the same format as the items in the `scheduled` array.
+  - `outcome`: `"send"|"cancel"` - Whether the delayed event was sent, or was cancelled by an error or [the management endpoint](#managing-delayed-events) with an `action` of `"cancel"`.
+  - `reason`: `"error"|"action"|"delay"` - What caused the delayed event to become finalised. `"error"` means the delayed event failed to be sent due to an error; `"action"` means it was sent or cancelled by [the management endpoint](#managing-delayed-events); and `"delay"` means it was sent automatically on its scheduled delivery time.
+  - `error`: Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
+  to explain why this event failed to be sent. The Error can either be the `M_CANCELLED_BY_STATE_UPDATE` or any of the
+  Errors from the client server send and state endpoints.
+  - `event_id` - Optional EventId. The `event_id` this event got in case it was sent.
+  - `origin_server_ts` - Optional Timestamp. The timestamp the event was sent.
+- `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
 
 The batch size and the amount of terminated events that stay on the homeserver can be chosen, by the homeserver.
 The recommended values are:
