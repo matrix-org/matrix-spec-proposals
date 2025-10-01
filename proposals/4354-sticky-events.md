@@ -39,7 +39,7 @@ which is the number of milliseconds for the event to be sticky. The presence of 
 with a valid value makes the event “sticky”[^stickyobj]. Valid values are the integer range 0-3600000 (1 hour).
 For use cases that require stickiness beyond this limit, the application is responsible for sending another
 event to make it happen. The `sticky` key is not protected from redaction. A redacted sticky event is the same
-as a normal event.
+as a normal event. Note: this new top-level object is added to the [`ClientEvent` format](https://spec.matrix.org/v1.16/client-server-api/#room-event-format).
 
 ```json
 {
@@ -57,15 +57,15 @@ as a normal event.
 This key can be set by clients in the CS API by a new query parameter `sticky_duration_ms`, which is
 added to the following endpoints:
 
-* `PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`
-* `PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`
+* [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
+* [`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
 
 To calculate if any sticky event is still sticky:
 
 * Calculate the start time:  
   * The start time is `min(now, origin_server_ts)`. This ensures that malicious origin timestamps cannot
     specify start times in the future.  
-  * If the event is pushed via `/send`, servers MAY use the current time as the start time. This minimises
+  * If the event is pushed over federation via `/send`, servers MAY use the current time as the start time instead. This minimises
     the risk of clock skew causing the start time to be too far in the past. See “Potential issues \> Time”.  
 * Calculate the end time as `start_time + min(sticky_duration_ms, 3600000)`.  
 * If the end time is in the future, the event remains sticky.
@@ -93,7 +93,8 @@ Note: policy servers and other similar antispam techniques still apply to these 
 
 These messages may be combined with [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
 to provide heartbeat semantics (e.g required for MatrixRTC). Note that the sticky duration in this proposal
-is distinct from that of delayed events. The purpose of the sticky duration in this proposal is to ensure sticky events are cleaned up.
+is distinct from that of delayed events. The purpose of the sticky duration in this proposal is to ensure sticky events are cleaned up,
+whereas the purpose of delayed events is to affect the send time (and thus start time for stickiness) of an event.
 
 ### Sync API changes
 
