@@ -3,7 +3,7 @@
 This MSC proposes a mechanism by which a Matrix client can schedule an event (including a state event) to be sent into
 a room at a later time.
 
-The client does not have to be running or in contact with the Homeserver at the time that the event is actually sent.
+The client does not have to be running or in contact with the homeserver at the time that the event is actually sent.
 
 Once the event has been scheduled, the user's homeserver is responsible for actually sending the event at the appropriate
 time and then distributing it as normal via federation.
@@ -189,7 +189,7 @@ Content-Type: application/json
 Where the `action` is `send`, the homeserver **should** apply rate limiting to provide mitigation against the
 [High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat.
 
-The server will respond with HTTP 404 and an `M_NOT_FOUND` error if the `delay_id` is not recognized or was already canceled.
+The server will respond with HTTP 404 and an `M_NOT_FOUND` error if the `delay_id` is not recognized or was already cancelled.
 
 The success response body is always an empty object. A future MSC may define additional keys, such as returning
 the event ID for `send` or the new expected send time for `restart`.
@@ -201,7 +201,7 @@ If sending the event via a `send` call fails, or if the event already failed pre
 that happened while sending the event (e.g. HTTP 403 and `M_FORBIDDEN` if the user doesn't have permission to send the event).
 
 The primary point of rate limiting is event sending when the delay times out or the event is sent using the `send`
-action. However, servers can choose to rate limit the the management endpoints themselves as well if necessary.
+action. However, servers can choose to rate limit the management endpoints themselves as well if necessary.
 
 ### Getting delayed events
 
@@ -247,8 +247,8 @@ These objects contain the following fields:
   - `error`: Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
   to explain why this event failed to be sent. The Error can either be the `M_CANCELLED_BY_STATE_UPDATE` or any of the
   Errors from the client server send and state endpoints.
-  - `event_id` - Optional EventId. The `event_id` this event got in case it was sent.
-  - `origin_server_ts` - Optional Timestamp. The timestamp the event was sent.
+  - `event_id` - Optional. The `event_id` this event got in case it was sent.
+  - `origin_server_ts` - Optional. The timestamp of when the event was sent.
 - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
 
 The batch size and the amount of terminated events that stay on the homeserver can be chosen, by the homeserver.
@@ -616,7 +616,7 @@ which is [calculated from the fields](https://spec.matrix.org/v1.10/server-serve
 of an event including the `origin_server_ts` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
 
 Since the `origin_server_ts` may change due to re-scheduling the event's send time, the event ID cannot be relied upon
-as it would also change.  
+as it would also change.
 
 ### MSC4018 (use client sync loop)
 
@@ -758,7 +758,7 @@ All new endpoints are authenticated.
 To mitigate the risk of users flooding the delayed events database, servers MUST impose limits on the number and
 timeout duration of scheduled delayed events. The exact limits are left as an implementation detail.
 
-It is the server maintainers responsibility to evaluate the best tradoff between what usecases
+It is the server maintainers responsibility to evaluate the best tradeoff between what usecases
 their users have for delayed events for and the resources they are able to provide.
 
 Its the homeserver implementers responsibility to communicate this and educate the server hosters about the tradeoffs
