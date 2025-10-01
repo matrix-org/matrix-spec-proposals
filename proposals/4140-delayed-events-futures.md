@@ -18,7 +18,6 @@ time and then distributing it as normal via federation.
     - [On push](#on-push)
   - [Homeserver implementation details](#homeserver-implementation-details)
     - [Power levels are evaluated at the point of sending](#power-levels-are-evaluated-at-the-point-of-sending)
-    - [Delayed state events are cancelled by a more recent state event](#delayed-state-events-are-cancelled-by-a-more-recent-state-event)
     - [Rate-limiting at the point of sending](#rate-limiting-at-the-point-of-sending)
   - [Guest accounts](#guest-accounts)
 - [Use case specific considerations](#use-case-specific-considerations)
@@ -45,6 +44,7 @@ time and then distributing it as normal via federation.
   - [Use `DELETE` HTTP method for `cancel` action](#use-delete-http-method-for-cancel-action)
   - [[Ab]use typing notifications](#abuse-typing-notifications)
   - [Syncing failed delayed events](#syncing-failed-delayed-events)
+  - [Cancelling delayed state events by a more recent state event](#cancelling-delayed-state-events-by-a-more-recent-state-event)
 - [Security considerations](#security-considerations)
 - [Unstable prefix](#unstable-prefix)
 - [Dependencies](#dependencies)
@@ -319,47 +319,6 @@ DAG. This implies a delayed event can fail if it violates power levels at the ti
 
 Conversely, it's also possible to successfully schedule an event that the user has no permission to send at the time of sending.
 If the power level situation has changed at the time the delay passes, the event can even reach the DAG.
-
-#### Delayed state events are cancelled by a more recent state event
-
-> [!NOTE]
-> Special rule for delayed state events:
-> A delayed event `D` gets cancelled if:
->
-> - `D` is a state event with key `k` and type `t` from sender `s`.
-> - A new state event `N` with type `t` and key `k` is sent into the room.
-> - The sender of `D` is different to the sender `N`.
-
-If a new state event is sent to the same room at the same entry (`event_type`, `state_key` pair) as a delayed event by a
-**different matrix user**, any delayed event for this entry (`event_type`, `state_key` pair) is cancelled.
-
-This only happens if its a state update from a different user. If it is from the same user, the delayed event will not
-get cancelled.
-If the same user is updating the state which has associated delayed events, this user is in control of those delayed events.
-They can just cancel and check the events manually using the `/delayed_events?status=scheduled` and the `/delayed_events?status=finalised` endpoint.
-
-In the case where the delayed event gets cancelled due to a different user updating the same state, there
-is no race condition here since a possible race between timeout and the _new state event_ will always converge to
-the _new state event_:
-
-- timeout for _delayed event_ followed by _new state event_: the room state will be updated twice: once by the content of
-  the delayed event but later with the content of _new state event_.
-- _new state event_ followed by timeout for _delayed event_: the _new state event_ will cancel the outstanding _delayed event_.
-
-The finalised delayed event as represented by the finalised list of the GET endpoint (See:[Getting delayed events](#getting-delayed-events))
-will be stored with the following outcome:
-
-```json
-"outcome": "cancel", 
-"reason": "error", 
-"error": {
-  "errorcode": "M_CANCELLED_BY_STATE_UPDATE",
-  "error":"The delayed event did not get send because a different user updated the same state event.
-  So the scheduled event might change it in an undesired way."}
-```
-
-Note that this behaviour does not apply to regular (non-state) events as there is no concept of a (`event_type`, `state_key`)
-pair that could be overwritten.
 
 #### Rate-limiting at the point of sending
 
@@ -750,6 +709,55 @@ Some alternatives for the `running_since` field on the `GET` response are:
 Currently, clients have to fetch the delayed event info after the timeout to find an error in case the event failed.
 We could instead define a new method to push failed delayed events down `/sync` to the sender. However, this could be
 complicated and it's not clear whether clients actually need immediate notifications about failed delayed events.
+
+### Cancelling delayed state events by a more recent state event
+
+There may be usecases that depend on delayed state events, which may be disrupted by
+changes made to the same piece of state that a scheduled delayed state event would set.
+To avoid this disruption, a special rule for handling delayed state events could be implemented:
+
+> A delayed event `D` gets cancelled if:
+>
+> - `D` is a state event with key `k` and type `t` from sender `s`.
+> - A new state event `N` with type `t` and key `k` is sent into the room.
+> - The sender of `D` is different to the sender `N`.
+
+If a new state event is sent to the same room at the same entry (`event_type`, `state_key` pair) as a delayed event by a
+**different matrix user**, any delayed event for this entry (`event_type`, `state_key` pair) is cancelled.
+
+This only happens if its a state update from a different user. If it is from the same user, the delayed event will not
+get cancelled.
+If the same user is updating the state which has associated delayed events, this user is in control of those delayed events.
+They can just cancel and check the events manually using the `GET /delayed_events` endpoint.
+
+In the case where the delayed event gets cancelled due to a different user updating the same state, there
+is no race condition here since a possible race between timeout and the _new state event_ will always converge to
+the _new state event_:
+
+- timeout for _delayed event_ followed by _new state event_: the room state will be updated twice: once by the content of
+  the delayed event but later with the content of _new state event_.
+- _new state event_ followed by timeout for _delayed event_: the _new state event_ will cancel the outstanding _delayed event_.
+
+The finalised delayed event as represented by the finalised list of the GET endpoint (See:[Getting delayed events](#getting-delayed-events))
+will be stored with the following outcome:
+
+```json
+"outcome": "cancel",
+"reason": "error",
+"error": {
+  "errorcode": "M_CANCELLED_BY_STATE_UPDATE",
+  "error":"The delayed event did not get send because a different user updated the same state event.
+  So the scheduled event might change it in an undesired way."
+}
+```
+
+Note that this behaviour does not apply to regular (non-state) events as there is no concept of a (`event_type`, `state_key`)
+pair that could be overwritten.
+
+This rule is proposed as alternative because there is presently no usecase that relies on delayed state events.
+An earlier revision of MatrixRTC used delayed state events for call membership and relied on this rule to prevent
+race conditions, but it has since migrated to using [Sticky Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354)
+instead of state events for this, and thus no longer needs this rule.
 
 ## Security considerations
 
