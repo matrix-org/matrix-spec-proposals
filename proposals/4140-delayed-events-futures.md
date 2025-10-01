@@ -244,7 +244,7 @@ These objects contain the following fields:
   - `delayed_event` - Required. Describes the original delayed event in the same format as the items in the `scheduled` array.
   - `outcome`: `"send"|"cancel"` - Whether the delayed event was sent, or was cancelled by an error or [the management endpoint](#managing-delayed-events) with an `action` of `"cancel"`.
   - `reason`: `"error"|"action"|"delay"` - What caused the delayed event to become finalised. `"error"` means the delayed event failed to be sent due to an error; `"action"` means it was sent or cancelled by [the management endpoint](#managing-delayed-events); and `"delay"` means it was sent automatically on its scheduled delivery time.
-  - `error`: Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
+  - `error` - Optional. A Matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
   to explain why this event failed to be sent.
   - `event_id` - Optional. The `event_id` this event got in case it was sent.
   - `origin_server_ts` - Optional. The timestamp of when the event was sent.
@@ -711,7 +711,7 @@ complicated and it's not clear whether clients actually need immediate notificat
 
 ### Cancelling delayed state events by a more recent state event
 
-There may be usecases that depend on delayed state events, which may be disrupted by
+There may be use cases that depend on delayed state events, which may be disrupted by
 changes made to the same piece of state that a scheduled delayed state event would set.
 To avoid this disruption, a special rule for handling delayed state events could be implemented:
 
@@ -745,7 +745,7 @@ will be stored with the following outcome:
 "reason": "error",
 "error": {
   "errorcode": "M_CANCELLED_BY_STATE_UPDATE",
-  "error":"The delayed event did not get send because a different user updated the same state event.
+  "error":"The delayed event did not get sent because a different user updated the same state event.
   So the scheduled event might change it in an undesired way."
 }
 ```
@@ -759,7 +759,7 @@ The `M_UNKNOWN` `errcode` should be used instead of `M_CANCELLED_BY_STATE_UPDATE
 "error": {
   "errcode": "M_UNKNOWN",
   "org.matrix.msc4140.errcode": "M_CANCELLED_BY_STATE_UPDATE",
-  "error":"The delayed event did not get send because a different user updated the same state event.
+  "error":"The delayed event did not get sent because a different user updated the same state event.
   So the scheduled event might change it in an undesired way."
 }
 ```
@@ -767,7 +767,7 @@ The `M_UNKNOWN` `errcode` should be used instead of `M_CANCELLED_BY_STATE_UPDATE
 Note that this behaviour does not apply to regular (non-state) events as there is no concept of a (`event_type`, `state_key`)
 pair that could be overwritten.
 
-This rule is proposed as alternative because there is presently no usecase that relies on delayed state events.
+This rule is proposed as alternative because there is presently no use case that relies on delayed state events.
 An earlier revision of MatrixRTC used delayed state events for call membership and relied on this rule to prevent
 race conditions, but it has since migrated to using [Sticky Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354)
 instead of state events for this, and thus no longer needs this rule.
@@ -779,10 +779,10 @@ All new endpoints are authenticated.
 To mitigate the risk of users flooding the delayed events database, servers MUST impose limits on the number and
 timeout duration of scheduled delayed events. The exact limits are left as an implementation detail.
 
-It is the server maintainers responsibility to evaluate the best tradeoff between what usecases
+It is the server maintainers responsibility to evaluate the best trade-off between what use cases
 their users have for delayed events for and the resources they are able to provide.
 
-Its the homeserver implementers responsibility to communicate this and educate the server hosters about the tradeoffs
+Its the homeserver implementers responsibility to communicate this and educate the server hosters about the trade-offs
 and potentially give sane example values for those configurations.
 
 As described [above](#power-levels-are-evaluated-at-the-point-of-sending), the homeserver **must** evaluate and enforce the
