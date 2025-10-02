@@ -46,8 +46,11 @@ construct a new authorization request. For this purpose, `acr_values` and `max_a
 include any scopes, the client SHOULD use the same scopes it used during login on the authorization
 request.
 
-Following successful authentication, the client can use the new access token to repeat the original
-request.
+Following successful authentication, the client's previous access token SHOULD be invalidated and a
+new, more priviledged, token be issued. The new token SHOULD have a short lifetime. The client can
+then use the new token to repeat the original request but may also use it for other API requests.
+Renewing the token SHOULD produce a less priviledged token again. This approach ensures that
+implementations can continue to maintain only a single access token per device as they do today.
 
 ### Aspects that are out of scope
 
@@ -87,6 +90,13 @@ WWW-Authenticate: Bearer error="insufficient_user_authentication",
 Switching to the header would break with the established error mechanism in Matrix, however. As a
 middleground, the header could also be used *on* standard error responses. It's unclear though what
 advantages it would bring to have two different mechanisms that convey the same information.
+
+Rather than replacing the current access token, a new token could be issued without invalidating the
+existing one. The client would then use the new token only for repeating the original request and
+continue using the old token for all other requests. This enables one-shot tokens but would mean
+that implementations have to start managing more than one token per device. Moreover, homeservers
+could also achieve one-shot-like semantics by re-applying this proposal's step-up process to the new
+token.
 
 A [previous version] of [MSC2967] used the `insufficient_scope` error code from [RFC6750] (The OAuth
 2.0 Authorization Framework: Bearer Token Usage) to communicate missing scopes back to the client.
