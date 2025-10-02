@@ -49,7 +49,7 @@ request.
 Following successful authorization, the client's previous access token SHOULD be invalidated and a
 new, more privileged, token be issued. The new token SHOULD have a short lifetime. The client can
 then use the new token to repeat the original request but may also use it for other API requests.
-Renewing the token SHOULD produce a less privileged token again. This approach ensures that
+Refreshing the token SHOULD produce a less privileged token again. This approach ensures that
 implementations can continue to maintain only a single access token per device as they do today.
 
 ### Aspects that are out of scope
