@@ -170,8 +170,7 @@ The endpoint accepts a query parameter of `status` with a value of either `"sche
 to filter the response on either delayed events that are scheduled to be sent (`"scheduled"`),
 or ones that have been sent or failed be sent due to cancellation or an error (`"finalised"`).
 Without this parameter, delayed events of all status types are included in the response.
-Requests that set this parameter to multiple values (e.g. `?status=scheduled&status=finalised`) or an unsupported value
-will respond with HTTP 400 and `M_UNKNOWN`.
+Requests that set this parameter to an unsupported value will respond with HTTP 400 and `M_UNKNOWN`.
 
 The endpoint accepts a query parameter of `delay_id=<delay_id>` to filter the response on delayed events with a matching ID.
 This parameter may be specified multiple times to filter on multiple matching IDs.
@@ -182,7 +181,7 @@ page size.
 
 The response is a JSON object containing the following fields:
 
-- `scheduled` - Required, unless the request includes a query parameter of `status=finalised`.
+- `scheduled` - Required if the request has no `status` parameter, or sets it to `"scheduled"`.
 An array of objects describing delayed events that have been scheduled to be sent,
 sorted by `running_since + delay` in increasing order (event that will timeout soonest first).
 These objects contain the following fields:
@@ -195,7 +194,7 @@ These objects contain the following fields:
     last restarted.
   - `content` - Required. The content of the delayed event. This is the body of the original `PUT` request, not a preview
   of the full event after sending.
-- `finalised` - Required, unless the request includes a query parameter of `status=scheduled`.
+- `finalised` - Required if the request has no `status` parameter, or sets it to `"finalised"`.
 An array of objects describing delayed events that have either been sent, cancelled, or were not sent due to an error,
 sorted by `origin_server_ts` in decreasing order (latest finalised event first).
 These objects contain the following fields:
