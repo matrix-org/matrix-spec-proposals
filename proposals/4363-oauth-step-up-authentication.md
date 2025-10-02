@@ -46,7 +46,7 @@ construct a new authorization request. For this purpose, `acr_values` and `max_a
 include any scopes, the client SHOULD use the same scopes it used during login on the authorization
 request.
 
-Following successful authentication, the client's previous access token SHOULD be invalidated and a
+Following successful authorization, the client's previous access token SHOULD be invalidated and a
 new, more privileged, token be issued. The new token SHOULD have a short lifetime. The client can
 then use the new token to repeat the original request but may also use it for other API requests.
 Renewing the token SHOULD produce a less privileged token again. This approach ensures that
