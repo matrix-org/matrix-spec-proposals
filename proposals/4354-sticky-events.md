@@ -348,7 +348,7 @@ The `/versions` response in the CSAPI includes:
 ## Addendum
 
 This section explains how sticky events can be used to implement a short-lived, per-user, per-room key-value store.
-This technique would be used by MatrixRTC to synchronise RTC members.
+This technique would be used by MatrixRTC to synchronise RTC members, and should land in the spec as a suggested algorithm to follow.
 
 ### Implementing an ephemeral map
 
