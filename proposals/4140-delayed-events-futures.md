@@ -166,10 +166,10 @@ action. However, servers can choose to rate limit the management endpoints thems
 The new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allows clients to get a list of
 all the delayed events owned by the requesting user that have been scheduled to send, have been sent, or failed to be sent.
 
-The endpoint accepts a query parameter of `status` with a value of either `scheduled` or `status=finalised`
-to filter the response on either delayed events that are scheduled to be sent,
-or ones that have been sent or failed be sent due to cancellation or an error.
-Without this parameter, both scheduled and finalised delayed events are included in the response.
+The endpoint accepts a query parameter of `status` with a value of either `"scheduled"` or `"finalised"`
+to filter the response on either delayed events that are scheduled to be sent (`"scheduled"`),
+or ones that have been sent or failed be sent due to cancellation or an error (`"finalised"`).
+Without this parameter, delayed events of all status types are included in the response.
 Requests that set this parameter to multiple values (e.g. `?status=scheduled&status=finalised`) or an unsupported value
 will respond with HTTP 400 and `M_UNKNOWN`.
 
