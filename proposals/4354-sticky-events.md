@@ -335,6 +335,16 @@ In the common case, it provides protection against clock skew when clients have 
 - To enable this in SSS, the extension name is `org.matrix.msc4354.sticky_events`.
 - The `unsigned.sticky_duration_ttl_ms` field is `unsigned.msc4354_sticky_duration_ttl_ms`
 
+The `/versions` response in the CSAPI includes:
+```json
+{
+    "versions": ["..."],
+    "unstable_features": {
+        "org.matrix.msc4354": true
+    }
+}
+```
+
 ## Addendum
 
 This section explains how sticky events can be used to implement a short-lived, per-user, per-room key-value store.
