@@ -54,16 +54,17 @@ request.
 This proposal consciously leaves a number of things undefined.
 
 Firstly, the act of evaluating whether or not an access token meets a resource's requirements is
-left as an implementation detail between the homeserver and the authorization server. As per
-[RFC9470], this can, for instance, be achieved by encoding the access token with additional
-properties in JWT format or through a dedicated token introspection endpoint.
+left as an implementation detail of the homeserver. As per [RFC9470], this can, for instance, be
+achieved by encoding the access token with additional properties in JWT format. Alternatively, if
+the homeserver delegates authorization to an external authorization server, a dedicated token
+introspection endpoint could be used.
 
-Furthermore, no concrete ACR values are specified. Again, this is a detail to arrange between the
-homeserver and the authorization server as ACR values are not intended for introspection by clients.
+Furthermore, no concrete ACR values are specified. Again, this is an implementation detail of the
+homeserver as ACR values are not intended for introspection by clients.
 
-Finally, it is left up to the authorization server to determine how exactly the `acr_values`,
-`max_age` and `scope` parameters are used during authentication. Implementations should, however,
-note the recommendations in [RFC9470].
+Finally, it is left up to the homeserver to determine how exactly the `acr_values`, `max_age` and
+`scope` parameters are used during authentication. Implementations should, however, note the
+recommendations in [RFC9470].
 
 ## Potential issues
 
@@ -91,10 +92,9 @@ A [previous version] of [MSC2967] used the `insufficient_scope` error code from 
 2.0 Authorization Framework: Bearer Token Usage) to communicate missing scopes back to the client.
 This is comparable to but less flexible than the present proposal as it lacks ACRs and token age.
 
-Finally, the scheme proposed in [MSC4312] (ab)uses UIA to deeplink into the authorization server's
-account management UI. This is less flexible and powerful than OAuth step up authentication,
-however. It is also contrary to the idea of standardizing authentication in Matrix on OAuth
-mechanisms.
+Finally, the scheme proposed in [MSC4312] (ab)uses UIA to deeplink into the homeserver's account
+management web UI. This is less flexible and powerful than OAuth step up authentication, however. It
+is also contrary to the idea of standardizing authentication in Matrix on OAuth mechanisms.
 
 ## Security considerations
 
