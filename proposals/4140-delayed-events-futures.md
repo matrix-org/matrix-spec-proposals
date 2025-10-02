@@ -1,7 +1,6 @@
 # MSC4140: Cancellable delayed events
 
-This MSC proposes a mechanism by which a Matrix client can schedule an event (including a state event) to be sent into
-a room at a later time.
+This MSC proposes a mechanism by which a Matrix client can schedule an event to be sent into a room at a later time.
 
 The client does not have to be running or in contact with the homeserver at the time that the event is actually sent.
 
@@ -26,17 +25,16 @@ This works well when the client is running and can send the state events as need
 communicate with the homeserver (e.g. the user closes the app or loses connection) the call state is not updated to say
 that the participant has left.
 
-The motivation for this MSC is to allow updating call member state events after the user disconnected by allowing to
+The motivation for this MSC is to allow updating call membership events after the user disconnected by allowing to
 schedule/delay/timeout/expire events in a generic way.
 
-The "reliability requirements for the room state" section of
 [MSC4143: MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) has more details on the use case.
 
-There are numerous possible solution to solve the call member event expiration. They are covered in detail
-in the [Use case specific considerations/MatrixRTC](#use-case-specific-considerations) section, because they are not part
+There are numerous possible solutions to solve the call membership expiration. They are covered in detail
+in the [use case specific considerations/MatrixRTC](#matrixrtc) section, because they are not part
 of this proposal.
 
-This proposal enables a Matrix client to schedule a "hangup" state event to be sent after a specified time period.
+This proposal enables a Matrix client to schedule a "hangup" event to be sent after a specified time period.
 The client can then periodically restart the timer whilst it is running. If the client is no longer running
 or able to communicate, then the timer would expire and the homeserver would send the "hangup" event on behalf of the client.
 
@@ -478,7 +476,7 @@ The client would share the scoped token and the required details, so that the SF
 `refresh` endpoint while a user is connected
 and can call the delayed event `send` request once the user disconnects
 (using a `{"action": "restart"}` and a `{"action": "send"}` `/delayed_events` request.).
-This way, the SFU can be used as the source of truth for the call member room state event without knowing anything about
+This way, the SFU can be used as the source of truth for the call membership events without knowing anything about
 the Matrix call.
 
 Since the SFU has a much lower chance of running into a network issue,
