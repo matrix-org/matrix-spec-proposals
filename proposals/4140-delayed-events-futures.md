@@ -11,7 +11,7 @@ time and then distributing it as normal via federation.
 
 This proposal originates from the needs of VoIP signalling in Matrix:
 
-The Client-Server API currently has a  [Voice over IP module](https://spec.matrix.org/v1.11/client-server-api/#voice-over-ip)
+The Client-Server API currently has a  [Voice over IP module](https://spec.matrix.org/v1.16/client-server-api/#voice-over-ip)
 that uses room messages to communicate the call state. However, it only allows for calls with two participants.
 
 [MSC3401: Native Group VoIP Signalling](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) proposes a scheme
@@ -58,9 +58,9 @@ Instead, the homeserver allocates a `delay_id` to the scheduled event which is u
 ### Scheduling a delayed event
 
 An optional `delay` query parameter is added to the existing
-[`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
+[`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
 and
-[`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
+[`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
 endpoints.
 
 The new query parameter is used to configure the event scheduling:
@@ -103,7 +103,7 @@ Content-Type: application/json
 ```
 
 The homeserver **should** apply rate limiting to the scheduling of delayed events to provide mitigation against the
-[High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat.
+[High Volume of Messages](https://spec.matrix.org/v1.16/appendices/#threat-high-volume-of-messages) threat.
 
 If the user has too many outstanding delayed events, the server will respond with HTTP 400 and a new
 `M_MAX_DELAYED_EVENTS_EXCEEDED` error code:
@@ -143,7 +143,7 @@ Content-Type: application/json
 ```
 
 Where the `action` is `send`, the homeserver **should** apply rate limiting to provide mitigation against the
-[High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat.
+[High Volume of Messages](https://spec.matrix.org/v1.16/appendices/#threat-high-volume-of-messages) threat.
 
 The server will respond with HTTP 404 and an `M_NOT_FOUND` error if the `delay_id` is not recognized or was already cancelled.
 
@@ -174,7 +174,7 @@ The endpoint accepts a query parameter of `delay_id=<delay_id>` to filter the re
 This parameter may be specified multiple times to filter on multiple matching IDs.
 
 The endpoint accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as
-per the [pagination convention](https://spec.matrix.org/v1.11/appendices/#pagination). The homeserver can choose a suitable
+per the [pagination convention](https://spec.matrix.org/v1.16/appendices/#pagination). The homeserver can choose a suitable
 page size.
 
 The response is a JSON object containing the following fields:
@@ -199,7 +199,7 @@ These objects contain the following fields:
   - `delayed_event` - Required. Describes the original delayed event in the same format as the items in the `scheduled` array.
   - `outcome`: `"send"|"cancel"` - Whether the delayed event was sent, or was cancelled by an error or [the management endpoint](#managing-delayed-events) with an `action` of `"cancel"`.
   - `reason`: `"error"|"action"|"delay"` - What caused the delayed event to become finalised. `"error"` means the delayed event failed to be sent due to an error; `"action"` means it was sent or cancelled by [the management endpoint](#managing-delayed-events); and `"delay"` means it was sent automatically on its scheduled delivery time.
-  - `error` - Optional. A Matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
+  - `error` - Optional. A Matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.16/client-server-api/#standard-error-response))
   to explain why this event failed to be sent.
   - `event_id` - Optional. The `event_id` this event got in case it was sent.
   - `origin_server_ts` - Optional. The timestamp of when the event was sent.
@@ -280,7 +280,7 @@ Further to the rate limiting of the API endpoints, the homeserver **should** app
 of delayed messages at the point that they are inserted into the DAG.
 
 This is to provide mitigation against the
-[High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat where a malicious
+[High Volume of Messages](https://spec.matrix.org/v1.16/appendices/#threat-high-volume-of-messages) threat where a malicious
 actor could schedule a large volume of events ahead of time without exceeding a rate limit on the initial `PUT` request,
 but has specified a `delay` that corresponds to a common point of time in the future.
 
@@ -524,9 +524,9 @@ and to have a different return type for the new `send_delayed_event` and `state_
 
 This was considered, but when sending a delayed event the `event_id` is not yet available:
 
-The Matrix spec says that the `event_id` must use the [reference hash](https://spec.matrix.org/v1.10/rooms/v11/#event-ids)
-which is [calculated from the fields](https://spec.matrix.org/v1.10/server-server-api/#calculating-the-reference-hash-for-an-event)
-of an event including the `origin_server_ts` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
+The Matrix spec says that the `event_id` must use the [reference hash](https://spec.matrix.org/v1.16/rooms/v11/#event-ids)
+which is [calculated from the fields](https://spec.matrix.org/v1.16/server-server-api/#calculating-the-reference-hash-for-an-event)
+of an event including the `origin_server_ts` as defined in [this list](https://spec.matrix.org/v1.16/rooms/v11/#client-considerations)
 
 Since the `origin_server_ts` may change due to re-scheduling the event's send time, the event ID cannot be relied upon
 as it would also change.
@@ -744,7 +744,7 @@ As described [above](#power-levels-are-evaluated-at-the-point-of-sending), the h
 power levels at the time of the delayed event being sent (i.e. added to the DAG).
 
 This has the risk that this feature could be used by a malicious actor to circumvent existing rate limiting measures which
-corresponds to the [High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages)
+corresponds to the [High Volume of Messages](https://spec.matrix.org/v1.16/appendices/#threat-high-volume-of-messages)
 threat. The homeserver **should** apply rate-limiting to both the scheduling of delayed events and the later sending to
 mitigate this risk, as well as limiting the number of scheduled events a user can have at any one time.
 
