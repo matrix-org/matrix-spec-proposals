@@ -605,6 +605,10 @@ to preload history for multiple rooms at once, and 2) `/messages` can be slow if
 We could implement a bulk `/messages` endpoint, where the client would specify multiple rooms and `prev_batch` tokens.
 We can also add a flag to disable attempting to backfill over pagination (to match the behaviour of the sync timeline).
 
+Another alternative is to do one initial sync with a low `timeline_limit` and then another with the higher
+`timeline_limit`. This is conceptually simple, though has the main downside of potentially duplicating a lot of data
+(such as state). The approach also doesn't support the use case for having two lists so that rooms that bubble to the
+top of the room list automatically get expanded timelines.
 
 # Security considerations
 
