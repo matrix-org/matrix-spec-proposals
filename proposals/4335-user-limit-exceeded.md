@@ -15,7 +15,6 @@ signal when a user has exceeded their allocated limits, distinct from general ra
 server-wide constraints. This improves the user experience by allowing clients to provide more
 specific error messages and handle user-specific limitations appropriately.
 
-
 ## Proposal
 
 This proposal adds a new [common error code](https://spec.matrix.org/v1.15/client-server-api/#common-error-codes)
@@ -105,17 +104,17 @@ None as only adding a new error code.
 
 ## Unstable prefix
 
-While this proposal is being developed and refined, implementations should use the prefix the
-`errcode` and `info_url` fields with `org.matrix.msc4335.` and use a value of `M_UNKNOWN` for
-`errcode`.
+While this proposal is being developed and refined, implementations should use the following:
+
+* `ORG.MATRIX.MSC4335_USER_LIMIT_EXCEEDED` instead of `M_USER_LIMIT_EXCEEDED`
+* `org.matrix.msc4335.info_url` instead of `info_url`
 
 For example:
 
 ```json
 {
-  "errcode": "M_UNKNOWN",
-  "org.matrix.msc4335.errcode": "M_USER_LIMIT_EXCEEDED",
-  "org.matrix.msc4334.info_url": "https://example.com/homeserver/?limit_type=quota",
+  "errcode": "ORG.MATRIX.MSC4335_USER_LIMIT_EXCEEDED",
+  "org.matrix.msc4335.info_url": "https://example.com/homeserver/?limit_type=quota",
   "error": "User has exceeded their fair usage limit of 2GB"
 }
 ```
