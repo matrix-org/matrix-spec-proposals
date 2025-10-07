@@ -191,6 +191,11 @@ This provides fine-grained control over when to deliver the sticky events to cli
 to wait for another request. Servers SHOULD deliver the event to clients before the sticky event expires. This may not
 always be possible if the remaining time is very short.
 
+Servers SHOULD return sticky events down `/sync` in batches if there are many sticky events to return in one go.
+This ensures that clients can always make forward progress and can't get into a death spiral of never being able to
+download a large `/sync` response. This MSC recommends a batch size of 100 sticky events per `/sync` response, across
+all rooms. This means at most ~6.5MB of the sync response will contain sticky events.
+
 ### Federation behaviour
 
 Servers are only responsible for sending sticky events originating from their own server. This ensures the server is aware
@@ -274,6 +279,7 @@ the client chooses when to pull in this information, reducing the time-to-intera
    API would really only be useful for A) applications which do not sync, B) users of the existing `/sync` API. The use case for applications
    which do not sync is weak, given the entire point of sticky events is to ensure rapid synchronisation of temporary data. This heavily
    implies the use of some kind of syncing mechanism to receive timely updates, which polling a `/get_sticky_events` endpoint subverts.
+
 
 ## Alternatives
 
@@ -379,6 +385,11 @@ implement this behaviour MUST:
 
 - pick the one with the highest `origin_server_ts`,  
 - tie break on the one with the highest lexicographical event ID (A < Z).
+
+>[!NOTE]
+> If a client sends two sticky events in the same millisecond, the 2nd event may be replaced by the 1st if
+> the event ID of the 1st event has a higher lexicographical event ID. To protect against this, clients should
+> ensure that they wait at least 1 millisecond between sending sticky events.
 
 Clients SHOULD expire sticky events in maps when their stickiness ends. They should use the algorithm described in this proposal
 to determine if an event is still sticky. Clients may diverge if they do not expire sticky events as in the following scenario:
