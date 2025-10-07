@@ -12,7 +12,7 @@ their users.
 Consequently, such application services leave many unused but active access
 tokens for those users.
 
-Furthermore, the `/login` endpoint is longer available for application services
+Furthermore, the `/login` endpoint is no longer available for application services
 to use on servers that have switched to OAuth2 ([MSC3861]).
 
 This MSC proposes a dedicated API endpoint for application services to create
