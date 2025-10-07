@@ -223,7 +223,7 @@ Examples of extensions, which will be specified in future MSCs, are:
 
 # API
 
-The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/org.matrix.simplified_msc3575/sync`.
+The endpoint is a `POST` request with a JSON body to `/_matrix/client/v4/sync`.
 
 ## Request Body
 
