@@ -32,7 +32,7 @@ Firstly, we make two backwards compatible changes to the [Legacy API]:
 
 - The homeserver can optionally specify that where more than one
   [authentication type](https://spec.matrix.org/v1.16/client-server-api/#authentication-types)
-  is suppored, that a specific [`m.login.sso`] auth type is preferred.
+  is supported, that a specific [`m.login.sso`] auth type is preferred.
 - A client can specify which action the user is wanting to achieve at the point of SSO redirection. This allows the
   homeserver to display the most relevant UI to the user.
 
