@@ -440,7 +440,6 @@ When a user is or has been in the room, the following field are also returned:
 | `invited_count` | `int` | No |  The number of users with membership of invite. (same as sync v2 `m.invited_member_count`) |
 | `notification_count` | `int` | No | The total number of unread notifications for this room. (same as sync v2). <br/><br/> Does not included threaded notifications, which are returned in an extension. |
 | `highlight_count` | `int` | No | The number of unread notifications for this room with the highlight flag set. (same as sync v2) <br/><br/> Does not included threaded notifications, which are returned in an extension. |
-| `lists` | `[string]` | No | The name of the lists that match this room. The field is omitted if it doesn't match any list and is included only due to a subscription. |
 
 
 > [!Note]
