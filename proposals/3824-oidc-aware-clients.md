@@ -98,7 +98,8 @@ For a client to be considered fully *OAuth 2.0 aware* it **must**:
 
 Optionally, an *OAuth 2.0 aware* client **could**:
 
-- label the SSO button as "Continue" rather than "SSO". This is because after redirect the server may then offer a password and/or further upstream IdPs
+- label the SSO button as "Continue" rather than "SSO". This is because after redirect the server may then offer a
+  password and/or further upstream IdPs
 - pass other
   [query parameters for context](https://github.com/matrix-org/matrix-spec-proposals/blob/quenting/account-deeplink/proposals/4191-account-deeplink.md#account-management-url-parameters)
   when linking to the account web UI
