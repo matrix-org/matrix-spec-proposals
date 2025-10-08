@@ -13,7 +13,7 @@ clarification of any of these points.
 
 - [ ] Are [appropriate implementation(s)](https://spec.matrix.org/proposals/#implementing-a-proposal) specified in the MSC’s PR description?
 - [ ] Are all MSCs that this MSC depends on already accepted?
-- [ ] For each new endpoint that is introduced:
+- [ ] For each endpoint that is introduced or modified:
   - [ ] Have authentication requirements been specified?
   - [ ] Have rate-limiting requirements been specified?
   - [ ] Have guest access requirements been specified?
