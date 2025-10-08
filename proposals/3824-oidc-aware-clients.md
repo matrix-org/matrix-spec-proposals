@@ -8,7 +8,7 @@ As of spec 1.15 we now have two APIs for clients to authenticate:
 In this context we can define four types of client:
 
 1. *OAuth native client* - This is a client that, where the homeserver supports it, uses the OAuth 2.0 API for login and registration. e.g. Element X, Element Web
-1. *OAuth aware client* - This is a client that is aware of the OAuth 2.0 API but will still uses the Legacy PI (e.g. `m.login.sso`) to auth with an OAuth 2.0 API enabled homeserver.
+1. *OAuth aware client* - This is a client that is aware of the OAuth 2.0 API but will still uses the Legacy API (e.g. `m.login.sso`) to auth with an OAuth 2.0 API enabled homeserver.
 1. *Legacy client with SSO support* - This is a client that is not aware of the OAuth 2.0 API but does support the `m.login.sso` flow. e.g. Element Classic on iOS and Android
 1. *Legacy client without SSO support* - This is a client that is not aware of the OAuth 2.0 API at all and nor does it support `m.login.sso` flow. Typically auth is done via `m.login.password` only. e.g. Fractal
 
