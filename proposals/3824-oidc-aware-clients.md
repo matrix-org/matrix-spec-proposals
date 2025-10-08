@@ -5,7 +5,14 @@ As of spec 1.15 we now have two APIs for clients to authenticate:
 - the [Legacy API]
 - the [OAuth 2.0 API]
 
-In this context we can define four types of client:
+It is anticipated that in time all clients will support the [OAuth 2.0 API]. However, in the interim, some existing
+clients will continue to only support the [Legacy API].
+
+During this transition period it is proposed that a client could make some small changes to improve the user experience
+when talking to a homeserver that is using the [OAuth 2.0 API] without actually having to implement the full
+[OAuth 2.0 API].
+
+In this context it is helpful to distinguish four types of client:
 
 1. *OAuth native client* - This is a client that, where the homeserver supports it, uses the [OAuth 2.0 API] for login
    and registration. e.g. Element X, Element Web
@@ -19,28 +26,27 @@ In this context we can define four types of client:
 The purpose of differentiating #2 and #3 is that, for a Legacy client with SSO support, the user journey can be
 optimised with minimal modifications when talking to an [OAuth 2.0 API] enabled homeserver.
 
-This proposal outlines changes to facilitate clients in becoming [OAuth 2.0 API] aware.
-
 ## Proposal
 
 Firstly, we make two backwards compatible changes to the [Legacy API]:
 
+- The homeserver can optionally specify that where more than one
+  [authentication type](https://spec.matrix.org/v1.16/client-server-api/#authentication-types)
+  is suppored, that a specific [`m.login.sso`] auth type is preferred.
 - A client can specify which action the user is wanting to achieve at the point of SSO redirection. This allows the
   homeserver to display the most relevant UI to the user.
-- The homeserver can optionally specify which auth type is `delegated_oidc_compatibility` are supported for an
-  authentication type.
 
 We then describe how a client can use these new features and others to optimise the user experience without having
 to support the [OAuth 2.0 API].
 
 These are detailed below.
 
-### Homeserver indicates that an `m.login.sso` flow is for compatibility
+### Homeserver indicates that an `m.login.sso` flow is preferred
 
-Add an optional `delegated_oidc_compatibility` field to the response of
+Add an optional `oauth_aware_preferred` field to the response of
 [`GET /_matrix/client/v3/login`](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3login):
 
-`"delegated_oidc_compatibility"?: boolean`
+- `"oauth_aware_preferred"?: boolean`
 
 For example, if a homeserver is advertising password login for legacy clients only then it could return the following:
 
@@ -50,13 +56,13 @@ For example, if a homeserver is advertising password login for legacy clients on
     "type": "m.login.password"
   }, {
     "type": "m.login.sso",
-    "delegated_oidc_compatibility": true
+    "oauth_aware_preferred": true
   }]
 }
 
 ```
 
-If the client finds `delegated_oidc_compatibility` to be `true` then, assuming it supports that auth type, it should
+If the client finds `oauth_aware_preferred` to be `true` then, assuming it supports that auth type, it should
 present this as the only login/registration method available to the user.
 
 ### Client indicates `action` on SSO redirect
@@ -80,7 +86,7 @@ as that isn't used for registration.
 For a client to be considered fully *OAuth 2.0 aware* it **must**:
 
 - support the [`m.login.sso`] auth flow
-- where a `delegated_oidc_compatibility` value of `true` is present on an [`m.login.sso`] then *only* offer that auth flow
+- where a `oauth_aware_preferred` value of `true` is present on an [`m.login.sso`] then *only* offer that auth flow
   to the user
 - append `action=login` and `action=register` parameters to the SSO redirect URLs
 - link users to manage their account at the `account_management_uri` given by [MSC4191] instead of native UI
@@ -110,8 +116,8 @@ For an OIDC enabled homeserver to provide support for *OAuth 2.0 aware* clients 
 
 - support the [OAuth 2.0 API]
 - provide an implementation of the  `m.login.password` and [`m.login.sso`]
-  [authentication types](https://spec.matrix.org/v1.16/client-server-api/#authentication-types) from the Legacy API
-- indicate that the [`m.login.sso`] is preferred by setting `delegated_oidc_compatibility` to `true`
+  [authentication types](https://spec.matrix.org/v1.16/client-server-api/#authentication-types) from the [Legacy API]
+- indicate that the [`m.login.sso`] is preferred by setting `oauth_aware_preferred` to `true`
 - provides a value for the `action` param on the SSO redirect endpoints as defined above
 
 Additionally, the homeserver **should**:
@@ -120,7 +126,8 @@ Additionally, the homeserver **should**:
 
 ## Potential issues
 
-None.
+Clients might be discouraged from making the full transition to the [OAuth 2.0 API] because this proposal outlines a
+kind of "half way house".
 
 ## Alternatives
 
@@ -148,7 +155,7 @@ None relevant.
 While this feature is in development the following unstable prefixes should be used:
 
 - In the /login response body: `org.matrix.msc3824.delegated_oidc_compatibility` instead of
-  `delegated_oidc_compatibility`
+  `oauth_aware_preferred`
 - On the SSO redirect: `org.matrix.msc3824.action` instead of `action` query parameter
 
 An earlier version of this MSC used the `session_end` value instead of the [MSC4191]
