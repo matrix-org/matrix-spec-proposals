@@ -169,6 +169,6 @@ been accepted into the spec:
 - [MSC4191]: Account management for [OAuth 2.0 API]
 
 [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
-[Legacy API]: (https://spec.matrix.org/v1.16/client-server-api/#legacy-api)
-[OAuth 2.0 API]: (https://spec.matrix.org/v1.16/client-server-api/#oauth-20-api)
-[`m.login.sso`]: (https://spec.matrix.org/v1.16/client-server-api/#client-login-via-sso)
+[Legacy API]: https://spec.matrix.org/v1.16/client-server-api/#legacy-api
+[OAuth 2.0 API]: https://spec.matrix.org/v1.16/client-server-api/#oauth-20-api
+[`m.login.sso`]: https://spec.matrix.org/v1.16/client-server-api/#client-login-via-sso
