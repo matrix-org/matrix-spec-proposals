@@ -122,8 +122,10 @@ Optionally, an *OAuth 2.0 aware* client **could**:
 For an homeserver using [OAuth 2.0 API] to provide support for *OAuth 2.0 aware* clients it **must**:
 
 - support the [OAuth 2.0 API]
-- provide an implementation of the `m.login.password` and [`m.login.sso`]
-  [authentication types](https://spec.matrix.org/v1.16/client-server-api/#authentication-types) from the [Legacy API]
+- provide an implementation of the [`m.login.sso`]
+  [authentication type](https://spec.matrix.org/v1.16/client-server-api/#authentication-types) from the [Legacy API]
+- if password authentication was previously enabled on the homeserver then provide an implementation of the
+  `m.login.password` [authentication type](https://spec.matrix.org/v1.16/client-server-api/#authentication-types) from the [Legacy API]
 - indicate that the [`m.login.sso`] is preferred by setting `oauth_aware_preferred` to `true`
 - provides a value for the `action` param on the SSO redirect endpoints as defined above
 
