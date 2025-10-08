@@ -10,11 +10,11 @@ In this context we can define four types of client:
 1. *OAuth native client* - This is a client that, where the homeserver supports it, uses the [OAuth 2.0 API] for login
    and registration. e.g. Element X, Element Web
 1. *OAuth aware client* - This is a client that is "aware" (see below) of the [OAuth 2.0 API] but will still uses the
-   [Legacy API] (e.g. `m.login.sso`) to auth with an [OAuth 2.0 API] enabled homeserver.
+   [Legacy API] (e.g. [`m.login.sso`]) to auth with an [OAuth 2.0 API] enabled homeserver.
 1. *Legacy client with SSO support* - This is a client that is not aware of the [OAuth 2.0 API] but does support the
-   `m.login.sso` flow from the [Legacy API]. e.g. Element Classic on iOS and Android
+   [`m.login.sso`] from the [Legacy API]. e.g. Element Classic on iOS and Android
 1. *Legacy client without SSO support* - This is a client that is not aware of the [OAuth 2.0 API] at all and nor does
-   it support the `m.login.sso` [Legacy API] flow. Typically auth is done via `m.login.password` only. e.g. Fractal
+   it support the [`m.login.sso`] [Legacy API] flow. Typically auth is done via `m.login.password` only. e.g. Fractal
 
 The purpose of differentiating #2 and #3 is that, for a Legacy client with SSO support, the user journey can be
 optimised with minimal modifications when talking to an [OAuth 2.0 API] enabled homeserver.
@@ -79,8 +79,8 @@ as that isn't used for registration.
 
 For a client to be considered fully *OAuth 2.0 aware* it **must**:
 
-- support the `m.login.sso` auth flow
-- where a `delegated_oidc_compatibility` value of `true` is present on an `m.login.sso` then *only* offer that auth flow
+- support the [`m.login.sso`] auth flow
+- where a `delegated_oidc_compatibility` value of `true` is present on an [`m.login.sso`] then *only* offer that auth flow
   to the user
 - append `action=login` and `action=register` parameters to the SSO redirect URLs
 - link users to manage their account at the `account_management_uri` given by [MSC4191] instead of native UI
@@ -109,9 +109,9 @@ Optionally, an *OAuth 2.0 aware* client **could**:
 For an OIDC enabled homeserver to provide support for *OAuth 2.0 aware* clients it **must**:
 
 - support the [OAuth 2.0 API]
-- provide an implementation of the  `m.login.password` and `m.login.sso`
+- provide an implementation of the  `m.login.password` and [`m.login.sso`]
   [authentication types](https://spec.matrix.org/v1.16/client-server-api/#authentication-types) from the Legacy API
-- indicate that the `m.login.sso` is preferred by setting `delegated_oidc_compatibility` to `true`
+- indicate that the [`m.login.sso`] is preferred by setting `delegated_oidc_compatibility` to `true`
 - provides a value for the `action` param on the SSO redirect endpoints as defined above
 
 Additionally, the homeserver **should**:
@@ -124,15 +124,15 @@ None.
 
 ## Alternatives
 
-Clients could assume that an `m.login.sso` is preferred directly from where the
+Clients could assume that an [`m.login.sso`] is preferred directly from where the
 [server metadata discovery](https://spec.matrix.org/v1.16/client-server-api/#server-metadata-discovery) indicates the
 [OAuth 2.0 API] is being used. However, this might hamper some more custom configuration.
 
-The homeserver could only offer `m.login.sso` as the supported auth type but this would prevent non-SSO capable legacy
+The homeserver could only offer [`m.login.sso`] as the supported auth type but this would prevent non-SSO capable legacy
 clients from accessing the homeserver.
 
 [Capabilities negotiation](https://spec.matrix.org/v1.16/client-server-api/#capabilities-negotiation) could be used to
-indicate that `m.login.sso` is preferred.
+indicate that [`m.login.sso`] is preferred.
 
 For the param on redirect: a `prompt` parameter with values 
 [`create`](https://openid.net/specs/openid-connect-prompt-create-1_0.html#rfc.section.4) and
@@ -164,3 +164,4 @@ been accepted into the spec:
 [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
 [Legacy API]: (https://spec.matrix.org/v1.16/client-server-api/#legacy-api)
 [OAuth 2.0 API]: (https://spec.matrix.org/v1.16/client-server-api/#oauth-20-api)
+[`m.login.sso`]: (https://spec.matrix.org/v1.16/client-server-api/#client-login-via-sso)
