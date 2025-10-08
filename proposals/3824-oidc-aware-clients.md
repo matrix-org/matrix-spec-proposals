@@ -37,7 +37,8 @@ These are detailed below.
 
 ### Homeserver indicates that an `m.login.sso` flow is for compatibility
 
-Add an optional `delegated_oidc_compatibility` field to the response of `GET /_matrix/client/v3/login`:
+Add an optional `delegated_oidc_compatibility` field to the response of
+[`GET /_matrix/client/v3/login`](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3login):
 
 `"delegated_oidc_compatibility"?: boolean`
 
@@ -60,8 +61,9 @@ present this as the only login/registration method available to the user.
 
 ### Client indicates `action` on SSO redirect
 
-Add an optional query parameter `action` to `GET /_matrix/client/v3/login/sso/redirect` and
-`GET /_matrix/client/v3/login/sso/redirect/{idpId}` with meaning:
+Add an optional query parameter `action` to [`GET /_matrix/client/v3/login/sso/redirect`](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3loginssoredirect)
+and [`GET /_matrix/client/v3/login/sso/redirect/{idpId}`](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3loginssoredirectidpid)
+with meaning:
 
 - `login` - the SSO redirect is for the purposes of signing an existing user in
 - `register` - the SSO redirect is for the purpose of registering a new user account
@@ -70,7 +72,7 @@ e.g. `https://matrix-client.matrix.org/_matrix/client/v3/login/sso/redirect?acti
 
 The client might determine the value based on whether the user clicked a "Login" or "Register" button.
 
-n.b. we don't need to add this to the [Login Fallback](https://spec.matrix.org/v1.15/client-server-api/#login-fallback)
+n.b. we don't need to add this to the [Login Fallback](https://spec.matrix.org/v1.16/client-server-api/#login-fallback)
 as that isn't used for registration.
 
 ### Definition of OAuth 2.0 aware
@@ -85,7 +87,7 @@ For a client to be considered fully *OAuth 2.0 aware* it **must**:
 - do not offer the user the function to deactivate their account and instead refer them to the account management URL
   described above
 - check and honour the `m.3pid_changes`
-  [capability](https://spec.matrix.org/v1.15/client-server-api/#m3pid_changes-capability) so that the user is not
+  [capability](https://spec.matrix.org/v1.16/client-server-api/#m3pid_changes-capability) so that the user is not
   offered the ability to add or remove 3PIDs when the server has the OAuth 2.0 API enabled
 - if the user wishes to sign out a device session other than it's own then the client **must**:
   - link the user to the `account_management_uri` given by [MSC4191] if provided
@@ -108,7 +110,7 @@ For an OIDC enabled homeserver to provide support for *OAuth 2.0 aware* clients 
 
 - support the [OAuth 2.0 API]
 - provide an implementation of the  `m.login.password` and `m.login.sso`
-  [authentication types](https://spec.matrix.org/v1.15/client-server-api/#authentication-types) from the Legacy API
+  [authentication types](https://spec.matrix.org/v1.16/client-server-api/#authentication-types) from the Legacy API
 - indicate that the `m.login.sso` is preferred by setting `delegated_oidc_compatibility` to `true`
 - provides a value for the `action` param on the SSO redirect endpoints as defined above
 
@@ -123,13 +125,13 @@ None.
 ## Alternatives
 
 Clients could assume that an `m.login.sso` is preferred directly from where the
-[server metadata discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery) indicates the
+[server metadata discovery](https://spec.matrix.org/v1.16/client-server-api/#server-metadata-discovery) indicates the
 [OAuth 2.0 API] is being used. However, this might hamper some more custom configuration.
 
 The homeserver could only offer `m.login.sso` as the supported auth type but this would prevent non-SSO capable legacy
 clients from accessing the homeserver.
 
-[Capabilities negotiation](https://spec.matrix.org/v1.15/client-server-api/#capabilities-negotiation) could be used to
+[Capabilities negotiation](https://spec.matrix.org/v1.16/client-server-api/#capabilities-negotiation) could be used to
 indicate that `m.login.sso` is preferred.
 
 For the param on redirect: a `prompt` parameter with values 
@@ -160,5 +162,5 @@ been accepted into the spec:
 - [MSC4191]: Account management for [OAuth 2.0 API]
 
 [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
-[Legacy API]: (https://spec.matrix.org/v1.15/client-server-api/#legacy-api)
-[OAuth 2.0 API]: (https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api)
+[Legacy API]: (https://spec.matrix.org/v1.16/client-server-api/#legacy-api)
+[OAuth 2.0 API]: (https://spec.matrix.org/v1.16/client-server-api/#oauth-20-api)
