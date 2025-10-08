@@ -265,6 +265,8 @@ following protections in place:
 * All sticky events are subject to normal PDU checks, meaning that the sender must be authorised to send events into the room.  
 * Servers sending lots of sticky events may be asked to try again later as a form of rate-limiting.
   Due to data expiring, subsequent requests will gradually have less data.
+* Sticky events are returned down `/sync` in batches of 100 to ensure clients never get a single enormous `/sync` response. They
+  will still get all unexpired sticky events via batches.
 
 We could add a layer of indirection to the `/sync` response where we only announce the number of sticky events, and
 expect the client to fetch them when they are ready via a different endpoint. This has roughly the same bandwidth cost, but
@@ -381,7 +383,7 @@ a standardised mechanism for determining keys on sticky events, the `content.sti
 receive a sticky event with a `sticky_key` SHOULD keep a map with keys determined via the 4-uple[^3uple]
 `(room_id, sender, type, content.sticky_key)` to track the current values in the map. Nothing stops
 users sending multiple events with the same `sticky_key`. To deterministically tie-break, clients which
-implement this behaviour MUST:
+implement this behaviour MUST[^maporder]:
 
 - pick the one with the highest `origin_server_ts`,  
 - tie break on the one with the highest lexicographical event ID (A < Z).
@@ -534,3 +536,8 @@ as all use cases expect the values for a given key to be of the same type e.g `m
 could safely propose a delimiter when both the event type and sticky key would be freeform unicode decided by the application. For these
 reasons, this MSC chooses the 4-uple format. This makes implementing `Map<StickyKey, Event[Any]>` behaviour _slightly_ harder, and makes
 implementing `Map<EventType, Map<StickyKey, Event[EventType]>>` _slightly_ easier.
+[^maporder]: We determine the order based on the data in the event and not by the order of sticky events in the array returned by `/sync`.
+We do this because the `/sync` ordering may not match the sending order if A) servers violate the proposal and send later events first,
+B) newer sticky events are retrieved transitively from a 3rd server via `/get_missing_events` _first_, then older sticky events are sent
+afterwards, C) when batches of sticky events are returned down `/sync`, newer sticky events may appear in the timeline before older sticky events are
+returned via batching.
