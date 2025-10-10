@@ -699,7 +699,7 @@ will be stored with the following outcome:
 "outcome": "cancel",
 "reason": "error",
 "error": {
-  "errorcode": "M_CANCELLED_BY_STATE_UPDATE",
+  "errcode": "M_CANCELLED_BY_STATE_UPDATE",
   "error":"The delayed event did not get sent because a different user updated the same state event.
   So the scheduled event might change it in an undesired way."
 }
