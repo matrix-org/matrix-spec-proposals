@@ -109,11 +109,11 @@ dismiss the warning on all of his devices.
 A mechanism for synchronising information between devices could be proposed by
 another MSC.
 
-### Encrypted to-device messages MUST NOT be sent to non-cross-signed devices
+### Encrypted to-device messages SHOULD NOT be sent to non-cross-signed devices
 
 Since non-cross-signed devices don’t provide any assurance that the device
 belongs to the user, and server admins can trivially create new devices for
-users, clients MUST not send encrypted to-device messages, such as room keys or
+users, clients SHOULD NOT send encrypted to-device messages, such as room keys or
 secrets (via Secret Sharing), to non-cross-signed devices by default.  When
 sending room keys, clients can use a [`m.room_key.withheld`
 message](https://spec.matrix.org/v1.15/client-server-api/#reporting-that-decryption-keys-are-withheld)
