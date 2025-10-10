@@ -210,7 +210,7 @@ The recommended values are:
 
 - `finalised` retention: 7 days
 - `finalised` batch size: 10
-- `finalised` max cached events: 1000
+- `finalised` max cached events per user: 1000
 
 There is no guarantee for a client that all events will be available in the
 finalised events list if they exceed the limits of their homeserver.
