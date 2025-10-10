@@ -208,8 +208,8 @@ These objects contain the following fields:
 The batch size and the amount of terminated events that stay on the homeserver can be chosen, by the homeserver.
 The recommended values are:
 
+- batch size: 10
 - `finalised` retention: 7 days
-- `finalised` batch size: 10
 - `finalised` max cached events per user: 1000
 
 There is no guarantee for a client that all events will be available in the
