@@ -202,7 +202,7 @@ These objects contain the following fields:
   - `error` - Optional. A Matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.16/client-server-api/#standard-error-response))
   to explain why this event failed to be sent.
   - `event_id` - Optional. The `event_id` this event got in case it was sent.
-  - `origin_server_ts` - Optional. The timestamp of when the event was sent.
+  - `origin_server_ts` - Required. The timestamp of when the event was finalised.
 - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
 
 The batch size and the amount of terminated events that stay on the homeserver can be chosen, by the homeserver.
