@@ -17,7 +17,7 @@ specific error messages and handle user-specific limitations appropriately.
 
 ## Proposal
 
-This proposal adds a new [common error code](https://spec.matrix.org/v1.15/client-server-api/#common-error-codes)
+This proposal adds a new [common error code](https://spec.matrix.org/v1.16/client-server-api/#common-error-codes)
 `M_USER_LIMIT_EXCEEDED` to the Matrix specification. This error code should be returned when a user has exceeded
 limits that are specifically associated with their account, such as:
 
@@ -30,19 +30,37 @@ limits that are specifically associated with their account, such as:
 * **Account tier restrictions**: When a user's account type (free, premium, etc.) prevents them
   from performing certain operations.
 
-The error response would also contain an `info_url` value which provides a URI that the client can link
-the user to in order to get more context on the error.
+The error response must also contain additional fields:
+
+* `info_uri` string (required) - a URI that the client can link the user to in order to get more context on the error
+* `soft_limit` boolean (required) - `true` means that the specific limit encountered can be increased. `false` means
+  that it is a hard limit that cannot be increased.
+* `increase_uri` (required if `soft_limit` is `true`) - a URI where the user can undertake actions to increase the
+  encountered limit.
 
 The HTTP response code should be chosen based on the specification for the individual endpoint. For
-example, the most appropriate code for `POST /_matrix/media/v3/upload` would be `403 Forbidden`.
+example, the most appropriate code for [`POST /_matrix/media/v3/upload`] would be `403 Forbidden`.
 
 An example response body for the error might look as follows:
 
 ```json
 {
   "errcode": "M_USER_LIMIT_EXCEEDED",
-  "info_url": "https://example.com/homeserver/?limit_type=quota",
-  "error": "User has exceeded their storage quota of 10GB"
+  "error": "User has exceeded their storage quota of 10GB",
+  "info_uri": "https://example.com/homeserver/about?limit_type=quota",
+  "soft_limit": true,
+  "increase_uri": "https://example.com/homeserver/upgrade"
+}
+```
+
+For a hard limit:
+
+```json
+{
+  "errcode": "M_USER_LIMIT_EXCEEDED",
+  "error": "User has exceeded their storage quota of 10GB",
+  "info_uri": "https://example.com/homeserver/about?limit_type=quota",
+  "soft_limit": false
 }
 ```
 
@@ -51,8 +69,8 @@ An example response body for the error might look as follows:
 This error code can be returned by any Matrix Client-Server API endpoint where user-specific limits
 might be enforced. Examples could include:
 
-* `POST /_matrix/media/v3/upload` - When storage quota is exceeded
-* `POST /_matrix/client/v3/rooms/{roomId}/invite` - When invite limits (like maximum participant count) are exceeded
+* [`POST /_matrix/media/v3/upload`] - When storage quota is exceeded
+* [`POST /_matrix/client/v3/rooms/{roomId}/invite`] - When invite limits (like maximum participant count) are exceeded
 
 ### Distinction from Other Error Codes
 
@@ -67,12 +85,12 @@ This error code is distinct from:
 
 This error code does not specify the exact nature of the limit that was exceeded, which could
 potentially lead to ambiguity. However, this is consistent with other Matrix error codes that
-rely on the human-readable `error` field to provide specific details. Instead the `info_url`
+rely on the human-readable `error` field to provide specific details. Instead the `info_uri`
 provides a way for the homeserver to apply arbitrary limits without the client having to understand
 every type in advance.
 
-The homeserver can choose to provide localised and personalised content on the `info_url` if it
-wishes.
+The homeserver can choose to provide localised and personalised content on the `info_uri`, `soft_limit` and
+`increase_uri` if it wishes.
 
 The error code does not provide machine-readable information about current usage or limits,
 which could be useful for clients to display progress bars or usage statistics. However, adding
@@ -83,7 +101,7 @@ MSC if deemed necessary.
 
 Several alternatives were considered for this proposal:
 
-**Use M_RESOURCE_LIMIT_EXCEEDED**: The existing `M_RESOURCE_LIMIT_EXCEEDED` error code could be
+**Use M_RESOURCE_LIMIT_EXCEEDED**: The existing [`M_RESOURCE_LIMIT_EXCEEDED`] error code could be
 expanded to cover user-specific limits. However, this code is currently used for server-wide
 resource constraints, and overloading it could create confusion about whether the limit applies
 to the user specifically or the server generally.
@@ -107,18 +125,26 @@ None as only adding a new error code.
 While this proposal is being developed and refined, implementations should use the following:
 
 * `ORG.MATRIX.MSC4335_USER_LIMIT_EXCEEDED` instead of `M_USER_LIMIT_EXCEEDED`
-* `org.matrix.msc4335.info_url` instead of `info_url`
+* `org.matrix.msc4335.info_uri` instead of `info_uri`
+* `org.matrix.msc4335.soft_limit` instead of `soft_limit`
+* `org.matrix.msc4335.increase_uri` instead of `increase_uri`
 
 For example:
 
 ```json
 {
   "errcode": "ORG.MATRIX.MSC4335_USER_LIMIT_EXCEEDED",
-  "org.matrix.msc4335.info_url": "https://example.com/homeserver/?limit_type=quota",
-  "error": "User has exceeded their fair usage limit of 2GB"
+  "error": "User has exceeded their fair usage limit of 2GB",
+  "org.matrix.msc4335.info_uri": "https://example.com/homeserver/about?limit_type=quota",
+  "org.matrix.msc4335.soft_limit": true,
+  "org.matrix.msc4335.increase_uri": "https://example.com/homeserver/upgrade"
 }
 ```
 
 ## Dependencies
 
 None.
+
+[`POST /_matrix/media/v3/upload`]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixmediav3upload
+[`POST /_matrix/client/v3/rooms/{roomId}/invite`]: https://spec.matrix.org/v1.16/client-server-api/#thirdparty_post_matrixclientv3roomsroomidinvite
+[`M_RESOURCE_LIMIT_EXCEEDED`]: https://spec.matrix.org/v1.16/client-server-api/#other-error-codes
