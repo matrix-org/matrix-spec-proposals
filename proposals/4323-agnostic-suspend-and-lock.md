@@ -61,7 +61,7 @@ to actively use by including the following new capability:
 ```json5
 {
   "capabilities": {
-    "account_moderation": {
+    "m.account_moderation": {
       "suspend": true, // or false if unavailable/unimplemented
       "lock": true // or false if unavailable/unimplemented
     }
