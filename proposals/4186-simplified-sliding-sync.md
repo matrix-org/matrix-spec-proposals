@@ -278,7 +278,7 @@ Describes the set of state that the server should return for the room.
 
 #### Lazy loaded memberships
 
-Room members can be lazily-loaded by using the `lazy_members` flag is set. Typically, when you view a room, you want to
+Room members can be lazily-loaded by using the `lazy_members` flag. Typically, when you view a room, you want to
 retrieve all state events except for `m.room.member` events which you want to lazily load. To get this behaviour, clients
 can send the following:
 
