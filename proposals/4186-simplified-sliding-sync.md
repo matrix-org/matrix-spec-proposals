@@ -285,9 +285,10 @@ can send the following:
 This is (almost) the same as [lazy loaded
 memberships](https://spec.matrix.org/v1.16/client-server-api/#lazy-loading-room-members) in sync v2. When specified, the
 server will return the membership events for:
-1. All the `senders` of events in `timeline_events` unless previously returned. This ensures that the client can render
-   all the timeline events without having to fetch more events from the server.
-1. The target (i.e. `state_key`) of all membership events in `timeline_events`.
+1. All the `senders` of events in `timeline_events`, excluding membership events that were previously returned. This
+   ensures that the client can render all the timeline events without having to fetch more events from the server.
+1. The target (i.e. `state_key`) of all membership events in `timeline_events`, excluding membership events previously
+   returned.
 1. All membership updates since the last sync when `limited` is false (i.e. non-gappy syncs). This allows the client to
    cache the membership list without requiring the server to send all membership updates for large gaps. Caching is
    useful as it reduces the frequency that clients have to fetch the full membership list from the server, which needs
