@@ -1,4 +1,4 @@
-# MSC999: Canonical ignore list rooms
+# MSC4365: Canonical ignore list rooms
 
 Keeping up with spam in ignore lists can be hard, and currently requires either a lot of manual labor
 or thoughtfully designed bots to bridge policy lists with user's ignore lists. This has a chance to
@@ -79,7 +79,7 @@ lists to follow, that they themselves place trust in.
 
 ## Unstable prefix
 
-`s/ignored_user_list_rooms/gay.rory.msc9999.ignored_user_list_rooms/`
+`s/ignored_user_list_rooms/gay.rory.msc4365.ignored_user_list_rooms/`
 
 ## Dependencies
 
