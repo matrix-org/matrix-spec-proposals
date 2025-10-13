@@ -34,8 +34,8 @@ The error response must also contain additional fields:
 
 * `info_uri` string (required) - an opaque URI that the client can link the user to in order to get more context on the
   error.
-* `soft_limit` boolean (required) - `true` means that the specific limit encountered can be increased. `false` means
-  that it is a hard limit that cannot be increased.
+* `soft_limit` boolean (optional, default `false`) - `true` means that the specific limit encountered can be increased.
+  Otherwise it is a hard limit that cannot be increased.
 * `increase_uri` (required if `soft_limit` is `true`) - an opaque URI where the user can undertake actions to increase
   the encountered limit.
 
@@ -63,8 +63,7 @@ For a hard limit:
 {
   "errcode": "M_USER_LIMIT_EXCEEDED",
   "error": "User has exceeded their storage quota of 10GB",
-  "info_uri": "https://example.com/homeserver/about?limit_type=quota",
-  "soft_limit": false
+  "info_uri": "https://example.com/homeserver/about?limit_type=quota"
 }
 ```
 
