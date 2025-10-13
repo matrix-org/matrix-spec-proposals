@@ -17,7 +17,7 @@ specific error messages and handle user-specific limitations appropriately.
 
 ## Proposal
 
-This proposal adds a new [common error code](https://spec.matrix.org/v1.16/client-server-api/#common-error-codes)
+This proposal adds a new [common error code]
 `M_USER_LIMIT_EXCEEDED` to the Matrix specification. This error code should be returned when a user has exceeded
 limits that are specifically associated with their account, such as:
 
@@ -70,11 +70,13 @@ For a hard limit:
 
 ### Applicable Endpoints
 
-This error code can be returned by any Matrix Client-Server API endpoint where user-specific limits
-might be enforced. Examples could include:
+As it is a [common error code], `M_USER_LIMIT_EXCEEDED` may be returned by any Matrix Client-Server API endpoint.
 
-* [`POST /_matrix/media/v3/upload`] - When storage quota is exceeded
-* [`POST /_matrix/client/v3/rooms/{roomId}/invite`] - When invite limits (like maximum participant count) are exceeded
+For the purpose of illustration, practical examples could include:
+
+* [`POST /_matrix/media/v3/upload`] - When the server is enforcing a storage quota.
+* [`POST /_matrix/client/v3/rooms/{roomId}/invite`] - When invite limits (like maximum participant count) are exceeded.
+* [`POST /_matrix/client/v3/createRoom`] - When the number or type of rooms is constrained.
 
 ### Distinction from Other Error Codes
 
@@ -120,6 +122,18 @@ of limits (e.g., `M_STORAGE_LIMIT_EXCEEDED`, `M_ROOM_LIMIT_EXCEEDED`). However, 
 would require many new error codes and doesn't provide significant benefits over a single code
 with descriptive error messages.
 
+### Define specific endpoints
+
+Instead of making this a [common error code] instead it could be an
+["other" error code](https://spec.matrix.org/v1.16/client-server-api/#other-error-codes) and have the specific endpoints
+listed.
+
+A downside of this is that if a homeserver wished to introduce a new type of limit or quota that was not foreseen, then
+another MSC would be required to introduce it.
+
+Instead, by making it a [common error code] the homeserver operator has flexibility over what types of limit they
+choose without requiring further coordination with clients.
+
 ## Security considerations
 
 None as only adding a new error code.
@@ -152,3 +166,5 @@ None.
 [`POST /_matrix/media/v3/upload`]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixmediav3upload
 [`POST /_matrix/client/v3/rooms/{roomId}/invite`]: https://spec.matrix.org/v1.16/client-server-api/#thirdparty_post_matrixclientv3roomsroomidinvite
 [`M_RESOURCE_LIMIT_EXCEEDED`]: https://spec.matrix.org/v1.16/client-server-api/#other-error-codes
+[common error code]: https://spec.matrix.org/v1.16/client-server-api/#common-error-codes
+[`POST /_matrix/client/v3/createRoom`]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3createroom
