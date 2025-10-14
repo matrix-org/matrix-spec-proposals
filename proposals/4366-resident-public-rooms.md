@@ -50,8 +50,7 @@ proposal.
 ## Alternatives
 
 Non-resident rooms could be allowed in room directory responses if the server would accompany them
-with suitable `via` values. It is unclear, however, how the server would reliably determine other
-resident servers to provide these values. A future proposal might investigate this idea further.
+with suitable `via` values. This approach is covered in [MSC4367].
 
 ## Security considerations
 
@@ -74,3 +73,4 @@ None.
   [`POST /_matrix/federation/v1/publicRooms`]: https://spec.matrix.org/v1.16/server-server-api/#post_matrixfederationv1publicrooms
   [`POST /_matrix/client/v3/join/{roomIdOrAlias}`]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3joinroomidoralias
   [spec]: https://spec.matrix.org/v1.16/server-server-api/#published-room-directory
+  [MSC4367]: https://github.com/matrix-org/matrix-spec-proposals/pull/4367
