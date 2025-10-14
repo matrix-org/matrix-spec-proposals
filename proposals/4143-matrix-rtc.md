@@ -100,7 +100,7 @@ handle it with a sensible user interface.
 
 The minimum Application definition consists of a simple JSON object
 
-```json
+```json5
 {
   "application": {
     "type": "m.call", // The # character MUST NOT appear in a valid type string.
@@ -152,7 +152,7 @@ never be used to name a slot.
 A slot is opened by sending an `m.rtc.slot` state event with `state_key = slot_id`. This event
 authorises MatrixRTC members that intend to participate in the slot and follows the schema below:
 
-```json
+```json5
 // Example: an open slot with application-specific metadata
 {
   "application": {
@@ -179,7 +179,7 @@ The `slot_id` of an open slot acts like a virtual address where participants are
 The grammar for the `slot_id` is a well formed state key confined such that members of different
 MatrixRTC applications never occupy the same slot according to: 
 
-```
+```json5
 {application.type}#{application_slot_id}
 ```
 
@@ -198,7 +198,7 @@ This grammar MUST never be used to parse `slot_ids`; it exists only to namespace
 To close a slot, the corresponding `m.rtc.slot` state event is updated with empty content which
 removes all remaining MatrixRTC members, for example:
 
-```json
+```json5
 // Empty content represents a closed slot
 {}
 
@@ -208,6 +208,7 @@ state_key: "m.call#ROOM" // slot_id
 #### Examples of MatrixRTC Slot Usage
 
 In the following example three different slot use-cases are depicted  
+
 ```
 m.rtc.slot[id_1] {content_1}            ...████████████████████████████████████████████...
 m.rtc.slot[id_2] {content_2}                         ███████████████████
@@ -297,7 +298,7 @@ An `m.rtc.member` sticky event can be either **Connected** or **Disconnected**
 
 A valid `m.rtc.member` event as a prerequisite for connecting to a slot has the following schema:
 
-```json
+```json5
 // event type: "m.rtc.member"
 {
   "slot_id": "m.call#.ROOM",
@@ -368,7 +369,7 @@ the event timing out (e.g., 5 minutes) to minimize potential connection state �
 
 A valid `m.rtc.member` event as a prerequisite for disconnecting from a slot has the following schema:
 
-```
+```json5
 // event type: "m.rtc.member"
 {
   "slot_id": "m.call#ROOM",              // MUST
@@ -683,7 +684,7 @@ of Transport description objects.
 
 Response format:
 
-```json
+```json5
 {
   "rtc_transports": [
     {
@@ -697,7 +698,7 @@ Response format:
 
 Concrete example for a `livekit_multi_sfu` transport:
 
-```json
+```json5
 {
   "rtc_transports": [
     {
@@ -756,7 +757,7 @@ transmitted via an event of type `m.rtc.encryption_key`. The **target device ID*
 `member`.`device_id` field of the recipient’s `m.rtc.member` event. The event follows the following
 schema:
 
-```
+```json5
 // event type: "m.rtc.encryption_key"
 {
     "room_id": "!roomid:matrix.domain",
@@ -832,7 +833,7 @@ key system.
 In order to use a shared key, a new encrypted room event (`m.rtc.shared_encryption_key`) should be
 sent in the room, and the slot should be updated to include the `event_id` of the shared key event.
 
-```json
+```json5
 // Example: an open slot with shared key encryption
 {
   "application": {
@@ -846,7 +847,8 @@ state_key: "m.call#ROOM" // slot_id
 ```
 
 The shared key event:
-```
+
+```json5
   "event_id": "$000",
   "origin_server_ts": 1759827668867,
   "type": "m.rtc.shared_encryption_key"
@@ -1073,7 +1075,7 @@ approach does not allow for perfect forward secrecy as the keys are persisted in
 
 The encrypted content of the `m.rtc.encryption_keys` event was as follows:
 
-```
+```json5
 {
     "session": {
       "application": "m.call",
