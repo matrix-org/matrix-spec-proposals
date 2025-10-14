@@ -16,11 +16,11 @@ Table of contents:
         - [High-level description](#high-level-description)
         - [The send mechanism](#the-send-mechanism)
         - [Expiry](#expiry)
-        - [POST /_matrix/client/v1/rendezvous](#rz-post)
-        - [PUT /_matrix/client/v1/rendezvous/{rendezvousId}](#rz-put)
-        - [GET /_matrix/client/v1/rendezvous/{rendezvousId}](#rz-get)
-        - [DELETE /_matrix/client/v1/rendezvous/{rendezvousId}](#rz-delete)
-        - [Implementation notes](#rz-implementation-notes)
+        - [POST /_matrix/client/v1/rendezvous](#post-_matrixclientv1rendezvous---create-a-rendezvous-session-and-send-initial-payload)
+        - [PUT /_matrix/client/v1/rendezvous/{rendezvousId}](#put-_matrixclientv1rendezvousrendezvousid---send-a-payload-to-an-existing-rendezvous)
+        - [GET /_matrix/client/v1/rendezvous/{rendezvousId}](#get-_matrixclientv1rendezvousrendezvousid---receive-a-payload-from-a-rendezvous-session)
+        - [DELETE /_matrix/client/v1/rendezvous/{rendezvousId}](#delete-_matrixclientv1rendezvousrendezvousid---cancel-a-rendezvous-session)
+        - [Implementation notes](#implementation-notes)
         - [Example API usage](#example-api-usage)
         - [Threat analysis](#threat-analysis)
     - [QR code format](#qr-code-format)
@@ -104,7 +104,7 @@ The rendezvous session (i.e. the payload) SHOULD expire after a period of time c
 `expires_ts` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
 the payload MUST fail. The rendezvous session can be manually expired with a `DELETE` call to the rendezvous session.
 
-#### `POST /_matrix/client/v1/rendezvous` - Create a rendezvous session and send initial payload {#rz-post}
+#### `POST /_matrix/client/v1/rendezvous` - Create a rendezvous session and send initial payload
 
 Rate-limited: Yes
 Requires authentication: Optional - depending on server policy
@@ -163,9 +163,9 @@ include:
 - Requires authenticated user - this would reduce abuse to known users, but would restrict the mechanism so that the QR
   code must be created on the existing Matrix client (and therefore the new Matrix client must have a camera).
 
-The expiry time is detailed [below](#rz-ttl).
+The expiry time is detailed [below](#maximum-duration-of-a-rendezvous).
 
-#### `PUT /_matrix/client/v1/rendezvous/{rendezvousId}` - Send a payload to an existing rendezvous {#rz-put}
+#### `PUT /_matrix/client/v1/rendezvous/{rendezvousId}` - Send a payload to an existing rendezvous
 
 Rate-limited: Yes
 Requires authentication: No
@@ -215,7 +215,7 @@ Content-Type: application/json
 }
 ```
 
-#### `GET /_matrix/client/v1/rendezvous/{rendezvousId}` - Receive a payload from a rendezvous session {#rz-get}
+#### `GET /_matrix/client/v1/rendezvous/{rendezvousId}` - Receive a payload from a rendezvous session
 
 Rate-limited: Yes
 Requires authentication: No
@@ -254,7 +254,7 @@ top-level navigation requests and return a `403` HTTP response with error code `
 A future optimisation could be allow the client to "long-poll" by sending the previous `sequence_token` as a query parameter
 and then the server returns when the is new data or some timeout has passed.
 
-#### `DELETE /_matrix/client/v1/rendezvous/{rendezvousId}` - cancel a rendezvous session {#rz-delete}
+#### `DELETE /_matrix/client/v1/rendezvous/{rendezvousId}` - cancel a rendezvous session
 
 Rate-limited: Yes
 Requires authentication: No
@@ -266,7 +266,7 @@ HTTP response codes:
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
-#### Implementation notes {#rz-implementation-notes}
+#### Implementation notes
 
 ##### Maximum payload size
 
@@ -277,7 +277,7 @@ The server MUST enforce a maximum payload size of 4096 UTF8 characters.
 The `sequence_token` values should be unique to the rendezvous session and the last modified time so that two clients can
 distinguish between identical payloads sent by either client.
 
-##### Maximum duration of a rendezvous {#rz-ttl}
+##### Maximum duration of a rendezvous
 
 The rendezvous session needs to persist for the duration of the login including allowing the user another time to
 confirm that the secure channel has been established and complete any extra homeserver mandated login steps such as MFA.
@@ -383,7 +383,7 @@ is possible to use it to circumvent firewalls and other network security measure
 Implementation may want to block their production IP addresses from being able to make requests to the rendezvous
 endpoints in order to avoid attackers using it as a dead-drop for exfiltrating data.
 
-##### Unsafe content {#unsafe-content}
+##### Unsafe content
 
 Because the rendezvous session is not authenticated, it is possible for an attacker to use it to distribute malicious
 content.
