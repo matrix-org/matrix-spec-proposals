@@ -1142,7 +1142,8 @@ that was sent in the three seconds after leaving the session.
 
 ## Unstable prefix
 
-Use `org.matrix.msc4143.rtc.member` as the state event type in place of `m.rtc.member`.
+Use `org.matrix.msc4143.rtc.member` as the sticky event type in place of `m.rtc.member`.
+Use `org.matrix.msc4143.rtc.slot` as the state event type in place of `m.rtc.slot`.
 
 For MatrixRTC Transport discovery via  `GET` endpoint use
 `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` instead of
