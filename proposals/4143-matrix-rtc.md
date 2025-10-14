@@ -1,7 +1,9 @@
 # MSC4143: MatrixRTC
 
-This MSC defined Matrix real-time communication, in short MatrixRTC. This is the base layer to build
-real-time systems on top of Matrix.
+## Overview
+
+This MSC defines MatrixRTC: how to set up real-time communication sessions over Matrix.
+This is the base layer to build real-time systems on top of Matrix.
 
 MatrixRTC specifies how a real-time session is described in a room and how Matrix users can connect
 to a session.
@@ -28,14 +30,15 @@ The MatrixRTC specification is separated into different modules:
     during the session  
   * This MSC also specifies how E2EE keys are distributed
 
-This MSC focuses on the three aspects above, the other modules are defined by accompanying MSC's:
+This MSC focuses on the three aspects above, the other modules are defined by accompanying MSCs:
 
 * **MatrixRTC Transports**  
   * Supports multiple transport implementations  
   * Defines how to connect to peers or servers, update connections, and subscribe to streams  
-  * A LiveKit-based transport is the current standard proposal (MSC4195: MatrixRTC Transport using
+  * A LiveKit-based transport is the current standard proposal
+    ([MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195): MatrixRTC Transport using
     LiveKit backend)  
-  * Another planned transport is a full-mesh implementation based on
+  * Another planned transport is a full-mesh WebRTC implementation based on
     [MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401)  
 * **MatrixRTC Applications**  
   * Each application type can have its own specification  
