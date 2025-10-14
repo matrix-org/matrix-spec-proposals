@@ -1,111 +1,150 @@
-# MSC4195: MatrixRTC using LiveKit backend
+# MSC4195: MatrixRTC Transport using LiveKit Backend
 
-This proposal defines a new [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) compliant
-RTC backend Focus type utilising [LiveKit](https://github.com/livekit/livekit) SFUs.
+This proposal defines a new [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
+compliant MatrixRTC Transport using [LiveKit](https://github.com/livekit/livekit) Selective
+Forwarding Units (SFUs).
+
+In real-time communication environments, managing media streams among multiple participants can be
+complex. This transport proposal uses a **Multi-SFU approach** where each participant publishes
+their media directly to a LiveKit SFU, while others subscribe to streams they need. This removes the
+need for an SFU election and preserves clear ownership of media.
+
+Example for two participants from different homeservers A and B
+
+```
+      +------------------+
+      |  Participant A   |
+      |  (Matrix Client) |
+      +------------------+
+        |             ^
+        |             |
+        | publishes   | subscribes
+        v             |
+      +-------+  +-------+
+      | SFU A |  | SFU B |
+      +-------+  +-------+
+        |             ^
+        |             |
+        | subscribes  | publishes
+        v             |
+      +------------------+
+      |  Participant B   |
+      |  (Matrix Client) |
+      +------------------+
+```
 
 ## Proposal
 
-The `type` of the Focus is `livekit`.
+This MSC defines the **LiveKit RTC Transport**, which can appear as one of the **RTC Transports**
+offered by a homeserver and being used as transport by clients.
 
-We introduce a two sub-types of LiveKit Focus:
+### LiveKit room alias
 
-- LiveKit SFU Focus - a LiveKit SFU backend infrastructure.
-- LiveKit oldest membership Focus selection algorithm - an algorithm to select a communal LiveKit SFU based on the age of the session participants.
+The name of a LiveKit room is referred to as the **LiveKit alias** (`livekit_alias`). The alias
+**MUST** be unique within a given MatrixRTC slot in a Matrix room. It is derived by the
+concatenation of `room_id` and `|` and `slot_id`. The value is opaque to the MatrixRTC application.
+Within the LiveKit namespace, the `livekit_alias` represents a MatrixRTC slot.
 
-### LiveKit SFU Focus
+Participants from the same Matrix deployment (using the same SFU to publish their media) are
+considered to use the same `livekit_alias` in order to limit the number of actual LiveKit SFU
+connections.
 
-A backend LiveKit SFU Focus is represented in these places:
+### Focus type: `livekit_multi_sfu`
 
-- the `m.rtc_foci` entry of the `.well-known/matrix/client`
-- the `foci_preferred` of the `m.rtc.member` state event
-- the `focus_active` of the `m.rtc.member` state event. TODO: is this correct?
+This section defines the JSON format for the LiveKit SFU Transport, covering both homeserver-side
+advertisement and client-side consumption.
 
-It is represented as a JSON object with the following fields:
+#### Transport Advertisement (homeserver)
 
-- `type` required string - `livekit`
-- `livekit_service_url` required string - The URL of the LiveKit MatrixRTC backend to use for the session.
+The homeserver announces available LiveKit Transport as a JSON object with the following fields:
 
-An example within a `.well-known/matrix/client`:
+- `type` (string, required) \- this **MUST** be `"livekit_multi_sfu`  
+- `livekit_service_url` (string, required) \- The URL of the service that issues JWT tokens for
+  connecting this LiveKit SFU.
 
+An example for  `GET /_matrix/client/v1/rtc/transports`
 ```json5
 {
-  // rest of the .well-known/matrix/client content
-  "m.rtc_foci": [
+  "rtc_transports": [
     {
-      "type": "livekit",
-      "livekit_service_url": "https://livekit-jwt.call.element.dev"
+      "type": "livekit_multi_sfu",
+      "livekit_service_url": "https://matrix-rtc.example.com/livekit/jwt"
     }
   ]
 }
 ```
 
-An example within the `foci_preferred` of the `m.rtc.member` state event:
+#### Transport Usage (client)
 
-```json5
+The mechanism for discovering available RTC transports by clients is already defined in
+[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
+
+Clients declare the RTC Transport(s) they use to publish RTC data in their `m.rtc.member` state
+event by adding a JSON object to the `rtc_transports` array.
+
+#### Field Descriptions
+
+* `type` (string, required) \- this **MUST** be `"livekit_multi_sfu"`  
+* `livekit_service_url` (string, required) \- The URL of the service that issues JWT tokens for
+  connecting this LiveKit SFU.
+
+```
 {
   // rest of the m.rtc.member event
-  "foci_preferred": [
+  "rtc_transports": [
     {
-      "type": "livekit",
-      "livekit_service_url": "https://livekit-jwt.call.element.dev",
+      "type": "livekit_multi_sfu",
+      "livekit_service_url": "https://matrix-rtc.example.com/livekit/jwt",
     }
   ]
 }
 ```
 
-### LiveKit oldest membership Focus selection algorithm
 
-We define a new Focus that uses the age of the session participant `m.rtc.member` to determine the Focus to use.
+### LiveKit SFU Authorisation
 
-This can be used in the `focus_active` of the `m.rtc.member` state event.
-
-The Focus is represented as follows:
-
-- `type` required string - `livekit`
-- `focus_selection` required string - `oldest_membership`
-
-### SFU authentication with LiveKit
-
-LiveKit SFUs requires a JWT `access_token` to be provided when [connecting to the WebSocket](https://docs.livekit.io/reference/internals/client-protocol/#WebSocket-Parameters).
-We standardise the method by which the LiveKit JWT token is obtained by a MatrixRTC application.
+LiveKit SFUs requires a JWT `access_token` to be provided when [connecting to the
+WebSocket](https://docs.livekit.io/reference/internals/client-protocol/#WebSocket-Parameters). We
+standardise the method by which the LiveKit JWT token is obtained by a MatrixRTC application.
 
 Prerequisites:
 
-- the `livekit_service_url` for the MatrixRTC backend has been discovered from one of the methods above
-- the Matrix client has obtained an OpenID Token from the [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#openid).
+* The `livekit_service_url` for the MatrixRTC backend has been discovered from one of the methods above  
+* The Matrix client has obtained an OpenID Token from the [Client-Server
+  API](https://spec.matrix.org/v1.11/client-server-api/#openid).
 
 The JWT token is obtained by making a `POST` request to the `/sfu/get` endpoint of the LiveKit service.
 
 The `Content-Type` of the request is `application/json` and the body JSON body contains the following fields:
 
-- `room_id` required string: the room ID of the Matrix room where the `m.rtc.member` event state key is present.
-- `session` required object: the contents of the `session` from the `m.rtc.member` event.
-- `openid_token` required object: The verbatim OpenID token response obtained from the
-  [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3useruseridopenidrequest_token).
-- `member` required object: The contents of the `member` from the `m.rtc.member` event.
+* `room_id` required string: the room ID of the Matrix room where the `m.rtc.member` event state key
+  is present.  
+* `slot_id` required string: the slot ID from the `m.rtc.member` event.  
+* `openid_token` required object: The verbatim OpenID token response obtained from the
+  [Client-Server
+  API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3useruseridopenidrequest_token).  
+* `member` required object: The contents of the `member` from the `m.rtc.member` event.
 
-If the request is successful an HTTP `200` response is returned with `Content-Type` `application/json` and the body contains:
+If the request is successful an HTTP `200` response is returned with `Content-Type`
+`application/json` and the body contains:
 
-- `jwt` string: The JWT token to use for authentication with the SFU.
-- `url` string: The URL of the LiveKit SFU to use for the session.
+* `jwt` string: The JWT token to use for authentication with the SFU.  
+* `url` string: The URL of the LiveKit SFU to use for the session.
 
 The LiveKit JWT should have permissions as defined below.
 
-An example request where `livekit_service_url` is `https://livekit-jwt.call.element.dev/xyz`:
+An example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
 
-```http
-POST /xyz/sfu/get HTTP/1.1
-Host: livekit-jwt.call.element.dev
+```
+POST /livekit/jwt/sfu/get HTTP/1.1
+Host: matrix-rtc.example.com
 Content-Type: application/json
 
 {
   "room_id": "!tDLCaLXijNtYcJZEey:element.io",
-  "session": {
-    "application": "m.call",
-    "call_id": ""
-  },
+  "slot_id": "the_id",
   "openid_token": {
-    "access_token":  "FPkexLLvKbAHKclQhpvgfWxx",
+    "access_token": "FPkexLLvKbAHKclQhpvgfWxx",
     "expires_in": 3600,
     "matrix_server_name": "call.ems.host",
     "token_type": "Bearer"
@@ -120,41 +159,40 @@ Content-Type: application/json
 
 An example response:
 
-```http
+```
 HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
   "jwt": "thejwt",
-  "url": "wss://livekit-jwt.call.element.dev/rtc"
+  "url": "wss://matrix-rtc.example.com/livekit/sfu"
 }
 ```
 
-### Pseudonymous LiveKit participant identity
+### Pseudonymous LiveKit Participant Identity
 
-We use a pseudonymous LiveKit participant identity for privacy so that the Matrix user ID is not exposed to the LiveKit SFU backend.
+To protect user privacy, a pseudonymous LiveKit participant identity is used, so the Matrix user ID
+is not exposed to the LiveKit SFU backend. This pseudonymous identity is represented by `member.id`.
 
-The pseudonymous LiveKit participant identity is calculated as the SHA-256 hash of the concatenation of:
+### LiveKit JWT Permission Grants
 
-- the Matrix user ID
-- `|`
-- `member`.`device_id`
-- `|`
-- `member`.`id`.
+As well as being a valid [LiveKit JWT](https://docs.livekit.io/home/get-started/authentication/) the
+following constraints are applied:
 
-e.g. `SHA256(@user:matrix.domain|DEVICEID|xyzABCDEF10123)`
+- `sub`: This is the pseudonymous LiveKit participant identity as described above.  
+- `video`.`room`: `livekit_alias` as defined above
 
-### LiveKit JWT permission grants
+In a Multi-SFU setup, where participants may publish to one SFU and consume from others, the JWT
+SHOULD encode access permissions according to the user’s homeserver and their relationship to
+the MatrixRTC backend.
 
-As well as being a valid [LiveKit JWT](https://docs.livekit.io/home/get-started/authentication/) the following constraints
-are applied:
+The permissions SHOULD be just sufficient for the MatrixRTC application to operate in a LiveKit
+room. Permissions SHOULD be scoped according to the user’s role (publishing or subscribing) and
+their relationship to the MatrixRTC backend. All users MUST be able to join the LiveKit room for
+which they are authorized. The `roomCreate` permission SHOULD only be granted to users who are
+related to the MatrixRTC backend and are allowed to publish media.
 
-- `sub`: This is the pseudonymous LiveKit participant identity as described above.
-- `video`.`room`: The name of the room should be the unique for the given `room_id` and `session` inputs. It is opaque to the MatrixRTC application.
-
-The permissions should be sufficient to allow the MatrixRTC application to join the room.
-
-For example:
+Example for publishing RTC data using a full-access grant
 
 ```json
 {
@@ -172,41 +210,109 @@ For example:
 }
 ```
 
+Example for subscribing RTC data with restricted-access grant
+
+```json
+{
+  "exp": 1726764439,
+  "iss": "API2bYPYMoVqjcE",
+  "nbf": 1726760839,
+  "sub": "SHA256(@user:matrix.domain|DEVICEID|xyzABCDEF10123)",
+  "video": {
+    "canPublish": false,
+    "canSubscribe": true,
+    "room": "!gIpOlaUSrXBmgtveWK:call.ems.host_m.call_",
+    "roomCreate": false,
+    "roomJoin": true
+  }
+}
+```
+
 ### End-to-end encryption
 
-End-to-end encryption is mapped into the LiveKit frame level encryption mechanism described [here](https://github.com/livekit/livekit/issues/1035).
+End-to-end encryption is mapped into the LiveKit frame level encryption mechanism described
+[here](https://github.com/livekit/livekit/issues/1035).
 
-Where a shared password is used by the application it is used as the `string` input to the LiveKit key derivation function (which uses PBKDF2) and all participants use the same derived key for encryption and decryption.
+Where a shared password is used by the application it is used as the `string` input to the LiveKit
+key derivation function (which uses PBKDF2) and all participants use the same derived key for
+encryption and decryption.
 
-Where a per-participant key is used it is imported as the byte array input to the LiveKit key derivation function (which uses HKDF). The `index` field of the `m.rtc.encryption_keys` event is used as the key index for the key provider.
+Where a per-participant key is used it is imported as the byte array input to the LiveKit key
+derivation function (which uses HKDF). The `index` field of the `m.rtc.encryption_keys` event is
+used as the key index for the key provider.
 
-On receipt of the `m.rtc.encryption_keys` event the application can associate the received key with the LiveKit participant identity by calculating the
-pseudonymous LiveKit participant identity as described above.
+On receipt of the `m.rtc.encryption_keys` event the application can associate the received key with
+the LiveKit participant identity by calculating the pseudonymous LiveKit participant identity as
+described above.
 
 ## Potential issues
 
+Pseudonymous `livekit_alias`
+
+Assuming that LiveKit SFU authorization is handled separately from the actual LiveKit SFU, metadata
+leakage can be further limited by using a pseudonymous `livekit_alias`. For example, this could be
+derived as: `SHA256(room_id|slot_id|truly random bits)`
+
+Clients that use the same SFU to publish their media are considered to share the same
+`livekit_alias`, which helps limit the number of active LiveKit SFU connections. Consequently, the
+“truly random bits” used for pseudonymity need to be shared among clients using the same
+`livekit_alias`.
+
+As described in the MatrixRTC slots section of
+[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), slots are currently the
+only mechanism for sharing state between clients. Slots are **unencrypted** and subject to potential
+state resolution issues, including flip-flop and settling effects, and generally require **higher
+power levels** to be managed. While tie-breaking “truly random bits” derived from `m.rtc.member`
+(e.g., as part of the `rtc_transports` field) events satisfies shared state encryption, it does
+**not** improve the reliability of state propagation. Given that pseudonymous LiveKit participant
+IDs already exist, the design prioritizes **reliability over additional pseudonymity**, ensuring
+consistent state propagation across clients.
+
 ## Alternatives
+
+Pseudonymous `livekit_alias`
+
+Assuming that LiveKit SFU authorization is handled separately from the actual LiveKit SFU and can be
+trusted, metadata leakage can be further limited by using a pseudonymous `livekit_alias`. For
+example, this could be derived as: `SHA256(room_id|slot_id|truly random bits)` where the `truly
+random bits` are maintained by the LiveKit SFU authorization service. This requires the service to
+be stateful.
 
 ## Security considerations
 
-To prevent abuse of SFU resources, during the backend service should validate the OpenID token as part of requests to `/sfu/get`.
+### Resource usage
 
-The Server-Server API endpoint [/_matrix/federation/v1/openid/userinfo](https://spec.matrix.org/v1.11/server-server-api/#get_matrixfederationv1openiduserinfo)
+To prevent abuse of SFU resources, the LiveKit Authorisation service should validate the OpenID
+token as part of requests to `/sfu/get`.
+
+The Server-Server API endpoint
+[/\_matrix/federation/v1/openid/userinfo](https://spec.matrix.org/v1.11/server-server-api/#get_matrixfederationv1openiduserinfo)
 can be used for this purpose.
 
-An access control policy should be applied based on the result of the OpenID token validation. For example,
-access might be restricted to users of a particular homeserver or to users with a specific role.
+An access control policy should be applied based on the result of the OpenID token validation. For
+example, access might be restricted to users of a particular homeserver or to users with a specific
+role.
 
-The homeserver restriction could be applied by checking the `matrix_server_name` field of the OpenID token before validating the token.
+The homeserver restriction could be applied by checking the `matrix_server_name` field of the OpenID
+token before validating the token.
 
-The `room_id` could be validated too, and checking that the Matrix user from the OpenID token is a member of the room.
+The `room_id` could be validated too, and checking that the Matrix user from the OpenID token is a
+member of the room.
+
+### Pseudonymity
+
+The LiveKit participant identity is a function of one's Matrix user ID, device ID, and session
+membership ID; if all of these values are known or otherwise predictable to the SFU then there is
+effectively no guarantee of pseudonymity. Therefore clients must be careful to use randomly
+generated session membership IDs with sufficient entropy.
 
 ## Unstable prefix
 
-Assuming that this is accepted at the same time as [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
-no unstable prefix is required as these fields  will only be accessed via some other unstable prefix.
+Assuming that this is accepted at the same time as
+[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) no unstable prefix is
+required as these fields  will only be accessed via some other unstable prefix.
 
 ## Dependencies
 
-This MSC builds on [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
-(which at the time of writing has not yet been accepted into the spec).
+This MSC builds on [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) (which
+at the time of writing has not yet been accepted into the spec).
