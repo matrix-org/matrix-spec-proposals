@@ -126,7 +126,7 @@ as something similar to:
 As such, I think this message would be confusing to users the interim whilst clients updated their implementations and
 that a new error code would be the best way forward.
 
-### Add structured error information**
+### Add structured error information
 
 Instead of a simple error code, a more complex error format
 could include machine-readable fields for limit types, current usage, and maximum limits. While
