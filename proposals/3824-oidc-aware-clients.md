@@ -102,7 +102,7 @@ For a client to be considered fully *OAuth 2.0 aware* it **must**:
   - link users to manage their account at the `account_management_uri` given by [MSC4191] instead of native UI
   - do not offer the user the function to deactivate their account and instead refer them to the account management URL
     described above
-  - if the user wishes to sign out a device session other than it's own then the client **must**:
+  - if the user wishes to sign out a device session other than its own then the client **must**:
     - link the user to the `account_management_uri` given by [MSC4191] if provided
     - append the `action` and `device_id` to the web UI link parameters described by
       [MSC4191](https://github.com/matrix-org/matrix-spec-proposals/blob/quenting/account-deeplink/proposals/4191-account-deeplink.md#account-management-url-parameters)
@@ -119,7 +119,7 @@ Optionally, an *OAuth 2.0 aware* client **could**:
   [query parameters for context](https://github.com/matrix-org/matrix-spec-proposals/blob/quenting/account-deeplink/proposals/4191-account-deeplink.md#account-management-url-parameters)
   when linking to the account web UI
 
-For an homeserver using [OAuth 2.0 API] to provide support for *OAuth 2.0 aware* clients it **must**:
+For a homeserver using [OAuth 2.0 API] to provide support for *OAuth 2.0 aware* clients it **must**:
 
 - support the [OAuth 2.0 API]
 - provide an implementation of the [`m.login.sso`]
@@ -127,7 +127,7 @@ For an homeserver using [OAuth 2.0 API] to provide support for *OAuth 2.0 aware*
 - if password authentication was previously enabled on the homeserver then provide an implementation of the
   `m.login.password` [authentication type](https://spec.matrix.org/v1.16/client-server-api/#authentication-types) from the [Legacy API]
 - indicate that the [`m.login.sso`] is preferred by setting `oauth_aware_preferred` to `true`
-- provides a value for the `action` param on the SSO redirect endpoints as defined above
+- provide a value for the `action` param on the SSO redirect endpoints as defined above
 
 Additionally, the homeserver **should**:
 
