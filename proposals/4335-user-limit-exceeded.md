@@ -106,17 +106,36 @@ MSC if deemed necessary.
 
 Several alternatives were considered for this proposal:
 
-**Use M_RESOURCE_LIMIT_EXCEEDED**: The existing [`M_RESOURCE_LIMIT_EXCEEDED`] error code could be
-expanded to cover user-specific limits. However, this code is currently used for server-wide
-resource constraints, and overloading it could create confusion about whether the limit applies
-to the user specifically or the server generally.
+### Use M_RESOURCE_LIMIT_EXCEEDED
 
-**Add structured error information**: Instead of a simple error code, a more complex error format
+The existing [`M_RESOURCE_LIMIT_EXCEEDED`] looks very similar at first glance.
+
+However, this code is explicitly referring to a limit being applied to the *server* and not to the *user* themselves:
+
+> The request cannot be completed because the homeserver has reached a resource limit imposed on it.
+> For example, a homeserver held in a shared hosting environment may reach a resource limit if it starts using too much
+> memory or disk space.
+
+As such this error code is currently rendered by
+[existing](https://github.com/element-hq/element-web/blob/c96da5dbf8e20ced4a512a03a75c91f8680e8d40/src/i18n/strings/en_EN.json#L1112)
+[clients](https://github.com/element-hq/element-ios/blob/2dc7b76c44545b3d027cdf0196c6af6eba8932f4/Riot/Assets/en.lproj/Vector.strings#L615)
+as something similar to:
+
+> This homeserver has exceeded one of its resource limits
+
+As such, I think this message would be confusing to users the interim whilst clients updated their implementations and
+that a new error code would be the best way forward.
+
+### Add structured error information**
+
+Instead of a simple error code, a more complex error format
 could include machine-readable fields for limit types, current usage, and maximum limits. While
 this would provide more information, it would require a more significant change to the error
 response format and could be added in a future MSC if needed.
 
-**Multiple specific error codes**: Separate error codes could be introduced for different types
+### Multiple specific error codes
+
+Separate error codes could be introduced for different types
 of limits (e.g., `M_STORAGE_LIMIT_EXCEEDED`, `M_ROOM_LIMIT_EXCEEDED`). However, this approach
 would require many new error codes and doesn't provide significant benefits over a single code
 with descriptive error messages.
