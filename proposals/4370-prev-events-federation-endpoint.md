@@ -68,7 +68,7 @@ Though not primary drivers for this proposal, this MSC's new endpoint also enabl
 ## Proposal
 
 A new endpoint is added to the [Server-Server API](https://spec.matrix.org/v1.16/server-server-api/)
-to retreive the current extremities (as event IDs) the server has in the given room. The endpoint
+to retrieve the current extremities (as event IDs) the server has in the given room. The endpoint
 requires normal authentication for federation endpoints and MAY be rate limited. "Current" is at the
 time of the request and has no guarantee of being accurate after the request is completed.
 
