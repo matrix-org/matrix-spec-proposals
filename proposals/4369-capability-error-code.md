@@ -1,4 +1,4 @@
-# MSC0000: M_CAPABILITY_NOT_ENABLED error code for when capability is not enabled on an API endpoint
+# MSC4369: M_CAPABILITY_NOT_ENABLED error code for when capability is not enabled on an API endpoint
 
 The [capabilities negotiation] feature in the [Client-Server API] provides a mechanism for clients
 to discover whether specific capabilities are available to a user.
