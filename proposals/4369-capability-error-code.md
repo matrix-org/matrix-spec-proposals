@@ -6,7 +6,7 @@ to discover whether specific capabilities are available to a user.
 However, the endpoints that use capabilities do not currently specify what error response a client
 should expect if they try to use an API that does not have the capability enabled for the user.
 
-I believe this is an omission in the current spec that should be addressed for existing capabilites
+I believe this is an omission in the current spec that should be addressed for existing capabilities
 and be checked for future MSCs that use capabilities.
 
 For background: this MSC originates from a
