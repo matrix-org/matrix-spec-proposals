@@ -54,7 +54,7 @@ leading to significantly different UX across clients.
 ## Alternatives
 
 Further metadata such as the concrete access time or the room could be tracked together with emoji.
-It is unclear, however, if this would lead to materially better suggestions, however.
+It is unclear, however, if this would lead to materially better suggestions.
 
 ## Security considerations
 
