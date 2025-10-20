@@ -55,7 +55,9 @@ The following account management actions are defined by this MSC:
 - `org.matrix.device_view` - The user wishes to view the details of a specific device.
 - `org.matrix.device_delete` - The user wishes to delete/logout a specific device.
 - `org.matrix.account_deactivate` - The user wishes to deactivate their account.
-- `org.matrix.cross_signing_reset` - The user wishes to reset their cross-signing identity.
+- `org.matrix.cross_signing_reset` - The user wishes to reset their cross-signing identity. See
+  [MSC4312](https://github.com/matrix-org/matrix-spec-proposals/blob/ea0aef0aa32ee979b4db14bb869938a597777346/proposals/4312-x-signing-reset-with-nextgen-auth.md?plain=1#L55-L58)
+  for additional details on this.
 
 Subsequent MSCs may extend this list.
 
