@@ -169,6 +169,41 @@ Content-Type: application/json
 }
 ```
 
+#### Error responses
+
+The LiveKit authorisation service MUST respond with appropriate HTTP status codes and structured
+JSON bodies when an error occurs. All error responses MUST include a top-level `"errcode"` string
+and a human-readable `"error"` description, following the conventions used in the 
+[Matrix Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#error-codes).
+
+Common error responses:
+
+| HTTP Status | `errcode` | Meaning / Recommended handling |
+|--------------|------------|--------------------------------|
+| `400 Bad Request` | `M_INVALID_PARAM` | The request body was malformed, missing required fields, or contained invalid values (e.g. missing `room_id`, `slot_id`, or `openid_token`). |
+| `401 Unauthorized` | `M_UNAUTHORIZED` | The request could not be authorised. This response is used for all cases where the OpenID token is invalid, expired, could not be verified, or where the requested room or slot is unknown or inaccessible. Clients may attempt to refresh their OpenID token and retry. |
+| `429 Too Many Requests` | `M_LIMIT_EXCEEDED` | The client or homeserver has exceeded rate limits for LiveKit token requests. A `retry_after_ms` field SHOULD be included to indicate when retry is allowed. |
+| `500 Internal Server Error` | `M_UNKNOWN` | An unexpected internal error occurred while generating the token. The client may retry after a short delay. |
+
+Example Error Response:
+```
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+
+{
+  "errcode": "M_UNAUTHORIZED",
+  "error": "The request could not be authorised."
+}
+```
+For privacy reasons, the authorisation service does not distinguish between invalid credentials,
+unknown resources, or insufficient permissions. All such conditions result in a 401 Unauthorized
+response with `M_UNAUTHORIZED`. This prevents clients from inferring the existence of specific
+rooms, users, or slots based on error responses.
+
+The LiveKit authorisation service MAY include additional fields (such as `retry_after_ms` or
+`reason`) for diagnostic purposes, but clients MUST be prepared to ignore unknown fields.
+Implementations SHOULD NOT disclose sensitive information in the `"error"` field.
+
 ### Pseudonymous LiveKit Participant Identity
 
 To protect user privacy, a pseudonymous LiveKit participant identity is used, so the Matrix user ID
