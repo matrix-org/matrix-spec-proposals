@@ -268,6 +268,37 @@ power levels** to be managed. While tie-breaking “truly random bits” derived
 IDs already exist, the design prioritizes **reliability over additional pseudonymity**, ensuring
 consistent state propagation across clients.
 
+### Reliance on the LiveKit Protocol and Implementation
+
+A concern has been raised regarding the reliance of this MSC on the LiveKit protocol, which is
+developed and maintained by a commercial entity rather than a formal standards body. This creates a
+theoretical risk that future development or licensing changes by LiveKit, Inc. could diverge from
+Matrix’s goals or limit interoperability.
+
+This consideration was already discussed during the design of the MatrixRTC backend, and several
+factors help to mitigate the concern:
+* **Protocol openness**: The LiveKit protocol and reference implementation are released under the
+  [Apache 2.0 License](https://github.com/livekit/livekit/blob/master/LICENSE), which allows for
+  forking and independent evolution. If LiveKit’s direction or license were to change, Matrix could
+  adopt the current protocol version and evolve it independently under an open governance model.
+* **No lock-in at the Matrix level**: MatrixRTC defines a generic transport abstraction (see
+  [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)), allowing for the
+  definition of additional or alternative transport types in the future without breaking
+  compatibility.
+* **Extensibility**: Because the LiveKit protocol is open source, nothing prevents the Matrix
+  community from implementing additional functionality — such as Cascading SFUs or other
+  federation-oriented features — on top of the existing protocol if required. While this has been
+  discussed with the LiveKit team and they did not object in principle, such extensions are not
+  expected to depend on their involvement.
+* **Implementation pragmatism**: The choice of LiveKit was primarily pragmatic—to accelerate
+  development and deployment of a functioning multi-SFU solution—rather than to establish a
+  permanent dependency. The current multi-SFU model also reduces the importance of features such as
+  Cascading SFUs that might otherwise require protocol changes.
+
+In summary, this MSC’s reliance on LiveKit represents a practical implementation path rather than a
+long-term commitment to a specific third-party protocol. The current design remains open to future
+evolution toward a Matrix-native or jointly standardized MatrixRTC transport.
+
 ## Alternatives
 
 Pseudonymous `livekit_alias`
