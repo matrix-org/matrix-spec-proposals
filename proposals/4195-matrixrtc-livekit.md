@@ -372,6 +372,27 @@ membership ID; if all of these values are known or otherwise predictable to the 
 effectively no guarantee of pseudonymity. Therefore clients must be careful to use randomly
 generated session membership IDs with sufficient entropy.
 
+### Error handling and information disclosure
+
+Implementations of the `/sfu/get` endpoint SHOULD take care not to disclose sensitive internal
+details through error messages.
+
+Error responses should use generic `"errcode"` values and short, human-readable `"error"`
+descriptions that are suitable for client display or logging. Specifically:
+* Validation or authorisation failures MUST NOT reveal information about whether a particular Matrix
+  user, device, or room exists.
+* Server-side or federation validation errors (for example, OpenID token verification failures)
+  SHOULD be reported as `M_UNAUTHORIZED` or `M_FORBIDDEN` without including internal validation
+  results or upstream responses.
+* Detailed diagnostic information (e.g., reasons for policy rejection, internal stack traces, or
+  upstream HTTP responses) MUST NOT be exposed to clients, but MAY be logged on the server side for
+  audit and debugging purposes.
+* If rate limiting is applied, the inclusion of a numeric `retry_after_ms` value is acceptable, but
+  other details of rate limiting policy SHOULD NOT be exposed.
+
+This ensures that error responses remain useful for clients while preventing potential metadata
+leakage about users, rooms, or federation trust relationships.
+
 ## Unstable prefix
 
 Assuming that this is accepted at the same time as
