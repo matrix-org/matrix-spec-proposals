@@ -41,9 +41,9 @@ offered by a homeserver and being used as transport by clients.
 ### LiveKit room alias
 
 The name of a LiveKit room is referred to as the **LiveKit alias** (`livekit_alias`). The alias
-**MUST** be unique within a given MatrixRTC slot in a Matrix room. It is derived by the
-concatenation of `room_id` and `|` and `slot_id`. The value is opaque to the MatrixRTC application.
-Within the LiveKit namespace, the `livekit_alias` represents a MatrixRTC slot.
+MUST be unique within a given MatrixRTC slot in a Matrix room. It is derived by the concatenation
+of `room_id` and `|` and `slot_id`. The value is opaque to the MatrixRTC application. Within the 
+LiveKit namespace, the `livekit_alias` represents a MatrixRTC slot.
 
 Participants from the same Matrix deployment (using the same SFU to publish their media) are
 considered to use the same `livekit_alias` in order to limit the number of actual LiveKit SFU
@@ -54,12 +54,14 @@ connections.
 This section defines the JSON format for the LiveKit SFU Transport, covering both homeserver-side
 advertisement and client-side consumption.
 
-#### Transport Advertisement (homeserver)
+### Transport Advertisement (homeserver)
+
+The mechanism for advertising available RTC transports by homeservers is already defined in
+[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
 
 The homeserver announces available LiveKit Transport as a JSON object with the following fields:
-
-- `type` (string, required) \- this **MUST** be `"livekit_multi_sfu`  
-- `livekit_service_url` (string, required) \- The URL of the service that issues JWT tokens for
+* `type` — required `string`: this MUST be `"livekit_multi_sfu`  
+* `livekit_service_url` — required `string`: The URL of the service that issues JWT tokens for
   connecting this LiveKit SFU.
 
 An example for  `GET /_matrix/client/v1/rtc/transports`
@@ -74,7 +76,7 @@ An example for  `GET /_matrix/client/v1/rtc/transports`
 }
 ```
 
-#### Transport Usage (client)
+### Transport Usage (client)
 
 The mechanism for discovering available RTC transports by clients is already defined in
 [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
@@ -82,10 +84,13 @@ The mechanism for discovering available RTC transports by clients is already def
 Clients declare the RTC Transport(s) they use to publish RTC data in their `m.rtc.member` state
 event by adding a JSON object to the `rtc_transports` array.
 
-#### Field Descriptions
+Other clients in the same MatrixRTC slot discover and subscribe to each other’s media by inspecting
+`m.rtc.member` events. Clients use this information to connect to the appropriate SFU and subscribe
+to the published media.
 
-* `type` (string, required) \- this **MUST** be `"livekit_multi_sfu"`  
-* `livekit_service_url` (string, required) \- The URL of the service that issues JWT tokens for
+Field Descriptions:
+* `type` — required `string`: this MUST be `"livekit_multi_sfu"`  
+* `livekit_service_url` — required `string`: The URL of the service that issues JWT tokens for
   connecting this LiveKit SFU.
 
 ```
@@ -100,65 +105,61 @@ event by adding a JSON object to the `rtc_transports` array.
 }
 ```
 
-
 ### LiveKit SFU Authorisation
 
-LiveKit SFUs requires a JWT `access_token` to be provided when [connecting to the
-WebSocket](https://docs.livekit.io/reference/internals/client-protocol/#WebSocket-Parameters). We
-standardise the method by which the LiveKit JWT token is obtained by a MatrixRTC application.
+LiveKit SFUs require a JWT `access_token` to be provided when 
+[connecting to the WebSocket](https://docs.livekit.io/reference/internals/client-protocol/#WebSocket-Parameters).  
+This section standardises the method by which a MatrixRTC application obtains the LiveKit JWT
+token.
 
-Prerequisites:
+#### Prerequisites
 
-* The `livekit_service_url` for the MatrixRTC backend has been discovered from one of the methods above  
-* The Matrix client has obtained an OpenID Token from the [Client-Server
-  API](https://spec.matrix.org/v1.11/client-server-api/#openid).
+* The `livekit_service_url` for the MatrixRTC backend has been discovered from one of the methods above.  
+* The Matrix client has obtained an OpenID token from the [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#openid).
+
+#### Request
 
 The JWT token is obtained by making a `POST` request to the `/sfu/get` endpoint of the LiveKit service.
 
-The `Content-Type` of the request is `application/json` and the body JSON body contains the following fields:
+The `Content-Type` of the request is `application/json` and the JSON body contains the following
+fields:
+  * `room_id` — required `string`: the Matrix room ID where the `m.rtc.member` event is present.  
+  * `slot_id` — required `string`: the slot ID from the `m.rtc.member` event.  
+  * `openid_token` — required `object`: the verbatim OpenID token response obtained from the 
+    [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3useruseridopenidrequest_token).  
+  * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
 
-* `room_id` required string: the room ID of the Matrix room where the `m.rtc.member` event state key
-  is present.  
-* `slot_id` required string: the slot ID from the `m.rtc.member` event.  
-* `openid_token` required object: The verbatim OpenID token response obtained from the
-  [Client-Server
-  API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3useruseridopenidrequest_token).  
-* `member` required object: The contents of the `member` from the `m.rtc.member` event.
-
-If the request is successful an HTTP `200` response is returned with `Content-Type`
-`application/json` and the body contains:
-
-* `jwt` string: The JWT token to use for authentication with the SFU.  
-* `url` string: The URL of the LiveKit SFU to use for the session.
-
-The LiveKit JWT should have permissions as defined below.
-
-An example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
-
+Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
 ```
 POST /livekit/jwt/sfu/get HTTP/1.1
 Host: matrix-rtc.example.com
 Content-Type: application/json
 
 {
-  "room_id": "!tDLCaLXijNtYcJZEey:element.io",
+  "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
   "openid_token": {
     "access_token": "FPkexLLvKbAHKclQhpvgfWxx",
     "expires_in": 3600,
-    "matrix_server_name": "call.ems.host",
+    "matrix_server_name": "matrix.example.com",
     "token_type": "Bearer"
   },
   "member": {
     "id": "xyzABCDEF10123",
     "device_id": "DEVICEID",
-    "user_id": "@user:matrix.domain"
+    "user_id": "@user:matrix.example.com"
   }
 }
 ```
 
-An example response:
+#### Successful response
 
+If the request is successful, an HTTP `200 OK` response is returned with
+`Content-Type: application/json`. The response body contains:
+* `jwt` — `string`: the JWT token to use for authentication with the SFU.  
+* `url` — `string`: the URL of the LiveKit SFU to use for the given slot.
+
+Example response:
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -227,9 +228,8 @@ their relationship to the MatrixRTC backend. All users MUST be able to join the 
 which they are authorized. The `roomCreate` permission SHOULD only be granted to users who are
 related to the MatrixRTC backend and are allowed to publish media.
 
-Example for publishing RTC data using a full-access grant
-
-```json
+Example for publishing RTC data using a full-access grant:
+```json5
 {
   "exp": 1726764439,
   "iss": "API2bYPYMoVqjcE",
@@ -247,7 +247,7 @@ Example for publishing RTC data using a full-access grant
 
 Example for subscribing RTC data with restricted-access grant
 
-```json
+```json5
 {
   "exp": 1726764439,
   "iss": "API2bYPYMoVqjcE",
@@ -282,7 +282,7 @@ described above.
 
 ## Potential issues
 
-Pseudonymous `livekit_alias`
+### Pseudonymous `livekit_alias`
 
 Assuming that LiveKit SFU authorization is handled separately from the actual LiveKit SFU, metadata
 leakage can be further limited by using a pseudonymous `livekit_alias`. For example, this could be
