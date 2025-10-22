@@ -31,7 +31,7 @@ same or different.
 I propose providing a fixed set of images to use for emoji verification, and
 recommending a fixed layout for display on screen.
 
-### Changes to the emoji table
+### Including URLs in the Emoji table
 
 Currently the spec provides Unicode code points of emoji for each
 number 0-63 along with translated names. It also provides this information as
@@ -80,6 +80,13 @@ I also propose that graphical clients SHOULD display these images in two rows,
 centred vertically, with 4 images on the first row and 3 images on the second,
 with the local translation of the corresponding word below each image.
 
+Unless absolutely necessary, the images will not change, so clients are not
+expected to update them in future, and will probably not bother to automate
+downloads of the images as part of their build process.
+
+There is no uptime guarantee for the supplied URLs, so clients SHOULD NOT depend
+on them being available when a user needs to use them.
+
 ### Non-graphical clients
 
 Non-graphical clients or other clients that are unable to use the supplied
@@ -89,14 +96,20 @@ images may continue to use Unicode code points as before.
 
 I propose taking a snapshot of the relevant images from
 [twemoji](https://github.com/twitter/twemoji) at the time of incorporating this proposal
-into the spec, and freezing the set of images at that time. (Until/unless some
-other MSC requires them to be changed.)
+into the spec, and freezing the set of images at that time.
 
 These images are attractive and clear.
 
 These images are provided under the CC BY 4.0 license so may be used with
 proper attribution, which should be added to the spec text and client
 applications.
+
+### Future changes
+
+If at all possible, these images will not change. In future, if they need to
+change in an incompatible way, I expect that the verification process will be
+extended to include information allowing clients to negotiate which image set to
+use, but this is out of scope for this proposal.
 
 ## Potential issues
 
