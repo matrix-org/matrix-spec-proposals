@@ -46,12 +46,17 @@ always had a capability associated with it and so clients should know to check t
 
 ### Changes from implementations in the wild
 
+This is what Synapse currently returns:
+
 Endpoint(s)|Synapse current
 -|-
 [`POST /_matrix/client/v3/account/password`]|`403` with `M_FORBIDDEN`
 [`PUT /_matrix/client/v3/profile/{userId}/{keyName}`] [`DELETE /_matrix/client/v3/profile/{userId}/{keyName}`]|`400` with `M_FORBIDDEN`
 [`POST /_matrix/client/v3/account/3pid`] [`POST /_matrix/client/v3/account/3pid/add`] [`POST /_matrix/client/v3/account/3pid/delete`]|`400` with `M_FORBIDDEN`
 [`POST /_matrix/client/v1/login/get_token`]|`404` with `M_UNRECOGNIZED`
+
+The [`POST /_matrix/client/v1/login/get_token`] one is interesting as it suggests that the `400` from the previous
+section isn't used in the wild.
 
 ## Alternatives
 
