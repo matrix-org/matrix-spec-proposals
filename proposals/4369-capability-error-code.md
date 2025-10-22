@@ -60,14 +60,14 @@ section isn't used in the wild.
 
 ## Alternatives
 
-### Codify existing Synapse behaviour
+### Codify existing Synapse behaviour
 
 We could simply codify what is in the existing Synapse implementation (see above). This is what was originally proposed
 in https://github.com/matrix-org/matrix-spec/pull/2212.
 
 However, that doesn't consider non-Synapse implementations.
 
-### Increment version on affected endpoints
+### Increment version on affected endpoints
 
 Deprecate the old version and introduce a new version with the updated error responses.
 
