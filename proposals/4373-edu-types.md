@@ -1,4 +1,4 @@
-# MSCXXXX: Server opt-out of specific EDU types
+# MSC4373: Server opt-out of specific EDU types
 
 Some servers may wish to not receive specific types of EDUs, such as presence, to
 cut down on the amount of bandwidth used (as an example).
