@@ -31,7 +31,8 @@ This endpoint SHOULD NOT require authentication, but if provided, follow the nor
 verification process.
 
 If the EDU type is listed, and is set to `false`, any EDUs of that type
-SHOULD NOT be sent to the target homeserver.
+SHOULD NOT be sent to the target homeserver. The target server MUST ignore
+EDUs of these types.
 
 If the EDU type is set to `true`, the EDU MAY be sent to the target homeserver,
 unless other factors disallow it (such as room ACLs, where that is relevant).
