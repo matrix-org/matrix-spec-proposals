@@ -9,21 +9,32 @@ cut down on the amount of bandwidth used (as an example).
 
 This endpoint dictates what types of EDUs the server wishes to receive.
 
-The server should reply with a list of EDU types:
+The response for this endpoint is shaped like the following:
 
 ```json
 {
-    "read_receipts": true,
-    "presence": true,
-    "typing": true
+    "m.presence": false,
+    "m.typing": true,
+    "m.read": true
 }
 ```
 
-Other types of EDUs (signing key updates, device lists, to-device messaging)
-are likely unsafe to opt-out of and thus must not be included.
+The allowed types are:
+* `m.presence`
+* `m.typing`
+* `m.read`
 
-This endpoint should not require authentication as nothing too sensitive is
-revealed by having it as such.
+Other types of EDUs (signing key updates, device lists, to-device messaging, etc)
+are likely unsafe to opt-out of.
+
+This endpoint MUST NOT require authentication, but if provided, follow the normal
+verification process.
+
+If the EDU type is listed, and is set to `false`, any EDUs of that type
+SHOULD NOT be sent to the target homeserver.
+
+If the EDU type is set to `true`, the EDU MAY be sent to the target homeserver,
+unless other factors disallow it (such as room ACLs, where that is relevant).
 
 ## Potential issues
 
