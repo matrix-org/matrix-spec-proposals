@@ -36,6 +36,8 @@ SHOULD NOT be sent to the target homeserver.
 If the EDU type is set to `true`, the EDU MAY be sent to the target homeserver,
 unless other factors disallow it (such as room ACLs, where that is relevant).
 
+The endpoint response SHOULD be cached, for a week at maximum.
+
 ## Potential issues
 
 Older homeservers (or simply non-compliant ones) will still send unwanted EDUs,
