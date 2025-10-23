@@ -14,15 +14,15 @@ The response for this endpoint is shaped like the following:
 ```json
 {
     "m.presence": false,
-    "m.typing": true,
-    "m.read": true
+    "m.receipt": true,
+    "m.typing": true
 }
 ```
 
 The allowed types are:
 * `m.presence`
+* `m.receipt`
 * `m.typing`
-* `m.read`
 
 Other types of EDUs (signing key updates, device lists, to-device messaging, etc)
 are likely unsafe to opt-out of.
