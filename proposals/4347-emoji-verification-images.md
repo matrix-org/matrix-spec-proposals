@@ -116,6 +116,9 @@ use, but this is out of scope for this proposal.
 A program to download the necessary images from twemoji is provided at
 [codeberg.org/andybalaam/download-matrix-twemoji](https://codeberg.org/andybalaam/download-matrix-twemoji).
 
+The zipped result of running this tool is at
+[github.com/user-attachments/files/23101244/sas-emoji.zip](https://github.com/user-attachments/files/23101244/sas-emoji.zip).
+
 If this proposal is merged and the images are available from the spec repo, a
 similar tool could be provided to download them directly.
 
@@ -164,7 +167,8 @@ similar tool could be provided to download them directly.
     but twemoji is already in widespread use in Matrix clients, so seems the
     least disruptive alternative.
 
-* We could provide the images as a zip file
+* We could provide the images as a zip file like
+  [github.com/user-attachments/files/23101244/sas-emoji.zip](https://github.com/user-attachments/files/23101244/sas-emoji.zip)
   either in addition to the individual images, or as an alternative. This would
   probably be more convenient for client implementors, but would be less aligned
   with the way sas-emoji.json is structured.
