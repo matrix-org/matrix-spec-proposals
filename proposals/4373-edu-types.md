@@ -27,7 +27,7 @@ The allowed types are:
 Other types of EDUs (signing key updates, device lists, to-device messaging, etc)
 are likely unsafe to opt-out of.
 
-This endpoint MUST NOT require authentication, but if provided, follow the normal
+This endpoint SHOULD NOT require authentication, but if provided, follow the normal
 verification process.
 
 If the EDU type is listed, and is set to `false`, any EDUs of that type
