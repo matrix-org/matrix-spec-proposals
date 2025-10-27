@@ -30,57 +30,114 @@ The following information can be useful for clients:
 - Whether an invite event was preceded by a knock, if the client wants to auto-accept invites that
   come from knocking.
 
-_Note that part of this proposed change specifies behavior that has been implemented for a long time
-in homeserver implementations and that clients already rely on._
+Furthermore, appservices may want to deduplicate this event received via `/sync` from events
+received via `/_matrix/app/v1/transactions`, so they need to be able to identify it uniquely. The
+easiest way to do this is to use its `event_id`.
+
+> [!NOTE]
+> Part of this proposed change is based on behavior that has been implemented for a long time in
+> homeserver implementations and that clients already rely on, but that is currently unspecced.
 
 
 ## Proposal
 
-For clients to be able to get details about an invite or knock, the `m.room.member` event that was
-created during the invite or knock process MUST be present in the `events` of the `invite_state` or
-`knock_state`. Making it mandatory makes sense because this event is the reason why the room appears
-in `invite` or `knock` in the first place.
+For clients to be able to get all the details about an invite or knock, a `state` key is added to
+the [`InvitedRoom`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync_response-200_invited-room)
+and [`KnockedRoom`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync_response-200_knocked-room)
+objects. It uses the same format as the [`State`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync_response-200_state)
+object in [`JoinedRoom`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync_response-200_joined-room)
+and MUST include the `m.room.member` event that was created during the invite or knock process, in
+the [`ClientEventWithoutRoomID`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync_response-200_clienteventwithoutroomid)
+format.
 
-_Note that the example for the response of `GET /sync` already include the stripped `m.room.member`
-event although it is not specified._
+> [!NOTE]
+> Making it mandatory makes sense because this event is the reason why the room appears in `invite`
+> or `knock` in the first place. Providing the full event format allows clients to access details
+> like the `origin_server_ts`, the `event_id` or the `unsigned` object.
 
-The stripped state event format is modified in the Client-Server and Server-Server APIs to include
-the optional `origin_server_ts`. This property is optional for backwards-compatibility but servers
-MUST include the `origin_server_ts` if they have it. It means that in the `/sync` response, stripped
-state received over federation might lack this field if the other server didn't send it, but the
-`m.room.member` event should always have it, since the server always has this event as a PDU.
+For compatibility with the current client implementations, homeservers SHOULD also include this
+event in the `events` array of the `invite_state` or `knock_state` in stripped format.
 
-In the Client-Server API, the optional `unsigned` property is also added, identical to the one in
-other event formats. This property is mostly expected for the `m.room.member` event, for clients to
-be able to follow the transitions between membership states by looking at `prev_content`.
+Clients SHOULD expect the `state` key to be missing and SHOULD look for the `m.room.member` event in
+`invite_state` or `knock_state` as a fallback.
 
-Example of an `m.room.member` in `invite_state`:
-
-```json
-{
-  "content": {
-    "membership": "invite",
-    "displayname": "Alice"
-  },
-  "type": "m.room.member",
-  "state_key": "@alice:example.org",
-  "sender": "@bob:example.org",
-  "origin_server_ts": 1432735824653,
-  "unsigned": {
-    "prev_content": {
-      "membership": "knock",
-      "displayname": "Alice"
-    }
-  }
-}
-```
+> [!NOTE]
+> The example for the response of `GET /sync` already includes the stripped `m.room.member` event
+> although it is not specified.
 
 Finally, the list of events that should be included in the stripped state is extended with the
 stripped `m.room.member` event of the `sender` of the invite. This allows clients to be able to
 display information about the sender of an invite, like their display name or avatar.
 
+Example of an `InvitedState` object:
+
+```json
+{
+  "state": {
+    "events": [
+      {
+        "content": {
+          "membership": "invite",
+          "displayname": "Alice"
+        },
+        "type": "m.room.member",
+        "state_key": "@alice:example.org",
+        "sender": "@bob:example.org",
+        "event_id": "$Rqnc-F-dvnEYJTyHq_iKxU2bZ1CI92-kuZq3a5lr5Zg",
+        "origin_server_ts": 1432735824653,
+        "unsigned": {
+          "prev_content": {
+            "membership": "knock",
+            "displayname": "Alice"
+          }
+        }
+      }
+    ]
+  },
+  "invite_state": {
+    "events": [
+      {
+        "content": {
+          "membership": "invite",
+          "displayname": "Alice"
+        },
+        "type": "m.room.member",
+        "state_key": "@alice:example.org",
+        "sender": "@bob:example.org",
+      },
+      {
+        "content": {
+          "m.federate": true,
+          "predecessor": {
+            "event_id": "$something:example.org",
+            "room_id": "!oldroom:example.org"
+          },
+          "room_version": "11"
+        },
+        "sender": "@example:example.org",
+        "state_key": "",
+        "type": "m.room.create",
+      },
+      {
+        "content": {
+          "membership": "join",
+          "displayname": "Bob"
+        },
+        "type": "m.room.member",
+        "state_key": "@bob:example.org",
+        "sender": "@bob:example.org",
+      },
+    ]
+  }
+}
+```
+
 
 ## Potential issues
+
+This changes the current expectations of clients by moving the `m.room.member` event outside of the
+`invite_state` and `knock_state` so they will need to adapt to the change. This is mitigated by
+encouraging servers are to keep sending the event in these objects.
 
 By showing more information about the sender of an invite, users might be subject to undesirable
 content like abusive language or images. Mitigating this is out of scope of this MSC, and other MSCs
@@ -89,14 +146,23 @@ exist for this, like [MSC4278](https://github.com/matrix-org/matrix-spec-proposa
 
 ## Alternatives
 
-We could put the full `m.room.member` event in the `invite_state` or `knock_state`, but mixing event
-formats in a list is undesirable.
+We could put the full `m.room.member` event in the `events` array of the `invite_state` or
+`knock_state`, but mixing event formats in a list is undesirable.
 
-We could also put the full `m.room.member` event someplace else, like in a `state` property similar
-to rooms under `join` or `leave`. It would have the added benefit that homeservers wouldn't need to
-edit the stripped state that was received over federation. However this change would not be
-compatible with the current ecosystem where clients already depend on all events being in the
-`invite_state` or `knock_state`.
+We could put the full `m.room.member` event under another key in the `invite_state` or
+`knock_state`, the `state` key was chosen for its similarity with other room objects. It will also
+allow to add more events using their full format in the future if needed.
+
+We could add more fields to the stripped state format, but given all the fields that are needed for
+the different use cases, it would mean that the stripped state has the same format as normal state.
+Using the full event format might give the wrong idea that this state has been validated by the
+homeserver, which is currently not possible
+(see [this discussion in MSC4311](https://github.com/matrix-org/matrix-spec-proposals/pull/4311#discussion_r2274781824)).
+Besides, those fields are really only necessary for the `invite` or `knock` `m.room.member` event.
+
+This doesn't solve the case where a room doesn't an `m.room.name` or `m.room.canonical_alias` state
+event, so [its display name should be computed using the room summary](https://spec.matrix.org/v1.15/client-server-api/#calculating-the-display-name-for-a-room).
+This is left to another MSC.
 
 
 ## Security considerations
@@ -106,7 +172,8 @@ No potential security issues are known to the author.
 
 ## Unstable prefix
 
-None necessary, this is adding existing event types into existing arrays.
+While this proposal is not considered stable, implementations should use `org.matrix.msc4319.state`
+for the `state` key in `InvitedRoom` and `JoinedRoom`.
 
 
 ## Dependencies
