@@ -500,6 +500,24 @@ and better identification of what entity is requesting these endpoints, which ca
 The downsides of this approach are its requirement on the homeserver supporting the OAuth 2.0 login API,
 and the additional network/configuration overhead for external services to request access to this scope.
 
+### Management endpoint action in request body
+
+A previous version of this MSC defined the [delayed event management endpoints](#managing-delayed-events)
+with a single URL for all management actions, where the action to perform was specified in the request's JSON body
+in a field named "action":
+
+```http
+POST /_matrix/client/v1/delayed_events/1234567890
+Content-Type: application/json
+
+{
+  "action": "send"
+}
+```
+
+This has been changed to permit more fine-grained routing/load-balancing/authentication/scopes on those endpoints,
+and to optimize network traffic by eliminating the payload of these requests.
+
 ### Batch sending
 
 In some scenarios it is important to allow to send an event with an associated
@@ -830,10 +848,12 @@ endpoints for sending and managing delayed events.
 
 ### Implementation differences
 
-In the Synapse implementation of this MSC,
-`GET /_matrix/client/v1/delayed_events` does not yet support query parameters,
-and returns only scheduled delayed events,
-under a key of `"delayed_events"` instead of `"scheduled"`.
+In the Synapse implementation of this MSC:
+- `GET /_matrix/client/v1/delayed_events` does not yet support query parameters,
+  and returns only scheduled delayed events,
+  under a key of `"delayed_events"` instead of `"scheduled"`.
+- [The management endpoints](#managing-delayed-events) use a single URL for all management actions,
+  in the manner described [here](#management-endpoint-action-in-request-body).
 
 ## Dependencies
 
