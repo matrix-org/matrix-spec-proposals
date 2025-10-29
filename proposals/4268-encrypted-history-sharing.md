@@ -45,7 +45,7 @@ The keys are assembled into a JSON object with the following structure:
   "withheld": [
     {
       "algorithm": "m.megolm.v1.aes-sha2",
-      "code": "m.unauthorised",
+      "code": "m.history_not_shared",
       "reason": "History not shared",
       "room_id": "!Cuyf34gef24t:localhost",
       "sender_key": "RF3s+E7RkTQTGF2d8Deol0FkQvgII2aJDf3/Jp5mxVU",
@@ -58,7 +58,7 @@ The keys are assembled into a JSON object with the following structure:
 The properties in the object are defined as:
 
   * `room_keys`: an array of objects each with the following fields from [`ExportedSessionData`](https://spec.matrix.org/v1.14/client-server-api/#definition-exportedsessiondata):
-  
+
      * `algorithm`
      * `room_id`
      * `sender_claimed_keys`
@@ -72,8 +72,9 @@ The properties in the object are defined as:
 
  * `withheld`: an array of objects with the same format as the content of an
    [`m.room_key.withheld`](https://spec.matrix.org/v1.14/client-server-api/#mroom_keywithheld)
-   message, usually with code `m.unauthorised` to indicate that the recipient
-   isn't allowed to receive the key.
+   message, usually with code `m.history_not_shared` (see
+   [below](#new-withheld-code)) to indicate that the recipient isn't allowed to
+   receive the key.
 
 A single session MUST NOT appear in both the `room_keys` and `withheld` sections.
 
@@ -106,7 +107,7 @@ The plaintext content of such a message should be:
     "room_id": "!Cuyf34gef24t:localhost",
     "file": {
       "v": "v2",
-      "url": "mxc://example.org/FHyPlCeYUSFFxlgbQYZmoEoe",     
+      "url": "mxc://example.org/FHyPlCeYUSFFxlgbQYZmoEoe",
       "key": {
           "alg": "A256CTR",
           "ext": true,
@@ -121,7 +122,7 @@ The plaintext content of such a message should be:
     }
   },
   "sender": "@alice:example.com",
-  "recipient": "@bob:example.org", 
+  "recipient": "@bob:example.org",
   "recipient_keys": { "ed25519": "<bob_ed25519_key>" }
   "keys": { "ed25519": "<alice_ed25519_key>" },
   "sender_device_keys": { ... }
@@ -132,7 +133,7 @@ The properties within the `content` are defined as:
 
  * `room_id`: the room to which the keys in the key bundle relate. (This is
    required so that Bob can download the key bundle at the right time.)
- 
+
  * `file`: `EncryptedFile` from the [encrypted attachment
    format](https://spec.matrix.org/v1.13/client-server-api/#extensions-to-mroommessage-msgtypes).
 
@@ -219,6 +220,44 @@ For example:
 In all cases, an absent or non-boolean `shared_history` property is treated the same as
 `shared_history: false`.
 
+### New "withheld" code
+
+The spec currently
+[defines](https://spec.matrix.org/v1.14/client-server-api/#mroom_keywithheld) a
+number of "withheld" codes which are used to indicate that a client is
+deliberately *not* sharing a megolm session key with another. Normally these
+codes are used in `m.room_key.withheld` to-device events; as the text above
+specifies, we will now also use them in the `withheld` section of the room key bundle.
+
+This MSC proposes the addition of a new withheld code, `m.history_not_shared`,
+which is used specifically to indicate that the megolm session in question does not
+have the `shared_history` flag set (which means that the creator of that
+session believed that the room history visibility did not allow new members to
+access history).
+
+* Aside: the spec currently contains a definition for a `withheld` code
+  `m.unauthorised`. However, its semantics are unclear: the spec defines it as
+  meaning "the user/device is not allowed to have the key", but is unclear
+  about why this might happen. (Arguably, `m.blacklisted` and `m.unverified`
+  are also cases of "the user/device is not allowed to have the key".)
+
+  In practice, modern Element clients (including Element Web and the classic
+  mobile clients, since the port to the Rust crypto stack), do not send this
+  withheld code at all. Further, the example given in the spec, "the
+  user/device was not in the room when the original message was sent", is
+  somewhat similar to this usecase.
+
+  It is therefore somewhat tempting to repurpose `m.unauthorised` to suit this
+  usecase. However, `m.unauthorised` has been used for other purposes in the
+  past (for example, [Element Android
+  Classic](https://github.com/element-hq/element-android/blob/v1.6.5/matrix-sdk-android/src/kotlinCrypto/java/org/matrix/android/sdk/internal/crypto/IncomingKeyRequestManager.kt#L276)
+  used to use it as a general-purpose refusal to respond to key requests from
+  other users), and we have little insight as to how `m.unauthorised` might be
+  used in non-Element clients.
+
+  In short, a new code is likely to cause less confusion than repurposing
+  `m.unauthorised`,
+
 ### Actions as a receiving client
 
 When Bob's client receives an `m.room_key_bundle` event from Alice, there are two possibilities:
@@ -236,12 +275,12 @@ When Bob's client receives an `m.room_key_bundle` event from Alice, there are tw
 
    Delaying the download in this way avoids a potential DoS vector in which an
    attacker can cause the victim to download a lot of useless data.
-   
+
 Once Bob has downloaded the key bundle, the sessions are imported as they would
 be when importing a key export; however:
 
   * Only keys for the relevant room should be imported.
-  
+
   * Bob's client should remember who sent the keys (Alice, in this case), and
     MUST show that information to the user, since he has only that user's word
     for the authenticity of those sessions.
@@ -292,7 +331,7 @@ TODO: tell the sender we have finished with the bundle, so they can delete it?
   a megolm session belonged to Alice, whereas it actually belonged to
   Charlie. Even if the recipient later receives a key bundle from an honest
   user, they may now have difficulty deciding which user was correct.
-  
+
   Both problems can be mitigated by only accepting key bundles when accepting
   an invite from that user.
 
@@ -302,13 +341,14 @@ Until this MSC is accepted, the following identifiers should be used:
 
  * `io.element.msc4268.room_key_bundle` instead of `m.room_key_bundle` for the
    to-device message containing details of the key bundle.
- 
+
  * `org.matrix.msc3061.shared_history` instead of `shared_history` for the
    property in `BackedUpSessionData` and `ExportedSessionData` indicating that
    the key can be shared with new members.
 
+ * `io.element.msc4268.history_not_shared` instead of `m.history_not_shared` as
+   the withheld code for sessions which are not marked as `shared_history`.
 
 ## Dependencies
 
 This MSC depends on [MSC4147](https://github.com/matrix-org/matrix-spec-proposals/pull/4147), which has recently been accepted into the spec.
-
