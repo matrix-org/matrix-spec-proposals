@@ -386,7 +386,7 @@ receive a sticky event with a `sticky_key` SHOULD keep a map with keys determine
 users sending multiple events with the same `sticky_key`. To deterministically tie-break, clients which
 implement this behaviour MUST[^maporder]:
 
-- pick the one with the highest `origin_server_ts + sticky.duration_ms`,  
+- pick the one with the highest `origin_server_ts + sticky.duration_ms` (last to expire wins),  
 - tie break on the one with the highest lexicographical event ID (A < Z).
 
 >[!NOTE]
@@ -411,13 +411,12 @@ sequenceDiagram
 ```
 
 There is no mechanism for sticky events to expire earlier than their timeout value. To remove entries in the map, clients SHOULD
-send another sticky event with just `content.sticky_key` set, with all the other application-specific fields omitted.
+send another sticky event with just `content.sticky_key` set, with all the other application-specific fields omitted. Redacting
+sticky events are an alternative way to do this, although this loses the `content.sticky_key` property so clients will need to
+remember the sticky event ID to know which sticky key was affected.
 
 When clients create multiple events with the same `sticky_key`, they SHOULD use the same sticky duration as the previous
-sticky event to avoid clients diverging. This can happen when a client sends a sticky event S with a long timeout, then overwrites it with S’
-with a short timeout. If S’ fails to be sent to all servers before the short timeout is hit,
-some clients will believe the state is S and others will have no state. This will only resolve once the long timeout is hit.
-To illustrate this, consider the scenario when clients use the _same sticky duration_:
+sticky event to avoid clients not applying more recent sticky events.
 ```
 Event        Lifetime
   S       [=========|==]  |
@@ -436,7 +435,8 @@ Event        Lifetime
                   A    B
 ```
 Just like before, at time `A` the possible states are `{ _, S, S'}`, but now at time `B` the possible states are `{ _, S }`.
-This is problematic if you're trying to agree on the "latest" values, like you would in a k:v map.
+This is problematic if you're trying to agree on the "latest" values, like you would in a k:v map. Note that if a client had
+seen S then sees S', they will ignore it due to it having a lower expiry time than S (last to expire wins).
 
 Note that encrypted sticky events will encrypt some parts of the 4-uple. An encrypted sticky event only exposes the room ID and sender to the server:
 
