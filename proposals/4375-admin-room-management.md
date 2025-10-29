@@ -9,25 +9,26 @@ have [the admin room][c1], and other lesser known servers either have their own 
 interfaces, or even none at all.
 
 Such fragmentation in administration interfaces presents a great challenge to ecosystem developers
-who wish to provider room management capabilities to their users. Clients and moderation tools
+who wish to provide room management capabilities to their users. Clients and moderation tools
 (which will be grouped together for this proposal) usually have to choose between supporting the
 Synapse admin API as it is the most deployed homeserver, guessing which implementation is in use and
 maintaining several implementation-specific calls, or just not supporting anything at all.
+
 Translation layers, such as [conduwuit Admin API proxy][caap] (defunct) can be used to alleviate the
 problem at hand, however they simply shift the burden to another project, and introduce another
 moving part that has the potential to flake or fail. When it comes to moderation and administration,
 flakes and failures are generally not an acceptable risk, unless there is no other option.
 
-As [MSC4343][MSC4323] did, this proposal is introducing some new client-to-server API endpoints that
-will allow the clients of priviliged users to have greater management capabilities over the
-homeserver. It will define interfaces to allow the listing of rooms the server has stored, fetching
+This proposal is introducing some new client-to-server API endpoints that will allow the clients of
+priviliged users to have greater management capabilities over the homeserver.
+It will define interfaces to allow the listing of rooms the server has stored, fetching
 information regarding rooms, evacuating rooms (removing all local users), purging rooms, and
 blocking (to prevent future joins).
 
 The reader is also encouraged to consider the usage of proposals such as
 [MSC4204: `m.takedown` moderation policy recommendation][MSC4204], which allows clients such as
-[Draupnir][draupnir] and [Meowlnir][meowlnir] to issue room "takedowns", which typically results in
-the client attempting to block + purge the room.
+[Draupnir][draupnir] and [Meowlnir][meowlnir] to issue room "takedowns", which typically result in
+the client attempting to block, evacuate, and purge the room.
 
 [MSC4323]: https://github.com/matrix-org/matrix-spec-proposals/pull/4323
 [s1]: https://element-hq.github.io/synapse/latest/usage/administration/admin_api/index.html
@@ -54,14 +55,14 @@ the client attempting to block + purge the room.
 Complementing [section 10.22 (Server Administration)][p1] of the client-to-server specification,
 eight new endpoints are introduced:
 
-- `GET /_matrix/client/v1/admin/rooms` - List rooms known to the homeserver
-- `GET /_matrix/client/v1/admin/rooms/{roomID}` - Get room information (e.g. name, members, topic)
-- `POST /_matrix/client/v1/admin/rooms/{roomID}/evacuate` - Start removing all local users from a room
-- `GET /_matrix/client/v1/admin/rooms/{roomID}/evacuate/status` - Get room evacuation status
-- `PUT /_matrix/client/v1/admin/rooms/{roomID}/blocked` - Block or unblock a room
-- `DELETE /_matrix/client/v1/admin/rooms/{roomID}` - Start purging a room
-- `GET /_matrix/cleint/v1/admin/rooms/{roomID}/delete/status` - Check the progress of a purge task
-- `POST /_matrix/client/v1/admin/rooms/{roomID}/takeover` - Take over a room
+1. `GET /_matrix/client/v1/admin/rooms` - List rooms known to the homeserver
+2. `GET /_matrix/client/v1/admin/rooms/{roomID}` - Get room information (e.g. name, members, topic)
+3. `POST /_matrix/client/v1/admin/rooms/{roomID}/evacuate` - Start removing all local users from a room
+4. `GET /_matrix/client/v1/admin/rooms/{roomID}/evacuate/status` - Get room evacuation status
+5. `PUT /_matrix/client/v1/admin/rooms/{roomID}/blocked` - Block or unblock a room
+6. `DELETE /_matrix/client/v1/admin/rooms/{roomID}` - Start purging a room
+7. `GET /_matrix/cleint/v1/admin/rooms/{roomID}/delete/status` - Check the progress of a purge task
+8. `POST /_matrix/client/v1/admin/rooms/{roomID}/takeover` - Take over a room
 
 [p1]: https://spec.matrix.org/v1.16/client-server-api/#server-administration
 
@@ -74,8 +75,7 @@ act upon the known room IDs (e.g. hash match, fetch information, purge, etc).
 
 As homeservers might be aware of five or even six-digit room counts, this endpoint is restricted to
 returning only room IDs, expecting the client to fetch room data in follow-up for the rooms it may
-be interested in. In order to accomodate this same situation, the pagination for this endpoint MAY
-have a higher than normal cap on the number of entries that can be returned.
+be interested in.
 
 #### Request Parameters
 
@@ -106,7 +106,7 @@ The endpoint has the following parameters:
 - `latest_event`: Sort by the timestamp of the latest received event (oldest -> newest). Events that
   soft-failed SHOULD be considered in the sorting.
 
-Servers MUST NOT allow `limit`s greater than 500, and MUST wrap the provided `limit` to the cap
+Servers MUST NOT allow `limit` to be greater than 500, and MUST wrap the provided `limit` to the cap
 if it exceeds it.
 
 `order_by` MUST be case insensitive and servers MUST ignore any unknown values.
@@ -155,10 +155,10 @@ The following state events SHOULD be returned, if present:
 The following state events MAY be returned, if present:
 
 - `m.room.server_acl`
-- `m.room.parent` (all keys)
+- `m.space.parent` (all keys)
 - `m.room.pinned_events`
 
-`m.room.member` events MUST NOT be present unless `include_members` is true.
+`m.room.member` events MUST NOT be present UNLESS `include_members` is true.
 
 #### Request Parameters
 
@@ -169,7 +169,7 @@ This endpoint has the following query parameters:
 
 | Parameter | Type | Default | Description |
 | --------- | ---- | ------- | ----------- |
-| `include_members` | boolean | `false` | Include **all** user IDs currently joined to the room |
+| `include_members` | boolean | `false` | Include **all** room membership events |
 
 #### Response
 
@@ -185,7 +185,6 @@ State events should be fully formatted client events, not stripped.
       "sender": "...",
       "content": "...",
       "state_key": "..."
-      // ...
     }
   ]
 }
@@ -258,7 +257,8 @@ The request body for this endpoint is shaped like the following:
 ```
 
 Clients SHOULD allow for a large timeout on requests to this endpoint, especially if they set
-`"background": false`.
+`"background": false`. This may not be possible in externally-controlled environments, such as in
+the browser.
 
 Servers MAY ignore the `background` preference, if specified.
 
@@ -291,7 +291,7 @@ return `200 OK` with `background: false` and `removed: 0`.
 
 **`GET /_matrix/client/v1/admin/rooms/{roomID}/evacuate/status`**
 
-This endpoint allows a client to check on the status of a room evacuation task.
+This endpoint allows clients to check on the status of a room evacuation task.
 
 #### Request Parameters
 
@@ -395,7 +395,8 @@ The request body for this endpoint is shaped like the following:
 ```
 
 Clients SHOULD allow for a large timeout on requests to this endpoint, especially if they set
-`"background": false`.
+`"background": false`. This may not be possible in externally-controlled environments, such as in
+the browser.
 
 Servers MAY ignore the `background` preference, if specified.
 
@@ -425,7 +426,7 @@ return `200 OK` with `background: false`.
 
 **`GET /_matrix/client/v1/admin/rooms/{roomID}/delete/status`**
 
-This endpoint allows a client to check on the status of a room purge task.
+This endpoint allows clients to check on the status of a room purge task.
 
 #### Request Parameters
 
@@ -505,7 +506,7 @@ Aside from the status quo, none are known at this time.
 ## Security considerations
 
 Rooms are the lifeblood of Matrix, so this proposal introduces some incredibly powerful endpoints.
-Misuse of the powers granted can result in permenant data loss (namely in the event of local-only
+Misuse of the powers granted can result in permanent data loss (namely in the event of local-only
 rooms being purged) and potentially irreversible privilage escalation via takeovers.
 
 This propsal assumes the server is secure and administrator rights are only granted to trustworthy
