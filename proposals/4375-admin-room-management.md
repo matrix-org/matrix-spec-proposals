@@ -1,4 +1,4 @@
-# MSC0000: Admin Room Management
+# MSC4375: Admin Room Management
 
 *See also: [MSC4323: User suspension & locking endpoints][MSC4323]*
 
@@ -515,7 +515,7 @@ this proposal.
 ## Unstable prefix
 
 | Stable | Unstable |
-| `/_matrix/client/v1/` | `/_matrix/client/unstable/uk.timedout.msc0000/` |
+| `/_matrix/client/v1/` | `/_matrix/client/unstable/uk.timedout.msc4375/` |
 
 Servers SHOULD advertise support for this functionality via `/_matrix/client/versions`,
 OPTIONALLY only to authenticated users.
