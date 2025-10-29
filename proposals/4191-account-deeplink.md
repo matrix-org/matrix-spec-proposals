@@ -38,7 +38,7 @@ The account management URL (as provided above) may accept the following addition
 
 For example, if a user wishes to sign out a session for the device `ABCDEFGH` where the advertised
 `account_management_uri` was `https://account.example.com/myaccount` the client could open a link to
-`https://account.example.com/myaccount?action=org.matrix.session_end&device_id=ABCDEFGH`.
+`https://account.example.com/myaccount?action=org.matrix.device_delete&device_id=ABCDEFGH`.
 
 Not all actions need to be supported by the account management URL, and the client should only use the actions
 advertised in the `account_management_actions_supported` array from above.
@@ -82,7 +82,7 @@ The reason given in the spec is:
 > **WARNING**: Since this endpoint uses User-Interactive Authentication, it cannot be used when the access token
 > was obtained via the OAuth 2.0 API.
 
-As an alternative to the proposed `org.matrix.session_end` action the above device deletion endpoints could be instead
+As an alternative to the proposed `org.matrix.device_delete` action the above device deletion endpoints could be instead
 be used *if* the [User-interactive API](https://spec.matrix.org/v1.15/client-server-api/#user-interactive-api-in-the-rest-api)
 was compatible with the OAuth 2.0 API.
 
@@ -104,17 +104,17 @@ The metadata could be advertised in a metadata endpoint separate to the
 
 ## Security considerations
 
-For the `org.matrix.session_end` action the
+For the `org.matrix.device_delete` action the
 [security considerations](https://spec.matrix.org/v1.15/client-server-api/#security-considerations-6) that are already
 stated for device management apply.
 
-Consequently for the destructive `org.matrix.session_end` and `org.matrix.account_deactivate` actions the server SHOULD
+Consequently for the destructive `org.matrix.device_delete` and `org.matrix.account_deactivate` actions the server SHOULD
 require re-authentication (or authentication through an additional factor) before allowing the user to complete the
 action.
 
 Because the format of these links are public and the device IDs are visible to other Matrix users it is trivial for an
 attacker to craft a "malicious" link that targets a destructive action. To mitigate this risk, for the destructive
-actions (`org.matrix.session_end` and `org.matrix.account_deactivate`) the server MUST inform the user of what the
+actions (`org.matrix.device_delete` and `org.matrix.account_deactivate`) the server MUST inform the user of what the
 action is prior to it being executed (in addition to any re-authentication as above).
 
 ## Unstable prefixes
