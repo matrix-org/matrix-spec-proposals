@@ -1,13 +1,15 @@
 # MSC4354: Sticky Events
 
-MatrixRTC currently depends on [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757)
+MatrixRTC currently relies on allowing any user (PL0) to send `org.matrix.msc3401.call`
+and `org.matrix.msc3401.call.member` state events into the room
 for sending per-user per-device state. MatrixRTC wants to be able to share a temporary state to all
 users in a room to indicate whether the given client is in the call or not. 
 
-The concerns with MSC3757 and using it for MatrixRTC are mainly:
+The concerns with allowing any user to send room state and using it for MatrixRTC are mainly:
 
-1. In order to ensure other users are unable to modify each other’s state, it proposes using
-   string packing for authorization which feels wrong, given the structured nature of events.  
+1. Any user can modify other user's call state. MSC3757 tries to fix this, but in order to ensure other
+   users are unable to modify each other’s state, it proposes using string packing for authorization which
+   feels wrong, given the structured nature of events.  
 2. Allowing unprivileged users to send arbitrary amounts of state into the room is a potential
    abuse vector, as these states can pile up and can never be cleaned up as the DAG is append-only.  
 3. State resolution can cause rollbacks. These rollbacks may inadvertently affect per-user per-device state.
@@ -16,14 +18,18 @@ The concerns with MSC3757 and using it for MatrixRTC are mainly:
 data with history", AKA "live location sharing") has similar problems: it uses state events when it
 really just needs per-user last-write-wins behaviour.
 
-There currently exists no good communication primitive in Matrix to send this kind of data. EDUs are
+There currently exists no good communication primitive in Matrix to send this kind of data. Receipt/Typing EDUs are
 almost the right primitive, but:
 
-* They can’t be sent via clients (there is no concept of EDUs in the Client-Server API\!
-  [MSC2477](https://github.com/matrix-org/matrix-spec-proposals/pull/2477) tries to change that)  
-* They aren’t extensible.   
-* They do not guarantee delivery. Each EDU type has slightly different persistence/delivery guarantees,
-  all of which currently fall short of guaranteeing delivery, with the exception of to-device messages.
+* They aren't extensible. You can _only_ send receipts / typing notifications and cannot add extra keys to the JSON object.
+  There is no concept of EDUs in the Client-Server API to allow additional EDU types, though
+  [MSC2477](https://github.com/matrix-org/matrix-spec-proposals/pull/2477) tries to change that. 
+* They do not guarantee delivery. Receipts/typing have slightly different persistence/delivery guarantees,
+  all of which currently fall short of guaranteeing delivery. You _can_ guarantee delivery with EDUs, which is what to-device messages
+  do, but that lacks the per-room scoping required for a per-room, per-user state. It's insufficient to just slap on some extra
+  keys to make it per-room, per-user though because of the Byzantine broadcast problem: a user can send each server _different_
+  state, thus breaking convergence. To-device messages fundamentally avoid this by being point-to-point communication, and not
+  a broadcast mechanism.
 
 This proposal adds such a primitive, called Sticky Events, which provides the following guarantees:
 
@@ -168,8 +174,9 @@ Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_eve
 }
 ```
 
-Sticky events are expected to be encrypted and so there is no "state filter" equivalent provided for sticky events
-e.g to filter sticky events by event type.
+Sticky events are expected to be encrypted and so there is no [state filter](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3useruseridfilter_request_roomeventfilter)
+equivalent provided for sticky events e.g to filter sticky events by event type.
+As with normal events, sticky events sent by ignored users MUST NOT be delivered to clients.
 
 ### Rate limits
 
