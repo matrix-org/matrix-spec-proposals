@@ -155,6 +155,75 @@ another MSC would be required to introduce it.
 Instead, by making it a [common error code] the homeserver operator has flexibility over what types of limit they
 choose without requiring further coordination with clients.
 
+### Use server side translations
+
+This could be similar to what is proposed generically by [MSC4176], but would need to support some form of markup rather
+than just plain text in order to allow linking to external resources.
+
+If the homeserver wanted to communicate a "soft" limit then it could return something like:
+
+```json
+{
+  "errcode": "M_USER_LIMIT_EXCEEDED",
+  "error": "User has exceeded a media upload limit",
+  "messages": {
+    "en": "You have reached your daily upload limit. More information on the usage limits that apply to your account is available <a href=\"https://matrix.org/homeserver/pricing/#usage-limits\">here</a>. You can upgrade to a Premium account to increase the limits <a href=\"https://account.matrix.org/account?action=org.matrix.plan_management\">here</a>.",
+    "fr": "Vous avez atteint votre limite de téléchargement quotidienne. Pour plus d'informations sur les limites d'utilisation applicables à votre compte, cliquez <a href=\"https://matrix.org/homeserver/pricing/#usage-limits\">ici</a>. Vous pouvez passer à un compte Premium pour augmenter ces limites <a href=\"https://account.matrix.org/account?action=org.matrix.plan_management\">ici</a>.",
+  }
+}
+```
+
+Similarly for a "hard" limit:
+
+```json
+{
+  "errcode": "M_USER_LIMIT_EXCEEDED",
+  "error": "User has exceeded a media upload limit",
+  "messages": {
+    "en": "You have reached your daily upload limit. More information on the usage limits that apply to your account is available <a href=\"https://matrix.org/homeserver/pricing/#usage-limits\">here</a>.",
+    "fr": "Vous avez atteint votre limite de téléchargement quotidienne. Pour plus d'informations sur les limites d'utilisation applicables à votre compte, cliquez <a href=\"https://matrix.org/homeserver/pricing/#usage-limits\">ici</a>.",
+  }
+}
+```
+
+Comparison:
+
+* An advantage is that the homeserver can be as specific as it wishes with the messages. For example, the matrix.org
+  homeserver can specifically refer to the usage plans that are available rather than having to be generic.
+* The size of the error response payload increases significantly. [MSC4176] has some discussion around using a header
+  such as `Accept-Language` or a query parameter to reduce the number of translations returned.
+* A change in behaviour for clients: ordinarily the client picks the wording that is used to describe things in the
+  client User Interface, this would move responsibility to the server. However, this is no different from how the
+  [OAuth 2.0 API] makes the server responsible for translations relating to login and registration screens.
+
+### Server side translation with client side translation fallback
+
+This combines the benefits of above, with a client side fallback for servers that don't provide translations.
+
+The client would use the value from `messages` if a matching language is found, otherwise it can fallback to use generic
+strings like in the main proposal.
+
+An example might be:
+
+```json
+{
+  "errcode": "M_USER_LIMIT_EXCEEDED",
+  "error": "User has exceeded a media upload limit",
+  "info_uri": "https://example.com/homeserver/about?limit_type=quota",
+  "soft_limit": true,
+  "increase_uri": "https://example.com/homeserver/upgrade",
+  "messages": {
+    "en": "You have reached your daily upload limit. More information on the usage limits that apply to your account is available <a href=\"https://matrix.org/homeserver/pricing/#usage-limits\">here</a>. You can upgrade to a Premium account to increase the limits <a href=\"https://account.matrix.org/account?action=org.matrix.plan_management\">here</a>.",
+    "fr": "Vous avez atteint votre limite de téléchargement quotidienne. Pour plus d'informations sur les limites d'utilisation applicables à votre compte, cliquez <a href=\"https://matrix.org/homeserver/pricing/#usage-limits\">ici</a>. Vous pouvez passer à un compte Premium pour augmenter ces limites <a href=\"https://account.matrix.org/account?action=org.matrix.plan_management\">ici</a>.",
+  }
+}
+```
+
+So for English and French the client could show the specific messages provided by the homeserver, but for German the
+client would pick the message with it's own translations.
+
+A downside of this is inconsistency in wording across languages depending on what the server provided.
+
 ## Security considerations
 
 None as only adding a new error code.
@@ -189,3 +258,5 @@ None.
 [`M_RESOURCE_LIMIT_EXCEEDED`]: https://spec.matrix.org/v1.16/client-server-api/#other-error-codes
 [common error code]: https://spec.matrix.org/v1.16/client-server-api/#common-error-codes
 [`POST /_matrix/client/v3/createRoom`]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3createroom
+[MSC4176]: https://github.com/matrix-org/matrix-spec-proposals/pull/4176
+[OAuth 2.0 API]: https://spec.matrix.org/v1.16/client-server-api/#oauth-20-api
