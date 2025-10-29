@@ -33,7 +33,7 @@ limits that are specifically associated with their account, such as:
 The error response must also contain additional fields:
 
 * `info_uri` string (required) - an opaque URI that the client can link the user to in order to get more context on the
-  error.
+  encountered limit.
 * `soft_limit` boolean (optional, default `false`) - `true` means that the specific limit encountered can be increased.
   Otherwise it is a hard limit that cannot be increased.
 * `increase_uri` (required if `soft_limit` is `true`) - an opaque URI where the user can undertake actions to increase
@@ -41,6 +41,9 @@ The error response must also contain additional fields:
 
 The `info_uri` and `increase_uri` are "opaque" in the sense that the homeserver implementation may choose to encode
 information, such as the type of limit encountered, within the URI but it may do so using an encoding of its choosing.
+
+The homeserver may return *different* values for `info_uri` and `increase_uri` depending on what type of limit was
+reached.
 
 The HTTP response code should be chosen based on the specification for the individual endpoint. For
 example, the most appropriate code for [`POST /_matrix/media/v3/upload`] would be `403 Forbidden`.
