@@ -3,11 +3,14 @@
 This proposal builds on the [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api) that was
 added in v1.15 of the spec.
 
-[OpenID Connect Core 1.0] specifies an optional `login_hint`
-authorization request parameter but leaves the contents of the parameter vague and "to the OP's discretion".
+There are times when a client already knows or has asked for the user's identity before redirecting them to the homeserver's
+account management interface to log in or to manage their devices. It would be useful to pass this information along to
+the homeserver with these requests.
 
-This MSC aims to define a format for use in the context of Matrix which allows for a login flow that starts with the
-user typing their [MXID].
+[OpenID Connect Core 1.0] specifies an optional `login_hint` authorization request parameter which is perfect for this
+purpose but it leaves the contents of the parameter vague and "to the OP's discretion".
+
+This MSC aims to define a format for this parameter for use in the context of Matrix for interoperability.
 
 
 ## Proposal
@@ -36,12 +39,15 @@ The prefix for this hint is `mxid` (all lowercase) and the value is the Matrix u
 
 Example valid hint value: `mxid:@example-user:example.com`
 
-### Usage
+### Usage in authorization requests
 
 A client MAY start the login flow by asking the user for their MXID.
 It SHOULD then parse the domain, discover the homeserver and its auth metadata ([OAuth 2.0 API Server metadata discovery]),
 register itself with the homeserver ([OAuth 2.0 API Client registration])
 and send the user to the authorization endpoint ([OAuth 2.0 API Login flow]), all in one step.
+
+Alternatively, this MAY also be used when the user is already logged in and the client is requesting additional scopes
+(when more granular scopes are defined in a future proposal).
 
 To improve the UX of this flow, the MXID MAY be sent to the homeserver with the authorization request in the OPTIONAL
 `login_hint` query parameter from [OpenID Connect Core 1.0], following the format specified above using the `mxid` hint
@@ -57,7 +63,7 @@ initially suggested, especially if the homeserver does not support the `login_hi
 uses the wrong credentials.
 The client MAY inform the user about ending up on a different account than intended and present an option to try again.
 
-### Example authorization request
+#### Example authorization request
 
 Expanding on the example authorization request shown in [OAuth 2.0 API Login flow] (broken down into multiple lines for
 readability),
@@ -82,6 +88,16 @@ With the line breaks removed and values properly encoded:
 ```
 https://account.example.com/oauth2/auth?client_id=s6BhdRkqt3&response_type=code&response_mode=fragment&redirect_uri=https%3A%2F%2Fapp.example.com%2Foauth2-callback&scope=urn%3Amatrix%3Aclient%3Aapi%3A*+urn%3Amatrix%3Aclient%3Adevice%3AAAABBBCCCDDD&state=ewubooN9weezeewah9fol4oothohroh3&code_challenge=72xySjpngTcCxgbPfFmkPHjMvVDl2jW1aWP7-J6rmwU&code_challenge_method=S256&login_hint=mxid%3A%40example-user%3Aexample.com
 ```
+
+### Usage in [MSC4191] account management
+
+We also add the `login_hint` query parameter for the [MSC4191] `account_management_uri` using the same format.
+
+For example, if `@example-user:example.com` wishes to delete the device `ABCDEFGH` where the advertised
+`account_management_uri` was `https://account.example.com/myaccount` the client could open a link to
+`https://account.example.com/myaccount?action=org.matrix.device_delete&device_id=ABCDEFGH&login_hint=mxid%3A%40example-user%3Aexample.com`.
+
+Similarly to the authorization request, the homeserver SHOULD assist the user to the account the action was intended for.
 
 ### Examples of homeserver assistance
 
@@ -115,10 +131,10 @@ homeserver.
 #### Session management
 
 If there is already an active session with a different user, the homeserver could decide to log out and take the user to
-the login screen instead of showing the consent screen for the wrong account.
+the login screen instead of showing the consent screen or account management interface for the wrong account.
 
-If multiple concurrent sessions are supported,
-the homeserver could automatically switch to the correct session before showing the consent screen.
+If multiple concurrent sessions are supported, the homeserver could automatically switch to the correct session before
+showing the consent screen or account management interface.
 
 ## Potential issues
 
@@ -147,14 +163,18 @@ and public like a work email.
 
 ## Unstable prefix
 
-No unstable prefix is necessary, as the format of the MXID is already stable within the spec.
+For the authorization request we are borrowing the existing OIDC parameter so an unstable prefix isn't necessary.
+
+For the account management request, `org.matrix.msc4198.login_hint` should be used instead of `login_hint` while in
+development.
 
 ## Dependencies
 
-This MSC does not have any dependencies.
+This MSC builds on [MSC4191] (which at the time of writing has not yet been accepted into the spec).
 
 [OpenID Connect Core 1.0]: https://openid.net/specs/openid-connect-core-1_0.html
 [MXID]: https://spec.matrix.org/v1.11/appendices/#user-identifiers
 [OAuth 2.0 API Server metadata discovery]: https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery
 [OAuth 2.0 API Client registration]: https://spec.matrix.org/v1.15/client-server-api/#client-registration
 [OAuth 2.0 API Login flow]: https://spec.matrix.org/v1.15/client-server-api/#login-flow
+[MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
