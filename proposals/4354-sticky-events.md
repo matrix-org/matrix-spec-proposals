@@ -12,8 +12,9 @@ The concerns with MSC3757 and using it for MatrixRTC are mainly:
    abuse vector, as these states can pile up and can never be cleaned up as the DAG is append-only.  
 3. State resolution can cause rollbacks. These rollbacks may inadvertently affect per-user per-device state.
 
-Other proposals have similar problems such as live location sharing which uses state events when it
-really just wants per-user last-write-wins behaviour.
+[MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489) ("Sharing streams of location
+data with history", AKA "live location sharing") has similar problems: it uses state events when it
+really just needs per-user last-write-wins behaviour.
 
 There currently exists no good communication primitive in Matrix to send this kind of data. EDUs are
 almost the right primitive, but:
@@ -30,7 +31,7 @@ This proposal adds such a primitive, called Sticky Events, which provides the fo
 * Access control tied to the joined members in the room.  
 * Extensible, able to be sent by clients.
 
-This new primitive can be used to implement MatrixRTC participation, live location sharing, among other functionality.
+This new primitive can be used to implement MatrixRTC participation and live location sharing, among other functionality.
 
 ## Proposal
 
@@ -198,7 +199,7 @@ all rooms. This means at most ~6.5MB of the sync response will contain sticky ev
 
 ### Federation behaviour
 
-Servers are only responsible for sending sticky events originating from their own server. This ensures the server is aware
+As with regular events, servers are only responsible for sending sticky events originating from their own server. This ensures the server is aware
 of the `prev_events` of all sticky events they send to other servers. This is important because the receiving server will
 attempt to fetch those previous events if they are unaware of them, _rejecting the transaction_ if the sending server fails
 to provide them. For this reason, it is not possible for servers to reliably deliver _other server's_ sticky events.
@@ -385,13 +386,13 @@ receive a sticky event with a `sticky_key` SHOULD keep a map with keys determine
 users sending multiple events with the same `sticky_key`. To deterministically tie-break, clients which
 implement this behaviour MUST[^maporder]:
 
-- pick the one with the highest `origin_server_ts`,  
+- pick the one with the highest `origin_server_ts + sticky.duration_ms`,  
 - tie break on the one with the highest lexicographical event ID (A < Z).
 
 >[!NOTE]
 > If a client sends two sticky events in the same millisecond, the 2nd event may be replaced by the 1st if
 > the event ID of the 1st event has a higher lexicographical event ID. To protect against this, clients should
-> ensure that they wait at least 1 millisecond between sending sticky events.
+> ensure that they wait at least 1 millisecond between sending sticky events with the same `sticky_key`.
 
 Clients SHOULD expire sticky events in maps when their stickiness ends. They should use the algorithm described in this proposal
 to determine if an event is still sticky. Clients may diverge if they do not expire sticky events as in the following scenario:
