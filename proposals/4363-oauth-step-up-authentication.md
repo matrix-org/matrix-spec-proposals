@@ -69,6 +69,12 @@ Finally, it is left up to the homeserver to determine how exactly the `acr_value
 `scope` parameters are used during authentication. Implementations should, however, note the
 recommendations in [RFC9470].
 
+### Cross-signing key reset
+
+Implementations MAY use this proposal to replace UIA when the client has obtained its access token
+via the OAuth APIs. The only endpoint currently using UIA for which this is relevant is
+[/_matrix/client/v3/keys/device_signing/upload].
+
 ## Potential issues
 
 None apparent.
@@ -140,6 +146,7 @@ The new authorization request parameters should not use prefixes since they foll
   [RFC9470]: https://datatracker.ietf.org/doc/rfc9470/
   [Okta's reference]: https://developer.okta.com/docs/guides/step-up-authentication/main/
   [current list of request parameters]: https://spec.matrix.org/v1.15/client-server-api/#login-flow
+  [/_matrix/client/v3/keys/device_signing/upload]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3keysdevice_signingupload
   [standard error response]: https://spec.matrix.org/v1.16/client-server-api/#standard-error-response
   [previous version]: https://github.com/matrix-org/matrix-spec-proposals/pull/2967/commits/544d75b413277f14393a635ea17be3d0d49529c5
   [MSC2967]: github.com/matrix-org/matrix-doc/pull/2967
