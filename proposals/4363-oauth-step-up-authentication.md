@@ -15,7 +15,7 @@ Matrix.
 The following description assumes that the client has authenticated via the [OAuth APIs].
 
 When a homeserver determines that the authentication event associated with the access token
-presented on a request is insufficient, it MAY respond with HTTP 401 and a new error code
+presented on a request is insufficient, it MAY respond with HTTP 401 and a new common error code
 `M_INSUFFICIENT_USER_AUTHENTICATION`. Three optional top-level properties are allowed in the
 response to convey the authentication requirements challenge back to the client:
 
