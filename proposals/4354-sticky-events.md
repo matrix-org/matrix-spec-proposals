@@ -79,19 +79,21 @@ To calculate if any sticky event is still sticky:
 Sticky events are like normal message events and are authorised using normal PDU checks. They have the
 following _additional_ properties[^prop]:
 
-* They are eagerly synchronised with all other servers.[^partial]  
-* They must appear in the `/sync` response.[^sync]  
-* The soft-failure checks MUST be re-evaluated when the membership state changes for a user with unexpired sticky events.[^softfail]
-* They ignore history visibility checks. Any joined user is authorised to see sticky events for the duration they remain sticky.[^hisvis]
+* They are eagerly **pushed** to all other servers.[^partial]  
+* They must be **delivered** to clients.[^sync]
+* Only state event level **checks** are applied to them.[^softfail][^hisvis]
 
 To implement these properties, servers MUST:
 
-* Attempt to send their own[^origin] sticky events to all joined servers, whilst respecting per-server backoff times.
-  Large volumes of events to send MUST NOT cause the sticky event to be dropped from the send queue on the server.  
-* Ensure all sticky events are delivered to clients via `/sync` in a new section of the sync response,
-  regardless of whether the sticky event falls within the timeline limit of the request.  
-* When a new server joins the room, existing servers MUST attempt delivery of all of their own sticky events[^newjoiner].  
-* Remember sticky events per-user, per-room such that the soft-failure checks can be re-evaluated.
+* Attempt to **push** their own[^origin] sticky events to all joined servers, whilst respecting per-server backoff times.
+  Large volumes of events to send MUST NOT cause the sticky event to be dropped from the send queue on the server.
+* When a new server joins the room, existing servers MUST attempt to **push** all of their own sticky events[^newjoiner].
+* Ensure sticky events are **delivered** to clients via `/sync` in a new section of the sync response,
+  regardless of whether the sticky event falls within the timeline limit of the request. If there are too many sticky events,
+  the client is informed of this and can fetch the remaining sticky events via a new pagination endpoint.
+* Soft-failure **checks** MUST be re-evaluated when the membership state changes for a user with unexpired sticky events.[^softfail]
+* History visibility **checks** MUST NOT be applied to sticky events. Any joined user is authorised to see sticky events
+  for the duration they remain sticky.[^hisvis]
 
 When an event loses its stickiness, these properties disappear with the stickiness. Servers SHOULD NOT
 eagerly synchronise such events anymore, nor send them down `/sync`, nor re-evaluate their soft-failure status.
@@ -123,8 +125,9 @@ The new `/sync` section looks like:
                     "sticky": {
                       "duration_ms": 300000
                     },
-                    "origin_server_ts": 1757920344000,
-                    "content": { ... }
+                    "origin_server_ts": 1757920341020,
+                    "content": { ... },
+                    "unsigned": { "sticky_duration_ttl_ms": 258113 }
                 },
                 {
                     "sender": "@alice:example.com",
@@ -132,8 +135,9 @@ The new `/sync` section looks like:
                     "sticky": {
                       "duration_ms": 300000
                     },
-                    "origin_server_ts": 1757920311020,
+                    "origin_server_ts": 1757920344000,
                     "content": { ... }
+                    "unsigned": { "sticky_duration_ttl_ms": 289170 }
                 }
             ]
         }
@@ -145,6 +149,9 @@ The new `/sync` section looks like:
 Sticky messages MAY be sent in the timeline section of the `/sync` response, regardless of whether
 or not they exceed the timeline limit[^ordering]. If a sticky event is in the timeline, it MAY be
 omitted from the `sticky.events` section. This ensures we minimise duplication in the `/sync` response JSON.
+This proposal recommends always putting sticky events into the `sticky.events` section _except_ if
+the sticky event is going to be returned in the `timeline.events` section of the current sync response.
+In other words, filter out any event from `sticky.events` where the event ID appears in `timeline.events`. 
 
 Sticky events follow the same 'stream-like' behaviour as the `timeline`. This means clients will receive a sticky
 event S _once_, and subsequent requests with an advanced `since` token will not return the same sticky event S.
@@ -197,11 +204,6 @@ Option B means servers have to store the sticky event in their database, protect
 This provides fine-grained control over when to deliver the sticky events to clients as the server doesn't need
 to wait for another request. Servers SHOULD deliver the event to clients before the sticky event expires. This may not
 always be possible if the remaining time is very short.
-
-Servers SHOULD return sticky events down `/sync` in batches if there are many sticky events to return in one go.
-This ensures that clients can always make forward progress and can't get into a death spiral of never being able to
-download a large `/sync` response. This MSC recommends a batch size of 100 sticky events per `/sync` response, across
-all rooms. This means at most ~6.5MB of the sync response will contain sticky events.
 
 ### Federation behaviour
 
