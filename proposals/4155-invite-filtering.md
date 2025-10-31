@@ -37,10 +37,12 @@ event `m.invite_permission_config` is introduced.
 `enabled` is a boolean property and defaults to `true` if omitted. It provides clients with a convenience on/off
 toggle that lets them deactivate the configuration without purging it.
 
-All other properties in `content` are optional arrays. The array elements are [glob expressions]. Any `*_users`
-glob is to be matched against full user IDs (localpart and domain). Any `*_servers` glob is to be matched
-against server names / domain parts of user IDs after stripping any port suffix. This matches the way the
-globs from [server ACLs] are applied.
+All other properties in `content` are optional arrays. A missing property MUST be treated like an empty array.
+Any value that is not an array of strings MUST lead to the entire event being considered invalid.
+
+The array elements are [glob expressions]. Any `*_users` glob is to be matched against full user IDs (localpart
+and domain). Any `*_servers` glob is to be matched against server names / domain parts of user IDs after
+stripping any port suffix. This matches the way the globs from [server ACLs] are applied.
 
 When evaluating an invite, implementations MUST first apply the existing `m.ignored_user_list` as per
 the current spec. If the invite didn't match, implementations MUST then apply `m.invite_permission_config`.
