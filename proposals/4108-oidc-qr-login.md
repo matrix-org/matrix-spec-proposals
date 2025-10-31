@@ -439,7 +439,8 @@ encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on home
 (Whitespace is for readability only)
 
 ```
-4D 41 54 52 49 58 02  03
+4D 41 54 52 49 58
+02 03
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
@@ -451,7 +452,8 @@ Which looks as follows as a QR with error correction level Q:
 <!--
 Generated with:
 
-nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58 02  03
+nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
+02 03
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
@@ -466,7 +468,8 @@ A full example for an existing device using ephemeral public key `2IZoarIZe3gOMA
 encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver`matrix.org` is as follows: (Whitespace is for readability only)
 
 ```
-4D 41 54 52 49 58 02  04
+4D 41 54 52 49 58
+02 04
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
@@ -478,7 +481,8 @@ Which looks as follows as a QR with error correction level Q:
 <!--
 Generated with:
 
-nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58 02  04
+nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
+02 04
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
@@ -1681,50 +1685,61 @@ Recommendations to mitigate this are:
 
 ## Unstable prefix
 
+n.b. the [2024 version](https://github.com/matrix-org/matrix-spec-proposals/blob/87f8317a902cd7bc5c2d2d225f71021b3a509e2d/proposals/4108-oidc-qr-login.md#unstable-prefix)
+of this proposal used a different set of unstable prefixes.
+
 ### Rendezvous API prefix
 
 While this feature is in development the new API endpoints should be exposed using the following unstable prefix:
 
-- `/_matrix/client/unstable/org.matrix.msc4108/rendezvous` instead of `/_matrix/client/v1/rendezvous`
+- `/_matrix/client/unstable/io.element.msc4108/rendezvous` instead of `/_matrix/client/v1/rendezvous`
 
-Additionally, the feature is to be advertised as unstable feature in the GET /_matrix/client/versions response, with the
-key org.matrix.msc4108 set to true. So, the response could look then as following:
+Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions` response, with the
+key `io.element.msc4108` set to true. So, the response could look then as following:
 
 ```json
 {
     "versions": ["..."],
     "unstable_features": {
-        "org.matrix.msc4108": true
+        "io.element.msc4108": true
     }
 }
 ```
 
 ### Unstable QR code format
 
-It would be helpful to make it clear that the QR code format is unstable, but need some guidance on what would be the
-best way to do this. See notes above about QR format/versioning.
+The unstable value of `IO_ELEMENT_MSC4108` should be used instead of `MATRIX` in the QR code.
+
+A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
+encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver `matrix.org` is as follows: (Whitespace is for readability only)
+
+```
+49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 31 30 38
+02 04
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67
+```
+
+Which looks as follows as a QR with error correction level Q:
+<!--
+Generated with:
+
+nix-shell -p qrencode --run 'echo "49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 31 30 38
+02 04
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode04-unstable.png'
+-->
+![Example QR for mode 0x04](images/4108-qr-mode04-unstable.png)
 
 ### M_CONCURRENT_WRITE errcode
 
-Furthermore, where a new `errcode` is being introduced the existing `M_UNKNOWN` code should be used instead, with the new
-code placed in a `org.matrix.msc4108.errcode` field instead. For example, instead of:
-
-```json
-{
-    "errcode": "M_CONCURRENT_WRITE",
-    "error": "Data was modified"
-}
-```
-
-The server should send:
-
-```json
-{
-    "errcode": "M_UNKNOWN",
-    "org.matrix.msc4108.errcode": "M_CONCURRENT_WRITE",
-    "error": "Data was modified"
-}
-```
+The unstable value of `IO_ELEMENT_MSC4108_CONCURRENT_WRITE` should be used instead of `M_CONCURRENT_WRITE`.
 
 ## Dependencies
 
