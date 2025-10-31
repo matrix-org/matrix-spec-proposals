@@ -118,6 +118,7 @@ The new `/sync` section looks like:
         "state": { ... },
         "timeline": { ... },
         "sticky": {
+            "prev_batch": "s11_22_33_44_55_66_77_88",
             "events": [
                 {
                     "sender": "@bob:example.com",
@@ -166,6 +167,7 @@ Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_eve
 {
   "rooms": {
       "!726s6s6q:example.com": {
+          "prev_batch": "s11_22_33_44_55_66_77_88",
           "events": [{
               "sender": "@bob:example.com",
               "type": "m.foo",
@@ -183,6 +185,45 @@ Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_eve
 Sticky events are expected to be encrypted and so there is no [state filter](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3useruseridfilter_request_roomeventfilter)
 equivalent provided for sticky events e.g to filter sticky events by event type.
 As with normal events, sticky events sent by ignored users MUST NOT be delivered to clients.
+
+#### Pagination
+
+If there are too many sticky events to return down `/sync`, the server may choose not to deliver all sticky events and
+instead provide a `prev_batch` token which can be passed to a new endpoint to retrieve sticky events in that room. If all
+sticky events were delivered, the `prev_batch` token is omitted from the Sync / Sliding Sync response object.
+
+This proposal recommends only sending a `prev_batch` token if there are more than 100 sticky events in a given room. This
+minimises the chances that clients will need to paginate, improving responsiveness at the cost of higher initial bandwidth used.
+
+The API shape follows the one proposed in [MSC4308: Thread Subscriptions extension to Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/blob/rei/msc_ssext_threadsubs/proposals/4308-sliding-sync-ext-thread-subscriptions.md#companion-endpoint-for-backpaginating-thread-subscription-changes):
+
+```
+GET /_matrix/client/v1/rooms/{roomId}/sticky_events
+```
+URL query parameters:
+ - dir (string, required): always `b` (backward), to mirror other pagination endpoints. The forward direction is not yet specified to be implemented.
+ - from (string, optional): a token used to continue backpaginating
+    The token is either acquired from a previous `/sticky_events` response, or the `prev_batch` in a Sliding Sync / Sync response.
+    The token is opaque and has no client-discernible meaning.
+    If this token is not provided, then backpagination starts from the 'end'.
+ - to (string, optional): a token used to limit the backpagination
+    The token, originally acquired from pos in a Sliding Sync response, would be the same one used as the pos request parameter in the Sliding Sync request that returned the prev_batch.
+ - limit (int, optional; default 100): a maximum number of sticky events to fetch in one response.
+    Must be greater than zero. Servers may impose a smaller limit than requested.
+
+Response body:
+```js
+{
+  "sticky_events": [ ... ], // list of sticky events
+  // If there are still more sticky events to fetch,
+  // a new `from` token the client can use to walk further
+  // backwards. (The `to` token, if used, should be reused.)
+  "end": "OPAQUE_TOKEN"
+}
+```
+
+NB: This endpoint may also be used to retrieve sticky events in a room without calling `/sync` at all (by omitting both `from` and `to`),
+which may be useful for bots.
 
 ### Rate limits
 
@@ -274,22 +315,8 @@ following protections in place:
 * All sticky events are subject to normal PDU checks, meaning that the sender must be authorised to send events into the room.  
 * Servers sending lots of sticky events may be asked to try again later as a form of rate-limiting.
   Due to data expiring, subsequent requests will gradually have less data.
-* Sticky events are returned down `/sync` in batches of 100 to ensure clients never get a single enormous `/sync` response. They
-  will still get all unexpired sticky events via batches.
-
-We could add a layer of indirection to the `/sync` response where we only announce the number of sticky events, and
-expect the client to fetch them when they are ready via a different endpoint. This has roughly the same bandwidth cost, but
-the client chooses when to pull in this information, reducing the time-to-interactivity. This has a few problems:
- - It assumes sticky events are not urgently required when opening the application. This may be true for something like live
-   location sharing but may not be true for VoIP calls.
- - It's not clear that there is a strong need for the extra indirection, given the strong rate limits and expirations already in
-   place.
- - Adding the indirection increases complexity and friction when using the API, and presupposes the standard `/sync` model.
-   For [MSC4186: Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186), clients can already indirect
-   if they wish to by simply not enabling the extension until they are ready to receive the data. Therefore, any new `/get_sticky_events`
-   API would really only be useful for A) applications which do not sync, B) users of the existing `/sync` API. The use case for applications
-   which do not sync is weak, given the entire point of sticky events is to ensure rapid synchronisation of temporary data. This heavily
-   implies the use of some kind of syncing mechanism to receive timely updates, which polling a `/get_sticky_events` endpoint subverts.
+* Sticky events are returned down `/sync` with a recommended limit of 100 per room to ensure clients never get a single enormous `/sync` response. They
+  will still get all unexpired sticky events via the pagination endpoint.
 
 
 ## Alternatives
@@ -351,6 +378,7 @@ In the common case, it provides protection against clock skew when clients have 
 - The sticky key in the `content` of the PDU is `msc4354_sticky_key`.
 - To enable this in SSS, the extension name is `org.matrix.msc4354.sticky_events`.
 - The `unsigned.sticky_duration_ttl_ms` field is `unsigned.msc4354_sticky_duration_ttl_ms`
+- The endpoint `/_matrix/client/v1/rooms/{roomId}/sticky_events` is `/_matrix/client/unstable/org.matrix.msc4354/rooms/{roomId}/sticky_events`.
 
 The `/versions` response in the CSAPI includes:
 ```json
