@@ -1,4 +1,4 @@
-# MSCXXXX: Clarify Image Pack Ordering
+# MSC4377: Clarify Image Pack Ordering
 
 ## Dependencies
 
@@ -25,4 +25,4 @@ This MSC does not specify or support an `order` field when no state keys are spe
 
 ## Unstable prefix
 
-Until this proposal is accepted into the spec, implementations SHOULD refer to `order` as `com.enovale.mscXXXX.order`.
+Until this proposal is accepted into the spec, implementations SHOULD refer to `order` as `com.enovale.msc4377.order`.
