@@ -399,26 +399,29 @@ Mitigations that are included in this proposal:
 
 ### QR code format
 
-Once a device creates the rendezvous session it then generates a QR code that contains sufficient information for the
-scanning device to locate the rendezvous session and establish the secure channel (as described in the
-[next section](#secure-channel)).
+To get a good trade-off between visual compactness and high level of error correction we use a binary mode QR with a
+similar structure to that of the existing Device Verification QR code encoding described in [Client-Server
+API](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
 
 It is proposed that the QR code format that is currently used in the Client-Server API for
 [device verification](https://spec.matrix.org/v1.16/client-server-api/#qr-code-format) be extended to be more general
-purpose and accommodate this new use case.
+purpose and accommodate this new use case, and future use cases.
 
-The "QR code verification mode" would be changed to be something more general like "QR code mode".
+The "QR code version" would be repurposed to be a "QR code type" and used as the way to distinguish the format of the
+subsequent data.
 
-We then define two new modes to allow for the two login device dispositions: the new device wishing to login; an existing
-device wishing to facilitate the login of the new device;
+The existing cross verification code would be type `0x02`.  I suspect that type `0x01` and `0x00` might correspond to
+earlier iterations of the cross signing flow and so might want to be "reserved".
+
+This proposal then adds a new type `0x03`.
 
 The QR codes to be displayed and scanned using this format will encode binary strings in the general form:
 
 - the ASCII string `MATRIX`
-- one byte indicating the QR code version (must be `0x02`)
-- one byte indicating the QR code mode. Should be one of the following values:
-  - `0x03` a new device wishing to login and self-verify
-  - `0x04` an existing device wishing to facilitate the login of a new device and self-verify that other device
+- one byte indicating the QR code type: `0x03` which identifies that the QR is part of this proposal
+- one byte indicating the intent of the device generating the QR:
+  - `0x00` a new device wishing to login and self-verify
+  - `0x01` an existing device wishing to facilitate the login of a new device and self-verify that other device
 - the ephemeral Curve25519 public key that will be used for [secure channel establishment](#establishment), as 32 bytes
 - the rendezvous session ID encoded as:
   - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session ID as a UTF-8
@@ -429,7 +432,7 @@ The QR codes to be displayed and scanned using this format will encode binary st
   - the server name as a UTF-8 string
 
 If a new version of this QR sign in capability is needed in future (perhaps with updated secure channel protocol) then
-additional "mode" values can be added.
+an additional type can then be allocated which would clearly distinguish this later version.
 
 #### Example for QR code generated on new device
 
@@ -440,7 +443,7 @@ encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on home
 
 ```
 4D 41 54 52 49 58
-02 03
+03 00
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
@@ -453,14 +456,14 @@ Which looks as follows as a QR with error correction level Q:
 Generated with:
 
 nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
-02 03
+03 00
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 0A
-6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode03.png'
+6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-intent00.png'
 -->
-![Example QR for mode 0x03](images/4108-qr-mode03.png)
+![Example QR for intent 0x00](images/4108-qr-intent00.png)
 
 #### Example for QR code generated on existing device
 
@@ -469,7 +472,7 @@ encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on hom
 
 ```
 4D 41 54 52 49 58
-02 04
+03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
@@ -482,14 +485,14 @@ Which looks as follows as a QR with error correction level Q:
 Generated with:
 
 nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
-02 04
+03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 0A
-6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode04.png'
+6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-intent01.png'
 -->
-![Example QR for mode 0x04](images/4108-qr-mode04.png)
+![Example QR for intent 0x01](images/4108-qr-intent01.png)
 
 ### Secure channel
 
@@ -537,7 +540,10 @@ with an empty payload. It parses the **ID** received.
 
 3. **Initial key exchange**
 
-Device G displays a QR code containing:
+Device G displays a QR code containing sufficient information for the scanning device to locate the rendezvous session
+and establish the secure channel (as described in the [next section](#secure-channel)).
+
+The information to be encoded is:
 
 - Its public key **Gp**
 - The insecure rendezvous session **ID**
@@ -545,11 +551,7 @@ Device G displays a QR code containing:
 that wishes to facilitate the login of the new device
 - the Matrix homeserver **[server name](https://spec.matrix.org/v1.15/appendices/#server-name)**
 
-To get a good trade-off between visual compactness and high level of error correction we use a binary mode QR with a
-similar structure to that of the existing Device Verification QR code encoding described in [Client-Server
-API](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
-
-This is defined in detail in a separate section of this proposal.
+The format of this QR is defined in detail in a [separate section](#qr-code-format) of this proposal.
 
 Device S scans and parses the QR code to obtain **Gp**, the rendezvous session **ID**, **intent** and the Matrix homeserver
 **[server name](https://spec.matrix.org/v1.15/appendices/#server-name)**.
@@ -1634,15 +1636,14 @@ will soon be verified.
 
 ### Alternative QR code formats
 
-Instead of extending the existing QR code format and adding new "modes", alternatives include:
+An earlier version of this proposal kept the "version" byte at `0x02` and added additional "mode"
+values of `0x03` (which is now intent `0x00`) and `0x04` (which is now intent `0x01`).
 
-- using a different prefix to namespace the data (e.g. `MATRIX_LOGIN` instead of `MATRIX`)
-- keep the `MATRIX` prefix and repurpose the current "version" byte to be something like "type". For example:
-  - type = `0x02` could be the verification format described in the current spec
-  - type = `0x03` could be for this proposal
+The current usage of converting the "version" to be a "type" _feels_ like a more intuitive use of
+the bytespace.
 
-The purpose being that we end up with the QR being better namespaced (whilst also remaining compact) making future
-versioning simpler.
+Another alternative was to use a human readable prefix such as `MATRIX_LOGIN` instead of `MATRIX`.
+This was discounted on the basis of wanting to keep the QR reasonably compact.
 
 ## Security considerations
 
@@ -1715,7 +1716,7 @@ encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on hom
 
 ```
 49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 31 30 38
-02 04
+03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
@@ -1728,14 +1729,16 @@ Which looks as follows as a QR with error correction level Q:
 Generated with:
 
 nix-shell -p qrencode --run 'echo "49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 31 30 38
-02 04
+03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 0A
-6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode04-unstable.png'
+6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-intent01-unstable.png'
 -->
-![Example QR for mode 0x04](images/4108-qr-mode04-unstable.png)
+![Example QR for intent 0x01](images/4108-qr-intent01-unstable.png)
+
+It is suggested that this unstable QR prefix convention could be used by future proposals.
 
 ### M_CONCURRENT_WRITE errcode
 
