@@ -15,13 +15,17 @@ Instead of an **empty object**, this MSC defines this object like so:
 
 ### Sorting
 
-Clients can continue to use the image pack source priority defined in MSC2545, but within the sources that utlize `m.image_pack.rooms`, clients should sort the packs lexicographically by the `order` field.
+Clients can continue to use the image pack source priority defined in MSC2545, but within the sources that utilize `m.image_pack.rooms`, clients should sort the packs lexicographically by the `order` field.
 
 This sorting should be done WITHIN the packs in each `m.image_pack.rooms` event, e.g. room-local packs should NOT appear before user-account-local packs, if following the suggested pack source priority.
 
 ## Known Limitations
 
 This MSC does not specify or support an `order` field when no state keys are specified, which translates to "*all image packs that a room defines*". It is expected that the pack source is redefined with state keys for each image pack if the user wants to reorder packs within a single pack source.
+
+# Security considerations
+
+There are no obvious security concerns with this MSC.
 
 ## Unstable prefix
 
