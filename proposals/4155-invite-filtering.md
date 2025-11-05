@@ -76,7 +76,7 @@ When ignoring an invite, these endpoints MUST handle an invite normally as if ac
 MUST NOT include the invite down client synchronization endpoints such as `GET /_matrix/client/v3/sync` or
 MSC4186's sliding sync endpoint. In addition, these invites MUST be ignored when calculating push notifications.
 For clarity, this means that the invited user will get a regular `invite` membership event in the target room
-but will never be notified about that event, unless they modify their `m.invite_permission_config` such that the invite is no longer ignored. Similar, to `m.ignored_user_list`, clients SHOULD perform an
+but will never be notified about that event, unless they modify their `m.invite_permission_config` such that the invite is no longer ignored. As with `m.ignored_user_list`, clients SHOULD perform an
 initial `/sync` after relaxing their ignore configuration in order to receive potentially pending invites.
 
 Otherwise, all other endpoints (such as `GET /_matrix/client/v3/rooms/{roomId}/state`) should work as before. 
