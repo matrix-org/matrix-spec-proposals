@@ -63,7 +63,7 @@ The complete processing logic is as follows:
 The semantics of "ignore" and "block" follow [MSC4283] which means ignoring hides the invite with no
 feedback to the inviter whereas blocking rejects (or refuses, in the case of servers) the invite.
 
-When blocking an inviter, the server must respond to the following endpoints with an error:
+When blocking an inviter, the server MUST respond to the following endpoints with an error:
 
 - `PUT /_matrix/federation/(v1|v2)/invite/{roomId}/{eventId}`
 - `POST /_matrix/client/v3/rooms/{roomId}/invite`
