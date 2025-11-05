@@ -171,7 +171,7 @@ changes.
 ## Alternatives
 
 Instead of introducing a separate account data event, the existing `m.ignored_user_list` could have
-been expanded. This would, however, not only effect invites but also events in existing rooms which
+been expanded. This would, however, not only affect invites but also events in existing rooms which
 makes it a much more nuclear option. Additionally, the existing schema of `m.ignored_user_list`
 complicates morphing it into something that optionally supports allow-list semantics.
 
