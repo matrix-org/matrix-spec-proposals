@@ -7,7 +7,7 @@ specific users but doesn't have a mechanism to ignore entire servers. These shor
 insufficient for use cases such as tightly locked down applications where ignoring needs to be the default
 behaviour.
 
-This proposal generalises the ignoring users [module] to allow filtering invites specifically. The scheme
+This proposal generalises the ignoring users module to allow filtering invites specifically. The scheme
 outlined below was conceptually borrowed from the [gematik specification].
 
 
