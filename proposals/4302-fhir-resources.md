@@ -60,7 +60,7 @@ A new event type `m.fhir.resource` is introduced with the following properties i
 {
   "type": "m.fhir.resource",
   "content": {
-    "canonical_url": "http://hl7.org/fhir/patient.html|4.0.1",
+    "canonical_url": "http://hl7.org/fhir/StructureDefinition/Patient|4.0.1",
     "m.fhir.resource": {
       "resourceType": "Patient",
       "name": [{
@@ -117,7 +117,7 @@ None.
     however.
 
   [FHIR]: https://hl7.org/fhir/
-  [`Patient`]: http://hl7.org/fhir/R4/patient.html
+  [`Patient`]: http://hl7.org/fhir/StructureDefinition/Patient
   [`TIPatient`]: https://simplifier.net/packages/de.gematik.ti/1.1.1/files/2968490
   [`EPAPatient`]: https://simplifier.net/packages/de.gematik.epa/1.2.0/files/2968520/~overview
   [canonical URL]: https://build.fhir.org/references.html#canonical
