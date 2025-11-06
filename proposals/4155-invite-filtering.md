@@ -209,6 +209,10 @@ which predates this MSC, uses an event type of `de.gematik.tim.account.permissio
 a different event schema.
 
 The error `M_INVITE_BLOCKED` should be `ORG.MATRIX.MSC4155.M_INVITE_BLOCKED` until this proposal is accepted into the spec.
+
+Additionally, implementations should use `org.matrix.msc4155` in the `unstable_features` section
+of `/versions` to advertise or verify support for this proposal.
+
 ## Dependencies
 
 This proposal loosely depends on [MSC4283] for the semantics of "ignore" and "block".
