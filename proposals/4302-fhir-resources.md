@@ -49,7 +49,7 @@ content block exists, as of writing.
 A new event type `m.fhir.resource` is introduced with the following properties in `content`:
 
 - `canonical_url` (string, required): The resource's [canonical URL], that is the globally unique
-  identifier defining its schema. MAY contain a version suffix separated by `|` as per the FHIR
+  identifier defining its base schema. MAY contain a version suffix separated by `|` as per the FHIR
   specification.
 - `m.fhir.resource` (object): The serialised JSON if it fits within the [64 KiB event size limit].
   Required if `m.file` is missing.
