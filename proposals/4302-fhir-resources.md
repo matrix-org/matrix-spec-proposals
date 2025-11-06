@@ -1,19 +1,48 @@
 # MSC4302: Exchanging FHIR resources via Matrix events
 
-[FHIR] (pronounced "fire") is a globally established standard for exchanging healthcare information
-electronically. The base building blocks of FHIR are so called resources, such as [`Patient`]. These
-resources can be serialised into JSON or XML which allows them to be transmitted via the [`m.file`]
-message type with a MIME type of `application/fhir+json` or `application/fhir+xml`. The generic MIME
-type doesn't provide clients with any information about what resources are contained in the file,
-however, and requires them to download it for further processing. This is suboptimal because clients
-may want to render only some resources, such as [Questionnaire], with a rich UI. Furthermore, even
-if a client chooses to present all FHIR resources as opaque files, users would benefit from getting
-some information about a file's content without having to download it. Finally, FHIR resources may
-in certain cases be small enough to be inlined into Matrix events which would significantly simplify
-client-side processing.
+## A brief abstract of FHIR, resources and profiles
 
-To address these shortcomings, this proposal introduces an event type for transmitting FHIR
-resources and type information over Matrix in either inlined or uploaded form.
+[FHIR] (pronounced "fire") is a globally established standard for exchanging healthcare information
+electronically. The base building blocks of FHIR are so-called *resources*. Resources have a type
+that defines their base schema. This schema can be further customised through one or more
+*profiles*.
+
+As an example, [`Patient`] is the resource type for patients which defines several fields. Among
+these are the *optional* property `birthDate` for the person's date of birth and `photo` for any
+number of pictures of the person.
+
+[`TIPatient`] is a profile on `Patient` defined by Germany's national health agency, gematik, for
+use within their own network (TI). It customises the schema of `Patient` in several ways, such as
+making `birthDate` required rather than optional.
+
+[`EPAPatient`], in turn, is another profile on `Patient` defined by gematik, specifically for use in
+Germany's digital patient file (EPA). `EPAPatient` builds on top of `TIPatient` and adds furhter
+customisations like, for instance, the requirement for the elements of `photo` to include the field
+`contentType` if the picture is supplied inline as Base64.
+
+As a result, the valid schema of a FHIR resource for a patient within Germany's digital patient file
+is determined by the combination of the resource type `Patient` and the profiles `TIPatient` and
+`EPAPatient`.
+
+Both resource types and profiles can be uniquely identified by their [canonical URL].
+
+## The problems of using FHIR resources in Matrix
+
+FHIR resources can be serialised into JSON or XML which can be transmitted via the [`m.file`]
+message type with a MIME type of `application/fhir+json` or `application/fhir+xml`. However, the
+generic MIME type doesn't let clients understand what resource is contained in the file without
+downloading it. This is suboptimal because clients may want to render a rich UI for certain resource
+types and profiles. An example of this is the [`Questionnaire`] resource which represents a form
+that can be filled out by the recipient and responded to with a [`QuestionnaireResponse`] resource.
+
+Similarly, clients that connect external systems to Matrix may want to automatically process certain
+resources. For instance, an anamnesis bot may want to export received `QuestionnaireResponse`s into
+a surgery's patient management system. Again, the generic MIME type forces such clients to download
+the file to determine if it is indeed a `QuestionnaireResponse`.
+
+These problems would be obliterated if FHIR resources were inlined into Matrix events. However, this
+isn't always possible due to the [64 KiB event size limit]. Additionally, no suitable event type or
+content block exists, as of writing.
 
 ## Proposal
 
@@ -89,10 +118,13 @@ None.
 
   [FHIR]: https://hl7.org/fhir/
   [`Patient`]: http://hl7.org/fhir/R4/patient.html
-  [`m.file`]: https://spec.matrix.org/v1.14/client-server-api/#mfile
-  [Questionnaire]: https://www.hl7.org/fhir/questionnaire.html
+  [`TIPatient`]: https://simplifier.net/packages/de.gematik.ti/1.1.1/files/2968490
+  [`EPAPatient`]: https://simplifier.net/packages/de.gematik.epa/1.2.0/files/2968520/~overview
   [canonical URL]: https://build.fhir.org/references.html#canonical
-  [64 KiB event size limit]: https://spec.matrix.org/v1.14/client-server-api/#size-limits
+  [`m.file`]: https://spec.matrix.org/v1.14/client-server-api/#mfile
+  [`Questionnaire`]: https://www.hl7.org/fhir/questionnaire.html
+  [`QuestionnaireResponse`]: https://build.fhir.org/questionnaireresponse.html
+  [64 KiB event size limit]: https://spec.matrix.org/v1.16/client-server-api/#size-limits
   [MSC3551]: https://github.com/matrix-org/matrix-spec-proposals/pull/3551
   [`Bundle`]: http://hl7.org/fhir/StructureDefinition/Bundle
   [RFC 2045]: https://datatracker.ietf.org/doc/html/rfc2045#section-5
