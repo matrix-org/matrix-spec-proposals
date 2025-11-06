@@ -1,6 +1,6 @@
 # MSC4302: Exchanging FHIR resources via Matrix events
 
-[FHIR] (pronounced 🔥) is a globally established standard for exchanging healthcare information
+[FHIR] (pronounced "fire") is a globally established standard for exchanging healthcare information
 electronically. The base building blocks of FHIR are so called resources, such as [`Patient`]. These
 resources can be serialised into JSON or XML which allows them to be transmitted via the [`m.file`]
 message type with a MIME type of `application/fhir+json` or `application/fhir+xml`. The generic MIME
