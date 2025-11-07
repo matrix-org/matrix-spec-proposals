@@ -2,27 +2,16 @@
 
 ## A brief abstract of FHIR, resources and profiles
 
-[FHIR] (pronounced "fire") is a globally established standard for exchanging healthcare information
-electronically. The base building blocks of FHIR are so-called *resources*. Resources have a type
-that defines their base schema. This schema can be further customised through one or more
-*profiles*.
+[FHIR] (pronounced "fire") is a globally established standard for the digital exchange of
+healthcare-related information. The base building block of FHIR are so-called *resources*. Resources
+have a type that defines their base schema. This schema can be further customised through one or
+more *profiles*.
 
-As an example, [`Patient`] is the resource type for patients which defines several fields. Among
-these are the *optional* property `birthDate` for the person's date of birth and `photo` for any
-number of pictures of the person.
-
-[`TIPatient`] is a profile on `Patient` defined by Germany's national health agency, gematik, for
-use within their own network (TI). It customises the schema of `Patient` in several ways, such as
-making `birthDate` required rather than optional.
-
-[`EPAPatient`], in turn, is another profile on `Patient` defined by gematik, specifically for use in
-Germany's digital patient file (EPA). `EPAPatient` builds on top of `TIPatient` and adds further
-customisations like, for instance, the requirement for the elements of `photo` to include the field
-`contentType` if the picture is supplied inline as Base64.
-
-As a result, the valid schema of a FHIR resource for a patient within Germany's digital patient file
-is determined by the combination of the resource type `Patient` and the profiles `TIPatient` and
-`EPAPatient`.
+As an example, [`Questionnaire`] is the resource type for medical forms that can be used for various
+purposes. This type defines several fields such as an *optional* `title` property containing a human
+friendly name for the form. [`ISiKFormularDefinition`], in turn, is a profile on `Questionnaire`
+created by Germany's national health agency, gematik, for use within hospitals. It customises the
+schema of `Questionnaire` in several ways, such as making `title` required rather than optional.
 
 Both resource types and profiles can be uniquely identified by their [canonical URL].
 
@@ -31,13 +20,14 @@ Both resource types and profiles can be uniquely identified by their [canonical 
 FHIR resources can be serialised into JSON or XML which can be transmitted via the [`m.file`]
 message type with a MIME type of `application/fhir+json` or `application/fhir+xml`. However, the
 generic MIME type doesn't let clients understand what resource is contained in the file without
-downloading it. This is suboptimal because clients may want to render a rich UI for certain resource
-types and profiles. An example of this is the [`Questionnaire`] resource which represents a form
-that can be filled out by the recipient and responded to with a [`QuestionnaireResponse`] resource.
+downloading it. This is suboptimal because clients may want to apply special display logic for
+certain resource types and profiles. Using the example of `Questionnaire`s, clients may want to
+render the resource as an interactive form for the user to fill out and send back a
+[`QuestionnaireResponse`] resource.
 
 Similarly, clients that connect external systems to Matrix may want to automatically process certain
 resources. For instance, an anamnesis bot may want to export received `QuestionnaireResponse`s into
-a surgery's patient management system. Again, the generic MIME type forces such clients to download
+a surgery's patient management system. Again, the generic MIME type forces such a client to download
 the file to determine if it is indeed a `QuestionnaireResponse`.
 
 These problems would be obliterated if FHIR resources were inlined into Matrix events. However, this
@@ -131,13 +121,11 @@ None.
     however.
 
   [FHIR]: https://hl7.org/fhir/
-  [`Patient`]: http://hl7.org/fhir/StructureDefinition/Patient
-  [`TIPatient`]: https://simplifier.net/packages/de.gematik.ti/1.1.1/files/2968490
-  [`EPAPatient`]: https://simplifier.net/packages/de.gematik.epa/1.2.0/files/2968520/~overview
+  [`Questionnaire`]: http://hl7.org/fhir/StructureDefinition/Questionnaire
+  [`ISiKFormularDefinition`]: https://gematik.de/fhir/isik/StructureDefinition/ISiKFormularDefinition
   [canonical URL]: https://build.fhir.org/references.html#canonical
   [`m.file`]: https://spec.matrix.org/v1.14/client-server-api/#mfile
-  [`Questionnaire`]: https://www.hl7.org/fhir/questionnaire.html
-  [`QuestionnaireResponse`]: https://build.fhir.org/questionnaireresponse.html
+  [`QuestionnaireResponse`]: http://hl7.org/fhir/StructureDefinition/QuestionnaireResponse
   [64 KiB event size limit]: https://spec.matrix.org/v1.16/client-server-api/#size-limits
   [`Meta.profile`]: http://hl7.org/fhir/resource-definitions.html#Meta.profile
   [MSC3551]: https://github.com/matrix-org/matrix-spec-proposals/pull/3551
