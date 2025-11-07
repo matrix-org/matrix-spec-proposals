@@ -319,7 +319,7 @@ the MatrixRTC backend.
 The permissions SHOULD be just sufficient for the MatrixRTC application to operate in a LiveKit
 room. Permissions SHOULD be scoped according to the user’s role (publishing or subscribing) and
 their relationship to the MatrixRTC backend. All users MUST be able to join the LiveKit room for
-which they are authorized. The `roomCreate` permission SHOULD only be granted to users who are
+which they are authorised. The `roomCreate` permission SHOULD only be granted to users who are
 related to the MatrixRTC backend and are allowed to publish media.
 
 Example for publishing RTC data using a full-access grant:
@@ -328,11 +328,11 @@ Example for publishing RTC data using a full-access grant:
   "exp": 1726764439,
   "iss": "API2bYPYMoVqjcE",
   "nbf": 1726760839,
-  "sub": "SHA256(@user:matrix.domain|DEVICEID|xyzABCDEF10123)",
+  "sub": "xyzABCDEF0123",    // member.id
   "video": {
     "canPublish": true,
     "canSubscribe": true,
-    "room": "!gIpOlaUSrXBmgtveWK:call.ems.host_m.call_",
+    "room": "SHA256(!gIpOlaUSrXBmgtveWK:call.ems.host|m.call#ROOM)",
     "roomCreate": true,
     "roomJoin": true
   }
@@ -346,11 +346,11 @@ Example for subscribing RTC data with restricted-access grant
   "exp": 1726764439,
   "iss": "API2bYPYMoVqjcE",
   "nbf": 1726760839,
-  "sub": "SHA256(@user:matrix.domain|DEVICEID|xyzABCDEF10123)",
+  "sub": "xyzABCDEF0123",    // member.id
   "video": {
     "canPublish": false,
     "canSubscribe": true,
-    "room": "!gIpOlaUSrXBmgtveWK:call.ems.host_m.call_",
+    "room": "SHA256(!gIpOlaUSrXBmgtveWK:call.ems.host|m.call#ROOM)",
     "roomCreate": false,
     "roomJoin": true
   }
