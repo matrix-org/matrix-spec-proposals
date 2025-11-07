@@ -119,12 +119,30 @@ Field Descriptions:
 }
 ```
 
-### LiveKit SFU Authorisation
+### LiveKit SFU Authorisation Service
 
 LiveKit SFUs require a JWT `access_token` to be provided when 
 [connecting to the WebSocket](https://docs.livekit.io/reference/internals/client-protocol/#WebSocket-Parameters).  
 This section standardises the method by which a MatrixRTC application obtains the LiveKit JWT
-token.
+token. A high level overview is depicted int he following diagram
+
+```mermaid
+sequenceDiagram
+    participant U as 🧑 User
+    participant M as 🏢 Matrix Homeserver
+    participant A as 🔐 MatrixRTC Authorisation Service
+    participant L as 📡 LiveKit SFU
+
+    U->>M: Requests OpenID token
+    M-->>U: Returns OpenID token
+    U->>A: Sends OpenID token & room request
+    A->>M: Validates token via OpenID API
+    M-->>A: Confirms user identity
+    A->>A: Generates LiveKit JWT
+    A->>L: (If full-access user) Create room if missing
+    A-->>U: Returns LiveKit JWT
+    U->>L: Connects to room using JWT
+```
 
 #### Prerequisites
 
