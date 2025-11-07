@@ -16,7 +16,7 @@ use within their own network (TI). It customises the schema of `Patient` in seve
 making `birthDate` required rather than optional.
 
 [`EPAPatient`], in turn, is another profile on `Patient` defined by gematik, specifically for use in
-Germany's digital patient file (EPA). `EPAPatient` builds on top of `TIPatient` and adds furhter
+Germany's digital patient file (EPA). `EPAPatient` builds on top of `TIPatient` and adds further
 customisations like, for instance, the requirement for the elements of `photo` to include the field
 `contentType` if the picture is supplied inline as Base64.
 
