@@ -480,8 +480,8 @@ role.
 The homeserver restriction could be applied by checking the `matrix_server_name` field of the OpenID
 token before validating the token.
 
-The `room_id` could be validated too, and checking that the Matrix user from the OpenID token is a
-member of the room.
+The Matrix `room_id` could be validated too, and checking that the Matrix user from the OpenID token
+is a member of the room.
 
 ### Pseudonymity
 
