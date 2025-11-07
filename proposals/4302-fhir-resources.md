@@ -46,21 +46,31 @@ content block exists, as of writing.
 
 ## Proposal
 
-A new event type `m.fhir.resource` is introduced with the following properties in `content`:
+To enable the efficient exchange of FHIR resources in either inline or file form, a new event type
+`m.fhir.resource` is introduced. This type mandates the following properties in `content`:
 
 - `canonical_url` (string, required): The resource's [canonical URL], that is the globally unique
   identifier defining its base schema. MAY contain a version suffix separated by `|` as per the FHIR
   specification.
-- `m.fhir.resource` (object): The serialised JSON if it fits within the [64 KiB event size limit].
-  Required if `m.file` is missing.
-- `m.file` (object): An [MSC3551] content block describing an uploaded JSON or XML serialisation of
-  the resource if it is too large to be inlined. Required if `m.fhir.resource` is missing.
+- `profiles`: (array of strings): The canonical URLs of the profiles the resource conforms to (if
+  any). The order of elements in the array is arbitrary, similar to FHIR's own [`Meta.profile`]
+  property.
+- `m.fhir.resource` (object, required if `m.file` is missing): The serialised JSON if it fits within
+  the [64 KiB event size limit].
+- `m.file` (object, required if `m.fhir.resource` is missing): An [MSC3551] content block describing
+  an uploaded JSON or XML serialisation of the resource if it is too large to be inlined.
 
 ``` json5
 {
   "type": "m.fhir.resource",
   "content": {
+    // Metadata to help identify the resource
     "canonical_url": "http://hl7.org/fhir/StructureDefinition/Patient|4.0.1",
+    "profiles": [
+      "https://gematik.de/fhir/epa/StructureDefinition/epa-patient|1.2.0",
+      "https://gematik.de/fhir/ti/StructureDefinition/ti-patient|1.1.1"
+    ],
+    // Either: The resource in inline form
     "m.fhir.resource": {
       "resourceType": "Patient",
       "name": [{
@@ -72,6 +82,7 @@ A new event type `m.fhir.resource` is introduced with the following properties i
       "birthDate": "1970-01-01",
       // further properties as per the Patient schema
     },
+    // Or: A file representing the resource
     "m.file": {
       "url": "mxc://example.org/abcd1234",
       "mimetype": "application/fhir+json",
@@ -125,6 +136,7 @@ None.
   [`Questionnaire`]: https://www.hl7.org/fhir/questionnaire.html
   [`QuestionnaireResponse`]: https://build.fhir.org/questionnaireresponse.html
   [64 KiB event size limit]: https://spec.matrix.org/v1.16/client-server-api/#size-limits
+  [`Meta.profile`]: http://hl7.org/fhir/resource-definitions.html#Meta.profile
   [MSC3551]: https://github.com/matrix-org/matrix-spec-proposals/pull/3551
   [`Bundle`]: http://hl7.org/fhir/StructureDefinition/Bundle
   [RFC 2045]: https://datatracker.ietf.org/doc/html/rfc2045#section-5
