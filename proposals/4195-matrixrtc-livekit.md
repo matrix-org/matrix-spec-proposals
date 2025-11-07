@@ -74,7 +74,7 @@ The mechanism for advertising available RTC transports by homeservers is already
 [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
 
 The homeserver announces available LiveKit Transport as a JSON object with the following fields:
-* `type` — required `string`: this MUST be `"livekit_multi_sfu`  
+* `type` — required `string`: this MUST be `livekit_multi_sfu`  
 * `livekit_service_url` — required `string`: The URL of the service that issues JWT tokens for
   connecting this LiveKit SFU.
 
