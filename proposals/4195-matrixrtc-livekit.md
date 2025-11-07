@@ -44,14 +44,24 @@ offered by a homeserver and being used as transport by clients.
 
 ### LiveKit room alias
 
-The name of a LiveKit room is referred to as the **LiveKit alias** (`livekit_alias`). The alias
-MUST be unique within a given MatrixRTC slot in a Matrix room. It is derived by the concatenation
-of `room_id` and `|` and `slot_id`. The value is opaque to the MatrixRTC application. Within the 
-LiveKit namespace, the `livekit_alias` represents a MatrixRTC slot.
+The name of a LiveKit room is referred to as the **LiveKit alias** (`livekit_alias`). The alias MUST
+be globally unique and dependent on a given MatrixRTC slot in a Matrix room. A minimal
+implementation that ensures a baseline of pseudonymity is given by the SHA-256 hash of the
+concatenation of the Matrix `room_id`, a pipe character (`|`), and the `slot_id`,
+e.g.,`SHA256(room_id|slot_id)`.
 
-Participants from the same Matrix deployment (using the same SFU to publish their media) are
-considered to use the same `livekit_alias` in order to limit the number of actual LiveKit SFU
-connections.
+For improved metadata protection, the `livekit_alias` SHOULD be derived as
+`SHA256(room_id|slot_id|truly random bits)`, where the `truly random bits` are maintained by the
+LiveKit SFU authorisation service. This approach enhances pseudonymity but requires the service to
+be **stateful** in order to manage and persist the random bits.
+
+The resulting value is opaque to the MatrixRTC application. Within the LiveKit namespace, the
+`livekit_alias` uniquely represents a MatrixRTC slot. Participants from the same Matrix deployment
+(using the same SFU to publish their media) are considered to use the same `livekit_alias` in order
+to limit the number of active LiveKit SFU connections. 
+
+The `livekit_alias` is shared with clients as part of their JWT token issued by the authorisation
+service.
 
 ### Focus type: `livekit_multi_sfu`
 
