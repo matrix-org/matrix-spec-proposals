@@ -1,4 +1,8 @@
-# MSC4195: MatrixRTC Transport using LiveKit Backend
+# MSC4195: MatrixRTC Transport Using LiveKit Backend
+
+This MSC defines a LiveKit-based transport for MatrixRTC, allowing clients to publish and subscribe
+to real-time media via LiveKit SFUs while maintaining Matrix-native session and membership
+semantics.
 
 This proposal defines a new [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
 compliant MatrixRTC Transport using [LiveKit](https://github.com/livekit/livekit) Selective
