@@ -160,6 +160,9 @@ fields:
   * `openid_token` — required `object`: the verbatim OpenID token response obtained from the 
     [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3useruseridopenidrequest_token).  
   * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
+  * `delay_id` — optional `string`: the delayed event id of the MatrixRTC member leave event.
+  * `delay_timeout` — optional `string`: number of positive non-zero milliseconds the homeserver
+    should wait before sending the MatrixRTC member leave event
 
 Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
 ```http
@@ -178,9 +181,11 @@ Content-Type: application/json
   },
   "member": {
     "id": "xyzABCDEF10123",
-    "device_id": "DEVICEID",
-    "user_id": "@user:matrix.example.com"
-  }
+    "claimed_device_id": "DEVICEID",
+    "claimed_user_id": "@user:matrix.example.com"
+  },
+  "delay_id": "1234567890",   // optional 
+  "delay_timeout": "7200000"  // optional (2 hours)
 }
 ```
 
@@ -236,6 +241,63 @@ rooms, users, or slots based on error responses.
 The LiveKit authorisation service MAY include additional fields (such as `retry_after_ms` or
 `reason`) for diagnostic purposes, but clients MUST be prepared to ignore unknown fields.
 Implementations SHOULD NOT disclose sensitive information in the `"error"` field.
+
+#### Optional Delegated MatrixRTC Membership Lifecycle Tracking using Cancellable Delayed Events
+
+As described in [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), clients
+SHOULD use cancellable delayed events to implement a "deadman switch" for precise MatrixRTC
+membership tracking. This involves sending a disconnect event ahead of the connect event as a
+delayed event with a reasonable timeout (e.g., 15--30 seconds), and periodically resetting the
+delayed event's timer. If the timer expires due to a missing reset, the disconnect event is
+automatically emitted, marking the participant as disconnected and ensuring accurate session state
+even in cases of sudden disconnection, crashes, or network failures. However, relying on clients to
+reset the delayed event timer can be error-prone in adverse network conditions, particularly due to
+TCP connection instability.
+
+Since the LiveKit SFU already maintains authoritative knowledge of each participant's connection
+state, the management of cancellable delayed events MAY be delegated to the LiveKit SFU
+Authorisation Service. This delegation allows the RTC transport layer to accurately manage and
+maintain MatrixRTC membership lifecycles across transient disconnects, ensuring a consistent and
+reliable view of session state. A prerequisite for this delegation is that the client includes both
+`delay_id` and `delay_timeout` fields as part of the authorisation request.
+
+Upon successful issuance of a JWT token and once the LiveKit SFU Authorisation Service observes the
+client's SFU connection, identified by the LiveKit room `livekit_alias` and the LiveKit identity
+specified in `member.id`, it SHOULD issue a `reset` of the delayed event by sending the following
+POST request to the homeserver of that client:
+```http
+POST /_matrix/client/v1/delayed_events/{delay_id}/restart HTTP/1.1
+Host: matrix-rtc.example.com
+Content-Type: application/json
+
+{}
+```
+
+It then starts a timer corresponding to the specified `delay_timeout`. The timer is periodically
+reset while the client remains connected with sufficient headroom (e.g., 80% of `delay_timeout`) to
+ ensure the reset occurs well before `delay_timeout` expires. If the SFU detects that the client has
+disconnected before the timer is reset, the Authorisation Service MUST trigger the `disconnect`
+event by sending the following request to the homeserver:
+```http
+POST /_matrix/client/v1/delayed_events/{delay_id}/send HTTP/1.1
+Host: matrix-rtc.example.com
+Content-Type: application/json
+
+{}
+```
+
+This ensures that the MatrixRTC membership state remains accurate and consistent, even in the
+presence of network interruptions or client crashes.
+
+Implementations SHOULD verify support for delayed events by querying the client’s homeserver
+`_matrix/client/versions` endpoint. If the homeserver does not advertise support for delayed events,
+the SFU authorisation request MUST be rejected with the error code `M_UNSUPPORTED` and error message
+`MatrixRTC membership lifecycle delegation failed: homeserver does not support delayed events.`.
+
+Implementations MAY retry failed delayed event POST requests using an exponential backoff strategy
+in the event of transient network failures. However, retry attempts MUST cease once either the
+configured `delay_timeout` has elapsed or the maximum sticky duration of one hour for the delayed
+event has been reached, whichever occurs first.
 
 ### Pseudonymous LiveKit Participant Identity
 
