@@ -151,7 +151,7 @@ sequenceDiagram
 
 #### Request
 
-The JWT token is obtained by making a `POST` request to the `/sfu/get` endpoint of the LiveKit service.
+The JWT token is obtained by making a `POST` request to the `/get_token` endpoint of the LiveKit service.
 
 The `Content-Type` of the request is `application/json` and the JSON body contains the following
 fields:
@@ -162,8 +162,8 @@ fields:
   * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
 
 Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
-```
-POST /livekit/jwt/sfu/get HTTP/1.1
+```http
+POST /livekit/jwt/get_token HTTP/1.1
 Host: matrix-rtc.example.com
 Content-Type: application/json
 
@@ -192,7 +192,7 @@ If the request is successful, an HTTP `200 OK` response is returned with
 * `url` — `string`: the URL of the LiveKit SFU to use for the given slot.
 
 Example response:
-```
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -219,7 +219,7 @@ Common error responses:
 | `500 Internal Server Error` | `M_UNKNOWN` | An unexpected internal error occurred while generating the token. The client may retry after a short delay. |
 
 Example Error Response:
-```
+```http
 HTTP/1.1 401 Unauthorized
 Content-Type: application/json
 
@@ -381,7 +381,7 @@ be stateful.
 ### Resource usage
 
 To prevent abuse of SFU resources, the LiveKit Authorisation service should validate the OpenID
-token as part of requests to `/sfu/get`.
+token as part of requests to `/get_token`.
 
 The Server-Server API endpoint
 [/\_matrix/federation/v1/openid/userinfo](https://spec.matrix.org/v1.11/server-server-api/#get_matrixfederationv1openiduserinfo)
@@ -406,7 +406,7 @@ generated session membership IDs with sufficient entropy.
 
 ### Error handling and information disclosure
 
-Implementations of the `/sfu/get` endpoint SHOULD take care not to disclose sensitive internal
+Implementations of the `/get_token` endpoint SHOULD take care not to disclose sensitive internal
 details through error messages.
 
 Error responses should use generic `"errcode"` values and short, human-readable `"error"`
