@@ -376,26 +376,50 @@ described above.
 
 ## Potential issues
 
-### Pseudonymous `livekit_alias`
+### Source of `truly_random_bits` for Pseudonymous `livekit_alias` Derivation
 
-Assuming that LiveKit SFU authorization is handled separately from the actual LiveKit SFU, metadata
-leakage can be further limited by using a pseudonymous `livekit_alias`. For example, this could be
-derived as: `SHA256(room_id|slot_id|truly random bits)`
+Clients that publish their media through the same SFU and use the same `slot_id` within a given
+Matrix room are considered to share the same LiveKit room (`livekit_alias`), which minimizes the
+number of active LiveKit SFU connections.
 
-Clients that use the same SFU to publish their media are considered to share the same
-`livekit_alias`, which helps limit the number of active LiveKit SFU connections. Consequently, the
-“truly random bits” used for pseudonymity need to be shared among clients using the same
-`livekit_alias`.
+The derivation of the LiveKit room alias is defined as: `livekit_alias = SHA256(room_id | slot_id |
+truly_random_bits)`. 
 
-As described in the MatrixRTC slots section of
-[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), slots are currently the
-only mechanism for sharing state between clients. Slots are **unencrypted** and subject to potential
-state resolution issues, including flip-flop and settling effects, and generally require **higher
-power levels** to be managed. While tie-breaking “truly random bits” derived from `m.rtc.member`
-(e.g., as part of the `rtc_transports` field) events satisfies shared state encryption, it does
-**not** improve the reliability of state propagation. Given that pseudonymous LiveKit participant
-IDs already exist, the design prioritizes **reliability over additional pseudonymity**, ensuring
-consistent state propagation across clients.
+This construction is part of the proposal and ensures that aliases remain pseudonymous while still
+being deterministically derived for a given Matrix room and MatrixRTC slot. The open consideration
+is the source of the `truly_random_bits` used in the derivation.
+
+Two approaches are possible:
+
+1. **Client-provided `truly_random_bits`**
+  * Requires coordination between clients sharing the same `slot_id` within a Matrix room to ensure
+    they use identical random bits; otherwise, different `livekit_alias` values maybe derived and
+    fragment the session.
+  * As described in the MatrixRTC slots section of
+    [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), slots are the intended
+    mechanism for sharing state between clients. However, slots are **unencrypted** and subject to
+    state resolution. Therefore, they are not suitable for holding truly random bits`.
+  * While tie-breaking `truly random bits` derived from `m.rtc.member` events (e.g., within the
+    `rtc_transports` field) ensures that the data is encrypted shared state, it is subject to
+    client-side consensus and may flip over time. Overall, it does **not** improve the reliability
+    of propagating and converging those random bits.
+  * This approach keeps the LiveKit Authorisation Service stateless
+  * Requires the removal of the `room_id` field from the access request, which prevents additional
+    access checks, such as verifying that the user is actually part of the claimed Matrix room.
+2. **Authorisation-service-provided random bits**
+  * The Authorisation Service generates and persists the `truly_random_bits` for each `(room_id,
+    slot_id)` tuple
+  * Guarantees consistent alias derivation across clients without requiring client-side
+    coordination.
+  * The service becomes stateful, as it must retain the `truly_random_bits`
+  * The benefit of improved pseudonymity only applies if the LiveKit SFU authorisation service is
+    operated separately from the actual LiveKit SFU.
+  * Preserves the `room_id` in the access request, allowing additional access checks, such as
+    verifying that the user is actually part of the claimed Matrix room.
+
+Given that pseudonymous LiveKit participant IDs already exist, the design prioritizes **reliability
+over additional pseudonymity** by using Authorisation-service-provided random bits, ensuring
+consistent `livekit_alias` across clients while enabling additional access checks.
 
 ### Reliance on the LiveKit Protocol and Implementation
 
