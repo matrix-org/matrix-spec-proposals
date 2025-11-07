@@ -55,22 +55,15 @@ To enable the efficient exchange of FHIR resources in either inline or file form
   "type": "m.fhir.resource",
   "content": {
     // Metadata to help identify the resource
-    "canonical_url": "http://hl7.org/fhir/StructureDefinition/Patient|4.0.1",
+    "canonical_url": "http://hl7.org/fhir/StructureDefinition/Questionnaire|4.0.1",
     "profiles": [
-      "https://gematik.de/fhir/epa/StructureDefinition/epa-patient|1.2.0",
-      "https://gematik.de/fhir/ti/StructureDefinition/ti-patient|1.1.1"
+      "https://gematik.de/fhir/isik/StructureDefinition/ISiKFormularDefinition|5.0.0"
     ],
     // Either: The resource in inline form
     "m.fhir.resource": {
-      "resourceType": "Patient",
-      "name": [{
-        "use": "official",
-        "given": ["John", "James"],
-        "family": "Doe"
-      }],
-      "gender": "male",
-      "birthDate": "1970-01-01",
-      // further properties as per the Patient schema
+      "resourceType": "Questionnaire",
+      "title": "Dr. Dre's anamnesis questionnaire for new patients",
+      // further properties as per the questionnaire's schema
     },
     // Or: A file representing the resource
     "m.file": {
