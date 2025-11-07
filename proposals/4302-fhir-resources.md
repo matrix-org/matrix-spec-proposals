@@ -112,7 +112,10 @@ This would allow reusing the `m.file` message type but leaks the resource type t
 
 ## Security considerations
 
-None.
+Malicious clients could attempt to trick other clients into automatically downloading files by
+faking the metadata in `m.fhir.resource` events. As a minimal defense, clients SHOULD sanity-check
+the size of the downloaded file by issuing a HEAD request and refuse to download large files without
+explicit user consent.
 
 ## Unstable prefix
 
