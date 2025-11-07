@@ -454,14 +454,6 @@ evolution toward a Matrix-native or jointly standardized MatrixRTC transport.
 
 ## Alternatives
 
-Pseudonymous `livekit_alias`
-
-Assuming that LiveKit SFU authorization is handled separately from the actual LiveKit SFU and can be
-trusted, metadata leakage can be further limited by using a pseudonymous `livekit_alias`. For
-example, this could be derived as: `SHA256(room_id|slot_id|truly random bits)` where the `truly
-random bits` are maintained by the LiveKit SFU authorization service. This requires the service to
-be stateful.
-
 ## Security considerations
 
 ### Resource usage
