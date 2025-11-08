@@ -13,6 +13,29 @@ Instead of an **empty object**, this MSC defines this object like so:
 
 - `order` **Optional, String**. Lexicographic ordering key.
 
+So for example, before:
+```
+{
+  "rooms": {
+    "!NasysSDfxKxZBzJJoE:matrix.org": {
+      "Nonexistent-Stickers": {}
+    },
+  }
+}
+```
+After:
+```
+{
+  "rooms": {
+    "!NasysSDfxKxZBzJJoE:matrix.org": {
+      "Nonexistent-Stickers": {
+        "order": "abcd"
+      }
+    },
+  }
+}
+```
+
 ### Sorting
 
 Clients can continue to use the image pack source priority defined in MSC2545, but within the sources that utilize `m.image_pack.rooms`, clients should sort the packs lexicographically by the `order` field.
