@@ -101,6 +101,25 @@ do not consider vulnerabilities with their design, we rely on reviewers to consi
 is easy to forget, so having a mandatory 'Security Considerations' section serves to nudge reviewers
 into thinking like an attacker.
 
+## Privacy considerations
+
+**All proposals must now have this section, even if it is to say there are no privacy issues.**
+
+*Think about how to attack your proposal, using the categories of privacy threats, threat mitigations and
+guidelines of [RFC6973](https://datatracker.ietf.org/doc/html/rfc6973) (see sections 5, 6 and 7).*
+
+*Some proposals may have some privacy aspect to them that was addressed in the proposed solution. This
+section is a great place to outline some of the possible implications on the users' privacy of your
+proposal, such as why your approach improves privacy aspects of the protocol or which new risks are
+introduced by your proposal. The example here is a bit of a stretch and unlikely to actually be
+worthwhile of including in a proposal, but it is generally a good idea to list these kinds of concerns
+where possible.*
+
+MSCs can drastically affect the protocol. The authors of MSCs may not have a privacy background. If they
+do not consider privacy implications in their design, we rely on reviewers to consider such implications.
+This is easy to forget, so having a mandatory 'Privacy Considerations' section serves to nudge reviewers
+into thinking like an attacker.
+
 ## Unstable prefix
 
 *If a proposal is implemented before it is included in the spec, then implementers must ensure that the
