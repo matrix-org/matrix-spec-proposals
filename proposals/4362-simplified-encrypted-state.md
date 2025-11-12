@@ -14,13 +14,27 @@ would be a good thing to list here._
 _If you're having troubles coming up with a description, a good question to ask is "how does this
 proposal improve Matrix?" - the answer could reveal a small impact, and that is okay._-->
 
-This proposal builds upon the earlier MSC3414, aiming to provide a simplified approach to encrypted
-state events in Matrix. Currently, all room state is unencrypted and accessible to everyone in the
-room, and occasionally people outside the room (such as via the public room directory, invite state,
-or peekable rooms). The server also has access to these state events in order to perform state
-resolution, and so is visible to server administrators. Most events in room state could be encrypted
-to provide confidentiality, which is what this MSC seeks to achieve more straightforwardly. Some
-parts, however, cannot be encrypted to maintain a functioning protocol.
+Currently, all state events are unencrypted. This allows the homeserver to read state event content
+in order to do its job in implementing the Matrix protocol: processing room membership and power
+levels, and performing state resolution. A side effect of homeservers being able to read state event
+content is that anyone with access to the homeserver's data (such as an administrator or a
+successful attacker) can also read these events.
+
+The set of events that are actually needed by the homeserver is quite small, so we propose
+encrypting everything else. This provides a significant reduction in the amount of visible metadata,
+at the cost of some user inconvenience (because users need decryption keys to see state information
+like room names).
+
+[MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414) has similar goals to this
+proposal, but it specifies a concrete mechanism for hiding encrypted event types, and resolving
+state where it cannot be fully resolved by the server. We think this approach could be problematic,
+and may effectively require us to implement full state resolution on the client. Here, we simply
+propose the "easy" part: encrypting state events without hiding their types from the server.
+
+The intent is to allow real-world usage of encrypted state, accepting the limitations imposed
+because state is hidden from users in situations where they might want it, without requiring us to
+draw conclusions on the trickiest parts (sharing historical state, resolving state the server can't
+identify, and exposing room names and topics).
 
 ## Proposal
 
@@ -62,32 +76,28 @@ This MSC relies on the room key sharing mechanism outlined in
 [MSC4268](https://github.com/matrix-org/matrix-spec-proposals/pull/4268), which enables clients to
 decrypt historical state events.
 
+## Limitations
+
+### Room names and topics are not visible from outside
+
+The name and topic of a room with encrypted state will not be visible without access to the keys
+used to encrypt them. Without additional proposals, this will make it impossible to provide a room
+directory entry, list the room inside a space, or display room details when invited.
+
+### State sent before joining the room is inaccessible
+
+Upon joining a room with encrypted state, new users will not be able to decrypt room state, making
+the room name, topic and other information (e.g. ongoing whiteboard sessions or call) inaccessible.
+
+This limitation does not apply if
+[MSC4268](https://github.com/matrix-org/matrix-spec-proposals/pull/4268) is available and the room
+settings allow sharing the relevant events.
+
 ## Potential issues
 
 <!--_Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
 and they should be documented here. There should be some explanation for why the disadvantage is
 acceptable, however - just like in this example._-->
-
-At present, MSC4268
-[does not require invitees to download the key bundle upon receiving an invite](https://github.com/matrix-org/matrix-spec-proposals/blob/rav/proposal/encrypted_history_sharing/proposals/4268-encrypted-history-sharing.md#actions-as-a-receiving-client);
-instead, the key bundle is only fetched when the user joins the room, which could lead to problems
-displaying the room name, topic, and avatar to invitees. One way to address this is to always
-download the room key bundle on invite, but as MSC4268 notes, this introduces a potential
-denial-of-service (DoS) attack vector.
-
-If the client does not receive the keys needed to decrypt state events, the room may become
-unusable, as information such as the room's name, topic, avatar, and other metadata will be
-inaccessible. Additionally, if there are state events sent both before and after state encryption is
-enabled, existing clients might display the unencrypted, outdated state.
-
-Encrypting certain state events would prevent servers from displaying meaningful information about
-rooms, as the room directory relies on being able to read these events. Rooms with encrypted
-metadata could either appear as blank, generic, or broken entries in the public room list, or could
-be omitted entirely, impeding room discovery. A similar issue arises with the space room list: if
-room metadata is encrypted, clients and servers will be unable to display meaningful information
-about child rooms within a space. It may be necessary to introduce an unencrypted state event,
-`m.space.child_info`, that stores plaintext copies of a child room's avatar, name, and topic, which
-can then be used over the encrypted metadata.
 
 The `:` delimiter may not be suitable in all cases. Additionally, string packing introduces size
 limitations, as the combined length of the packed string cannot exceed the 255-byte maximum for a
