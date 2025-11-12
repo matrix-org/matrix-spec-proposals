@@ -178,7 +178,8 @@ the feature, or what migration steps are needed to switch to newer versions of t
 
 ## Dependencies
 
-This MSC builds on
-[MSC3414](https://github.com/matrix-org/matrix-spec-propsals/tree/main/proposals/3414-encrypted-state-events.md)
-and depends on [MSC4268](https://github.com/matrix-org/matrix-spec-proposals/pull/4268), neither of
-which have been accepted into the spec at the time of writing.
+This proposal is a more limited alternative to
+[MSC3414](https://github.com/matrix-org/matrix-spec-propsals/tree/main/proposals/3414-encrypted-state-events.md).
+
+The limitations of this proposal are improved somewhat if
+[MSC4268](https://github.com/matrix-org/matrix-spec-proposals/pull/4268) is available.
