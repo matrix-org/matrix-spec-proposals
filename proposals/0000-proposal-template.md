@@ -87,7 +87,7 @@ idea.
 
 **All proposals must now have this section, even if it is to say there are no security issues.**
 
-*Think about how to attack your proposal. See [RFC3552](https://datatracker.ietf.org/doc/html/rfc3552)
+*Think about how to attack your proposal. See [RFC 3552](https://datatracker.ietf.org/doc/html/rfc3552)
 for things to think about, but in particular pay attention to lists from sources like
 [OWASP Top Ten](https://owasp.org/www-project-top-ten/) for inspiration.*
 
