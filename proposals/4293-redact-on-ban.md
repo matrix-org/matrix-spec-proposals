@@ -57,7 +57,7 @@ redactions" to ensure the room is cleaned up, though those senders can begin to 
 as best effort (currently, moderation bots in particular work incredibly hard to ensure they get *every*
 event redacted, but can run into delivery, reliability, and completeness issues with 1:1 redactions).
 
-It's also important to note that this proposal intends to compliment mass redactions and coexist in
+It's also important to note that this proposal intends to complement mass redactions and coexist in
 whatever room version mass redactions land in. This proposal has narrow scope and is fairly blunt as
 a measure, which may not be desirable in all situations. For example, only a user's last dozen or so
 messages may be worth redacting rather than the hundreds they sent prior to the ones which got them
