@@ -172,8 +172,9 @@ This section should be used to document things such as what endpoints and names 
 the feature is in development, the name of the unstable feature flag to use to detect support for
 the feature, or what migration steps are needed to switch to newer versions of the proposal._-->
 
-The current implementation uses an `io.element` vendor prefix for the `encrypt_state_events` flag
-(i.e. `io.element.msc3414.encrypt_state_events`) for compatibility.
+| Name | Stable prefix | Unstable prefix |
+| - | - | - |
+| Property in `m.room.encryption` event | `encrypt_state_events` | `io.element.msc4362.encrypt_state_events` |
 
 ## Dependencies
 
