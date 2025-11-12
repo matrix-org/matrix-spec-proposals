@@ -76,6 +76,122 @@ This MSC relies on the room key sharing mechanism outlined in
 [MSC4268](https://github.com/matrix-org/matrix-spec-proposals/pull/4268), which enables clients to
 decrypt historical state events.
 
+## Worked examples
+
+### Enabling state event encryption
+
+To enable state event encryption in a room, clients must include the `encrypt_state_events` flag set
+to `true` in the `content` of the `m.room.encryption` state event:
+
+```json
+{
+  "room_id": "!room:example.org",
+  "type": "m.room.encryption",
+  "state_key": "",
+  "content": {
+    "algorithm": "m.megolm.v1.aes-sha2",
+    "encrypt_state_events": true
+  }
+}
+```
+
+Once this event is present in the room state, clients that support encrypted state events will begin
+encrypting eligible state events according to this proposal, and will also attempt to decrypt any
+encrypted state events they receive. Clients that do not support this feature will continue to send
+and interpret state events unencrypted.
+
+### Sending an encrypted state event
+
+To encrypt an `m.room.name` state event, the client first constructs the "packed state key" by
+concatenating the event type and the state key, separated by a colon (`:`), following the template
+`<event_type>:<state_key>`. For `m.room.name` events, the `state_key` is typically an empty string,
+so the packed state key becomes `m.room.name:`.
+
+Next, the client prepares the plaintext payload to be encrypted. This payload contains the original
+event content and state key:
+
+```json
+{
+  "room_id": "!room:example.org",
+  "type": "m.room.name",
+  "state_key": "",
+  "content": {
+    "name": "Example"
+  }
+}
+```
+
+The client then encrypts this payload using the room's group encryption session (e.g., Megolm),
+producing an encrypted payload. The resulting state event that is sent to the server has:
+
+- The `type` field set to `m.room.encrypted`
+- The `state_key` field set to the packed state key (`m.room.name:` in this example)
+- The `content` field containing the encrypted payload, structured as in a normal encrypted message
+
+The final event sent to the room looks like this:
+
+```json
+{
+  "room_id": "!room:example.org",
+  "type": "m.room.encrypted",
+  "state_key": "m.room.name:",
+  "content": {
+    "algorithm": "m.megolm.v1.aes-sha2",
+    "ciphertext": "<encrypted_payload_base_64>",
+    "device_id": "<sender_device_id>",
+    "sender_key": "<sender_curve25519_key>",
+    "session_id": "<outbound_group_session_id>"
+  }
+}
+```
+
+Clients receiving this event will use the packed state key to determine which state event it
+represents, decrypt the payload, and verify that the decrypted `type` and `state_key` match the
+packed state key.
+
+### Reception and packed state key validation
+
+Suppose a client receives the following encrypted state event:
+
+```json
+{
+  "room_id": "!room:example.org",
+  "type": "m.room.encrypted",
+  "state_key": "m.room.topic:",
+  "content": {
+    "algorithm": "m.megolm.v1.aes-sha2",
+    "ciphertext": "<encrypted_payload_base_64>",
+    "device_id": "<sender_device_id>",
+    "sender_key": "<sender_curve25519_key>",
+    "session_id": "<outbound_group_session_id>"
+  }
+}
+```
+
+After decryption, the client obtains the following plaintext:
+
+```json
+{
+  "room_id": "!room:example.org",
+  "type": "m.room.topic",
+  "state_key": "",
+  "content": {
+    "topic": "Encrypted topics are cool!"
+  }
+}
+```
+
+The client must validate the following:
+
+- The outer event's `state_key` must be present if and only if the inner (decrypted) event's
+  `state_key` is present. That is, both should either be present or both absent.
+- The outer event's `state_key` must be able to be split into a `(type, state_key)` pair using the
+  `type:state_key` format (for example, `("m.room.topic", "")` in this case).
+- The `(type, state_key)` pair obtained from unpacking the outer event's `state_key` must exactly
+  match the `type` and `state_key` fields found in the decrypted (inner) event.
+
+If any of these checks fail, the event should be considered invalid and ignored.
+
 ## Limitations
 
 ### Room names and topics are not visible from outside
@@ -172,8 +288,8 @@ This section should be used to document things such as what endpoints and names 
 the feature is in development, the name of the unstable feature flag to use to detect support for
 the feature, or what migration steps are needed to switch to newer versions of the proposal._-->
 
-| Name | Stable name | Unstable name |
-| - | - | - |
+| Name                                  | Stable name            | Unstable name                             |
+| ------------------------------------- | ---------------------- | ----------------------------------------- |
 | Property in `m.room.encryption` event | `encrypt_state_events` | `io.element.msc4362.encrypt_state_events` |
 
 ## Dependencies
