@@ -54,7 +54,10 @@ leading to significantly different UX across clients.
 ## Alternatives
 
 Further metadata such as the concrete access time or the room could be tracked together with emoji.
-It is unclear, however, if this would lead to materially better suggestions.
+It is unclear, however, if this would lead to materially better suggestions. A last-used timestamp
+could also be used to cull emoji that haven't been used in a very long time. Given that implementations
+are already encouraged to limit the maximum number of tracked emoji, this doesn't appear necessary,
+however.
 
 ## Security considerations
 
