@@ -61,7 +61,9 @@ An encrypted state event looks very similar to a regular encrypted room message:
 `m.room.encrypted` and the `content` is the same shape as a regular `m.room.encrypted` event. The
 `state_key` for encrypted state events is constructed from the plaintext `type` and `state_key`
 fields, formatted as `{type}:{state_key}`, preserving the uniqueness of the `type`-`state_key`
-mapping required for the server to perform state resolution.
+mapping required for the server to perform state resolution. In rooms where both encrypted and
+unencrypted versions of the same state event exist (that is, for the same `(type, state_key)` pair),
+clients **must** use the encrypted version and ignore the unencrypted one.
 
 To track whether a room has state encryption enabled, and to preserve compatibility with older
 clients that cannot work with encrypted state events, a new boolean field `encrypt_state_events` is
@@ -104,8 +106,8 @@ and interpret state events unencrypted.
 
 To encrypt an `m.room.name` state event, the client first constructs the "packed state key" by
 concatenating the event type and the state key, separated by a colon (`:`), following the template
-`<event_type>:<state_key>`. For `m.room.name` events, the `state_key` is typically an empty string,
-so the packed state key becomes `m.room.name:`.
+`<type>:<state_key>`. For `m.room.name` events, the `state_key` is typically an empty string, so the
+packed state key becomes `m.room.name:`.
 
 Next, the client prepares the plaintext payload to be encrypted. This payload contains the original
 event content and state key:
