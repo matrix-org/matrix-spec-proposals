@@ -55,8 +55,8 @@ A single key, `locked`, with a boolean indicating if the target account is locke
 
 ### New capability definition
 
-The server can advertise that these new endpoints are available for the authenticated user
-to actively use by including the following new capability:
+The server should advertise that these new endpoints are available for the authenticated user
+to use by including the following new capability:
 
 ```json5
 {
@@ -132,7 +132,7 @@ moderation bots, assuming those tools are not also server administrators.
 | Stable | Unstable |
 | ------ | -------- |
 | `/_matrix/client/v1/admin/...` | `/_matrix/client/unstable/uk.timedout.msc4323/admin/...` |
-| `account_moderation` | `uk.timedout.msc4323` |
+| `m.account_moderation` | `uk.timedout.msc4323` |
 
 `locked` and `suspended` in the request/response bodies do not require an unstable prefix
 as the entire body is new.
