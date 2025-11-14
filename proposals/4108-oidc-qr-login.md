@@ -437,8 +437,8 @@ an additional type can then be allocated which would clearly distinguish this la
 #### Example for QR code generated on new device
 
 A full example for a new device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
-encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
-`matrix.org` is as follows:
+encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver with base URL
+`https://matrix-client.matrix.org` is as follows:
 (Whitespace is for readability only)
 
 ```
@@ -447,8 +447,8 @@ encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on home
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67
+00 20
+68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67
 ```
 
 Which looks as follows as a QR with error correction level Q:
@@ -460,15 +460,16 @@ nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-intent00.png'
+00 20
+68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-intent00.png'
 -->
 ![Example QR for intent 0x00](images/4108-qr-intent00.png)
 
 #### Example for QR code generated on existing device
 
 A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
-encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver`matrix.org` is as follows: (Whitespace is for readability only)
+encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver with base URL
+`https://matrix-client.matrix.org` is as follows: (Whitespace is for readability only)
 
 ```
 4D 41 54 52 49 58
@@ -476,8 +477,8 @@ encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on hom
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67
+00 20
+68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67
 ```
 
 Which looks as follows as a QR with error correction level Q:
@@ -489,8 +490,8 @@ nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-intent01.png'
+00 20
+68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-intent01.png'
 -->
 ![Example QR for intent 0x01](images/4108-qr-intent01.png)
 
@@ -1709,7 +1710,7 @@ key `io.element.msc4108` set to true. So, the response could look then as follow
 The unstable value of `IO_ELEMENT_MSC4108` should be used instead of `MATRIX` in the QR code.
 
 A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
-encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver `matrix.org` is as follows: (Whitespace is for readability only)
+encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver `https://matrix-client.matrix.org` is as follows: (Whitespace is for readability only)
 
 ```
 49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 31 30 38
@@ -1717,8 +1718,8 @@ encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on hom
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67
+00 20
+68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67
 ```
 
 Which looks as follows as a QR with error correction level Q:
@@ -1730,8 +1731,8 @@ nix-shell -p qrencode --run 'echo "49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-intent01-unstable.png'
+00 20
+68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-intent01-unstable.png'
 -->
 ![Example QR for intent 0x01](images/4108-qr-intent01-unstable.png)
 
