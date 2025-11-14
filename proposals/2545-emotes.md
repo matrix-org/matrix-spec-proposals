@@ -76,7 +76,7 @@ property with an empty string for an image pack's `state_key`.
 
 `m.image_pack` state events contain the following keys within their `content`:
 
-* `images`: **Required, Map[String, Object]**. A map from a shortcode to an [Image Object](#image-object).
+* `images`: **Required, Map[String, Object]**. A map from a shortcode ([grammar](#shortcode-grammar)) to an [Image Object](#image-object).
 * `pack` **Optional, Object**. A [Pack Object](#pack-object).
 
 ```jsonc
