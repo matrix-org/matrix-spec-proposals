@@ -351,12 +351,18 @@ displaying emote shortcodes and others leaving it in, the `:` character is
 barred from the shortcode grammar. This is in attempt to standardise `:` as the
 delimiter character for shortcodes.
 
+Similarly, the `/` character MUST NOT be included in the emote shortcode. This
+character may be used by clients to deliminate between shortcode and image pack
+when designing auto-completion UI in the message field (i.e. `:some_emote/my_pack_slug:`)
+
 In addition, the space character is not allowed. This helps avoid common
 usability paper-cuts (multiple spaces between words, spaces at the beginning/end
-of a shortcode). Shortcodes containing multiple words are encouraged to use alterantive separators like hyphens or underscores.
+of a shortcode). Shortcodes containing multiple words are encouraged to use alterantive separators like hyphens (`-`) or underscores (`_`).
 
 Specifically, the `U+0020` character (normal space) is disallowed. There are
-multiple other byte sequences associated with spaces in Unicode.
+multiple other byte sequences associated with spaces in Unicode, but as this is
+only intended to eliminate a common foot gun, more esoteric space characters are
+not considered.
 
 Any other character is explicitly allowed. This allows shortcodes containing
 non-Latin characters for communities of those languages, and ensures
@@ -430,16 +436,23 @@ non-square emotes.
 ##### Client suggestions
 
 A client could use the `:` delimiter to signify that the user wants to send an
-emote. So, if the user enters `:emote:` in a message, the client could replace
-that text with the corresponding emote based on the shortcode. Likewise, typing
-`:` and then a character could initiate a search action through available
-emotes.
+emote. Typing `:` and then a character could initiate a search action through
+available emotes.
 
-If there are multiple emotes with the same shortcode available, the client could
-for example slugify the containing pack's display name and prepend it to each
-emote's shortcode with a separator character (i.e. `~`). For instance, the user
-could enter `:my-pack~emote:` to select an image with shortcode `emote` in the
-pack `my pack`.
+If there are multiple emotes with the same shortcode available (from multiple
+packs), the client could slugify the containing pack's display name and append
+it to each emote's shortcode, using a `/` to separate shortcode and image pack
+. For instance, the user could enter `:my_emo/my_pack_na:` to quickly surface an
+image with shortcode `my_emote` in the pack `My Pack Name!`.
+
+It's important to note that image pack names aren't globally unique either, so
+even `:my-pack:emote:` could refer to multiple possible emotes. Thus, it is not
+recommended to add a feature to clients to try and automatically translate
+`:shortcode:` or `:image-pack-name:shortcode:` in the message field to a
+specific emote.
+
+A "search modal" or other UI that allows the user to tie-break is the approach
+recommended by this proposal.
 
 #### Stickers
 
