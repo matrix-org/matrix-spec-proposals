@@ -336,7 +336,9 @@ based on user preferences.
 
 ### Shortcode grammar
 
-A shortcode's length MUST not exceed 100 bytes. This restriction MUST be
+A shortcode's length MUST not exceed 100 bytes. This is to prevent a
+sufficiently long shortcode from being impossible to insert into subsequent events
+due to exceeding the event limit (e.g. emoji reactions). This restriction MUST be
 enforced by servers when sending reactions, but servers MUST NOT reject events
 coming across federation due to having too many bytes in the shortcode field.
 This avoids a split-brain in the room. Servers MAY opt to locally redact events
