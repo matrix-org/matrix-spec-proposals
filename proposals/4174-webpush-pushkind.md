@@ -1,15 +1,14 @@
 # MSC4174: Web Push pusher kind
 
-As stated in [MSC3013](https://github.com/matrix-org/matrix-spec-proposals/pull/3013), a first MSC about push notification encryption, that the present MSC is to replace:
+This MSC supersedes and replaces [MSC3013](https://github.com/matrix-org/matrix-spec-proposals/pull/3013), which introduced push notification encryption first.```
 
-Push notifications have the problem that they typically go through third-party push providers in order to be delivered,
-e.g. FCM (Google) or APNs (Apple) and a push gateway (sygnal). In order to prevent these push providers and
-push gateways from being able to read any sensitive information the `event_id_only` format was introduced, which only
-pushes the `event_id` and `room_id` of an event down the push. After receiving the push message the client can hit the
-`GET /_matrix/client/r0/rooms/{roomId}/event/{eventId}` to fetch the full event, and then create the notification based
+Push notifications typically go through third-party push providers in order to be delivered: 1) a push gateway (sygnal) and
+2) e.g. FCM (Google) or APNs (Apple). In order to prevent these push providers and
+push gateways from being able to read any sensitive information, the `event_id_only` format was introduced, where the push content only contains the `event_id` and `room_id` of an event. After receiving the push message the client uses
+`GET /_matrix/client/r0/rooms/{roomId}/event/{eventId}` to fetch the full event itself, and creates the notification based
 on that.
 
-Even the `event_id_only` leaks some metadata that can be avoided.
+Leaking the room and event id to third parties is problematic and can be avoided.
 
 Today, web clients supporting push notifications (eg. hydrogen) needs to use a matrix to webpush gateway. This requires
 going over the specifications, because they use `endpoint`, and `auth` in the `PusherData` (hydrogen [[1]], sygnal [[2]]),
@@ -19,9 +18,9 @@ while the specifications let understand that only `url` and `format` are allowed
 Web Push is a standard for (E2EE) push notifications, defined with RFC8030+RFC8291+RFC8292 [[4]][[5]][[6]]: many libraries
 are already available and robuste: they are reviewed, and acknowledge by experts.
 
-Having a webpush push kind would provide push notifications without gateway to
+Extending the push kind to `POST /_matrix/client/v3/pushers/set` to a `*webpush*` would provide encrypted push notifications without the need for an external gateway to
 - Web app and desktop app
-- Android apps using UnifiedPush (MSC2970 was open for this and won't be required anymore)
+- Android apps using [UnifiedPush](https://codeberg.org/UnifiedPush/specifications/src/branch/main/specifications/android.md#resources). This MSC would make [MSC2970]((https://github.com/matrix-org/matrix-spec-proposals/pull/2970) redundant.
 - Android apps using FCM (It is possible to push to FCM with webpush standard [[7]])
 - Maybe other ? We have seen apple moving a lot into web push support [[8]]
 
@@ -42,7 +41,7 @@ notifications in to Push Gateways. The details about what fields the homeserver 
 are defined in the Push Gateway Specification. Currently the only format available is ’event_id_only'.
 - `url`: Required if `kind` is `http`, not used else. The URL to use to send notifications to. MUST be an
 HTTPS URL with a path of /_matrix/push/v1/notify
-- `endpoint`: Required if `kind` is `webpush`, not used else. The URL to send notification to, as defined as a
+- `endpoint`: Required if `kind` is `webpush`, not used otherwise. The URL to send the notification to, as defined as a
 `push resource` by RFC8030. MUST be an HTTPS URL.
 - `auth`: Required if `kind` is `webpush`, not used else. The authentication secret. This is 16 random bytes
 encoded in base64 url.
@@ -101,9 +100,9 @@ not register another `http` pusher to avoid duplicate pushes.
 
 ## Potential issues
 
-While implemnting, one have to be carreful with RFC8291: many libraries use the 4th draft of this spec. Checking the
-Content-Encoding header is a good way to know if it the correct version. If the value is `aes128gcm`, then it uses
-the right specifications, else (`aesgcm`), then it uses the draft version.
+Many libraries only implement the 4th draft of [RFC8291](https://datatracker.ietf.org/doc/html/draft-ietf-webpush-encryption-04) from October 2016, rather than the final version of [RFC8291](https://datatracker.ietf.org/doc/html/rfc8291) from November 2017. Thus, some care needs to be taken during implementation. Checking the
+Content-Encoding header is a good way to check for the correct version. If the value is `aes128gcm`, then it uses
+the right specifications, in case of  `aesgcm` it uses the draft version.
 
 ## Alternatives
 
@@ -122,8 +121,8 @@ RFC8292 (VAPID).
 Like any other federation request, there is a risk of SSRF. This risk is limited since the post data isn't
 arbitrary (the content is encrypted), and a potential malicious actor don't have access to the response.
 Nevertheless, it is recommended to not post to private addresses, with the possibility with a setting to
-whitelist a private IP. (Synapse already have ip_range_whitelist [[10]])
-It is also recommended to not follow redirection, to avoid implementation issue where the destination is check
+whitelist a private IP. (Synapse already implements `ip_range_whitelist` [[10]])
+It is also recommended to not follow redirection, to avoid implementation issue where the destination is checked
 before sending the request but not for redirections.
 
 Like any other federation request, there is a risk of DOS amplification. One malicious actor register many users
