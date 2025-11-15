@@ -12,8 +12,8 @@ Leaking the room and event id to third parties is problematic and can be avoided
 
 Today, web clients supporting push notifications (eg. hydrogen) needs to use a matrix to webpush gateway. This requires
 going over the specifications, because they use `endpoint`, and `auth` in the `PusherData` (hydrogen [[1]], sygnal [[2]]),
-while the specifications let understand that only `url` and `format` are allowed [[3]].
-=> __PusherData already need to be updated__ to add `auth` and `endpoint`.
+while the current specifications let understand that only `url` and `format` are allowed [[3]].
+The specifications already need to be adapted to follow what the web clients do.
 
 Web Push is a standard for (E2EE) push notifications, defined with RFC8030+RFC8291+RFC8292 [[4]][[5]][[6]]: many libraries
 are already available and robuste: they are reviewed, and acknowledge by experts.
@@ -35,27 +35,21 @@ Extending the push kind to `POST /_matrix/client/v3/pushers/set` to a `*webpush*
 
 ## Proposal
 
-`PusherData` fields are now define as follow:
-- `format`: Required if `kind` is `http` or `webpush`, not used if `kind` is `email`. The format to send
-notifications in to Push Gateways. The details about what fields the homeserver should send to the push gateway
-are defined in the Push Gateway Specification. Currently the only format available is ’event_id_only'.
-- `url`: Required if `kind` is `http`, not used else. The URL to use to send notifications to. MUST be an
-HTTPS URL with a path of /_matrix/push/v1/notify
-- `endpoint`: Required if `kind` is `webpush`, not used otherwise. The URL to send the notification to, as defined as a
+The MSC introduces a new push kind: webpush.
+
+`PusherData` is extended as as follow:
+- `format`: is updated to be required if `kind` is `http` or `webpush`
+- `url`: is updated to be required if `kind` is `http`, not used otherwise (to clarify this isn't used with pushkind).
+- `endpoint`: is introduced, required if `kind` is `webpush`, not used otherwise. The URL to send the notification to, as defined as a
 `push resource` by RFC8030. MUST be an HTTPS URL.
-- `auth`: Required if `kind` is `webpush`, not used else. The authentication secret. This is 16 random bytes
+- `auth`: is introduced, required if `kind` is `webpush`, not used else. The authentication secret. This is 16 random bytes
 encoded in base64 url.
 
-The POST request to the endpoint dedicated to the creation, modification and deletin of pushers,
+The POST request to the endpoint dedicated to the creation, modification and deletion of pushers,
 `POST /_matrix/client/v3/pushers/set` now supports a new `kind`: `webpush`.
-- `kind`: Required: The `kind` of pusher to configure. `http` makes a pusher that sends HTTP pokes. `webpush` makes a
-pusher that sends Web Push encrypted messages. `email` makes a pusher that emails the user with unread notifications.
-`null` deletes the pusher.
-- `pushkey`: Required: This is a unique identifier for this pusher. The value you should use for this is the routing
-or destination address information for the notification, for example, the APNS token for APNS or the Registration ID
-for GCM. If your notification client has no such concept, use any unique identifier. Max length, 512 bytes.
-If the `kind` is "email", this is the email address to send notifications to.
-If the `kind` is `webpush`, this is the user agent public key encoded in base64 url. The public key comes from a ECDH
+- `kind`: is updated to introduce `webpush` which makes a
+pusher that sends Web Push encrypted messages.
+- `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key in the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf), section 2.3.3, replicated from X9.62), encoded in base64 url. The public key comes from a ECDH
 keypair using the P-256 (prime256v1, cf. FIPS186) curve.
 
 If the request creates a new pusher or modify the `pushkey`, the `PusherData.endpoint`, or the `PusherData.auth`, then
@@ -70,7 +64,7 @@ the `app_id` and a `ack_token`, a UUIDv4 token in the hyphen form, valid for 5 m
 }
 ```
 
-A new endpoint is dedicated to pusher validation:
+A new endpoint is introduced, dedicated to pusher validation:
 - POST `/_matrix/client/v3/pushers/ack`
 - Rate limited: No, Requires authentication: Yes
 - The request contains the `app_id` and `ack_token` parameters, received with the push notification.
@@ -86,6 +80,8 @@ The Pusher Data get a new optional field, `activated`, a boolean which is false 
 A VAPID (Voluntary Application Server Identification, cf RFC8292) is often needed to be able to register with a push
 server.
 It is proposed to add a `m.webpush` capability to the `/capabilities` endpoint with this format:
+
+The VAPID public key is in the uncompressed form, base64url encoded.
 
 ```
 "m.webpush": {
