@@ -1,4 +1,4 @@
-# MSC4174: Web Push pusher kind
+# MSC4174: Web push
 
 This MSC supersedes and replaces [MSC3013](https://github.com/matrix-org/matrix-spec-proposals/pull/3013), which introduced push notification encryption first.```
 
