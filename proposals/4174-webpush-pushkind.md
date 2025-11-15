@@ -39,7 +39,7 @@ The MSC introduces a new push kind: webpush.
 
 `PusherData` is extended as as follow:
 - `format`: is updated to be required if `kind` is `http` or `webpush`
-- `url`: is updated to be required if `kind` is `http`, not used otherwise (to clarify this isn't used with pushkind).
+- `url`: is updated to be required if `kind` is `http`, not used otherwise (to clarify this isn't used with webpush).
 - `endpoint`: is introduced, required if `kind` is `webpush`, not used otherwise. The URL to send the notification to, as defined as a
 `push resource` by RFC8030. MUST be an HTTPS URL.
 - `auth`: is introduced, required if `kind` is `webpush`, not used else. The authentication secret. This is 16 random bytes
