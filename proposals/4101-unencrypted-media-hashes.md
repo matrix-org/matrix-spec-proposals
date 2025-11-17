@@ -33,7 +33,7 @@ A typical flow for unencrypted media being sent in a room looks like this:
      |                           |               /download |                |
      |                           |<------------------------|                |
      |                           |                         |                |
-     |                           | bytes                   |                |
+     |                           | info+bytes              |                |
      |                           |------------------------>|                |
      |                           |                         |                |
      |                           |                         | bytes          |
@@ -50,14 +50,14 @@ Origin->Remote: /send (federation)
 Remote->ClientB: /sync
 ClientB->Remote: /download
 Remote->Origin: /download
-Origin->Remote: bytes
+Origin->Remote: info+bytes
 Remote->ClientB: bytes
 -->
 
 For encrypted rooms, the media is encrypted before being uploaded, and the decryption key material is
 further encrypted before `/send`ing an event to the origin server. The (encrypted) `file` information
 includes a sha256 hash of the *encrypted* blob that was uploaded to the server, described by
-[`EncryptedFile`](https://spec.matrix.org/v1.9/client-server-api/#sending-encrypted-attachments).
+[`EncryptedFile`](https://spec.matrix.org/v1.16/client-server-api/#sending-encrypted-attachments).
 
 Because the hash is encrypted by the sending client, the server is unable to meaningfully change the
 content of that file. Any difference in the encrypted blob would result in a mismatched hash, which
@@ -77,9 +77,14 @@ is authenticated by the hash present in the DAG.
 
 ## Proposal
 
-Similar to the `EncryptedFile` schema, a new `hashes` field is introduced to `m.room.message` events
-containing file/media references, including the thumbnail if present. An example image message would
-be:
+Similar to `EncryptedFile`'s schema, a new `hashes` field is introduced under `(thumbnail_)info` in
+`m.room.message` events containing files. Note that `EncryptedFile` places `hashes` under a `(thumbnail_)file`
+field instead of `info` - this proposal intentionally avoids using `file` to avoid confusing clients
+into thinking they're looking at encrypted media when it is in fact unencrypted. Future proposals,
+like [MSC3551](https://github.com/matrix-org/matrix-spec-proposals/pull/3551) under Extensible Events,
+may address this inconsistency.
+
+An example would be:
 
 ```jsonc
 {
@@ -111,52 +116,65 @@ be:
 }
 ```
 
-Similar to encrypted files, the sha256 hash is encoded using [Unpadded Base64](https://spec.matrix.org/v1.9/appendices/#unpadded-base64)
-and covers the blob uploaded to the homeserver. Unlike `EncryptedFile` though, we place the hashes
-inside the `[thumbnail_]info` object rather than the non-existent `file` object. This existing
-inconsistency is expected to be resolved by future MSCs, such as [MSC3551](https://github.com/matrix-org/matrix-spec-proposals/pull/3551)
-for Extensible Events.
+`hashes` is optional but *strongly recommended*. Exactly like encrypted files, it is an object of
+algorithm(s) to hash value, where the value is encoded using [unpadded base64](https://spec.matrix.org/v1.16/appendices/#unpadded-base64).
+At a minimum, clients SHOULD support the SHA-256 hash, which uses the key `sha256` (exactly like
+encrypted files).
 
-`hashes` is optional, but when supplied *must* contain `sha256` at a minimum. When using `EncryptedFile`,
-the `hashes` object described by this MSC serves no purpose and *must* be ignored by clients (if present).
-
-Clients *should* verify the hash when downloading the media, and refuse to render/offer to save the
-media when the hash is mismatched, or when `hashes` is malformed. In future, [`GET /download`](https://spec.matrix.org/v1.9/client-server-api/#get_matrixmediav3downloadservernamemediaid)
-could be expanded to take a sha256 parameter to avoid "wasting" the client's bandwidth, however many
-implementations already stream the media from origin to local clients while concurrently caching for
-future requests.
+When `hashes` is present, clients SHOULD verify the hash when downloading the media. If the hash differs,
+or the `hashes` object is malformed, the client SHOULD refuse to render the media to the user. A future
+proposal may alter the [`GET /download`](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv1mediadownloadservernamemediaid)
+endpoint to include a hash value, allowing the server to take on the comparison. Though, this is not
+done for encrypted media today, so may be a non-issue.
 
 ## Potential issues
 
-Several issues with this proposal are discussed in the security considerations section.
+There are drawbacks to this proposal which are discussed in the Security Considerations section. The
+notes within the proposal text about lack of consistency with encrypted files are relevant, but not
+duplicated here.
 
 ## Alternatives
 
-No alternatives identified.
+* Making media IDs be hashes instead of randomly generated IDs. This has value in deduplicating media,
+  but causes issues in a world with linked media or copyright concerns. The author of this proposal
+  expands upon these concerns in commentary on [MSC3468](https://github.com/matrix-org/matrix-spec-proposals/pull/3468)
+  (written by a different author).
 
 ## Security considerations
 
-This proposal increases security when an entity is attempting to tie a media blob to the DAG, but is
-still vulnerable to a replacement attack during the original upload and sending process. Because the
-hashes and media itself are not protected by a meaningful form of encryption, the origin server is
-still capable of replacing the media blob and intercepting the client's event send request to change
-the hash to match the malicious blob. Some clients will detect that their event changed when submitted
-to the homeserver, though most will not.
+Prior to this proposal, the server receiving the event or the origin server could serve different
+media to different users without the users knowing. This proposal fixes a trivial version of this
+attack, but does not solve the situation where either of those servers go a step further to modify
+or replace the hashes before serving the event to the clients. For example, a receiving server could
+strip the hashes off the event to 'trick' the client into downloading unverifiable media because clients
+do not typically receive or verify the full PDU format for events.
 
-Similarly, a local (remote) server could change the presented hash in an event before sending it down
-to clients. Clients will believe these changes in most cases because they do not have the capability
-to validate the DAG itself.
+This proposal does not intend to resolve this concern. Instead, the following may be used to mitigate
+the concerns:
 
-This proposal does *not* attempt to fix either tampering issue for unencrypted media. Encrypting events
-(and thus media) already solves these issues. Instead, this proposal ties a blob to the DAG itself,
-allowing entities processing that DAG to authenticate the media accordingly. This may be useful in
-cases where a well-behaved remote server is attempting to prove that a user did in fact receive a
-corrupt or maliciously modified file, or when a server is counting references to media before purging
-it from a local cache.
+1. [MSC2757](https://github.com/matrix-org/matrix-spec-proposals/pull/2757) may be used to have clients
+   sign (unencrypted) events, preventing tampering with the contained hashes and other details. This
+   would also fix other tampering concerns with events.
 
-(Servers which use reference counters should note that encrypted events can reference *unencrypted*
-media as well, so should take care to not delete media they may not be able to re-request when a
-client requests it.)
+2. Some time after this proposal is merged to the specification, clients may *require* hashes be present
+   otherwise they fail to download the media entirely. This is still subject to issues where the server
+   modifies rather than strips the hashes, but at least increases attack complexity in the process.
+
+   This choice may cause subpar user experience for users which regularly receive media from clients
+   that do not support hashes. As such, it is left as a deliberate implementation detail for when/how
+   to require hashes on received media. If a client chooses to require hashes, this proposal recommends
+   doing so no sooner than 3 months after the spec release containing this proposal.
+
+3. At a room level, communities may invoke the above option 2 through use of [MSC4284](https://github.com/matrix-org/matrix-spec-proposals/pull/4284)
+   Policy Servers. By receiving the full PDU format, policy servers can ensure that at least the
+   event which leaves the origin server contains unmodified media hashes, but cannot detect or prevent
+   situations where the origin server has modified the event between the client sending it and the
+   policy server validating it. Policy servers additionally cannot prevent or detect servers modifying
+   events before they are sent to local users, as identified by [MSC2757](https://github.com/matrix-org/matrix-spec-proposals/pull/2757).
+
+   Policy servers can similarly be used to enforce MSC2757 mechanics, if desired by the community.
+
+A combination of the above options may also be deployed for higher coverage of the attack space.
 
 ## Unstable prefix
 
@@ -169,4 +187,5 @@ This MSC has no dependencies, but does interact with MSCs which link events to m
 [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911) may have increased security
 if intermediate servers can verify not only that a user has access to the specific blob URI, but also
 that the blob tied to that event is exactly what was sent. Further iteration may be required to support
-encrypted media meaningfully in this scenario.
+encrypted media meaningfully in this scenario. Likewise, [MSC2757](https://github.com/matrix-org/matrix-spec-proposals/pull/2757)
+will help this MSC become safer if it were to be merged, but is not a blocking dependency.
