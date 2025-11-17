@@ -34,7 +34,7 @@ way that Homeservers do.
 
 ## Proposal
 
-Throuhgout this proposal, $prefix will be used to refer to the prefix of the
+Throughout this proposal, $prefix will be used to refer to the prefix of the
 API in question, ie. `/_matrix/identity/v2` for the IS API and
 `/_matrix/integrations/v1` for the IM API.
 

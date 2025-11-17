@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Check spelling of proposals
-      uses: crate-ci/typos@9be36f97fdbe645ee9a12449fb13aca856c2516a
+      uses: crate-ci/typos@f2c1f08a7b3c1b96050cb786baaa2a94797bdb7d # v1.20.10
       with:
         config: ${{github.workspace}}/.github/_typos.toml
