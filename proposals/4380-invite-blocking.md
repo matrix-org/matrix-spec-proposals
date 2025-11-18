@@ -87,7 +87,10 @@ None.
 | Stable identifier | Purpose | Unstable identifier |
 | --- | --- | ---|
 | `m.invite_permission_config` | Account data type | `org.matrix.msc4380.invite_permission_config` |
-| `M_INVITE_BLOCKED` | Error code | `ORG.MATRIX.MSC4380.INVITE_BLOCKED` |
+| `M_INVITE_BLOCKED` | Error code | `ORG.MATRIX.MSC4155.INVITE_BLOCKED` |
+
+Note that, for compatibility reasons, the unstable identifier for the error
+code is the same as that from MSC4155.
 
 Servers may advertise support for the feature by listing `org.matrix.msc4380`
 in the `unstable_features` section of the response to [`GET
