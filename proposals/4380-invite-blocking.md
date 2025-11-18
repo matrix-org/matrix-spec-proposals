@@ -37,7 +37,7 @@ is invited:
    (for invite membership)
 
 Any rejected requests should result in an HTTP 403 status code, with the Matrix
-error code `M_INVITE_BLOCKED`.
+error code `M_INVITE_BLOCKED`. This is a new error code.
 
 In addition, existing events already in the database MUST NOT be served over client synchronisation endpoints such as
 [`GET
