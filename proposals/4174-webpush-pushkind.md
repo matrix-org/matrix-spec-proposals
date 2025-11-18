@@ -44,13 +44,13 @@ pusher that sends Web Push encrypted messages.
 keypair using the P-256 (prime256v1, cf. FIPS186) curve.
 
 If the request creates a new pusher or modify the `pushkey`, the `PusherData.endpoint`, or the `PusherData.auth`, then
-the server responde with a 201, "The pusher is set but needs to be activated". The Server send a push notification to the
+the server respond with a 201, "The pusher is set but needs to be activated". The Server send a push notification to the
 endpoint, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key with a message containing
 the `app_id` and a `ack_token`, a UUIDv4 token in the hyphen form, valid for 5 minutes:
 
 ```
 {
-	"app_id": "face.mcapp.appy.prod",
+	"app_id": "im.vector.app.android",
 	"ack_token": "6fc76b70-5fad-4eb7-93ea-a1af7a03258b"
 }
 ```
