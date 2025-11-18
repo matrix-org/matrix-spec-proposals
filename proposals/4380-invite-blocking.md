@@ -86,6 +86,17 @@ None.
 
 | Stable identifier | Purpose | Unstable identifier |
 | --- | --- | ---|
+| `m.invite_permission_config` | Account data type | `org.matrix.msc4380.invite_permission_config` |
+| `M_INVITE_BLOCKED` | Error code | `ORG.MATRIX.MSC4380.INVITE_BLOCKED` |
+
+Servers may advertise support for the feature by listing `org.matrix.msc4380`
+in the `unstable_features` section of the response to [`GET
+/_matrix/client/versions`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientversions).
+
+Once this proposal completes FCP, servers may advertise support for the
+*stable* identifiers by listing `org.matrix.msc4380.stable`
+in `unstable_features`; clients may use this while they are waiting for the
+server to adopt a version of the spec that includes it.
 
 ## Dependencies
 
