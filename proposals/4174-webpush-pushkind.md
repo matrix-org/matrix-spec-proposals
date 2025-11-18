@@ -18,7 +18,7 @@ The specifications already need to be adapted to follow what the web clients do.
 Web Push is a standard for (E2EE) push notifications, defined with RFC8030+RFC8291+RFC8292 [[4]][[5]][[6]]: many libraries
 are already available and robust: they are reviewed, and acknowledge by experts.
 
-Extending the push kind to `POST /_matrix/client/v3/pushers/set` to a `*webpush*` would provide encrypted push notifications without the need for an external gateway to
+Extending the push kind to [`POST /_matrix/client/v3/pushers/set`](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3pushersset) to a `*webpush*` would provide encrypted push notifications without the need for an external gateway to
 - Web app and desktop app
 - Android apps using [UnifiedPush](https://codeberg.org/UnifiedPush/specifications/src/branch/main/specifications/android.md#resources). This MSC would make [MSC2970]((https://github.com/matrix-org/matrix-spec-proposals/pull/2970) redundant.
 - Android apps using FCM (It is possible to push to FCM with webpush standard [[7]])
