@@ -85,6 +85,31 @@ It is also useful to decide if the client should register a pusher using `http` 
 Sygnal WebPush semantic. A client that supports this kind of pusher should use it if the server supports it too, and
 not register another `http` pusher to avoid duplicate pushes.
 
+## Overview with webpush
+
+```
+                                                +-------------------+
+                  Matrix HTTP                   |                   |
+             Notification Protocol              |   Device Vendor   |
+                                                |                   |
+           +-------------------+                | +---------------+ |
+           |                   |                | |               | |
+           | Matrix homeserver +--> Web Push +----> Push Server   | |
+           |                   |                | |               | |
+           +-^-----------------+                | +----+----------+ |
+             |                                  |      |            |
+    Matrix   |                                  |      |            |
+ Client/Server API  +                           |      |            |
+             |      |                           +-------------------+
+             |   +--+-+                                |
+             |   |    <--------------------------------+
+             +---+    |
+                 |    |          Provider Push Protocol
+                 +----+
+
+         Mobile Device or Client
+```
+
 ## Potential issues
 
 Many libraries only implement [I-D.ietf-webpush-encryption-04](https://datatracker.ietf.org/doc/html/draft-ietf-webpush-encryption-04) from October 2016, rather than the final version of [RFC8291](https://datatracker.ietf.org/doc/html/rfc8291) from November 2017. Thus, some care needs to be taken during implementation. Checking the
