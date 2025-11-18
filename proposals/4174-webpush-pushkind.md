@@ -16,7 +16,7 @@ while the current specifications let understand that only `url` and `format` are
 The specifications already need to be adapted to follow what the web clients do.
 
 Web Push is a standard for (E2EE) push notifications, defined with RFC8030+RFC8291+RFC8292 [[4]][[5]][[6]]: many libraries
-are already available and robuste: they are reviewed, and acknowledge by experts.
+are already available and robust: they are reviewed, and acknowledge by experts.
 
 Extending the push kind to `POST /_matrix/client/v3/pushers/set` to a `*webpush*` would provide encrypted push notifications without the need for an external gateway to
 - Web app and desktop app
@@ -68,7 +68,7 @@ A new endpoint is introduced, dedicated to pusher validation:
 - POST `/_matrix/client/v3/pushers/ack`
 - Rate limited: No, Requires authentication: Yes
 - The request contains the `app_id` and `ack_token` parameters, received with the push notification.
-- The response, with status code 200, contains the `app_id` and `status`, which can be one of the following valules:
+- The response, with status code 200, contains the `app_id` and `status`, which can be one of the following values:
     - "unknown_app_id" if no pusher with this app_id exists
 		- "expired" if this token for this app_id is expired
 		- "unknown_token" if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
@@ -119,12 +119,12 @@ arbitrary (the content is encrypted), and a potential malicious actor don't have
 Nevertheless, it is recommended to not post to private addresses, with the possibility with a setting to
 whitelist a private IP. (Synapse already implements `ip_range_whitelist` [[10]])
 It is also recommended to not follow redirection, to avoid implementation issue where the destination is checked
-before sending the request but not for redirections.
+before sending the request but not for redirection.
 
 Like any other federation request, there is a risk of DOS amplification. One malicious actor register many users
 to a valid endpoint, then change the DNS record and target another server, then notify all these users. This
 amplification is very limited since HTTPS is required and the TLS certificate of the target will be rejected. The
-request won't reach any functionnality of the targeted application. The home server can reject pusher if the response
+request won't reach any functionality of the targeted application. The home server can reject pusher if the response
 code is not one intended.
 
 [9]: https://www.rfc-editor.org/rfc/rfc8030#section-8
@@ -138,4 +138,3 @@ code is not one intended.
 ## Dependencies
 
 -
-
