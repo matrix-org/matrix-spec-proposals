@@ -96,7 +96,7 @@ not register another `http` pusher to avoid duplicate pushes.
 
 ## Potential issues
 
-Many libraries only implement the 4th draft of [RFC8291](https://datatracker.ietf.org/doc/html/draft-ietf-webpush-encryption-04) from October 2016, rather than the final version of [RFC8291](https://datatracker.ietf.org/doc/html/rfc8291) from November 2017. Thus, some care needs to be taken during implementation. Checking the
+Many libraries only implement [I-D.ietf-webpush-encryption-04](https://datatracker.ietf.org/doc/html/draft-ietf-webpush-encryption-04) from October 2016, rather than the final version of [RFC8291](https://datatracker.ietf.org/doc/html/rfc8291) from November 2017. Thus, some care needs to be taken during implementation. Checking the
 Content-Encoding header is a good way to check for the correct version. If the value is `aes128gcm`, then it uses
 the right specifications, in case of  `aesgcm` it uses the draft version.
 
