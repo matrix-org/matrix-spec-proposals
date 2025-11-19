@@ -17,6 +17,9 @@ complete and thus has possibly altered meaning.
 
 Specifically, over the last decade of Matrix, clients have repeatedly had issues with ordered lists.
 
+The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”,
+and “OPTIONAL” in this document are to be interpreted as described in
+[RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
 ## Proposal
 
