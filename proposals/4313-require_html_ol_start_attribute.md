@@ -51,7 +51,7 @@ This is a clear break in communication, since this message has an entirely diffe
 from Bob's intended meaning, but also as it is viewed from different client implementations.
 
 This MSC proposes to alter the spec such that a client implementing rendering of the `ol` HTML tag
-in `formatted_body`s is also required ("MUST") to implement its `start` attribute, in order to prevent
+in `formatted_body`s MUST also implement its `start` attribute, in order to prevent
 loss of meaning of a message.
 
 
