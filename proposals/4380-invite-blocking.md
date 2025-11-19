@@ -43,7 +43,7 @@ In addition, existing events already in the database MUST NOT be served over cli
 [`GET
 /_matrix/client/v3/sync`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync)
 or `/v4/sync` from
-[MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4158). Invite
+[MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186). Invite
 events received over federation should likewise not be served over `/sync` requests.
 
 Servers MAY return any suppressed invite events over `/sync` if invite
