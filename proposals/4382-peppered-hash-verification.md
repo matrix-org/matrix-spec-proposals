@@ -83,8 +83,8 @@ The threat model assumes honest-but-curious or malicious servers. A malicious se
 ## Unstable Prefix
 
 During development, implementations should use:
-- Field name: `org.matrix.msc####.verification_hash`
-- Client capability: `org.matrix.msc####.peppered_hash_verification`
+- Field name: `org.matrix.msc4382.verification_hash`
+- Client capability: `org.matrix.msc4382.peppered_hash_verification`
 
 ## Dependencies
 
