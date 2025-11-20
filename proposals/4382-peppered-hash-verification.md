@@ -62,7 +62,7 @@ The server never needs decryption keys or access to the encrypted content.
 
 ## Potential Issues
 
-**Backwards compatibility**: Existing clients don't send `verification_hash`. The field should be optional during transition, with servers falling back to social trust when absent. During the unstable period, use `org.matrix.msc####.verification_hash`.
+**Backwards compatibility**: Existing clients don't send `verification_hash`. The field should be optional during transition, with servers falling back to social trust when absent. During the unstable period, use `org.matrix.msc4382.verification_hash`.
 
 **Event size increase**: Adds 32 bytes per encrypted event (~10% overhead for typical messages). This is considered acceptable for the moderation benefit provided.
 
