@@ -41,16 +41,36 @@ Where:
 }
 ```
 
+### Report Endpoint Extension
+
+The content reporting endpoint is extended to include the plaintext event:
+
+```
+POST /_matrix/client/v3/rooms/{roomId}/report/{eventId}
+{
+  "reason": "Human-readable explanation",
+  "plaintext": {
+    "type": "m.room.message",
+    "content": {"msgtype": "m.text", "body": "..."},
+    "room_id": "!room:server"
+  }
+}
+```
+
+The `plaintext` field contains the full plaintext event structure that
+was fed into the encryption algorithm, as specified in the Megolm
+documentation. This is the same structure that clients decrypt when
+receiving encrypted events.
+
 ### Verification Process
 
-When a user reports encrypted content, they provide the event ID and
-claimed plaintext. The server verifies:
+When a user reports encrypted content, the server verifies:
 
 ```python
-claimed_plaintext = canonical_json(report['plaintext'])
+plaintext_event = canonical_json(report['plaintext'])
 ciphertext = event['content']['ciphertext']
 
-computed = base64(sha256(claimed_plaintext + ciphertext))
+computed = base64(sha256(plaintext_event + ciphertext))
 
 if computed == event['content']['verification_hash']:
     # Report verified - plaintext is authentic
@@ -58,7 +78,9 @@ else:
     # Report is false - reporter is lying
 ```
 
-The server never needs decryption keys or access to the plaintext.
+The server never needs decryption keys or access to the encryption
+session. It only verifies that the reported plaintext matches the
+verification hash.
 
 ### Security Properties
 
