@@ -67,20 +67,31 @@ receiving encrypted events.
 When a user reports encrypted content, the server verifies:
 
 ```python
-plaintext_event = canonical_json(report['plaintext'])
-ciphertext = event['content']['ciphertext']
+# Server receives report with event_id and claimed plaintext
+report = receive_report(room_id, event_id)
 
+# Fetch stored encrypted event from database (local operation)
+event = database.get_event(event_id)
+
+# Extract verification data (all already stored locally)
+ciphertext = event['content']['ciphertext']
+verification_hash = event['content']['verification_hash']
+
+# Compute hash of reported plaintext with stored ciphertext
+plaintext_event = canonical_json(report['plaintext'])
 computed = base64(sha256(plaintext_event + ciphertext))
 
-if computed == event['content']['verification_hash']:
+# Single comparison - no decryption, no network requests
+if computed == verification_hash:
     # Report verified - plaintext is authentic
 else:
     # Report is false - reporter is lying
 ```
 
 The server never needs decryption keys or access to the encryption
-session. It only verifies that the reported plaintext matches the
-verification hash.
+session. All verification data (ciphertext and verification_hash) is
+already stored in the database. Verification requires only a local
+database fetch and a single SHA-256 computation.
 
 ### Security Properties
 
@@ -147,6 +158,7 @@ capabilities.
 
 During development, implementations should use:
 - Field name: `org.matrix.msc4382.verification_hash`
+- Report field: `org.matrix.msc4382.plaintext`
 - Client capability: `org.matrix.msc4382.peppered_hash_verification`
 
 ## Dependencies
