@@ -13,17 +13,28 @@ enable emoji suggestions across clients.
 ## Proposal
 
 A new global account data event `m.recent_emoji` is introduced. In `content`, it contains a single
-property `recent_emoji` that is an array where each element is itself an array. The first element in
-this nested array is the emoji, the second element is a counter (\<= 2^53-1) for how often it was
-used. The outer `recent_emoji` array is ordered descendingly by last usage time.
+property `recent_emoji` that is an array where each element is an object with the following properties:
+
+- `emoji` (string, required): The Unicode emoji as string.
+- `total` (number, required): The number of times the emoji has been used (\<= 2^53-1).
+
+The outer `recent_emoji` array is ordered descendingly by last usage time.
 
 ``` json5
 {
   "type": "m.recent_emoji",
   "content": {
     "recent_emoji": [
-      [ "😅",  7 ], // Most recently used, 7 times overall
-      [ "👍", 84 ], // Second most recently used, 84 times overall
+      // Most recently used, 7 times overall
+      {
+        "emoji": "😅",
+        "total": 7
+      },
+      // Second most recently used, 84 times overall
+      {
+        "emoji": "👍",
+        "total": 84
+      },
       ...
   }
 }
@@ -59,6 +70,12 @@ could also be used to cull emoji that haven't been used in a very long time. Giv
 are already encouraged to limit the maximum number of tracked emoji, this doesn't appear necessary,
 however.
 
+Rather than an array of objects, a nested array could be used. This approach has been used in early
+implementations of this proposal under the `io.element.recent_emoji` account data event. While this
+results in a more compact storage layout, it doesn't lend itself well to future extension. Additionally,
+given request compression and the common expectable length of the array, performance benefits should
+be negligible.
+
 ## Security considerations
 
 This proposal doesn't mandate encrypting the `m.recent_emoji` account data event. Since emoji are
@@ -75,7 +92,7 @@ data event due to local emoji usage.
 ## Unstable prefix
 
 While this MSC is not considered stable, `m.recent_emoji` should be referred to as
-`io.element.recent_emoji`.
+`io.github.Johennes.msc4356.recent_emoji`.
 
 ## Dependencies
 
