@@ -17,7 +17,7 @@ significantly cut down.
 
 A new account data event `m.invite_permission_config` is introduced.
 
-The content has a single property, `block_all`. When set to `true`, that
+The content has a single property, `default_action`. When set to `block`, that
 indicates that the user does not wish to receive *any* room invites, and they
 should be blocked as described below. Any other value (including omission of
 the property) means that the user wants to receive invites as normal (subject
@@ -77,6 +77,12 @@ something important.
   solution, allowing users to review any filtered emails and see if any are
   useful. On the other hand, by rejecting invites as early as possible, we
   provide better protection to the servers.
+
+* An earlier draft of this proposal had a boolean property `block_all` instead
+  of `default_action`. We moved away from this to allow future expansion to
+  alternative actions such as *ignoring* rather than *blocking* invites (see
+  [MSC4283](https://github.com/matrix-org/matrix-spec-proposals/pull/4283)) as
+  well as overrides based on particular conditions.
 
 ## Security considerations
 
