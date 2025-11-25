@@ -40,8 +40,9 @@ The outer `recent_emoji` array is ordered descendingly by last usage time.
 }
 ```
 
-When an emoji is used in a message or an annotation, the sending client moves (or adds) it to the
-beginning of the `recent_emoji` array and increments (or initializes) its counter.
+When an emoji is used, the sending client moves (or adds) it to the beginning of the `recent_emoji`
+array and increments (or initializes) its counter. What exactly constitutes emoji usage is left as
+an implementation detail for clients. Obvious choices are sending emoji in messages or annotations.
 
 When an image is sent as an inline image or in a reaction (using [MSC4027]), the `mxc://` URI of the
 image MAY be used as the "emoji" in this event. Clients which do not support such use of images MUST
