@@ -94,7 +94,7 @@ data event due to local emoji usage.
 ## Unstable prefix
 
 While this MSC is not considered stable, `m.recent_emoji` should be referred to as
-`io.github.Johennes.msc4356.recent_emoji`.
+`io.github.johennes.msc4356.recent_emoji`.
 
 ## Dependencies
 
