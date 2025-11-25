@@ -4,8 +4,10 @@
 
 Client applications utilizing the Matrix SDK[^6], a Client-Server[^7] library, have been observed
 making requests to `GET /_matrix/federation/v1/version`[^2]. It is the only known example of a
-cross-interface request to have any possible[^5] use to any implementation[^3], motivating this
-proposal to reestablish a properly clean partition between client and federation interfaces.
+cross-interface request made by an implementation[^3]. The purpose is valid: informing logs
+used for crash reports of the server specifics; often essential for efficient triage and robust
+patching of client software. This proposal reestablises the proper partition between client and
+federation interfaces while retaining the value added by the de facto misuse.
 
 Such cross-interface requests are problematic: the partition in the `/_matrix` URL hierarchy is
 understood by site-administrators to allow for distinct middleware configurations. Sites commonly
@@ -83,9 +85,6 @@ proxy) will have to note their implementation's new exposure of it when upgradin
 [^3]: https://github.com/matrix-org/matrix-rust-sdk/blob/d228bde8ef51a98da10a6b7d4b9f3e5b8f49ad3c/crates/matrix-sdk/src/client/mod.rs#L581-L616
 
 [^4]: https://github.com/matrix-org/matrix-spec-proposals/pull/2301
-
-[^5]: Server version information can provide useful context in logs and may be essential for
-effective crash reports.
 
 [^6]: https://github.com/matrix-org/matrix-rust-sdk
 
