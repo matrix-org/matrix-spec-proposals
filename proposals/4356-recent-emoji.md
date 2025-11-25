@@ -60,7 +60,8 @@ counters (so that more recently used emoji are ordered first on ties).
 ## Potential issues
 
 Clients could choose wildly different ways to generate recommendations from the shared storage
-leading to significantly different UX across clients.
+leading to significantly different UX across clients. A "correct" algorithm is not currently known,
+however, and will require future UI exploration in client implementations.
 
 ## Alternatives
 
