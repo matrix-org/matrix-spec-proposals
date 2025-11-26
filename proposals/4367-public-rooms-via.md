@@ -6,9 +6,12 @@ resident server to facilitate the join. The spec doesn't make it clear how to fi
 however.
 
 To begin with, it is unclear whether the endpoints for listing a server's directory may return rooms
-that the server is not joined to. Additionally, there is no recommendation on what `via` parameter
-clients should use when attempting to join rooms found in the directory. As a result, clients can
-end up browsing published rooms without being able to join them.[^1]
+that the server is not joined to. One example where including such rooms is desirable are
+directory-only servers like [matrixrooms.info].
+
+Additionally, there is no recommendation on what `via` parameter clients should use when attempting
+to join rooms found in the directory. As a result, clients can end up browsing published rooms
+without being able to join them.[^1]
 
 This proposal addresses the situation by adding `via` values in the room directory responses.
 
@@ -71,6 +74,7 @@ None.
 [^1]: These issues were initially raised in <https://github.com/matrix-org/matrix-spec/issues/1375>.
 
   [published room directory]: https://spec.matrix.org/v1.16/client-server-api/#published-room-directory
+  [matrixrooms.info]: https://matrixrooms.info/
   [`GET  /_matrix/client/v3/publicRooms`]: https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3publicrooms
   [`POST /_matrix/client/v3/publicRooms`]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3publicrooms
   [`GET  /_matrix/federation/v1/publicRooms`]: https://spec.matrix.org/v1.16/server-server-api/#get_matrixfederationv1publicrooms
