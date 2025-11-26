@@ -14,12 +14,16 @@ This proposal addresses the situation by adding `via` values in the room directo
 
 ## Proposal
 
-A new required property `via` is added on the `PublishedRoomsChunk` returned by
+Servers MAY include rooms that they are not joined to in responses returned by the following
+endpoints:
 
 - [`GET  /_matrix/client/v3/publicRooms`]
 - [`POST /_matrix/client/v3/publicRooms`]
 - [`GET  /_matrix/federation/v1/publicRooms`]
 - [`POST /_matrix/federation/v1/publicRooms`]
+
+To help clients join such rooms, a new required property `via` is added on the `PublishedRoomsChunk`
+returned by the above endpoints.
 
 ``` json5
 {
