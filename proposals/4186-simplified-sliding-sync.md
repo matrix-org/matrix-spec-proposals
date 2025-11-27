@@ -278,7 +278,7 @@ Describes the set of state that the server should return for the room.
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `type` | `string` | No | The event type to match. If omitted then matches all types. |
-| `state_key` | `string` | No | The event state key to match. If omitted then matches all state keys. |
+| `state_key` | `string` | No | The event state key to match. If omitted then matches all state keys. <br/><br/> Note: it is possible to match a specific state key, for all event types, by specifying `state_key` but leaving `type` unset. |
 
 
 
