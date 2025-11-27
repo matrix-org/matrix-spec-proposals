@@ -178,9 +178,15 @@ server handles the config differently.
 #### Timeline events
 
 Normally the timeline events returned are only the events that have been received since the last time the room was sent
-to the client (i.e. only new events). However, if the `timeline_limit` has increased (to say `N`) the server SHOULD
-ignore this and send down the latest `N` events, even if some of those events have previously been sent. The server MAY
-ignore this behaviour if the server knows it has previously sent down all of the latest `N` events.
+to the client (i.e. only new events). However, if the `timeline_limit` has increased (to say `N`) and the server has not
+previously sent down all of the latest `N` events on the connection, the server SHOULD send down the latest `N` events
+even if *some* of the events have previously been sent. If the server does not know if it has sent down all events it
+SHOULD send down the latest `N` events.
+
+For example, say the latest events in the room are `A`, `B`, `C` and `D` (from earliest to latest), and the client has
+previously seen `B`, `C` and `D` with a `timeline_limit` of 1. If the client increases the `timeline_limit` to 4 then
+the server SHOULD return `A`, `B`, `C` and `D`, but if the client increases it instead to 3 then server does not need to
+return any events as it knows the client already saw `B`, `C` and `D`.
 
 If the server does send down extra events, it MUST set the `expanded_timeline` to `true`.
 
