@@ -172,8 +172,8 @@ The fields are combined by taking the "superset", i.e.:
 
 When a room matches one or more rules (i.e. is eligible to be returned in the sync response) that has previously been
 returned to the client, the server checks whether the combined room config is different than when the room was last
-eligible to be returned. If the new config has fields that are a superset of the previous config, then the server
-handles the config differently.
+eligible to be returned. If the new config has at least one field that is a superset of the previous config, then the
+server handles the config differently.
 
 #### Timeline events
 
