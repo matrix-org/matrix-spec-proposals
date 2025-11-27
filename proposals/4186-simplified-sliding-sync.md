@@ -17,7 +17,7 @@ usage.
 From a high level, sliding sync works by the client specifying a set of rules to match rooms (via "lists" and
 "subscriptions"). The server will use these rules to match relevant rooms to the user, and return any rooms that have
 had changes since the previous time the room was returned to the client. If no rooms have changes, the server will block
-waiting for a change (aka long-polling, like sync v2).
+waiting for a change (aka long-polling, like `/v3/sync`).
 
 By judicious use of lists and subscriptions the client can control exactly what data is returned when, and help ensure
 that it doesn't request "too much" data at once (thus avoiding slow responses).
@@ -240,7 +240,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/v4/sync`.
 | `conn_id` | `string` | No | An optional string to identify this connection to the server. Only one sliding sync connection is allowed per given `conn_id` (empty or not). |
 | `pos` | string | No | Omitted if this is the first request of a connection (initial sync). Otherwise, the `pos` token from the previous call to `/sync` |
 | `timeout` | int | No | How long to wait for new events in milliseconds. If omitted the response is always returned immediately, even if there are no changes. Ignored when no `pos` is set. |
-| `set_presence` | string | No | Same as in sync v2, controls whether the client is automatically marked as online by polling this API. <br/><br/> If this parameter is omitted then the client is automatically marked as online when it uses this API. Otherwise if the parameter is set to “offline” then the client is not marked as being online when it uses this API. When set to “unavailable”, the client is marked as being idle. <br/><br/> An unknown value will result in a 400 error response with code `M_INVALID_PARAM`. |
+| `set_presence` | string | No | Same as in `/v3/sync`, controls whether the client is automatically marked as online by polling this API. <br/><br/> If this parameter is omitted then the client is automatically marked as online when it uses this API. Otherwise if the parameter is set to “offline” then the client is not marked as being online when it uses this API. When set to “unavailable”, the client is marked as being idle. <br/><br/> An unknown value will result in a 400 error response with code `M_INVALID_PARAM`. |
 | `lists` | `{string: SyncListConfig}` | No | Sliding window API. A map of list key to list information (`SyncListConfig`). The list keys should be arbitrary strings which the client is using to refer to the list.  <br/><br/> Max lists: 100. <br/> Max list name length: 64 bytes. |
 | `room_subscriptions` | `{string: RoomSubscription}` | No | A map of room ID to room subscription information. Used to subscribe to a specific room. Sometimes clients know exactly which room they want to get information about e.g by following a permalink or by refreshing a webapp currently viewing a specific room. The sliding window API alone is insufficient for this use case because there's no way to say "please track this room explicitly". |
 | `extensions` | `{string: ExtensionConfig}` | No | A map of extension key to extension config. Different extensions have different configuration formats. |
@@ -289,8 +289,8 @@ retrieve all state events except for `m.room.member` events which you want to la
 can send the following:
 
 This is (almost) the same as [lazy loaded
-memberships](https://spec.matrix.org/v1.16/client-server-api/#lazy-loading-room-members) in sync v2. When specified, the
-server will return the membership events for:
+memberships](https://spec.matrix.org/v1.16/client-server-api/#lazy-loading-room-members) in `/v3/sync`. When specified,
+the server will return the membership events for:
 1. All the `senders` of events in `timeline_events`, excluding membership events that were previously returned. This
    ensures that the client can render all the timeline events without having to fetch more events from the server.
 1. The target (i.e. `state_key`) of all membership events in `timeline_events`, excluding membership events previously
@@ -434,19 +434,19 @@ When a user is or has been in the room, the following field are also returned:
 | - | - | - | - |
 | `name` | `string` | No | Room name or calculated room name. |
 | `avatar` | `string` | No | Room avatar |
-| `heroes` | `[StrippedHero]` | No | A truncated list of users in the room that can be used to calculate the room name. Will first include joined users, then invited users, and then finally left users. The same as the `m.heroes` section in the sync v2 [specification](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3sync_response-200_roomsummary) |
+| `heroes` | `[StrippedHero]` | No | A truncated list of users in the room that can be used to calculate the room name. Will first include joined users, then invited users, and then finally left users. The same as the `m.heroes` section in the `/v3/sync` [specification](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3sync_response-200_roomsummary) |
 | `is_dm` | `bool` | No | Flag to specify whether the room is a direct-message room (according to account data). If absent the room is not a DM room. |
 | `initial` | `bool` | No | Flag which is set when this is the first time the server is sending this data on this connection, or if the client should replace all room data with what is returned. Clients can use this flag to replace or update their local state. The absence of this flag means `false`. |
 | `expanded_timeline` | `bool` | No | Flag which is set if we're returning more historic events due to the timeline limit having increased. See "Changing room configs" section. |
 | `required_state` | `[Event\|StateStub]` | No | Changes in the current state of the room. <br/><br/> To handle state being deleted, the list may include a `StateStub` type (c.f. schema below) that only has `type` and `state_key` fields. The presence or absence of `content` field can be used to differentiate between the two cases. |
-| `timeline_events` | `[Event]` | No | The latest events in the room. May not include all events if e.g. there were more events than the configured `timeline_limit`, c.f. the `limited` field. <br/><br/> If `limited` is true then we include bundle aggregations for the event, as per sync v2. <br/><br/> The last event in the list is the most recent. |
+| `timeline_events` | `[Event]` | No | The latest events in the room. May not include all events if e.g. there were more events than the configured `timeline_limit`, c.f. the `limited` field. <br/><br/> If `limited` is true then we include bundle aggregations for the event, as per `/v3/sync`. <br/><br/> The last event in the list is the most recent. |
 | `prev_batch` | `string` | No | A token that can be passed as a start parameter to the `/rooms/<room_id>/messages` API to retrieve earlier messages. |
 | `limited` | `bool` | No | True if there are more events since the previous sync than were included in the `timeline_events` field, or that the client should paginate to fetch more events.<br/><br/> Note that server may return fewer than the requested number of events and still set `limited` to true, e.g. because there is a gap in the history the server has for the room. <br/><br/>Absence means `false` |
 | `num_live` | `int` | No | The number of timeline events which have "just occurred" and are not historical, i.e. that have happened since the previous sync request. The last `N` events are 'live' and should be treated as such.<br/><br/> This is mostly useful to e.g. determine whether a given `@mention` event should make a noise or not. Clients cannot rely solely on the absence of `initial: true` to determine live events because if a room not in the sliding window bumps into the window because of an `@mention` it will have `initial: true` yet contain a single live event (with potentially other old events in the timeline). |
-| `joined_count` | `int` | No | The number of users with membership of join, including the client's own user ID. (same as sync `v2 m.joined_member_count`) |
-| `invited_count` | `int` | No |  The number of users with membership of invite. (same as sync v2 `m.invited_member_count`) |
-| `notification_count` | `int` | No | The total number of unread notifications for this room. (same as sync v2). <br/><br/> Does not included threaded notifications, which are returned in an extension. |
-| `highlight_count` | `int` | No | The number of unread notifications for this room with the highlight flag set. (same as sync v2) <br/><br/> Does not included threaded notifications, which are returned in an extension. |
+| `joined_count` | `int` | No | The number of users with membership of join, including the client's own user ID. (same as `/v3/sync` `m.joined_member_count`) |
+| `invited_count` | `int` | No |  The number of users with membership of invite. (same as `/v3/sync` `m.invited_member_count`) |
+| `notification_count` | `int` | No | The total number of unread notifications for this room. (same as `/v3/sync`). <br/><br/> Does not included threaded notifications, which are returned in an extension. |
+| `highlight_count` | `int` | No | The number of unread notifications for this room with the highlight flag set. (same as `/v3/sync`) <br/><br/> Does not included threaded notifications, which are returned in an extension. |
 
 
 > [!Note]
@@ -460,7 +460,7 @@ invites or knocks, but can also be for when the user has rejected an invite.
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
-| `stripped_state` | `[StrippedState]` | Yes  | Stripped state events (for rooms where the user is invited). Same as `rooms.invite.$room_id.invite_state` for invites in sync v2. |
+| `stripped_state` | `[StrippedState]` | Yes  | Stripped state events (for rooms where the user is invited). Same as `rooms.invite.$room_id.invite_state` for invites in `/v3/sync`. |
 
 The reason the full fields from the previous section can't be included is because we don't have any of that information
 for remote invites and the user isn't participating in the room yet so we shouldn't leak anything to them. We can only
@@ -618,8 +618,8 @@ top of the room list automatically get expanded timelines.
 
 # Security considerations
 
-Care must be taken, as with sync v2, to ensure that only the data that the user is authorized to see is returned in the
-response.
+Care must be taken, as with `/v3/sync`, to ensure that only the data that the user is authorized to see is returned in
+the response.
 
 Servers SHOULD limit the amount of data that they store per-user to guard against resource consumption, e.g. limiting
 the number of connections a device can have active. This protects against malicious clients creating large numbers of
