@@ -122,7 +122,7 @@ servers that are "distributed").
 
 ### Subscriptions
 
-Subscriptions are a rule that matches against a specified room ID, i.e. they allow the client to specify that a
+A subscription is a rule that matches against a specified room ID, i.e. they allow the client to specify that a
 given room should always be returned (if there are updates). This is useful if e.g. the user has opened the room and the
 client always wants to get the latest data for that room.
 
