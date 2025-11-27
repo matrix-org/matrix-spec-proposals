@@ -288,6 +288,15 @@ Room members can be lazily-loaded by using the `lazy_members` flag. Typically, w
 retrieve all state events except for `m.room.member` events which you want to lazily load. To get this behaviour, clients
 can send the following:
 
+```jsonc
+    {
+        "required_state": {
+            "include": [{}],  // An empty object matches everything
+            "lazy_members": true
+        }
+    }
+```
+
 This is (almost) the same as [lazy loaded
 memberships](https://spec.matrix.org/v1.16/client-server-api/#lazy-loading-room-members) in `/v3/sync`. When specified,
 the server will return the membership events for:
