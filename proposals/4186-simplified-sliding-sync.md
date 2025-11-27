@@ -343,7 +343,7 @@ An example that returns all the state except the create event:
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
-| `is_dm` | `bool` | No | Flag which only returns rooms present (or not) in the DM section of account data.<br/><br/> If unset, both DM rooms and non-DM rooms are returned. If False, only non-DM rooms are returned. If True, only DM rooms are returned. |
+| `is_dm` | `bool` | No | Flag which only returns rooms present (or not) in the `m.direct` entry in account data.<br/><br/> If unset, both DM rooms and non-DM rooms are returned. If False, only non-DM rooms are returned. If True, only DM rooms are returned. |
 | `spaces` | `[string]` | No | Filter the room based on the space they belong to according to `m.space.child` state events. <br/><br/> If multiple spaces are present, a room can be part of any one of the listed spaces (OR'd). The server will inspect the `m.space.child` state events for the JOINED space room IDs given. Servers MUST NOT navigate subspaces. It is up to the client to give a complete list of spaces to navigate. Only rooms directly mentioned as `m.space.child` events in these spaces will be returned. Unknown spaces or spaces the user is not joined to will be ignored. |
 | `is_encrypted` | `bool` | No | Flag which only returns rooms which have an `m.room.encryption` state event. <br/><br/> If unset, both encrypted and unencrypted rooms are returned. If `false`, only unencrypted rooms are returned. If `True`, only encrypted rooms are returned. |
 | `is_invite` | `bool` | No | Flag which only returns rooms the user is currently invited to. <br/><br/> If unset, both invited and joined rooms are returned. If `false`, no invited rooms are returned. If `true`, only invited rooms are returned. |
