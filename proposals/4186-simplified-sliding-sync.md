@@ -106,7 +106,7 @@ A "list" is then a set of filters (e.g. only match invites, or DM rooms, etc) pl
 *filtered* list of rooms. For example, a common list config would be no filters (i.e. all rooms) plus the range
 `[0,19]`, which would cause the server to return the top 20 rooms (by activity).
 
-Specifically, a room matches a given list if after filtering the server maintained list of rooms by the list's filters,
+Specifically, a room matches a given list if after filtering the server-maintained list of rooms by the list's filters,
 the room's index in the filtered list is within the list's range.
 
 #### Activity ordering
