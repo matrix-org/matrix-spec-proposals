@@ -30,10 +30,10 @@ During initial design, the following goals were taken into account:
 - Time from opening of the app (when already logged in) to confident usability should be as low as possible.
 - Time from login on existing accounts to usability should be as low as possible.
 - Bandwidth should be minimized.
-- Support lazy-loading of things like membership and read receipts (and avoid sending unnecessary data to the client)
-- Support informing the client when room state changes from under it, due to state resolution.
+- The API should support lazy-loading of things like membership and read receipts (and avoid sending unnecessary data to the client).
+- The API should support informing the client when room state changes from under it, due to state resolution.
 - Clients should be able to work correctly without ever syncing in the full set of rooms they’re in.
-- Don’t incremental sync rooms you don’t care about.
+- Incremental sync responses should only include rooms that the user cares about.
 - Servers should not need to store all past since tokens. If a since token has been discarded we should gracefully
   degrade to initial sync.
 
