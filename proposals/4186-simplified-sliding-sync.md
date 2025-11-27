@@ -141,7 +141,7 @@ not previously been sent to the client.
 See the API section below for exactly what is returned. A subset may be returned if the user does not have permission to
 view the room, e.g. if they are invited but not yet joined to the room.
 
-The server MUST not send any room information down that the user does not have permission to see. Specifically, the
+The server MUST NOT send any room information down that the user does not have permission to see. Specifically, the
 server should only return rooms the user: is or has previously been joined to, is invited to (or rejected an invite to),
 or has knocked on (or had a knock rejected).
 
