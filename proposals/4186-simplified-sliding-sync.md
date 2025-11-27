@@ -135,8 +135,8 @@ either be in the room, or be invited/knocked to the room. Otherwise, the room wi
 
 ## Room results
 
-A room is returned in the response if it matches at least one rule, and there is new data to return (if the room has
-previously been sent to the client).
+A room is returned in the response if it matches at least one rule, and either there is new data to return, or the room has
+not previously been sent to the client.
 
 See the API section below for exactly what is returned. A subset may be returned if the user does not have permission to
 view the room, e.g. if they are invited but not yet joined to the room.
