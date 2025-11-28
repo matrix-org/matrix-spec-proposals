@@ -1,11 +1,10 @@
 # MSC4186: Simplified Sliding Sync
 
 The current `/sync` endpoint scales badly as the number of rooms on an account increases. It scales badly because all
-rooms are returned to the client, incremental syncs are unbounded and slow down based on how long the user has been
-offline, and clients cannot opt-out of a large amount of extraneous data such as receipts. On large accounts with
-thousands of rooms, the initial sync operation can take tens of minutes to perform. This significantly delays the
-initial login to Matrix clients, and also makes incremental sync very heavy when resuming after any significant pause in
-usage.
+rooms are returned to the client and incremental syncs are unbounded and slow down based on how long the user has been
+offline. On large accounts with thousands of rooms, the initial sync operation can take tens of minutes to perform. This
+significantly delays the initial login to Matrix clients, and also makes incremental sync very heavy when resuming after
+any significant pause in usage.
 
 > [!Note]
 > This is a “simplified” version of the sliding sync API proposed in
