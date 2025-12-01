@@ -49,7 +49,7 @@ properties in `content`:
     // Properties from MSC4300
     "m.request.status": {
       "from_device": "RJYKSTBOIE",
-      "lifetime": 90_000, // 90s
+      "lifetime": 90000, // 90s
     },
     // I'd like to send any of these events into this room.
     // Which of these do you understand?
