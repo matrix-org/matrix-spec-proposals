@@ -32,7 +32,7 @@ Clients MAY add `m.request.status` as a top-level property in `content` on any e
   "content": {
     "m.request.status": {
       "from_device": "RJYKSTBOIE",
-      "lifetime": 90_000, // 90s
+      "lifetime": 90000, // 90s
     },
     // properties specific to m.pizza
   }
