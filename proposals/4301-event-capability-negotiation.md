@@ -163,7 +163,7 @@ The concerns and remedies around leaking metadata from [MSC4300] apply to this p
 
 ## Unstable prefix
 
-While this MSC is not considered stable, `m.request.event_capability` (the event type) and
+While this MSC is not considered stable, `m.request.event_capability` and
 `m.response.event_capability` should be referred to as `de.gematik.msc4301.request.event_capability`
 and `de.gematik.msc4301.response.event_capability`, respectively. Properties inherited from
 [MSC4300] have their own prefixing requirements.
