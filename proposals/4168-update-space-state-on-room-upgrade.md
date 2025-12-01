@@ -7,14 +7,23 @@ be copied over, as well as these events being updated in other rooms.
 
 ## Proposal
 
-When a room upgrade is performed, servers SHOULD replicate `m.space.child` and `m.space.parent` state
-in the new room.
+In the following sentences, "relevant space state events" refer to `m.space.parent` events for all
+room types, in addition to `m.space.child` events for rooms with a type of
+[`m.space`](https://spec.matrix.org/v1.16/client-server-api/#types).
 
-In addition, `m.space.child` and `m.space.parent` events in other rooms, where the caller of `/upgrade`
-has the permission to do so, servers SHOULD send a new state event for the old room, removing the `via` field
-from it, and send a new event of the same type, with `state_key` being the new room ID, and `via` just
-being the server of the sender user. Like when these events are copied into the upgraded room, the `sender`
-should be set to the user calling the endpoint.
+When a room upgrade is performed, servers SHOULD copy relevant space state events from the old room
+to the new room. The sender field in the new event should be set to the user who performed the
+upgrade.
+
+In addition, servers SHOULD update relevant space state events in rooms that reference the old room
+(in their `state_key` field). Note that this will only be possible in rooms where the upgrading
+user (or any other user on the same homeserver, if the implementation decides to use any user it
+can) has the power to do so.
+
+The `via` field of each new state event SHOULD only contain the server name of the server,
+regardless of its previous content. This is because the server's listed in the previous `via` field
+may not have joined the upgraded room yet, and thus servers may not be able to join through them.
+
 
 ## Potential issues
 
