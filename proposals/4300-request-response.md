@@ -125,9 +125,9 @@ scenarios that require auditability.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, `m.request.status` and `m.response.status` (the event type)
-should be referred to as `de.gematik.msc4300.request.status` and
-`de.gematik.msc4300.response.status`, respectively.
+While this MSC is not considered stable, `m.request.status` and `m.response.status` should be
+referred to as `de.gematik.msc4300.request.status` and `de.gematik.msc4300.response.status`,
+respectively.
 
 ## Dependencies
 
