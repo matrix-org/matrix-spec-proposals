@@ -150,8 +150,13 @@ download large files without explicit user consent.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, the event type `m.fhir` should be referred to as
-`de.gematik.msc4302.fhir`.
+While this MSC is not considered stable, the following identifiers should be used:
+
+- `m.fhir` → `de.gematik.msc4302.fhir`
+- `m.fhir.structure_definition` → `de.gematik.msc4302.fhir.structure_definition`
+- `m.fhir.resource` → `de.gematik.msc4302.fhir.resource`
+
+Note that `m.file` has its own prefixing requirements as per [MSC3551].
 
 ## Dependencies
 
