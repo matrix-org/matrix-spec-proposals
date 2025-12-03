@@ -1,4 +1,4 @@
-# MSCxxx: Allowing `m.secret.send` without a prior `m.secret.request`
+# MSC4385: Allowing `m.secret.send` without a prior `m.secret.request`
 
 [MSC1946](https://github.com/matrix-org/matrix-spec-proposals/pull/1946)
 introduced the `m.secret.request` and `m.secret.send` events, which allow a
