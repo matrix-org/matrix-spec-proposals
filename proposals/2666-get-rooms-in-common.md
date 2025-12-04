@@ -54,7 +54,8 @@ GET /_matrix/client/v1/user/mutual_rooms?user_id=%40bob%3Aexample.com
 The server may decide that the response to this endpoint is too large, and thus an optional key
 `"next_batch"` can be inserted, which the client has to pass to `from` in the query
 parameters together with the original `user_id` to fetch the next batch of responses. This will
-continue until the server does no longer insert `"next_batch"`.
+continue until the server does no longer insert `"next_batch"`. The `next_batch` field follows
+the [standard for opaque identifiers](https://spec.matrix.org/v1.16/appendices/#opaque-identifiers).
 
 ```json5
 {
