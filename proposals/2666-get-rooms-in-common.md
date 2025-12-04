@@ -27,6 +27,7 @@ This endpoint will take a query parameter of `user_id` which will contain the MX
 matched against.
 
 This endpoint can be rate limited and requires authentication.
+Guests are not allowed to use the endpoint, as guests will usually not join multiple rooms.
 
 The response format will be an array containing all rooms where both the authenticated user and
 `user_id` have a membership of type `join`.
