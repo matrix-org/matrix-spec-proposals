@@ -53,7 +53,7 @@ An example response body for the error might look as follows:
 ```json
 {
   "errcode": "M_USER_LIMIT_EXCEEDED",
-  "error": "User has exceeded their storage quota of 10GB",
+  "error": "You have exceeded your storage quota of 10GB",
   "info_uri": "https://example.com/homeserver/about?limit_type=quota",
   "soft_limit": true,
   "increase_uri": "https://example.com/homeserver/upgrade"
@@ -126,7 +126,7 @@ as something similar to:
 
 > This homeserver has exceeded one of its resource limits
 
-As such, I think this message would be confusing to users the interim whilst clients updated their implementations and
+As such, I think this message would be confusing to users  in the interim whilst clients updated their implementations and
 that a new error code would be the best way forward.
 
 ### Add structured error information
