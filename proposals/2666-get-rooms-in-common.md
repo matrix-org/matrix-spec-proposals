@@ -114,7 +114,7 @@ to request all state ahead of time.
 
 ## Unstable prefix
 
-The implementation MUST use `/_matrix/client/unstable/uk.half-shot.msc2666/mutual_rooms`.
+The implementation MUST use `/_matrix/client/unstable/uk.half-shot.msc2666/user/mutual_rooms`.
 
 The /versions endpoint MUST include a new key in `unstable_features` with the name
 `uk.half-shot.msc2666.query_mutual_rooms`.
