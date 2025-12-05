@@ -82,6 +82,10 @@ themselves and ignore any new `m.response` events received from other clients.
 
 ## Potential issues
 
+The mechanism introduced above doesn't enable clients to determine if other clients are able to
+understand an event without actually sending it. [MSC4301] builds upon the present proposal and
+introduces event capability queries to achieve this.
+
 This proposal doesn't strictly define what constitutes successful processing of an event. At a
 minimum, the meaning of success will depend on the type of event sent and the receiving client. An
 archival bot, for instance, may have to decrypt and export an event to consider it processed
@@ -134,4 +138,5 @@ respectively.
 None.
 
   [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
+  [MSC4301]: https://github.com/matrix-org/matrix-spec-proposals/pull/4301
   [MSC4089]: https://github.com/matrix-org/matrix-spec-proposals/pull/4089
