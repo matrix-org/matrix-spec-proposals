@@ -86,10 +86,7 @@ this information today, however.
 
 Malicious or buggy clients could cause undefined behavior on other clients by setting emoji counters
 to negative values or the maximum allowed value. To prevent this, clients SHOULD drop any emojis
-with invalid entries from the list. When observing a count of 2^53-1 for an emoji, clients SHOULD
-normalise the entire set of emoji by dividing all counts by two and rounding up. To prevent race
-conditions, both of these changes SHOULD only be applied when the client is updating the account
-data event due to local emoji usage.
+with invalid entries from the list.
 
 ## Unstable prefix
 
