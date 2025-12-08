@@ -248,7 +248,7 @@ and the `unsigned.sender_account.name` property of the event JSON to be the acco
 ```
 
 Clients can then use the `unsigned.sender_account.key` field as an unchanging identifier for the sender of the event, akin to how they use the `sender` field today.
-A later room version can then:
+A later room version or version of the CSAPI can then:
  - Revert the `sender` of the event to be the wire-format over federation and not modify it, meaning the `sender` becomes identical to `unsigned.sender_account.key`.
  - Tell clients to form the user ID by replacing the account key with the `unsigned.sender_account.name` if it is present. The absence of a `name` means the
    key is not verified. Abusive `name` strings can be redacted by the server without breaking user identification.
