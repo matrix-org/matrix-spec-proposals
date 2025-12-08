@@ -183,8 +183,9 @@ When a server joins a room, it will receive a list of account keys that are join
 the event signatures of the DAG or to apply auth rules, thus ensuring that all servers will converge on the same room state.
 
 The server SHOULD group each key according to its claimed domain and perform a single `/accounts` query to fetch the account name for each
-account key. This SHOULD be done prior to sending the room information to clients. Based on the result of the query, the server should then group
-account keys into two categories:
+account key. Requests SHOULD be batched to ensure that the HTTP request/response size doesn't become too large for reverse proxies to handle: this proposal
+recommends that keys for the same domain SHOULD be batched into groups of 256 keys. This SHOULD be done prior to sending the room information to clients.
+Based on the result of the query, the server should then group account keys into two categories:
  - Verified: the domain is aware of the account key because it was contained in the response. The JSON in the response has been correctly signed by the account key.
  - Unverified: the domain is unaware of the account key because it was not contained in the response or the domain is unreachable[^unreach], returned a non 2xx status,
    or the server cannot decode the response body.
