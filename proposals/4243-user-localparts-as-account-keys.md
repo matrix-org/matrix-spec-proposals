@@ -349,6 +349,12 @@ a policy server or a per-room notary server. The problem with this approach is t
  - the dedicated server would need to remain forever accessible. If the dedicated server dies, the
    room becomes read-only.
 
+Alternative MSCs which implement the same level of indirection and have much the same benefits as this MSC whilst making different trade-offs include:
+ - [MSC1228: Removing MXIDs from events](https://github.com/matrix-org/matrix-spec-proposals/pull/1228)
+ - [MSC2787: Portable Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/2787)
+ - [MSC4014: Pseudonymous Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4014)
+ - [MSC4348: Portable and serverless accounts in rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/4348) and [MSC4345: Server key identity and room membership](https://github.com/matrix-org/matrix-spec-proposals/pull/4345)
+
 ### Future work
 
 We want to eventually support portable accounts, where a user can migrate seamlessly to a different server. This would require the
@@ -369,8 +375,8 @@ are invasive: one changes the user ID format and the other subverts the existing
 
 - The room version is `org.matrix.12.4243` based on room version 12.
 - The `/invite` and `unsigned` properties do not need prefixes as they are already room-scoped, and the room is prefixed.
-- The endpoint `/_matrix/federation/v2/ban` is `/_matrix/federation/v2/org.matrix.12.4243.ban`.
-- The endpoint `/_matrix/federation/v1/query/accounts` is `/_matrix/federation/v1/query/org.matrix.12.4243.accounts`
+- The endpoint `/_matrix/federation/v2/ban` is `/_matrix/federation/unstable/org.matrix.msc4243/ban`.
+- The endpoint `/_matrix/federation/v1/query/accounts` is `/_matrix/federation/unstable/org.matrix.msc4243/query/accounts`
 
 ### Dependencies
 
