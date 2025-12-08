@@ -163,6 +163,7 @@ fields:
   * `delay_id` — optional `string`: the delayed event id of the MatrixRTC member leave event.
   * `delay_timeout` — optional `string`: number of positive non-zero milliseconds the homeserver
     should wait before sending the MatrixRTC member leave event
+  * `delay_cs_api_url` — optional `string`: The Matrix client-server API as used by the client
 
 Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
 ```http
@@ -258,8 +259,9 @@ Since the LiveKit SFU already maintains authoritative knowledge of each particip
 state, the management of cancellable delayed events MAY be delegated to the LiveKit SFU
 Authorisation Service. This delegation allows the RTC transport layer to accurately manage and
 maintain MatrixRTC membership lifecycles across transient disconnects, ensuring a consistent and
-reliable view of session state. A prerequisite for this delegation is that the client includes both
-`delay_id` and `delay_timeout` fields as part of the authorisation request.
+reliable view of session state. A prerequisite for this delegation is that the client includes the
+following fields: `delay_id`, `delay_timeout` and `delay_cs_api_url` as part of the authorisation
+request.
 
 Upon successful issuance of a JWT token and once the LiveKit SFU Authorisation Service observes the
 client's SFU connection, identified by the LiveKit room `livekit_alias` and the LiveKit identity
