@@ -1,4 +1,4 @@
-# MSCxxxx: Automatically sharing secrets after device verification
+# MSC4386: Automatically sharing secrets after device verification
 
 Currently, after a user verifies a new device, in many clients, the new device
 [requests secrets](https://spec.matrix.org/v1.16/client-server-api/#sharing)
@@ -196,9 +196,9 @@ verification, this is not a problem.
 
 Before this MSC is accepted, the following names are used:
 
-- `io.element.mscxxxx.secrets` instead of `secrets` for the property name in
+- `io.element.msc4386.secrets` instead of `secrets` for the property name in
   `m.key.verification.request`/`m.key.verification.ready` events, and
-- `io.element.mscxxxx.key.verification.secrets` instead of `m.key.verification.secrets`
+- `io.element.msc4386.key.verification.secrets` instead of `m.key.verification.secrets`
   for the event type.
 
 ## Dependencies
