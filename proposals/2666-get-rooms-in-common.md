@@ -35,8 +35,9 @@ The response format will be an array containing all rooms where both the authent
 If the `user_id` does not exist, or does not share any rooms with the authenticated user,
 an empty array should be returned.
 
-Handling invalid user IDs should result in an error, is likely implementation-specific,
-and is beyond the scope of this proposal.
+Handling invalid user IDs may result in an error, is likely implementation-specific,
+and is beyond the scope of this proposal. Implementations are also free to simply
+return a success response with an empty array for invalid user IDs.
 
 ```http
 GET /_matrix/client/v1/user/mutual_rooms?user_id=%40bob%3Aexample.com
@@ -112,6 +113,10 @@ parameters under `user_id`
 The information provided in this endpoint is already accessible to the client if it has a copy of all
 state that the user can see. This endpoint only makes it possible to get this information without having
 to request all state ahead of time.
+
+As mentioned earlier, servers should return an empty array for non-existent users to avoid leaking
+existence of other users. If necessary, servers MAY also add random delays to responses to combat
+timing attacks.
 
 ## Unstable prefix
 
