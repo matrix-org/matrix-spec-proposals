@@ -214,14 +214,6 @@ the following properties:
 
 Key revocations are enforced by auth rules to be immutable.
 
-### Additional causal restrictions on `m.server.participation` when participation is `revoked`
-
-These restrictions can be enforced locally or by another causal authority. See
-[MSC4349](https://github.com/matrix-org/matrix-spec-proposals/pull/4349).
-
-- The considered event MUST NOT be conflicting to the known _vector clock
-  frontier_ of the sender.
-
 ### The `m.server.participation` authorization rule
 
 These rules are to be inserted before rule 4 in
@@ -395,6 +387,32 @@ authority in the room, then this would allow them to fake valid events.
 
 Without being the causal authority this attack would fail. Without the ability
 to "unban" a server identity, this attack fails.
+
+### Equivocation of revocation
+
+Key controllers will inevitably equivocate about their current participation.
+This can happen with the intention to use a stolen key, or to evade a moderation
+decision made by the room admins. As of writing, this kind of equivocation is
+handled locally by soft-failure.
+
+It may be possible to strengthen the mitigation through the exploration of the
+following in further MSCs:
+
+- Constraining key controllers to produce events with an explicit backlink to a
+  previous event to form a linear chain, in order to enable reasoning about a
+  given key controller's causal knowledge and further:
+  - Scope keys at creation to a given number of events.
+  - Scope the canonical the history of the key at revocation.
+
+- Providing a means for servers to exchange evidence of equivocation.
+
+- Out-of-room server discovery via a gossip protocol using zero knowledge proofs
+  to mitigate silo'd room participants.
+
+- Embracing inconsistency in some scenarios over eventual consistency, keeping
+  participants in an unmerged, inconsistent state when room creators have acted
+  against the integrity of the room. This would also prevent _gaming_ tie breaks
+  in order to reach a desired outcome over repeat attempts.
 
 ## Unstable prefix
 
