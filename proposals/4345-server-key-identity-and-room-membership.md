@@ -24,10 +24,6 @@ DAG:
 This MSC is inspired the work of @kegsay in
 [MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243).
 
-Additionally, this MSC uses terminology from
-[MSC4349: Causal barriers and enforcement](https://github.com/matrix-org/matrix-spec-proposals/pull/4349):
-ie _causal barrier_ and _causal enforcement_.
-
 ## Proposal
 
 We propose to make the server's identity within a room solely a long lived
@@ -80,41 +76,27 @@ either.
 - A server's _ambient power level_ is the highest power level of any user that
   is resident to the server.
 
-- A _causal barrier_ is an event which excludes all concurrent events from
-  _consideration_. A ban event is a causal barrier that is enforced locally by
-  soft failure. A causal barrier can be scoped to a specific sender, like the
-  ban event is. In this proposal, we introduce a barrier scoped to a specific
-  server. Which is an `m.server.participation` event with a `participation` of
-  `revoked`.
+### The `accept` top level `m.room.power_levels` content property
 
-#### A note on _causal barriers_
-
-This MSC does not propose changes to the enforcement of _causal barriers_. But
-its security is greatly enhanced with different enforcement tehniques to soft
-failure, such as a trusted authority in a policy server. Alternative options for
-_causal enforcement_ are discussed in
-[MSC4349: Causal barriers and enforcement](https://github.com/matrix-org/matrix-spec-proposals/pull/4349).
+This is the power level required to accept requests to participate. Defaults to
+`100`.
 
 ### The `m.server.participation` state event, `state_key: ${origin_server_key}`
 
 #### The `unverified_domain` property
 
-This is a string representing the domain of the server. This is not an
+This is a string representing the domain of the server. This is NOT an
 attestation that ownership has been verified by the sender of the event. This
-property is protected from redaction.
+property is protected from redaction. Its primary purpose is to provide routing.
 
 This property is not required, as it may be desirable to hide the domain when
 setting the server's participation to `revoked`. Particularly in the event of
-attempted impersonation or an abusive domain name.
+attempted impersonation, or an abusive domain name.
 
 #### The `participation` property
 
-`participation` can be one of `permitted`, `accepted` or `revoked`.
+`participation` can be one of `requested`, `accepted` or `revoked`.
 `participation` is protected from redaction.
-
-A revoked server must not be sent a `m.server.participation` event unless the
-targeted server is already present within the room. This is to prevent malicious
-servers being made aware of rooms that they have not yet discovered.
 
 #### The `reason` property
 
@@ -133,64 +115,67 @@ authorization rules are inconsistent this text takes precedence.
 
 ![](./images/4345-participation-state.png)
 
-#### Accepted participation
+#### Requested participation
 
-The purpose of the `accepted` participation state is to bring the
-`m.server.participation` event into a _subject controlled state_. This means
+The purpose of the `requested` participation state is to always introduce the
+`m.server.participation` event within a _subject controlled state_. This means
 that only the controller of the keypair for which the participation describes
 can set the `unverified_domain` in the event.
 
-This stops other room participants with the _invite_ power level from providing
-an incorrect `unverified_domain` while the server is participaiting in the room.
+A secondary purpose of the `requested` participation state is to make a server's
+request to participate visible to all participants within a room. This is
+important in situations where a server can only request to join via a
+participant which otherwise cannot permit their participation (because of the
+silo'd nature of joining matrix rooms). And so the room admins can be made aware
+of the request.
 
-#### Permitted participation
+An `m.server.participation` event with a `requested` participation MUST be
+cosigned by a previously _accepted_ participant key in order to be authorizable.
+The purpose of this property is to add traceability to the origin of keys within
+a room. Particularly as the ability to publish requests to participate is
+available to any _accepted_ participant.
 
-The purpose of the `permitted` participation state is for a user to permit
-another server to begin participaiting in the room. This adds traceability to
-the origin of keys within a room. Without this traceability, the ability to add
-an infinite number of new server keys is available ambiently to anyone who is
-able to federate with a by-standing participant or malicious leaky server. In
-addition, this provides participants that have invite permission the opportunity
-to challenge previously undiscovered homeservers. Whereas there is no current
-protocol step to enable this for public rooms.
+#### Accepted participation
 
-#### Revoked participation when set by room admins
+The purpose of the `accepted` participation state is for a user with the power
+level to _accept_ to be able to permit a server to begin participating in the
+room.
 
-A user with the _ban_ power level, may change the `m.server.participation` event
-of any server with less ambient power level to `revoked`. This power level
-comparison is the sending user's power level compared to the revoked server's
-ambient power level.
+The `unverified_domain` property SHOULD be identical to its prior value in the
+preceding event with a `participation` of `requested`. And this is enforced by
+authorization rules.
 
-Once a key is revoked, if a Matrix homeserver is to participate again it must
-rejoin the room with a new keypair.
+#### Revoked participation
 
-#### Revoked participation when set by the key controller
+The purpose of the `revoked` participation state is to signal that the key can
+no longer be used to authorize events within the room. This can be both from a
+loss of control from the key controller or because of an intervention by the
+server admins for moderation purposes. Once a key is revoked, if a Matrix
+homeserver is to participate again it must rejoin the room with a new keypair.
 
-The server may revoke its own key at any time by setting its own participation
-to `revoked`. This allows for keys that have been stolen to be revoked by any
-key controller. The effect of a key being revoked is permanent, to rejoin the
-room, a new keypair must be created. If keys are stolen to invoke revoction
-maliciously, then that is a good thing that they only stole the key for that
-purpose.
+A key controller can revoke their own key at any time.
 
-#### Are clients responsible for `m.server.participation` ?
+A user with the _accept_ power level may change the _participation_ of any
+server to `revoked` when the server has less ambient power level than the user
+making the revocation. This power level comparison is the sending user's power
+level compared to the revoked server's ambient power level.
 
-Almost always the server sends the event on behalf of a user indirectly as a
-part of another client-server API interaction, such as accepting an invitation.
-Most flows have no need for dedicated client UI or management with exception of:
+#### Situations where `m.server.participation` is sent on behalf of the server
 
-- Banning servers via setting the state to `revoked`.
-- Revoking the server key.
+There are two situations where the `m.server.participation` event is sent by a
+matrix user on behalf of a server. In both situations, the event can be sent by
+any localpart, regardless of room membership:
 
-In these situations, the event is sent as a direct result of a user's action
-communicated in client UI.
+- A new server requests to participate in the room via an existing server with a
+  _participation_ of _accepted_.
+- A key controller revokes their own key.
 
 #### Room creation flow
 
-After creating the room, the room creator's origin server should set its own
-`participation` via the room creator's account to `accepted`, and set the
-advertised `unverified_domain` property of their participation event to include
-a domain for which they can prove ownership.
+After creating the room, and before sending the room creator's `m.room.member`
+event, the room creator's origin server should immediately set its own
+_participation_ via the room creator's account to `accepted`, including the
+advertised `unverified_domain` property of their participation event.
 
 #### Room join flow
 
