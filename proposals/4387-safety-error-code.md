@@ -223,7 +223,7 @@ v2" project being undertaken by the Foundation's T&S team.
 
 ## Alternatives
 
-The major alternative to this proposal is [MSC4228: Search Redirection](https://github.com/matrix-org/matrix-spec-proposals/pull/4228). That MSC narrowly focuses on the room directory, wheras this proposal aims to address search
+The major alternative to this proposal is [MSC4228: Search Redirection](https://github.com/matrix-org/matrix-spec-proposals/pull/4228). That MSC narrowly focuses on the room directory, whereas this proposal aims to address search
 redirection *and* the communication issues encountered when safety tooling (like policy servers)
 prevent an action.
 
