@@ -43,9 +43,27 @@ free-form use of the `reason` where redaction is required.
 
 ## Proposal
 
-We introduce a new policy recommendation, `m.takedown`, reserved for purging
-entities and any associated content. When `m.takedown` is used, a `reason`
-SHOULD NOT be embedded into the same policy event[^bluesky].
+We introduce a new policy recommendation, `m.takedown`, which only indicates
+that the sender wants the subject of the policy to be taken down, and any
+associated any associated content. When `m.takedown` is used, a `reason` SHOULD
+NOT be embedded into the same policy event[^bluesky]. This provides the
+following benefits:
+
+- The `m.takedown` recommendation provides a specific recommendation that can be
+  used to remove severe content quickly. Examples being: spam, illegal, or
+  otherwise intolerable content.
+
+- The absence of the reason property mitigates the ability to use the policy
+  list as a directory of abuse. The policy only indicates that the sender wants
+  the subject of the policy to be taken down.
+
+- This recommendation is intentionally distinct from the existing `m.ban`
+  recommendation, which is typically used in less sensitive situations such as
+  code of conduct violations. And is intentionally non-generic. This provides a
+  clear distinction through the entire safety stack, which reduces the risk of
+  the two policy recommendations being mistaken in both implementation and UX.
+
+### Policy application
 
 We provide guidance for how the `m.takedown` recommendation is expected to be
 consumed by typical moderation tooling or clients. This is to set expectations
@@ -103,13 +121,6 @@ If the entity of the rule is a server:
 
 ## Potential issues
 
-- It is anticipated that some consequences of recommending `m.takedown` against
-  an entity are irreversible, and can have a huge impact on the history of a
-  Matrix room if implemented naively. The most common use case for the
-  recommendation will be to replace the use of `m.ban` with the reason `spam`
-  targeting a user, which in Mjolnir causes the target user to be banned from
-  protected rooms and their messages to be redacted.
-
 - Because the `reason` is no longer present, a higher degree of trust is
   required when applying some consequences to these policies. An attempt to
   document the reason privately exists through
@@ -132,13 +143,28 @@ If the entity of the rule is a server:
 
 ## Security considerations
 
-- `m.takedown` can have severe consequences for entities, policies could be
-  created maliciously against innocent users on popular policy rooms. This could
-  increase the reward of infiltrating moderation focussed communities. Tools
-  that naively implement the recommendation without safeguards, such as manual
-  approval, for the most severe consequences could be exploited. Additionally,
-  moderation tools ask for confirmation when the associated entity is known to
-  be an active participant of the community being protected.
+- Where possible, tooling and moderators SHOULD consider their familiarity with
+  the subject of an `m.takedown` recommendation. For example, a tool could
+  require manual approval when a longstanding participant of a community is the
+  subject of a takedown.
+
+- Where possible, tooling and moderators SHOULD consider their familiarity with
+  the sender of an `m.takedown` recommendation. For example, a tool could
+  require manual approval before processing a policy from a previously
+  unrecognised sender.
+
+- Where possible, automated tooling SHOULD use non-destructive capabilities
+  until manual approval of the policy can be provided by a human operator.
+  Examples include using _user suspension_ and awaiting for approval before
+  proceeding with _deactivation_. Additional features may need to be specified
+  in follow up MSCs to support this flow, such as
+  [Lock and Suspend semantics for rooms](https://github.com/the-draupnir-project/Draupnir/issues/989).
+
+- Finally `m.takedown` can have severe consequences for entities, policies could
+  be created maliciously against innocent users on popular policy rooms. This
+  could increase the reward of infiltrating moderation focussed communities.
+  Tools that naively implement the recommendation without safeguards, such as
+  manual approval for the most severe consequences, could be exploited.
 
 ## Unstable prefix
 
