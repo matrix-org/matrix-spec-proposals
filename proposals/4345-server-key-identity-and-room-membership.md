@@ -261,35 +261,41 @@ check for `m.room.member`.
     its revocation. Room admins cannot steal a key and override this, once the
     key is revoked, it has been permanently revoked.
 
-### The `/request_participation` endpoint
+### The request participation handshake
 
-When a server requests participation, the requested server should verify that
-the joining server is claiming ownership of the provided server key. The request
-should also be signed using the same server key.
+This handshake is largely the same as the make join and make knock handshake,
+but in the room versions that support server participation it is general to both
+situations, and supersedes their use. Joins and knocks can be sent directly
+where the server already has a _participation_ of _accepted_.
 
-Then, the requested server will emit an `m.server.participation` event into the
-room with the key and the `unverified_domain` property filled for the request
-origin.
+#### GET `/_matrix/federation/v1/make_participation/{roomId}/{userId}`
 
-Once this is complete, the requested server will respond with the information
-required to begin interacting with the room.
+This endpoint is identical to `make_join` except for the following:
 
-When the joining server gets this response, it should immediately change its own
-participation to `accepted` in order to prevent users from overwriting the
-`unverified_domain`.
+- The requested server should respond with 403 if:
+  - The user is banned.
+  - If the user has not received an invitation when the join rule is `invite`.
 
-The following endpoint is defined: GET
-`/_matrix/federation/v1/request_participation/{roomId}/{serverKey}`.
+#### GET `/_matrix/federation/v1/send_participation/{roomId}/{userId}`
 
-The following query parameters are supported:
+This endpoint is identical to `send_join` except for the following:
 
-- `ver` the room versions the sending server has support for (identical to
-  `make_join`).
+- The resident server MUST verify that the `m.server.participation` event is
+  signed using the same server key found in the `state_key`.
 
-- `omit_members` whether to omit members from the response (identical to
-  `send_join`).
+- The resident server SHOULD verify that the requesting server is claiming
+  ownership of the provided server key in the `m.server.participation` event.
 
-The response is identical to `send_join`.
+- The resident server SHOULD verify that the origin of the request is in control
+  of the `unverified_domain`.
+
+- The resident server MUST add its own signature to the event using the key
+  matching the property `request_authorised_via_server` within the
+  `m.server.participation` event before sending or persisting the event to toher
+  servers.
+
+- The endpoint submits a signed `m.server.participation` event to the resident
+  server for it to accept into the room's graph.
 
 ### Introducing `/_matrix/key/v3/query`
 
@@ -298,12 +304,11 @@ explicit via DAG state.
 
 To verify domain ownership from an `m.server.participation` event:
 
-1. The event must have a `participation` of `accepted`.
-2. The event must contain an `unverified_domain` property.
-3. The event must be signed with the private key associated with the public key
+1. The event must contain an `unverified_domain` property.
+2. The event must be signed with the private key associated with the public key
    found in the state_key (auth rules also enforce the state key is consistent
    with the origin server key).
-4. The same public key is advertised in `/_matrix/key/v3/query` when requested
+3. The same public key is advertised in `/_matrix/key/v3/query` when requested
    from the `unverified_domain`
 
 The server that performed verification of domain ownership may now cache the
@@ -312,7 +317,8 @@ revoked in the future.
 
 The requested server should make sure to only admit ownership of keys for which
 the requesting server can access through participation within a room where the
-requested server is using said keys.
+requested server is using said keys. In order to not leak information about the
+server's participation within a room.
 
 ### Changes to the user ID format
 
