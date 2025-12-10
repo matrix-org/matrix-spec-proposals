@@ -1,4 +1,4 @@
-# MSCYYYY: Secure out-of-band channel for sign in with QR
+# MSC4388: Secure out-of-band channel for sign in with QR
 
 This proposal forms part of [MSC4108] to make it easy to sign in on a new device with the help of an existing device.
 
@@ -424,9 +424,9 @@ d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 20
-68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/YYYY-qr-intent00.png'
+68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4388-qr-intent00.png'
 -->
-![Example QR for intent 0x00](images/YYYY-qr-intent00.png)
+![Example QR for intent 0x00](images/4388-qr-intent00.png)
 
 ### Example for QR code generated on existing device
 
@@ -454,9 +454,9 @@ d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 20
-68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/YYYY-qr-intent01.png'
+68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4388-qr-intent01.png'
 -->
-![Example QR for intent 0x01](images/YYYY-qr-intent01.png)
+![Example QR for intent 0x01](images/4388-qr-intent01.png)
 
 ## Secure channel
 
@@ -882,29 +882,29 @@ A threat analysis has been done within each of the key layers in the proposal ab
 
 While this feature is in development the new API endpoints should be exposed using the following unstable prefix:
 
-- `/_matrix/client/unstable/io.element.mscYYYY/rendezvous` instead of `/_matrix/client/v1/rendezvous`
+- `/_matrix/client/unstable/io.element.msc4388rendezvous` instead of `/_matrix/client/v1/rendezvous`
 
 Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions` response, with the
-key `io.element.mscYYYY` set to true. So, the response could look then as following:
+key `io.element.msc4388` set to true. So, the response could look then as following:
 
 ```json
 {
     "versions": ["..."],
     "unstable_features": {
-        "io.element.mscYYYY": true
+        "io.element.msc4388": true
     }
 }
 ```
 
 ### Unstable QR code format
 
-The unstable value of `IO_ELEMENT_MSCYYYY` should be used instead of `MATRIX` in the QR code.
+The unstable value of `IO_ELEMENT_MSC4388` should be used instead of `MATRIX` in the QR code.
 
 A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
 encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver `https://matrix-client.matrix.org` is as follows: (Whitespace is for readability only)
 
 ```
-49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 31 30 38
+49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 33 38 38
 03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
@@ -917,21 +917,21 @@ Which looks as follows as a QR with error correction level Q:
 <!--
 Generated with:
 
-nix-shell -p qrencode --run 'echo "49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 31 30 38
+nix-shell -p qrencode --run 'echo "49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 33 38 38
 03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 20
-68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/YYYY-qr-intent01-unstable.png'
+68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4388-qr-intent01-unstable.png'
 -->
-![Example QR for intent 0x01](images/YYYY-qr-intent01-unstable.png)
+![Example QR for intent 0x01](images/4388-qr-intent01-unstable.png)
 
 It is suggested that this unstable QR prefix convention could be used by future proposals.
 
 ### M_CONCURRENT_WRITE errcode
 
-The unstable value of `IO_ELEMENT_MSCYYYY_CONCURRENT_WRITE` should be used instead of `M_CONCURRENT_WRITE`.
+The unstable value of `IO_ELEMENT_MSC4388_CONCURRENT_WRITE` should be used instead of `M_CONCURRENT_WRITE`.
 
 ## Dependencies
 
