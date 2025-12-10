@@ -1,5 +1,18 @@
 # MSC4204: `m.takedown` moderation policy recommendation
 
+> [!NOTE]
+>
+> This proposal was introduced as part of an effort to solve a problem where
+> policy rooms can unintentionally be used to source the content that is being
+> classified. This is known as the directory of abuse problem. This solution is
+> largely influenced by Blueky's 2024 roadmap which referenced an internal
+> proposal for an imperative "takedown label"[^bluesky]. This solution was
+> suggested directly to me in a conversation that I had with
+> [Bryan Newbold](https://bsky.app/profile/bnewbold.net) in the
+> [IFTAS](https://about.iftas.org/) Matrix rooms. There does not seem to be any
+> public documentation about the label, and it is unclear whether it was
+> adopted, or whether the relevant documentation hasn't been written yet.
+
 Currently there is one specified moderation policy recommendation,
 `m.ban`[^spec-ban-recommendation].
 
