@@ -19,6 +19,7 @@ It would be authenticated and rate limited.
 #### Request
 ```json
 {
+  "requester": "@foo:origin.org",
   "limit": 10,
   "search_term": "foo"
 }
@@ -34,7 +35,6 @@ It would be authenticated and rate limited.
       "display_name": "Foo",
       "m.tz": "America/New_York",
       "user_id": "@foo:bar.com",
-      "visibility": "local",
     }
   ]
 }
@@ -42,7 +42,12 @@ It would be authenticated and rate limited.
 
 All profile fields (cf [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)) should be returned here.
 
-On top of that, the server should include a `visibility` field that should mirror the user preference stored in the account data, cf `m.user_directory` definition later on.
+Search should be performed on all the profile fields too.
+
+Field `requester` should be verified by the requested server: since the request is signed, we know that it has been sent by a specific server, so we MUST check that the
+server name of the requester matches the requester server.
+
+`requester` field is useful to be able to filter the results on the requested server directly, depending of the visibility user preference (cf next section).
 
 When an user calls the client user search API, the server should send a federated user search request to all known servers or a subset of it. It would then receive the results and return them to the user.
 Servers must not forward this request to other servers and only return results known locally. This is to avoid infinite loop between servers knowing each other.
@@ -86,7 +91,9 @@ Example of the content of a `m.user_directory` account data:
 
 We propose to introduce a reactive mechanism to allow the server to stream new results to the client.
 
-For that we introduce a `search_token` to the request coming from the response of a previous search(`search_token`). A request containing a `search_token` will stall until new results are available to the server. If some more results are expected to be returned, it may include another `search_token`, and hence.
+For that we introduce a `search_token` to the request coming from the response of a previous search(`search_token`).
+A request containing a `search_token` will stall until new results are available to the server.
+If some more results are expected to be returned, it may include another `search_token`, and hence.
 
 `search_token` is optional within the request so proposed changes are retro-compatible.
 
@@ -115,8 +122,6 @@ This parameter is optional and default to remote.
 ```
 `search_token` :  is a unique identifier that means that more results can be retrieved by querying with this `search_token`. `limited` should be `true` when `search_token` is returned.
 
-The server should strip `visibility` from the results returned by other servers.
-
 ## Potential issues
 
 We may have requests lost or getting timeout from intermediary network equipment, especially since we are using some kind of long polling.
@@ -124,7 +129,9 @@ We think the fact that we use a `search_token` that changes on each request allo
 
 ## Alternatives
 
-We first thought about using an account data, however it has a big caveat: remote servers can't access it, hence remote servers will not be able to honor the visibility when trying to return remote users that are already visible locally to them.
+Previous version of this MSC was using a profile field to store the visibility setting of the user, and hence this setting was visible to everyone.
+By adding `requester` in the federation request, the target server is fully in control of enforcing user setting and we avoid leaking the setting.
+One drawback is that we can't cache the result per target server and results should be cached per user. It feels like an acceptable performance tradeoff.
 
 Rather than using a `search_token`, we could use a `search_id` that will be the same for all subsequent calls.
 This solution is less informative about the progression of the search from the server perspective, cf `Potential issues` section.
@@ -139,7 +146,7 @@ A malicious server could list all user matrix ids that are defined in `remote` o
 
 The federation search endpoint should be rate limited.
 
-We recommend to not answer for `search_term` with less than 3 characters like "a" or "at".
+We recommend to not answer for `search_term` with less than 3 characters like "a" or "at", except when an exact match is available.
 
 #### Trust & Safety recommendations
 
