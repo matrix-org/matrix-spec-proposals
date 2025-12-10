@@ -12,7 +12,32 @@ rooms when a user leaves them in order to more aggressively free up their
 resources. One example of this is the [`forget_rooms_on_leave`] config option in
 Synapse.
 
-The present proposal seeks to standaradize this proprietary behaviour.
+The existence of this server-side feature creates a problem. Without knowing
+whether or not the homeserver will automatically forget rooms on leave, clients
+are limited in their UX choices around forgetting rooms. For instance, a client
+might want to:
+
+-   simultaneously display buttons for "leave" (`/leave`) and "leave & forget"
+    (`/leave` followed by `/forget`)
+-   offer a setting to toggle what a single "leave" button does (`/leave`
+    followed or not followed by `/forget`)
+-   explain the finality or non-finality of a single "leave" button before
+    issuing a `/leave` (e.g. in a tooltip or dialog)
+-   display the empty "historical rooms" view or section alongside some
+    documentation explaining what it is or how it'll be populated
+
+On a server that automatically forgets rooms on leave, these would result in
+confusing UX, however.
+
+The present proposal seeks to standaradize the currently proprietary behaviour
+of automatically forgetting rooms on leave in way that allows clients to discover
+the server's configuration and adapt their UI accordingly.
+
+Note that forgetting rooms as currently spec'ed has a separate problem in that
+forgotten rooms are not communicated via incremental syncs. In a scenario where
+users have multiple clients, this means that occasional initial syncs are
+required to determine the correct set of historical rooms. This proposal does
+not seek to address this issue.
 
 ## Proposal
 
