@@ -29,7 +29,8 @@ During initial design, the following goals were taken into account:
 - Time from opening of the app (when already logged in) to confident usability should be as low as possible.
 - Time from login on existing accounts to usability should be as low as possible.
 - Bandwidth should be minimized.
-- The API should support lazy-loading of things like membership and read receipts (and avoid sending unnecessary data to the client).
+- The API should support lazy-loading of things like membership and read receipts (and avoid sending unnecessary data to
+  the client).
 - The API should support informing the client when room state changes from under it, due to state resolution.
 - Clients should be able to work correctly without ever syncing in the full set of rooms they’re in.
 - Incremental sync responses should only include rooms that the user cares about.
@@ -97,9 +98,9 @@ ordering semantics).
 
 Rooms that the user has been in but left are only included if the room was previously sent to the client in that
 connection. Rooms the user has been kicked or banned from will always be included. We do not include rooms the user has
-left themselves to save bandwidth and general efficiency (as the user knows they've left), but we still include kicked and banned
-rooms as a) this should be uncommon, and b) the user may not have seen that they've been kicked/banned from the room
-otherwise.
+left themselves to save bandwidth and general efficiency (as the user knows they've left), but we still include kicked
+and banned rooms as a) this should be uncommon, and b) the user may not have seen that they've been kicked/banned from
+the room otherwise.
 
 A "list" is then a set of filters (e.g. only match invites, or DM rooms, etc) plus a "range" that indexes into the
 *filtered* list of rooms. For example, a common list config would be no filters (i.e. all rooms) plus the range
@@ -121,8 +122,8 @@ servers that are "distributed").
 
 ### Subscriptions
 
-A subscription is a rule that matches against a specified room ID, i.e. they allow the client to specify that a
-given room should always be returned (if there are updates). This is useful if e.g. the user has opened the room and the
+A subscription is a rule that matches against a specified room ID, i.e. they allow the client to specify that a given
+room should always be returned (if there are updates). This is useful if e.g. the user has opened the room and the
 client always wants to get the latest data for that room.
 
 The server MUST ensure that user has permission to see any information the server returns. Currently, the user must
@@ -134,8 +135,8 @@ either be in the room, or be invited/knocked to the room. Otherwise, the room wi
 
 ## Room results
 
-A room is returned in the response if it matches at least one rule, and either there is new data to return, or the room has
-not previously been sent to the client.
+A room is returned in the response if it matches at least one rule, and either there is new data to return, or the room
+has not previously been sent to the client.
 
 See the API section below for exactly what is returned. A subset may be returned if the user does not have permission to
 view the room, e.g. if they are invited but not yet joined to the room.
@@ -184,10 +185,11 @@ SHOULD send down the latest `N` events.
 
 For example, say the latest events in the room are `A`, `B`, `C` and `D` (from earliest to latest), and the client has
 previously seen `B`, `C` and `D` with a `timeline_limit` of 1. If the client increases the `timeline_limit` to 4 then
-the server SHOULD return `A`, `B`, `C` and `D`. If the client instead increased `timeline_limit` to 3, then the server would not need to
-return any events as it knows the client already saw `B`, `C` and `D`.
+the server SHOULD return `A`, `B`, `C` and `D`. If the client instead increased `timeline_limit` to 3, then the server
+would not need to return any events as it knows the client already saw `B`, `C` and `D`.
 
-If the server does return events that predate the last time the room was sent to the client, it MUST set the `expanded_timeline` to `true`.
+If the server does return events that predate the last time the room was sent to the client, it MUST set the
+`expanded_timeline` to `true`.
 
 > [!IMPORTANT]
 > The server should return rooms that have expanded timelines immediately, rather than waiting for the next update to
@@ -215,7 +217,8 @@ response. The server MAY chose not to send that state if the client has previous
 ## Extensions
 
 For requesting data other than room events (such as account data or typing notifications), clients can use "extensions".
-These are split out into separate sections to a) make it easier for clients to specify just what they need, and b) to make it easier to extend in the future.
+These are split out into separate sections to a) make it easier for clients to specify just what they need, and b) to
+make it easier to extend in the future.
 
 Examples of extensions, which will be specified in future MSCs, are:
 - To Device Messaging
@@ -421,8 +424,8 @@ Not all fields will be returned depending on the user's membership in the room.
 All fields in this section may be omitted. When `initial` is set to `false` then an omitted field means that the field
 remains unchanged from its previous value. When `initial` is set to `true` then an omitted field means that the field is
 not set, e.g. if `initial` is `true` and `name` is not set then the room has no name. Care must be taken by clients to
-ensure that if they previously saw that the room had a `name`, then it MUST be cleared if it receives a room response with
-`initial: true` and no `name` field.
+ensure that if they previously saw that the room had a `name`, then it MUST be cleared if it receives a room response
+with `initial: true` and no `name` field.
 
 #### Common fields
 
@@ -555,8 +558,8 @@ Pagination of the room list is achieved by the client increasing the range of on
 
 For example an initial request might have a list called `all_rooms` specifying a range of `[0,19]` in the initial
 request, and the server will respond with the top 20 rooms (by most recently updated). On the second request the client
-may change the range to `[0,99]`, at which point the server will use the top 100 rooms and respond with the ones that either a) weren’t
-sent down in the first request, or b) have updates since the first request.
+may change the range to `[0,99]`, at which point the server will use the top 100 rooms and respond with the ones that
+either a) weren’t sent down in the first request, or b) have updates since the first request.
 
 Clients can increase and decrease the range as they see fit. A common approach would be to start with a small window
 and grow that until the range covers all the rooms. After some threshold of the app being offline it may reduce the
