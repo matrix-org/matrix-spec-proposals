@@ -149,7 +149,7 @@ In future MSCs, an exception *may* be added for rooms that are world readable an
 The number of events in the timeline and what state is returned depends on the "room config" specified in the rules that
 the room matches from the request.  If a given room matches multiple rules and therefore multiple room configs, then the
 room configs are combined (to be a superset) based on the rules below. The clients can also change room configs between
-requests, see below for the semantics.
+requests: see ["Combining room configs"](#combining-room-configs) below for the semantics.
 
 The data returned in the response is only the data that has changed, e.g. if the room name hasn't changed then the
 `name` field will only be sent down the first sync with the room in it and not subsequently. Clients can detect if the
@@ -162,8 +162,8 @@ If a room matches multiple rules, and therefore multiple room configs, then the 
 before being applied.
 
 The fields are combined by taking the "superset", i.e.:
-- Timeline limit — take the maximum timeline limit across all room configs.
-- Required state — take the union of the required state fields, i.e. if a state event would be returned by any room
+- `timeline_limit` — take the maximum timeline limit across all room configs.
+- `required_state` — take the union of the required state fields, i.e. if a state event would be returned by any room
   config it is returned by the combined room config.
 
 
@@ -171,10 +171,10 @@ The fields are combined by taking the "superset", i.e.:
 
 When a room matches one or more rules (i.e. is eligible to be returned in the sync response) that has previously been
 returned to the client, the server checks whether the combined room config is different than when the room was last
-eligible to be returned. If the new config has at least one field that is a superset of the previous config, then the
-server handles the config differently.
+eligible to be returned. If any of the fields have been changed in a way that would cause an expansion
+in the events to be returned, then the server handles the change specially, as follows.
 
-#### Timeline events
+#### Changes to `timeline_limit`
 
 Normally the timeline events returned are only the events that have been received since the last time the room was sent
 to the client (i.e. only new events). However, if the `timeline_limit` has increased (to say `N`) and the server has not
@@ -184,10 +184,10 @@ SHOULD send down the latest `N` events.
 
 For example, say the latest events in the room are `A`, `B`, `C` and `D` (from earliest to latest), and the client has
 previously seen `B`, `C` and `D` with a `timeline_limit` of 1. If the client increases the `timeline_limit` to 4 then
-the server SHOULD return `A`, `B`, `C` and `D`, but if the client increases it instead to 3 then server does not need to
+the server SHOULD return `A`, `B`, `C` and `D`. If the client instead increased `timeline_limit` to 3, then the server would not need to
 return any events as it knows the client already saw `B`, `C` and `D`.
 
-If the server does send down extra events, it MUST set the `expanded_timeline` to `true`.
+If the server does return events that predate the last time the room was sent to the client, it MUST set the `expanded_timeline` to `true`.
 
 > [!IMPORTANT]
 > The server should return rooms that have expanded timelines immediately, rather than waiting for the next update to
@@ -202,14 +202,14 @@ sent the second to last event previously). If the room then drops below the thre
 1), and then receives another update (and so the `timeline_limit` increases back to 10), the server MAY choose to
 remember that it has already sent the previous 10 events and only return the latest event.
 
-#### Required state
+#### Changes to `required_state`
 
 Required state expansion works in a similar way. If a room has an expanded `required_state` then the server checks if
 the room has any state that matches the new, but not the old, `required_state`. If so then that state is included in the
 response. The server MAY chose not to send that state if the client has previously seen that state.
 
 > [!Note]
-> Synapse currently does not return rooms with expanded state immediately, instead waits for the next update.
+> Synapse currently does not return rooms with expanded state immediately; instead it waits for the next update.
 
 
 ## Extensions
@@ -442,7 +442,7 @@ When a user is or has been in the room, the following field are also returned:
 | - | - | - | - |
 | `name` | `string` | No | Room name or calculated room name. |
 | `avatar` | `string` | No | Room avatar |
-| `heroes` | `[StrippedHero]` | No | A truncated list of users in the room that can be used to calculate the room name. Will first include joined users, then invited users, and then finally left users. The same as the `m.heroes` section in the `/v3/sync` [specification](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3sync_response-200_roomsummary) |
+| `heroes` | `[StrippedHero]` | No | A truncated list of users in the room that can be used to calculate the room name. Will first include joined users, then invited users, and then finally left users: the same users as the `m.heroes` section in the [`/v3/sync` specification](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3sync_response-200_roomsummary) |
 | `is_dm` | `bool` | No | Flag to specify whether the room is a direct-message room (according to account data). If absent the room is not a DM room. |
 | `initial` | `bool` | No | Flag which is set when this is the first time the server is sending this data on this connection, or if the client should replace all room data with what is returned. Clients can use this flag to replace or update their local state. The absence of this flag means `false`. |
 | `expanded_timeline` | `bool` | No | Flag which is set if we're returning more historic events due to the timeline limit having increased. See "Changing room configs" section. |
