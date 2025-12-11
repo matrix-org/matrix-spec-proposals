@@ -410,15 +410,17 @@ be enough to ensure server identity remains pseudo-anonymous per-room.
 
 ### MSC4243: User ID localparts as Account Keys
 
-This proposal is an alternative to
+This proposal is a parallel exploration to
 [MSC4243: User ID localparts as Account Keys](https://github.com/matrix-org/matrix-spec-proposals/pull/4243)
 and borrows several ideas from the same proposal. It is not required reading.
 The key difference between these proposals is that this proposal describes long
 lived identity for servers as a key pair in Matrix rooms. Whereas MSC4243 only
 does so for individual user accounts.
 
-However, critically this MSC provides traceability to the origin of users,
-whereas MSC4243 does not unless a policy server is in use to sign each event.
+The critical difference between the proposals is whether or not to include the
+server as a first-class participant in the DAG, which is used as as an
+attestation of trust and responsibility for the membership for each user. With
+the trade-off of reducing metadata.
 
 ### MSC4124: Simple Server Authorization
 
