@@ -101,7 +101,7 @@ attempted impersonation, or an abusive domain name.
 #### The `reason` property
 
 An optional reason property may be present in order to explain the reason why a
-server has been revoked or permitted to participate.
+server has been revoked or requested to participate.
 
 ### Participation semantics
 
@@ -193,13 +193,10 @@ to the room. This is enforced by authorization rules.
 
 #### Room invitation flow
 
-To invite participants, prior to sending the invite membership events, the
-public key of the target user's resident server will need to have a
-`m.server.participation` event in the room's current state with a
-`participation` of `permited` or `accepted`. If there is no current
-participation, an `m.server.participation` event will need to be sent by the
-inviter to ensure the invited user's resident server can accept participation.
-This event will have a `participation` of `permitted`.
+Invitations are sent as normal, but in order to accept an invitation and join
+the invited user, the invited user's server must first request to participate
+within the room if their server does not already have a `participation` of
+`accepted`.
 
 Servers can only accept invitations and emit a join event when their current
 participation state in the room is set to `accepted`.
