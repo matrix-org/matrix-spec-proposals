@@ -222,31 +222,36 @@ check for `m.room.member`.
 
 1. If type is `m.server.participation`:
    1. If the sender's signature matches the `state_key` of the considered event:
-      1. If the `participation` field of the considered event is `revoked` AND
+      1. If there is no current `participation` for the public key within
+         `state_key`:
+         1. If the `participation` field of the considered event is `accepted`
+            AND the sender is a room creator, allow[^room-creator].
+         2. If the `participation` field of the considered event is `requested`:
+            1. If there is no current `participation` for the key contained
+               within `request_authorised_via_server` with a participation of
+               `accepted`, reject.
+            2. If there is no signature on the considered event for the key
+               contained within `request_authorised_via_server`, reject.
+            3. Otherwise, allow.
+         3. Otherwise, reject.
+      2. If the `participation` field of the considered event is `revoked` AND
          the current participation is not `revoked`, allow.
-      2. If the `participation` field of the considered event is not `accepted`,
-         reject.
-      3. If the sender is a room creator, allow[^room-creator].
-      4. If the current participation state for the target is `permitted`,
-         allow.
-      5. Otherwise, reject.
-   2. If `participation` is `accepted`, reject[^participation-accept].
-   3. If `partcipation` is `revoked`:
+      3. Otherwise, reject.
+   2. If `participation` is `revoked`:
       1. If the origin of the current participation state is the target key,
          reject[^revocation].
-   4. If the `sender`'s power level is greater than or equal to the _ban level_,
-      is greater than or equal to the target server's ambient power level,
-      allow.
-   5. Otherwise, reject.
-   6. If `participation` is `permitted`:
+      2. If the `sender`'s power level is greater than or equal to the _ban
+         level_, is greater than or equal to the target server's ambient power
+         level, allow.
+   3. If `participation` is `accepted`:
       1. If the _target server_'s current participation state is `accepted`,
          reject.
       2. If the _target server_'s current participation state is `revoked`,
          reject[^revocation].
-      3. If the `sender`'s power level is greater than or equal to the _invite
+      3. If the `sender`'s power level is greater than or equal to the _accept
          level_, allow.
-   7. Otherwise, reject.
-   8. Otherwise, reject.
+   4. Otherwise, reject.
+
 2. If the `sender`'s current participation state is not `accepted`, reject.
 
 [^room-creator]:
