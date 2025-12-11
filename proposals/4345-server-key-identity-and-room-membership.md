@@ -116,7 +116,7 @@ either.
 
 ### Terminology
 
-- A server's _ambient power level_ is the highest power level of any user that
+- A server's _implicit power level_ is the highest power level of any user that
   is resident to the server.
 
 ### The `accept` top level `m.room.power_levels` content property
@@ -199,9 +199,9 @@ homeserver is to participate again it must rejoin the room with a new keypair.
 A key controller can revoke their own key at any time.
 
 A user with the _accept_ power level may change the _participation_ of any
-server to `revoked` when the server has less ambient power level than the user
+server to `revoked` when the server has less implicit power level than the user
 making the revocation. This power level comparison is the sending user's power
-level compared to the revoked server's ambient power level.
+level compared to the revoked server's implicit power level.
 
 #### Situations where `m.server.participation` is sent on behalf of the server
 
@@ -281,7 +281,7 @@ check for `m.room.member`.
       1. If the origin of the current participation state is the target key,
          reject[^revocation].
       2. If the `sender`'s power level is greater than or equal to the _accept
-         level_, is greater than or equal to the target server's ambient power
+         level_, is greater than or equal to the target server's implicit power
          level, allow.
    3. If `participation` is `accepted`:
       1. If the _target server_'s current participation state is `accepted`,
