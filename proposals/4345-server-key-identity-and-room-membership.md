@@ -390,6 +390,17 @@ Please suggest specific algorithms to make this consistent.
 
 ## Potential issues
 
+### Event metadata
+
+The proposal does not try to remove metadata about the origin of events. The
+`unverified_domain` property is persisted and plain-text which means the
+proposal offers no significant improvement on the metadata exposed via server
+names in matrix user identifiers.
+
+To address this, a follow-up proposal could explore how to provide routing
+information ephemerally or separately to persisted server keys, and this should
+be enough to ensure server identity remains pseudo-anonymous per-room.
+
 ## Alternatives
 
 ### MSC4243: User ID localparts as Account Keys
