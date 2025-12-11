@@ -114,7 +114,7 @@ builds upon this proposal. Servers still have to send events through their users
 in both MSCs and we don't intend to change that in future MSCs in this series
 either.
 
-### Terminiology
+### Terminology
 
 - A server's _ambient power level_ is the highest power level of any user that
   is resident to the server.
@@ -150,7 +150,7 @@ server has been revoked or requested to participate.
 
 In this section, we describe the semantics of server participation. Later, we
 make an attempt of implementing these in authorization rules, but auth rules are
-difficult to parse, and the intent and context of statments is lost. Where
+difficult to parse, and the intent and context of statements is lost. Where
 authorization rules are inconsistent this text takes precedence.
 
 - Reminder: In this MSC _Server_ refers to the controller of a ed25519 keypair,
@@ -401,13 +401,13 @@ The key difference between these proposals is that this proposal describes long
 lived identity for servers as a key pair in Matrix rooms. Whereas MSC4243 only
 does so for individual user accounts.
 
-However, critically this MSC provides traceability to the origin of usrs,
+However, critically this MSC provides traceability to the origin of users,
 whereas MSC4243 does not unless a policy server is in use to sign each event.
 
 ### MSC4124: Simple Server Authorization
 
 This proposal borrows the principle of constrained server membership from
-MSC4124. Specifically changing authorization to stop unencountered servers from
+MSC4124. Specifically changing authorization to stop un-encountered servers from
 suddenly appending an infinite amount of data to the DAG.
 
 ### MSC4104: Auth Lock: Soft-failure-be-gone!
