@@ -89,22 +89,22 @@ This has several advantages:
   verified ownership of the domain.
 
 In addition to this, we strengthen the conditions of server participation in the
-DAG:
+DAG. So that new server identities must obtain explicit access from room
+administrators:
 
 - We also introduce server participation, which allows servers to be revoked
   access to the room at the DAG level. This allows both public and private rooms
-  to benefit from DAG reproducibility and preemptive access control. Revoked
-  participation forms a _casual barrier_.
+  to benefit from DAG reproducibility and pre-emptive access control.
 
 - Servers are unable to participate within a room until their key has been added
   by an existing participant. This principally ensures the introduction of
   server keys is traceable to existing participants. Without this traceability,
   the ability to add an infinite number of new server keys is available
-  ambiently to anyone who is able to federate with a by-standing participant or
-  malicious leaky server. In addition, this provides participants that have
-  invite permission the opportunity to challenge previously undiscovered
-  homeservers. Whereas there is no current protocol step to enable this for
-  public rooms.
+  implicitly to anyone who is able to federate with a by-standing participant or
+  malicious leaky server. This change provides participants that have a newly
+  introduced _accept_ permission the opportunity to challenge previously
+  undiscovered homeservers. Whereas there is no current protocol step to enable
+  this.
 
 We make no attempt to change the relationship of users to the DAG and servers
 within this MSC.
