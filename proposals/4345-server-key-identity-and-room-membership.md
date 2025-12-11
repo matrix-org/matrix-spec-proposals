@@ -5,7 +5,12 @@
 > This proposal is a parallel exploration of
 > [MSC4243: User ID localparts as Account Keys](https://github.com/matrix-org/matrix-spec-proposals/pull/4243),
 > in order to explore the security of the Matrix room model with respect to new
-> identities.
+> identities. This MSC incorporates the ideas of three other successive attempts
+> to represent servers in the Matrix DAG:
+> [MSC4124: Simple Server Authorization](https://github.com/matrix-org/matrix-spec-proposals/pull/4124),
+> [MSC4099: Participation based authorization for servers in the Matrix DAG](https://github.com/matrix-org/matrix-spec-proposals/pull/4099),
+> and
+> [MSC3953: Server capability DAG](https://github.com/matrix-org/matrix-spec-proposals/pull/3953).
 
 ## Server identity today
 
