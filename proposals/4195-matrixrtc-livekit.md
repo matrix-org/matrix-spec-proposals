@@ -265,8 +265,8 @@ request.
 
 Upon successful issuance of a JWT token and once the LiveKit SFU Authorisation Service observes the
 client's SFU connection, identified by the LiveKit room `livekit_alias` and the LiveKit identity
-specified in `member.id`, it SHOULD issue a `reset` of the delayed event by sending the following
-POST request to the homeserver of that client:
+as specified in the next section (`SHA256(user_id|claimed_device_id|member.id)`), it SHOULD issue 
+a `reset` of the delayed event by sending the following POST request to the homeserver of that client:
 ```http
 POST /_matrix/client/v1/delayed_events/{delay_id}/restart HTTP/1.1
 Host: matrix-rtc.example.com
@@ -304,7 +304,9 @@ event has been reached, whichever occurs first.
 ### Pseudonymous LiveKit Participant Identity
 
 To protect user privacy, a pseudonymous LiveKit participant identity is used, so the Matrix user ID
-is not exposed to the LiveKit SFU backend. This pseudonymous identity is represented by `member.id`.
+is not exposed to the LiveKit SFU backend. This pseudonymous identity is given by the SHA-256 hash 
+of the concatenation of the Matrix `user_id`, a pipe character (`|`) , the `claimed_device_id`, 
+a pipe character (`|`) and the `member.id` field, e.g, `SHA256(user_id|claimed_device_id|member.id)`.
 
 ### LiveKit JWT Permission Grants
 
