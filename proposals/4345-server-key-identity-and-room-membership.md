@@ -280,7 +280,7 @@ check for `m.room.member`.
    2. If `participation` is `revoked`:
       1. If the origin of the current participation state is the target key,
          reject[^revocation].
-      2. If the `sender`'s power level is greater than or equal to the _ban
+      2. If the `sender`'s power level is greater than or equal to the _accept
          level_, is greater than or equal to the target server's ambient power
          level, allow.
    3. If `participation` is `accepted`:
