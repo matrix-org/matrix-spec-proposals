@@ -1,28 +1,70 @@
 # MSC4345: Server key identity and room membership
 
+> [!NOTE]
+>
+> This proposal is a parallel exploration of
+> [MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243): User
+> ID localparts as Account Keys
+
+## Server identity today
+
 Events in Matrix are signed by the sending server's domain-scoped signing key,
 which is also a rotating key. During signature verification, a server must
 obtain the public key used to sign an event. This presents problems when the
 origin server is offline or has been decommissioned. As this forces servers to
 rely on notaries to supply historical keys.
 
-There are several issues with this system that lead to inconsistent views of the
-DAG:
+There are two major issues with this system that lead to inconsistent views of
+the DAG:
 
-- Centralisation of trust: Signature verification depends on notaries being
-  online and honest about historical keys.
+- Signature verification depends on the availability of notaries to return a
+  copy of each public key from servers that are currently unavailable.
 
-- Notaries may never have been present in the rooms that a server is trying to
-  join. This is especially true of matrix.org which is the notary used by
-  default in synapse. If no notary has the key history for a given server, none
-  of the events can be verified.
+- Even when notaries are available, they may never have been present in the
+  rooms that a server is trying to join, and so may not have copies of relevant
+  public keys. If no notary has the key history for a given server, none of the
+  server's events can be verified.
 
-- As server keys are domain scoped and the domain name provides the identity of
-  servers in the DAG, verifying authenticity of events is a crossed concern with
-  verification of ownership of a domain.
+There are also major infrastructure related concerns with providing notaries:
 
-This MSC is inspired the work of @kegsay in
-[MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243).
+- Notaries are trusted infrastructure that can enable attackers to impersonate
+  other servers.
+
+- Decommissioning a notary has to be done responsibly with consideration to
+  allow the public keys to be transferred to other notaries. Which is a process
+  that also has security risks.
+
+We identify that the reason notaries are required is because the identity of
+servers is provided through their domain or server name. And that therefore
+verifying authenticity of events with respect to a server's identity is a
+crossed concern with verification of ownership of a server name.
+
+## Considerations for alternative identity
+
+The Matrix room model currently provides new identities with the same level of
+access as most room members via the _default power level_. And this is what has
+historically allowed malicious actors to exploit the room model with new user
+identities and attack public matrix rooms
+
+Server names as server identity provide a cost to creating a new identity. For
+example an address or domain must be registered for the server. Throughout
+Matrix's history, attackers have minted new user identities by exploiting
+homeservers with weak registration requirements instead of minting new
+homeservers. And servers using IP addresses as their server names are nearly
+universally banned from public matrix rooms. Therefore the cost to creating new
+server identities with server names is significant. And this cost is a
+significant factor in deterring attacks that the room model is currently
+vulnerable to.
+
+Any proposal that changes the primary identity in the Matrix room model
+therefore must explicitly address:
+
+1. The level of access new identities have in the Matrix room model.
+2. How room administrators can assess the trustworthiness of those identities
+   before providing them access.
+
+And this is our primary motivation for carrying out this exploration parallel to
+[MSC4243: User ID localparts as Account Keys](https://github.com/matrix-org/matrix-spec-proposals/pull/4243).
 
 ## Proposal
 
