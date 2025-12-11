@@ -3,8 +3,9 @@
 > [!NOTE]
 >
 > This proposal is a parallel exploration of
-> [MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243): User
-> ID localparts as Account Keys
+> [MSC4243: User ID localparts as Account Keys](https://github.com/matrix-org/matrix-spec-proposals/pull/4243),
+> in order to explore the security of the Matrix room model with respect to new
+> identities.
 
 ## Server identity today
 
