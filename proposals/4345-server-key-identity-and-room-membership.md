@@ -226,14 +226,14 @@ check for `m.room.member`.
          `state_key`:
          1. If the `participation` field of the considered event is `accepted`
             AND the sender is a room creator, allow[^room-creator].
-         2. If the `participation` field of the considered event is `requested`:
-            1. If there is no current `participation` for the key contained
-               within `request_authorised_via_server` with a participation of
-               `accepted`, reject.
-            2. If there is no signature on the considered event for the key
-               contained within `request_authorised_via_server`, reject.
-            3. Otherwise, allow.
-         3. Otherwise, reject.
+         2. If the `participation` field of the considered event is not
+            `requested`, reject.
+         3. If there is no current `participation` for the key contained within
+            `request_authorised_via_server` with a participation of `accepted`,
+            reject.
+         4. If there is no signature on the considered event for the key
+            contained within `request_authorised_via_server`, reject.
+         5. Otherwise, reject.
       2. If the `participation` field of the considered event is `revoked` AND
          the current participation is not `revoked`, allow.
       3. Otherwise, reject.
