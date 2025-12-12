@@ -103,68 +103,6 @@ The rendezvous session (i.e. the payload) SHOULD expire after a period of time c
 `expires_ts` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
 the payload MUST fail. The rendezvous session can be manually expired with a `DELETE` call to the rendezvous session.
 
-### Example API usage
-
-The actions above can be illustrated as follows:
-
-```mermaid
-sequenceDiagram
-  participant A as Device A
-  participant HS as Homeserver<br>https://matrix.example.com
-  participant B as Device B
-  Note over A: Device A determines which rendezvous server to use
-
-  A->>+HS: POST /_matrix/client/v1/rendezvous<br>{"data":"Hello from A"}
-  HS->>-A: 200 OK<br>{"id":"abc-def-123-456","sequence_token": "1", "expires_ts": 1234567}
-
-  A-->>B: Rendezvous ID and homeserver base URL shared out of band as QR code: e.g. id=abc-def-123-456 baseURL=https://matrix.example.com
-
-  Note over A: Device A starts polling for new payloads at the<br>rendezvous session using the returned `sequence_token`
-  activate A
-
-  Note over B: Device B resolves the servername to the homeserver
-
-  B->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
-  HS->>-B: 200 OK<br>{"sequence_token": "1", "data": "Hello from A"}
-  loop Device A polls the rendezvous session for a new payload
-    A->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
-    alt is not modified
-      HS->>-A: 200 OK<br>{"sequence_token": "1", "data": "Hello from A", "expires_ts": 1234567}
-    end
-  end
-
-  note over B: Device B sends a new payload
-  B->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456<br>{"sequence_token": "1", "data": "Hello from B"}
-  HS->>-B: 200 OK<br>{"sequence_token": "2"}
-
-  Note over B: Device B starts polling for new payloads at the<br>rendezvous session using the new `sequence_token`
-  activate B
-
-  loop Device B polls the rendezvous session for a new payload
-    B->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
-    alt is not modified
-      HS->>-B: 200 OK<br>{"sequence_token": "2", "data": "Hello from A", "expires_ts": 1234567}
-    end
-  end
-
-  note over A: Device A then receives the new payload
-  opt modified
-      HS->>A: 200 OK<br>{"sequence_token": "2", "data": "Hello from B", "expires_ts": 1234567}
-  end
-  deactivate A
-
-  note over A: Device A sends a new payload
-    A->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456<br>{"sequence_token": "2", "data": "Hello again from A"}
-    HS->>-A: 200 OK<br>{"sequence_token": "3"}
-
-  note over B: Device B then receives the new payload
-  opt modified
-      HS->>B: 200 OK<br>{"sequence_token": "3", "data": "Hello again from B", "expires_ts": 1234567}
-  end
-
-  deactivate B
-```
-
 ### `POST /_matrix/client/v1/rendezvous` - Create a rendezvous session and send initial payload
 
 Rate-limited: Yes
@@ -326,6 +264,68 @@ HTTP response codes:
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
+
+### Example API usage
+
+The actions above can be illustrated as follows:
+
+```mermaid
+sequenceDiagram
+  participant A as Device A
+  participant HS as Homeserver<br>https://matrix.example.com
+  participant B as Device B
+  Note over A: Device A determines which rendezvous server to use
+
+  A->>+HS: POST /_matrix/client/v1/rendezvous<br>{"data":"Hello from A"}
+  HS->>-A: 200 OK<br>{"id":"abc-def-123-456","sequence_token": "1", "expires_ts": 1234567}
+
+  A-->>B: Rendezvous ID and homeserver base URL shared out of band as QR code: e.g. id=abc-def-123-456 baseURL=https://matrix.example.com
+
+  Note over A: Device A starts polling for new payloads at the<br>rendezvous session using the returned `sequence_token`
+  activate A
+
+  Note over B: Device B resolves the servername to the homeserver
+
+  B->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
+  HS->>-B: 200 OK<br>{"sequence_token": "1", "data": "Hello from A"}
+  loop Device A polls the rendezvous session for a new payload
+    A->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
+    alt is not modified
+      HS->>-A: 200 OK<br>{"sequence_token": "1", "data": "Hello from A", "expires_ts": 1234567}
+    end
+  end
+
+  note over B: Device B sends a new payload
+  B->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456<br>{"sequence_token": "1", "data": "Hello from B"}
+  HS->>-B: 200 OK<br>{"sequence_token": "2"}
+
+  Note over B: Device B starts polling for new payloads at the<br>rendezvous session using the new `sequence_token`
+  activate B
+
+  loop Device B polls the rendezvous session for a new payload
+    B->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
+    alt is not modified
+      HS->>-B: 200 OK<br>{"sequence_token": "2", "data": "Hello from A", "expires_ts": 1234567}
+    end
+  end
+
+  note over A: Device A then receives the new payload
+  opt modified
+      HS->>A: 200 OK<br>{"sequence_token": "2", "data": "Hello from B", "expires_ts": 1234567}
+  end
+  deactivate A
+
+  note over A: Device A sends a new payload
+    A->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456<br>{"sequence_token": "2", "data": "Hello again from A"}
+    HS->>-A: 200 OK<br>{"sequence_token": "3"}
+
+  note over B: Device B then receives the new payload
+  opt modified
+      HS->>B: 200 OK<br>{"sequence_token": "3", "data": "Hello again from B", "expires_ts": 1234567}
+  end
+
+  deactivate B
+```
 
 ### Implementation notes
 
