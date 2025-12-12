@@ -28,6 +28,44 @@ This proposal is split into three parts:
 - Encoding the rendezvous session and an ephemeral key in a QR code
 - Establishing a secure channel over the insecure rendezvous session using an ephemeral key
 
+The overall flow looks like this:
+
+```mermaid
+sequenceDiagram
+    participant G as Device generating QR
+    participant HS as Homeserver
+    participant S as Device scanning QR
+
+    note over G,S: Generating and scanning devices each pick ephemeral Curve25519 keys to use to set up the secure channel
+
+    note over G: Generating device picks a suitable homeserver to use for the rendezvous session 
+
+    G->>+HS: Creates a rendezvous session on the homeserver
+    HS->>-G: ID for the rendezvous
+
+    note over G: Generates and displays a QR code containing:<br>ephemeral key of generating device, rendezvous ID, homeserver base URL,<br>device disposition (whether device is new or existing)
+
+    G-->>S: Other device scans the QR code
+
+    note over S: Scanning device checks that the disposition matches what it expects
+
+    S->>+HS: Scanning device checks that it can communicate with the<br>rendezvous session on the homeserver identified by information in QR
+    HS->>-S: OK
+
+    G<<->>S: Generating and scanning device then communicate by<br>sending and receiving to/from the rendezvous session via the homeserver
+
+    note over G,S: Devices perform Elliptic Curve Diffie-Hellman protocol<br>(using the ephemeral keys from earlier on) to agree a shared secret
+    S->>G: Scanning device sends LoginInitiateMessage handshake message
+    G->>S: Generating device validates and responds with LoginOkMessage handshake message
+
+    note over G,S: Devices ask user to confirm that the connection isn't being Man-In-The-Middle attacked by<br>entering a two digit CheckCode shown on scanning device into the generating device
+
+    S-->>G: User enters two digit code 
+    note over G,S: Devices can now communicate securely using the shared secret to encrypt future messages via the rendezvous session
+ 
+    S<<->>G: Devices then send and receive messages as described in MSC4108
+```
+
 ## Insecure rendezvous session
 
 It is proposed that an HTTP-based protocol be used to establish an ephemeral bi-directional communication session over
@@ -36,7 +74,7 @@ end-to-end confidentiality nor authenticity by itself - these are layered on top
 
 New optional HTTP endpoints are to be added to the Client-Server API.
 
-### High-level description
+### Concept
 
 Suppose that Device A wants to establish communications with Device B. Device A can do so by creating a
 _rendezvous session_ via a `POST /_matrix/client/v1/rendezvous` call to an appropriate homeserver. Its response includes
