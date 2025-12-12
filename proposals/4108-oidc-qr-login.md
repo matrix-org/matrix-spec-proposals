@@ -862,4 +862,4 @@ This MSC builds on:
 [MSC4341]: https://github.com/matrix-org/matrix-spec-proposals/pull/4341 "MSC4341 Support for RFC 8628 Device Authorization Grant"
 [server name]: https://spec.matrix.org/v1.16/appendices/#server-name
 [base URL]: https://spec.matrix.org/v1.16/client-server-api/#getwell-knownmatrixclient
-[MSC4388]: https://github.com/matrix-org/matrix-spec-proposals/pull/4338 "MSC4388 Secure out-of-band channel for sign in with QR"
+[MSC4388]: https://github.com/matrix-org/matrix-spec-proposals/pull/4388 "MSC4388 Secure out-of-band channel for sign in with QR"
