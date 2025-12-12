@@ -408,7 +408,7 @@ A valid `m.rtc.member` event as a prerequisite for disconnecting from a slot has
   the slot) This ensures that the disconnection reason refers to a real connection lifecycle rather
   than a pre-join cancellation. 
 
-`disconnect_reason` F**ield explanations:**
+`disconnect_reason` **Field explanations:**
 
 | Field | Type | Required | Description |
 | ----- | ----- | ----- | ----- |
@@ -437,7 +437,7 @@ A valid `m.rtc.member` event as a prerequisite for disconnecting from a slot has
 example, if the user is busy or declines a MatrixRTC session), a dedicated **sticky event** is
 required to convey the participant’s status. 
 
-#### Lifecycle of a MatrixRTC Membership {#lifecycle-of-a-matrixrtc-membership}
+#### Lifecycle of a MatrixRTC Membership
 
 The MatrixRTC membership is a collection of linked `m.rtc.member` events. With the definition of a
 **Connected** and a **Disconnected** MatrixRTC membership from above:
@@ -591,7 +591,7 @@ their existence remains valid regardless of how the room state later resolves.
 However, for this reconstruction process to work **reliably and deterministically**, the Matrix 
 protocol requires **consistent message ordering (on a homeserver basis)** across both state and 
 timeline events. This remains an open problem and is discussed further in the 
-[*Impact of Message Ordering wrt. Session History*](#impact-of-message-ordering-wrt.-session-history) 
+[*Impact of Message Ordering wrt. Session History*](#impact-of-message-ordering-wrt-session-history) 
 section. As a temporary workaround, the reconstruction process uses `origin_server_ts` ordering.
 
 General concept
@@ -635,7 +635,7 @@ Step-by-step reconstruction algorithm
 In general, there may be more than one `collection` of overlapping membership intervals, resulting
 in multiple consecutive MatrixRTC sessions within a single slot.
 
-### MatrixRTC Transport {#matrixrtc-transport}
+### MatrixRTC Transport
 
 MatrixRTC, by design, supports multiple transport implementations, each defined in its own MSC.
 Transports describe how clients connect to peers or servers, manage connections, publish and
@@ -752,7 +752,7 @@ specifies how the key material is actually used. For example, the RTC client may
 random 256-bit key, which the application can then use to derive the required secrets (using HKDF or
 other key-stretching methods as appropriate).
 
-#### Key Distribution {#key-distribution}
+#### Key Distribution
 
 When joining a MatrixRTC slot, each participant shares a generated E2EE key with the other members
 (`m.rtc.member`) of the same slot by sending an **encrypted** [Matrix to-device
@@ -968,7 +968,7 @@ MatrixRTC currently lacks a defined mechanism for interoperability across differ
 one common transport implementation. This can lead to fragmentation if clients or Matrix sites
 support disjoint sets of transports. A more complete interop solution is left as future work.
 
-### Impact of Message Ordering wrt. Session History {#impact-of-message-ordering-wrt.-session-history}
+### Impact of Message Ordering wrt. Session History
 
 As described above, all information required to reconstruct historic MatrixRTC sessions is available
 within the Matrix DAG:
