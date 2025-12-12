@@ -347,9 +347,10 @@ A valid `m.rtc.member` event as a prerequisite for connecting to a slot has the 
   accurate historical reconstruction, and allow deriving the participant’s start time using the
   `origin_server_ts` of the referenced event.  
 * `member` — Uniquely identifies this participation instance; includes:  
-  * `id` — UUID to distinguish multiple participants, even for the same device. This ID can also
-    serve as a canonical identifier for certain MatrixRTC transports, helping to prevent metadata
-    leakage. The ID MUST be unique for each connect event.  
+  * `id` — UUID to distinguish multiple participations, even for the same user and same device. This
+    ID can also serve as a canonical identifier for certain MatrixRTC transports, helping to prevent
+    metadata leakage if used as additional entropy, e.g., `SHA-256(user_id|device_id|member.id)`. 
+    The ID MUST be unique for each connect event.
   * `claimed_device_id` — Matrix device identifier.  
   * `claimed_user_id` — Matrix user ID.  
 * `rtc_transports` — List of objects describing how to access this participant’s media streams. See
