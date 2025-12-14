@@ -45,9 +45,9 @@ array and increments (or initializes) its counter. What exactly constitutes emoj
 an implementation detail for clients. Obvious choices are sending emoji in messages or annotations.
 
 When an image is sent as an inline image or in a reaction (using [MSC4027]), the `mxc://` URI of the
-image MAY be used as the "emoji" in this event. Clients which do not support such use of images MUST
-tolerate the existence of `mxc://` entries, e.g. by ignoring the entries when deciding what to
-display to the user, while still preserving them when modifying the list.
+image MAY be used as the "emoji" in this event. Clients MUST tolerate any `emoji` values that they
+don't understand or support, by ignoring the entries when deciding what to display to the user,
+while still preserving them when modifying the list.
 
 As new emoji are being used, clients SHOULD limit the length of the `recent_emoji` array by dropping
 elements from the end. A RECOMMENDED maximum length is 100 emoji. Apart from this, no other
