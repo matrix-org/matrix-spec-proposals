@@ -383,7 +383,7 @@ With this proposal, the client can use delayed events to implement a "heartbeat"
 On joining the call, the client sends a "join" state event as normal to indicate that it is participating:
 
 ```http
-PUT /_matrix/client/v1/rooms/!wherever:example.com/state/m.rtc.member/@someone:example.com
+PUT /_matrix/client/v3/rooms/!wherever:example.com/state/m.rtc.member/@someone:example.com
 Content-Type: application/json
 
 {
@@ -397,7 +397,7 @@ Before sending the join event, it also schedules a delayed "hangup" state event 
 marks the end of its participation:
 
 ```http
-PUT /_matrix/client/v1/rooms/!wherever:example.com/state/m.rtc.member/@someone:example.com?delay=10000
+PUT /_matrix/client/v3/rooms/!wherever:example.com/state/m.rtc.member/@someone:example.com?delay=10000
 Content-Type: application/json
 
 {
@@ -435,7 +435,7 @@ This MSC also allows an implementation of "self-destructing" messages using reda
 First send (or generate the PDU when
 [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080)
 is available):
-`PUT /_matrix/client/v1/rooms/{roomId}/send/m.room.message/{txnId}`
+`PUT /_matrix/client/v3/rooms/{roomId}/send/m.room.message/{txnId}`
 
 ```jsonc
 {
@@ -445,7 +445,7 @@ is available):
 ```
 
 then send:
-`PUT /_matrix/client/v1/rooms/{roomId}/send/m.room.redaction/{txnId}?delay=600000`
+`PUT /_matrix/client/v3/rooms/{roomId}/send/m.room.redaction/{txnId}?delay=600000`
 
 ```jsonc
 {
