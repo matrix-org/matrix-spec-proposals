@@ -132,6 +132,6 @@ Previous iterations of this MSC has used the following `unstable_features` key(s
 
 If the value is false or the key is not present, clients MUST assume the feature is not available.
 
-Once the MSC has been merged, and the homeserver has advertised support for the Matrix version that
-this endpoint is included in, clients should use `/_matrix/client/v1/mutual_rooms` and will no
-longer need to check for the `unstable_features` flag.
+Once the MSC has been merged, but before the homeserver advertises support for the Matrix spec
+version that includes this endpoint, servers SHOULD advertise the `uk.half-shot.msc2666.query_mutual_rooms.stable`
+unstable feature flag to indicate they support the stable `/_matrix/client/v1/mutual_rooms` endpoint.
