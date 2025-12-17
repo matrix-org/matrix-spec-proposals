@@ -1,11 +1,11 @@
 # MSC4373: Server opt-out of specific EDU types
 
-Some servers may wish to not receive specific types of EDUs, such as presence, to
-cut down on the amount of bandwidth used (as an example).
+Some servers may wish to not receive specific types of EDUs, e.g. presence, to cut down
+on bandwidth usage.
 
 ## Proposal
 
-### `GET /_matrix/federation/v1/edutypes`
+### `GET /_matrix/federation/v1/query/edutypes`
 
 This endpoint dictates what types of EDUs the server wishes to receive.
 
