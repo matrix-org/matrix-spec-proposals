@@ -502,17 +502,22 @@ The above rendezvous session is insecure, providing no confidentiality nor authe
 even arbitrary network participants which possess the rendezvous session ID and server base URL.
 To provide a secure channel on top of this insecure rendezvous session transport, we propose the following scheme.
 
-This scheme is essentially [ECIES](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme#Formal_description_of_ECIES)
-instantiated with X25519, HKDF-SHA256 for the KDF and ChaCha20-Poly1305 (as specified by
-[RFC8439](https://datatracker.ietf.org/doc/html/rfc8439#section-2.8)) for the authenticated encryption. Therefore,
-existing security analyses of ECIES are applicable in this setting too. Nevertheless we include below a short
-description of our instantiation of ECIES and discuss some potential pitfalls and attacks.
+This scheme is essentially [HPKE](https://www.rfc-editor.org/rfc/rfc9180) in [base
+mode](https://www.rfc-editor.org/rfc/rfc9180.html#name-hpke-modes) instantiated with X25519, HKDF-SHA256 for the KDF and
+ChaCha20-Poly1305 (as specified by [RFC8439](https://datatracker.ietf.org/doc/html/rfc8439#section-2.8)) for the
+authenticated encryption. Therefore, existing security analyses of HPKE are applicable in this setting too. Nevertheless
+we include below a short description of our instantiation of HPKE and discuss some potential pitfalls and attacks.
 
-The primary limitation of ECIES is that there is no authentication for the initiating party (the one to send the first
-payload; Device S in the text below). Thus the recipient party (the one to receive the first payload; Device G in the
-text below) has no assurance as to who actually sent the payload. In QR code login, we work around this problem by
-exploiting the fact that both of these devices are physically present during the exchange and offloading the check that
-they are both in the correct state to the user performing the QR code login process.
+The primary limitation of HPKE in base mode is that there is no authentication for the initiating party (the one to send
+the first payload; Device S in the text below). Thus the recipient party (the one to receive the first payload; Device G
+in the text below) has no assurance as to who actually sent the payload. In QR code login, we work around this problem
+by exploiting the fact that both of these devices are physically present during the exchange and offloading the check
+that they are both in the correct state to the user performing the QR code login process.
+
+Additionally the HPKE RFC exclusively defines unidirectional encryption. The scheme found in the [Oblivious
+HTTP](https://www.rfc-editor.org/rfc/rfc9458) RFC under the [Encapsulation of
+Responses](https://www.rfc-editor.org/rfc/rfc9458#name-encapsulation-of-responses) section is used to enable
+bidirectional encryption in our chosen HPKE scheme.
 
 ### Establishment
 
@@ -524,9 +529,12 @@ Participants:
 Regardless of which device generates the QR code, either device can be the existing (already signed in) device. The
 other device is then the new device (one seeking to be signed in).
 
-Symmetric encryption uses a separate encryption key for each sender, both derived from a shared secret using HKDF. A
-separate deterministic, monotonically-incrementing nonce is used for each sender. Devices initially set both nonces to
-`0` and increment the corresponding nonce by `1` for each message sent and received.
+Symmetric encryption uses a separate encryption key for each sender, both derived from a shared secret using HKDF.
+Separate nonces are used for each direction of the communication channel. Device S will create a base nonce from the
+shared secret, while Device G will create a new random base nonce. Each base nonce is mixed with a
+monotonically-incrementing sequence number. Devices initially set both numbers to `0` and increment the corresponding
+number by `1` for each message sent and received. The per-message nonce is is the result of XORing the base nonce with
+the current sequence number, encoded as a big-endian integer of the same length as base nonce.
 
 1. **Ephemeral key pair generation**
 
@@ -562,41 +570,48 @@ At this point Device S should check that the received intent matches what the us
 
 4. **Device S sends the initial payload**
 
-Device S computes a shared secret **SH** by performing ECDH between **Ss** and **Gp**. It then discards **Ss** and
-derives two 32-byte symmetric encryption keys from **SH** using HKDF-SHA256. One of those keys, **EncKey_S** is
-used for messages encrypted by device S, while the other, **EncKey_G** is used for encryption by device G.
+Device S performs an ECDH operation using **Ss** and **Gp** to compute the ECDH shared secret **SharedSecret**. This
+value is input to the HPKE key schedule, where it is first expanded into a common secret **Secret** using HKDF-SHA256.
+After this step, **Ss** is discarded.
 
-The keys are generated with the following HKDF parameters:
+From this common **Secret**, the HPKE key schedule derives the following values:
 
-**EncKey_S**
+* a symmetric encryption key **AeadKey_S**
+* an **ExporterSecret**
+* a **BaseNonce**
 
-- `MATRIX_QR_CODE_LOGIN_ENCKEY_S|Gp|Sp` as the info, where **Gp** and **Sp** stand for the generating
-  device's and the scanning device's ephemeral public keys, encoded as unpadded base64.
-- An all-zero salt.
+These values are then used to initialize an [HPKE encryption
+context](https://www.rfc-editor.org/rfc/rfc9180.html#name-encryption-and-decryption). This context encapsulates the
+derived key material and maintains the cryptographic state needed to protect messages. It provides functions for
+encrypting messages in a single direction using AEAD, and exposes an exporter interface for deriving additional secrets
+bound to the established context.
 
-**EncKey_G**
+**Context_S**
 
-- `MATRIX_QR_CODE_LOGIN_ENCKEY_G|Gp|Sp` as the info, where **Gp** and **Sp** stand for the generating
-  device's and the scanning device's ephemeral public keys, encoded as unpadded base64.
-- An all-zero salt.
+```
+SharedSecret := ECDH(Ss, Gp)
+Secret := LabeledExtract(shared_secret, "secret", SharedSecret)
 
-With this, Device S has established its side of the secure channel. Device S then derives a confirmation payload that
-Device G can use to confirm that the channel is secure. It contains:
+Mode := 0x00
+PskIdHash := LabeledExtract("", "psk_id_hash", "")
+InfoHash := LabeledExtract("", "info_hash", "MATRIX_QR_CODE_LOGIN")
+KeyScheduleContext := concat(Mode, PskIdHash, InfoHash)
+
+AeadKey_S := LabeledExpand(secret, "key", KeyScheduleContext, 32)
+BaseNonce := LabeledExpand(secret, "base_nonce", key_schedule_context, 12)
+ExporterSecret := LabeledExpand(secret, "exp", key_schedule_context, 32)
+
+Context_S := Context<S>(AeadKey_S, BaseNonce_S, 0, ExporterSecret)
+```
+
+With this, Device S has established its sending side of the secure channel. Device S then derives a confirmation payload
+that Device G can use to confirm that the channel is secure. It contains:
 
 - The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305.
 - Its public ephemeral key **Sp**.
 
 ```
-Nonce_S := 0
-SH := ECDH(Ss, Gp)
-EncKey_S := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCKEY_S|" || Gp || "|" || Sp, salt=0, size=32)
-
-// Stored, but not yet used
-EncKey_G := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCKEY_G|" || Gp || "|" || Sp, salt=0, size=32)
-
-NonceBytes_S := ToLowEndianBytes(Nonce_S)[..12]
-TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey_S, NonceBytes_S, "MATRIX_QR_CODE_LOGIN_INITIATE")
-Nonce_S := Nonce_S + 1
+TaggedCiphertext := Context_S_S.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", "")
 LoginInitiateMessage := UnpaddedBase64(TaggedCiphertext) || "|" || UnpaddedBase64(Sp)
 ```
 
@@ -608,20 +623,65 @@ Device G receives **LoginInitiateMessage** (potentially coming from Device S) fr
 polling with `GET` requests.
 
 It then does the reverse of the previous step, obtaining **Sp**, deriving the shared secret using **Gs** and **Sp**,
-discarding **Gs**, deriving the two symmetric encryption keys **EncKey_S** and **EncKey_G**, then finally
-decrypting (and authenticating) the **TaggedCiphertext** using **EncKey_S**, obtaining a plaintext.
+discarding **Gs**, deriving the HPKE context `Context_G`, then finally decrypting (and authenticating) the
+**TaggedCiphertext** using **AeadKey_S**, obtaining a plaintext.
+
+**Context_G**
+
+```
+(TaggedCiphertext, Sp) := Unpack(LoginInitiateMessage)
+
+SharedSecret := ECDH(Gs, Sp)
+Secret := LabeledExtract(shared_secret, "secret", SharedSecret)
+
+Mode := 0x00
+PskIdHash := LabeledExtract("", "psk_id_hash", "")
+InfoHash := LabeledExtract("", "info_hash", "MATRIX_QR_CODE_LOGIN")
+KeyScheduleContext := concat(Mode, PskIdHash, InfoHash)
+
+AeadKey_S := LabeledExpand(secret, "key", KeyScheduleContext, 32)
+BaseNonce := LabeledExpand(secret, "base_nonce", key_schedule_context, 12)
+ExporterSecret := LabeledExpand(secret, "exp", key_schedule_context, 32)
+
+Context_G := Context<R>(AeadKey_S, BaseNonce_S, 0, ExporterSecret)
+```
 
 It checks that the plaintext matches the string `MATRIX_QR_CODE_LOGIN_INITIATE`, failing and aborting if not.
 
-It then responds with a dummy payload containing the string `MATRIX_QR_CODE_LOGIN_OK` encrypted with **SH** calculated
-as follows:
+```
+Plaintext := Context_G.Open(TaggedCiphertext, "")
+
+unless Plaintext == "MATRIX_QR_CODE_LOGIN_INITIATE":
+     FAIL
+```
+
+It then derives a response context, which enables bidirectional communication:
+
+**ResponseContext_G**
 
 ```
-Nonce_G := 0
-NonceBytes_G := ToLowEndianBytes(Nonce_G)[..12]
-TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey_G, NonceBytes_G, "MATRIX_QR_CODE_LOGIN_OK")
-Nonce_G := Nonce_G + 1
-LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext)
+Secret := Context_G.Export("MATRIX_QR_CODE_LOGIN response", 32)
+
+ResponseNonce := random(32)
+Salt := Sp || ResponseNonce
+
+AeadKey_G := HKDF_SHA256(Secret, "key", salt=Salt, size=32)
+AeadNonce := HKDF_SHA256(Secret, "key", salt=Salt, size=12)
+ExporterSecret := [0; 32]
+
+ResponseContext_G := Context<S>(AeadKey, AeadNonce, 0, ExporterSecret)
+```
+
+**Warning** The exporter interface of the response context **MUST NOT** be used, as it is initialized with a dummy
+exporter secret. Aside from this limitation, the response context supports encryption and decryption in the same manner
+as the primary context, enabling bidirectional use of HPKE.
+
+Following the creation of the response context **ResponseContext_G**, it responds with a dummy payload containing the
+string `MATRIX_QR_CODE_LOGIN_OK`:
+
+```
+TaggedCiphertext := ResponseContext_G.Seal("MATRIX_QR_CODE_LOGIN_OK", "")
+LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext) || ResponseNonce
 ```
 
 Device G sends **LoginOkMessage** as the `data` payload via a `PUT` request to the insecure rendezvous session.
@@ -631,25 +691,41 @@ Device G sends **LoginOkMessage** as the `data` payload via a `PUT` request to t
 Device S receives a response over the insecure rendezvous session by polling with `GET` requests, potentially from
 Device G.
 
-It decrypts (and authenticates) it using the previously computed encryption key, which will succeed provided the payload
-was indeed sent by Device G. It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing otherwise.
+It proceeds to derive the response context by unpacking the base response nonce from the **LoginOkMessage** and
+creating a response context on its own.
+
+**ResponseContext_S**
 
 ```
-Nonce_G := 1
-(TaggedCiphertext, Sp) := Unpack(Message)
-NonceBytes := ToLowEndianBytes(Nonce)[..12]
-Plaintext := ChaCha20Poly1305_Decrypt(EncKey_G, NonceBytes, TaggedCiphertext)
-Nonce_G := Nonce_G + 1
+(TaggedCiphertext, ResponseNonce) := Unpack(LoginOkMessage)
+
+Secret := Context_S.Export("MATRIX_QR_CODE_LOGIN response", 32)
+Salt := Sp || ResponseNonce
+
+AeadKey_G := HKDF_SHA256(Secret, "key", salt=Salt, size=32)
+AeadNonce := HKDF_SHA256(Secret, "nonce", salt=Salt, size=12)
+ExporterSecret := [0; 32]
+
+ResponseContext_S := Context<R>(AeadKey, AeadNonce, 0, ExporterSecret)
+```
+
+It decrypts (and authenticates) the response using the previously computed response context, which will succeed provided
+the payload was indeed sent by Device G. It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing
+otherwise.
+
+```
+Plaintext := ResponseContext_S.Open(TaggedCiphertext, "")
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
      FAIL
 ```
 
-If the above was successful, Device S then calculates a two digit **CheckCode** code derived from **SH**, **Gp** and
-**Sp**:
+If the above was successful, Device S then calculates a two digit **CheckCode** code using the [HPKE export
+interface](https://www.rfc-editor.org/rfc/rfc9180.html#hpke-export) of its main context, **Context_S**. **Gp** and
+**Sp** are used as inputs for the export interface:
 
 ```
-CheckBytes := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp || "|" || Sp , salt=0, size=2)
+CheckBytes := Context_S.Export("MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp || "|" || Sp , size=2)
 CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 ```
 
@@ -660,7 +736,7 @@ code XY on your other device."
 7. **Out-of-band confirmation**
 
 **Warning**: *This step is crucial for the security of the scheme since it overcomes the aforementioned limitation of
-ECIES.*
+HPKE.*
 
 Device G asks the user to enter the **CheckCode** that is being displayed on Device S.
 
@@ -673,14 +749,17 @@ Device G compares the code that the user has entered with the **CheckCode** that
 as before:
 
 ```
-CheckBytes := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp "|" || Sp , salt=0, size=2)
+CheckBytes := Context_G.Export("MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp "|" || Sp , size=2)
 CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 ```
 
 If the code that the user enters matches then the secure channel is established.
 
-Subsequent payloads sent from G should be encrypted using **EncKey_G**, while payloads sent from S should be
-encrypted with **EncKey_S**, incrementing the corresponding nonce for each message sent/received.
+Subsequent payloads sent from G should be encrypted using the response context **ResponseContext_G**, while payloads
+sent from S should be encrypted with **Context_S**, incrementing the corresponding nonce for each message sent/received.
+
+Similarly, payloads received by G should be decrypted using the main context **Context_G**, while payloads received by S
+should be decrypted using the response context **ResponseContext_S**.
 
 ### Sequence diagram
 
@@ -710,7 +789,7 @@ sequenceDiagram
     S->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
     Z->>-S: 200 OK<br>{"sequence_token": "1", "expires_ts": 1234567, "data": ""}
 
-    note over S: 4) Device S computes SH, EncKey_S, EncKey_G and LoginInitiateMessage.<br>It sends LoginInitiateMessage via the rendezvous session
+    note over S: 4) Device S creates context Context_S and LoginInitiateMessage.<br>It sends LoginInitiateMessage via the rendezvous session
     S->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "1", "data": "<LoginInitiateMessage>"}
     Z->>-S: 200 OK<br>{"sequence_token": "2"}
     deactivate S
@@ -718,9 +797,10 @@ sequenceDiagram
     G->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
     activate G
     Z->>-G: 200 OK<br>{"sequence_token": "2", "expires_ts": 1234567, "data": "<LoginInitiateMessage>"}
-    note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after calculating SH, EncKey_S and EncKey_G
+    note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after creating Context_G
     note over G: Device G checks that the plaintext matches MATRIX_QR_CODE_LOGIN_INITIATE
 
+    note over G: Device G creates ResponseContext_G
     note over G: Device G computes LoginOkMessage and sends to the rendezvous session
 
     G->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "2", "data": "<LoginOkMessage>"}
@@ -732,6 +812,7 @@ sequenceDiagram
     Z->>-S: 200 OK<br>{"sequence_token": "3", "expires_ts": 1234567, "data": "<LoginOkMessage>"}
 
     note over S: 6) Device S attempts to parse Data as LoginOkMessage
+    note over S: 6) Device S creates ResponseContext_S
     note over S: Device S checks that the plaintext matches MATRIX_QR_CODE_LOGIN_OK
 
     note over S: If okay, Device S calculates the CheckCode to be displayed
@@ -748,22 +829,6 @@ sequenceDiagram
 Conceptually, once established, the secure channel offers two operations, `SecureSend` and `SecureReceive`, which wrap
 the `Send` and `Receive` operations offered by the rendezvous session API to securely send and receive data between two devices.
 
-At the end of the establishment phase, the next nonce for each device should be `1`.
-
-Device G sets:
-
-```
-Nonce_G := 1
-Nonce_S := 1
-```
-
-Device S sets:
-
-```
-Nonce_G := 1
-Nonce_S := 1
-```
-
 ### Threat analysis
 
 In an attack scenario, we add a participant called Specter with the following capabilities:
@@ -776,7 +841,8 @@ In an attack scenario, we add a participant called Specter with the following ca
 
 Due to use of ephemeral key pairs which are immediately discarded after use, each QR code login session derives a unique
 secret so payloads from earlier sessions cannot be replayed. Each payload in the session is unique and expected only
-once. Finally, the use of deterministic nonces prevents any possibility of replay.
+once. Finally, replay of the initial message from S to G is prevented by the use of a randomly generated base nonce in
+the response from G to S, while deterministic per-message nonces prevent replay of any subsequent messages.
 
 #### Pure Dolev-Yao attacker
 
@@ -789,7 +855,7 @@ Since Device G has no way of authenticating Device S, an attacker present for th
 attempt to mimic Device S in order to get their Device S signed in instead.
 
 - In step 3, Specter can shoulder surf the QR code scanning to obtain **Gp**.
-- In step 4, Specter can intercept S's payload and replace it with a payload of their own, replacing  **Sp** with its
+- In step 4, Specter can intercept S's payload and replace it with a payload of their own, replacing **Sp** with its
 own key.
 - The attack is only thwarted in step 7, because Device S won't ever display the indicator of success to the user. The
 user then must cancel the process on Device G, preventing it from sharing any sensitive material.
