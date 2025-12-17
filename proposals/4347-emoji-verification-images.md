@@ -187,3 +187,12 @@ None required.
 ## Dependencies
 
 None.
+
+## Implementations
+
+There is a draft Element Web implementation in
+[element-web#31571](https://github.com/element-hq/element-web/pull/31571), which
+uses a temporary custom version of the spec npm package at
+[andybalaam-matrix-spec](https://www.npmjs.com/package/andybalaam-matrix-spec),
+built from a draft spec PR at
+[matrix-spec#2273](https://github.com/matrix-org/matrix-spec/pull/2273).
