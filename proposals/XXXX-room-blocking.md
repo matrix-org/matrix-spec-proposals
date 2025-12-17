@@ -323,11 +323,11 @@ server opts to puppet local users into revoking their power levels, which cannot
 
 ## Unstable prefix
 
-| Stable | Unstable |
-| `m.room_moderation` | `uk.timedout.mscXXXX` |
+| Stable                | Unstable                                        |
+| --------------------- | ----------------------------------------------- |
+| `m.room_moderation`   | `uk.timedout.mscXXXX`                           |
 | `/_matrix/client/v1/` | `/_matrix/client/unstable/uk.timedout.mscXXXX/` |
 
 ## Dependencies
 
-This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
-into the spec).
+This MSC has no dependencies itself, but becomes a dependency for MSC4375
