@@ -1,7 +1,7 @@
 # MSC4390: Room Blocking API
 
 Room blocking (takedowns, shutdowns, takeovers, preventative blocks, deletes, etc) are an ever
-increasingly useful trust & safety utility for homeserver adminstrators, allowing them to prevent
+increasingly useful trust & safety utility for homeserver administrators, allowing them to prevent
 participation in harmful rooms, and take steps to prevent further participation should it have
 already been established. This is further enhanced by tools like [Draupnir] and [Meowlnir],
 which both allow server administrators to automate takedowns of these bad rooms by subscribing
@@ -10,7 +10,7 @@ is similar to what [MSC4323: User suspension & locking endpoints][msc4323] did: 
 exists no standardised API endpoints for these tools to perform these actions, effectively resulting
 in vendor lockin, since they typically only support the Synapse Admin API. This proposal will
 introduce a couple new endpoints that will allow programs to enact room bans and deletes without
-having to have knoledge of the underlying server implementation.
+having to have knowledge of the underlying server implementation.
 
 > [!NOTE]
 > This proposal is inspired by a subset of the much larger [MSC4375: Admin Room Management][msc4375],
@@ -231,7 +231,7 @@ This SHOULD perform at least some the following tasks when deleting a room:
 4. Remove all local aliases to the room
 5. Local room data removed (i.e. all events, state snapshots, etc)
 
-If the server recieves subsequent requests to start deleting a room when it is already doing so,
+If the server receives subsequent requests to start deleting a room when it is already doing so,
 it MUST perform no duplicate actions, instead only returning the room's ID.
 
 #### Request
