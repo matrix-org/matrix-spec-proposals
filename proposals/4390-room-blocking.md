@@ -1,4 +1,4 @@
-# MSCXXXX: Room Blocking API
+# MSC4390: Room Blocking API
 
 Room blocking (takedowns, shutdowns, takeovers, preventative blocks, deletes, etc) are an ever
 increasingly useful trust & safety utility for homeserver adminstrators, allowing them to prevent
@@ -15,7 +15,6 @@ having to have knoledge of the underlying server implementation.
 > [!NOTE]
 > This proposal is inspired by a subset of the much larger [MSC4375: Admin Room Management][msc4375],
 > but aims to tighten the scope to allow for easier implementation.
-> **TODO: MSC4375 should depend on this proposal**
 
 [Draupnir]: https://github.com/the-draupnir-project/Draupnir
 [Meowlnir]: https://github.com/maunium/meowlnir
@@ -325,8 +324,8 @@ server opts to puppet local users into revoking their power levels, which cannot
 
 | Stable                | Unstable                                        |
 | --------------------- | ----------------------------------------------- |
-| `m.room_moderation`   | `uk.timedout.mscXXXX`                           |
-| `/_matrix/client/v1/` | `/_matrix/client/unstable/uk.timedout.mscXXXX/` |
+| `m.room_moderation`   | `uk.timedout.msc4390`                           |
+| `/_matrix/client/v1/` | `/_matrix/client/unstable/uk.timedout.msc4390/` |
 
 ## Dependencies
 
