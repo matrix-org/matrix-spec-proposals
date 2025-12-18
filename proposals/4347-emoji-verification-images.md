@@ -104,6 +104,13 @@ These images are provided under the CC BY 4.0 license so may be used with
 proper attribution, which should be added to the spec text and client
 applications.
 
+In order to make the images clearly visible in clients using a dark theme, I
+propose adding a white circle to the background of each image. This is
+prototyped in
+[matrix-spec#2273](https://github.com/matrix-org/matrix-spec/pull/2273) and
+an example screenshot is visible in
+[element-web#31571](https://github.com/element-hq/element-web/pull/31571).
+
 ### Future changes
 
 If at all possible, these images will not change. In future, if they need to
