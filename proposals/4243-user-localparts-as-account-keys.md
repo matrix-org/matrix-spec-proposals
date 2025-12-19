@@ -193,7 +193,7 @@ Based on the result of the query, the server should then group account keys into
 This proposal tries to avoid clients needing to know or care about these account keys. As such, it takes steps to replace the account key
 with the account name in the user ID where possible in event JSON sent to clients/bots/bridges/appservices. For a given account key `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`:
  - The server should replace the account key with the account name in the user ID for verified keys. E.g `@kegan:matrix.org`.
- - The server should _filter out_ events from unverified users from being sent down the Client-Server API.
+ - The server should _filter out_ both state and message events from unverified users from being sent down the Client-Server API.
 
 The act of filtering out unverified user IDs means clients will potentially see different events in the same room. However, _servers_ will always see
 the same events, and be able to perform state resolution / apply event auth rules consistently. Clients that do not want to have these events filtered out
