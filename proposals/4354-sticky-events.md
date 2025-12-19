@@ -151,7 +151,12 @@ or not they exceed the timeline limit[^ordering]. If a sticky event is in the ti
 omitted from the `sticky.events` section. This ensures we minimise duplication in the `/sync` response JSON.
 This proposal recommends always putting sticky events into the `sticky.events` section _except_ if
 the sticky event is going to be returned in the `timeline.events` section of the current sync response.
-In other words, filter out any event from `sticky.events` where the event ID appears in `timeline.events`. 
+In other words, filter out any event from `sticky.events` where the event ID appears in `timeline.events`.
+
+**Interaction with `RoomFilter`:** The `RoomFilter` does not apply to the `sticky.events` section, as it is neither `timeline` nor `state`.
+However, the `timeline` filter MUST be applied before applying the deduplication logic above.
+In other words, if a sticky event would normally appear in both the `timeline.events` section and the `sticky.events` section,
+but is filtered out by the `timeline` filter, the sticky event MUST appear in `sticky.events`.
 
 Sticky events follow the same 'stream-like' behaviour as the `timeline`. This means clients will receive a sticky
 event S _once_, and subsequent requests with an advanced `since` token will not return the same sticky event S.
