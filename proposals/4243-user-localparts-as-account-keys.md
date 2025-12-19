@@ -184,7 +184,7 @@ the event signatures of the DAG or to apply auth rules, thus ensuring that all s
 
 The server SHOULD group each key according to its claimed domain and perform a single `/accounts` query to fetch the account name for each
 account key. Requests SHOULD be batched to ensure that the HTTP request/response size doesn't become too large for reverse proxies to handle: this proposal
-recommends that keys for the same domain SHOULD be batched into groups of 256 keys. This SHOULD be done prior to sending the room information to clients.
+recommends that keys for the same domain SHOULD be batched into groups of 512 keys. This SHOULD be done prior to sending the room information to clients.
 Based on the result of the query, the server should then group account keys into two categories:
  - Verified: the domain is aware of the account key because it was contained in the response. The JSON in the response has been correctly signed by the account key.
  - Unverified: the domain is unaware of the account key because it was not contained in the response or the domain is unreachable[^unreach], returned a non 2xx status,
@@ -193,21 +193,14 @@ Based on the result of the query, the server should then group account keys into
 This proposal tries to avoid clients needing to know or care about these account keys. As such, it takes steps to replace the account key
 with the account name in the user ID where possible in event JSON sent to clients/bots/bridges/appservices. For a given account key `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`:
  - The server should replace the account key with the account name in the user ID for verified keys. E.g `@kegan:matrix.org`.
- - The server should replace the `domain` of the user ID with "invalid" for unverified keys. E.g `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`.
+ - The server should _filter out_ events from unverified users from being sent down the Client-Server API.
+
+The act of filtering out unverified user IDs means clients will potentially see different events in the same room. However, _servers_ will always see
+the same events, and be able to perform state resolution / apply event auth rules consistently. Clients that do not want to have these events filtered out
+can specify this by **TODO: we need something that works across ALL CSAPI endpoints so no sync filter, on a per device basis.**
 
 >[!NOTE]
-> We could alternatively filter out unverified events from being delivered to clients, but this would cause
-> clients on different servers to disagree on the room state as not all servers would filter out the same users. 
->
-> Embedding the account name into the event JSON would not resolve the problem
-> as malicious servers could lie about their domain, creating impersonation attacks. For example,
-> Eve on `evil.com` could generate an account key with the name 'alice' then claim the domain part as `example.com`.
-> A third server might then fail to query `example.com` (e.g because it is temporarily unavailable), and could incorrectly
-> assume that the account key _is_ for `alice` on `example.com`, which it isn't. To avoid this, we rely on `/accounts` to
-> know the account name, and must handle the cases where we cannot perform that operation. As an aside,
-> if we forced all messages to be cryptographically signed (not necessarily encrypted), we would avoid this
-> impersonation attack, but that is orthogonal to this proposal.
->
+> We could _alternatively_ replace the `domain` of the user ID with "invalid" for unverified keys e.g. `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`.
 > We replace the domain with 'invalid' for unverified keys because otherwise it implies that user ID is an
 > account on that server. The domain part of the user ID is
 > not verified with this proposal. If we did not replace the domain with 'invalid', abusive or illegal activity
@@ -218,17 +211,29 @@ with the account name in the user ID where possible in event JSON sent to client
 > to appear with an "invalid" domain. [Moderation tooling](https://github.com/matrix-org/matrix-spec-proposals/pull/4284)
 > may decide to automatically soft-fail events sent from unverified domains to protect against abuse. On the flip side,
 > this is exactly what we want for peer-to-peer applications, where the identity and routing information is solely the
-> public key (e.g used in a distributed hash table).
+> public key (e.g used in a distributed hash table). If we chose to inform clients about unverified users, it would make
+> the MSC depend on [MSC4284: Policy Servers](https://github.com/matrix-org/matrix-spec-proposals/pull/4284) to ensure that
+> events sent by invalid domains can be moderated safely.
+>
+> However, we would need to handle the case where the user ID eventually becomes verified. This is error-prone and complex because
+> servers would need to issue synthetic leave events for the old user ID and synthetic join events for the new user ID and keep track of
+> those interactions across lazy-loading, sync filters, etc.
+>
+> Embedding the account name into the event JSON would not resolve the problem
+> as malicious servers could lie about their domain, creating impersonation attacks. For example,
+> Eve on `evil.com` could generate an account key with the name 'alice' then claim the domain part as `example.com`.
+> A third server might then fail to query `example.com` (e.g because it is temporarily unavailable), and could incorrectly
+> assume that the account key _is_ for `alice` on `example.com`, which it isn't. To avoid this, we rely on `/accounts` to
+> know the account name, and must handle the cases where we cannot perform that operation. As an aside,
+> if we forced all messages to be cryptographically signed (not necessarily encrypted), we would avoid this
+> impersonation attack, but that is orthogonal to this proposal.
 
 Once a mapping has been verified, it can be permanently cached. Servers MAY retry unverified mappings in the future,
 prioritising servers which have never responded over servers which have responded with the absence of the key.
 Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
-If a client has been told an `:invalid` account key user ID which then subsequently becomes verified, the server MUST:
- - resend the `m.room.member` event for all rooms with that account key user ID, replacing the user ID sections appropriately.
- - issue a synthetic leave event for the  account key user ID for all the rooms with that user ID.
-
-This ensures the member list remains accurate on clients.
-State events sent by that account key user ID MAY be resent with an updated `sender` field.
+If an unverified user becomes verified:
+ - the _current state events_ for that user (e.g their `m.room.member` event and any current state they are the `sender` of) MUST be
+   sent down client's sync streams.
 
 #### Gradual compatibility
 
@@ -247,7 +252,7 @@ and the `unsigned.sender_account.name` property of the event JSON to be the acco
 }
 ```
 
-Clients can then use the `unsigned.sender_account.key` field as an unchanging identifier for the sender of the event, akin to how they use the `sender` field today.
+Clients can then use the `unsigned.sender_account.key` field as an unchanging identifier[^idunchange] for the sender of the event, akin to how they use the `sender` field today.
 A later room version or version of the CSAPI can then:
  - Revert the `sender` of the event to be the wire-format over federation and not modify it, meaning the `sender` becomes identical to `unsigned.sender_account.key`.
  - Tell clients to form the user ID by replacing the account key with the `unsigned.sender_account.name` if it is present. The absence of a `name` means the
@@ -380,8 +385,7 @@ are invasive: one changes the user ID format and the other subverts the existing
 
 ### Dependencies
 
-The MSC may depend on [MSC4284: Policy Servers](https://github.com/matrix-org/matrix-spec-proposals/pull/4284) to ensure that events sent
-by invalid domains can be moderated safely.
+None.
 
 [^1]: Because the JSON with the `account_name` and `domain` is signed, we could use transparency logs to detect when a server
 tells some people one account name and other people a different account name. In addition, it opens up the possibility of having
@@ -405,3 +409,7 @@ the part of the sender of the event. This contrasted with "unknown" keys which w
 due to munging the user ID in a slightly different way. However, there is no guarantee that a server responding negatively to the existence of a
 key is actually malicious (recreating your database would do this for example). Therefore, the distinction isn't important, meaning they can be
 combined into one category.
+[^idunchange]: TODO: This isn't actually unchanging, as a key K known to two servers S1 and S2 can map the 'same' event to the same underlying key.
+For now, this is just a peculiarity and isn't a problem. But, we can't really consider the full account key user ID to be the principal; only the account key
+itself is the principal. This _matters_ for portable accounts, so perhaps we should be defining the account key as the unchanging identifier to anticipate
+this?
