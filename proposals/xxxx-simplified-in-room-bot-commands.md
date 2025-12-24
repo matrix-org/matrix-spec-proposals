@@ -73,7 +73,7 @@ The `content` for such an event fits the following implied schema:
 
       {
         "key": "target_users",
-        "type": { "kind": "array", "items": "user_id" },
+        "type": { "schema_type": "array", "items": "user_id" },
         "description": { "m.text": [{ "body": "The user ID(s)" }] }
       }
     ],
@@ -169,37 +169,41 @@ bot's commands to avoid users becoming confused.
 > because matrix.org's canonical JSON
 > [does not support encoding floats](https://spec.matrix.org/v1.15/appendices/#canonical-json).
 
-TODO: distinction of room_id, alias, event AND permalink seems like a disaster,
-each of these should be permalinks. And permalinks should be provided in object
-format like the room_id was.
-
-The following are the predefined `types` for an argument:
+The following essential types are the predefined `types` for an argument:
 
 - `string` - An arbitrary string.
 - `integer` - An arbitrary whole number. May be negative or zero.
 - `boolean` - `true` or `false` literal.
+
+Constrained string types:
+
 - `user_id` - Must be a valid
   [user ID](https://spec.matrix.org/v1.15/appendices/#user-identifiers) for the
-  room version.
-- `room_id` - Must be a valid
-  [room ID](https://spec.matrix.org/v1.15/appendices/#room-ids).
-- `room_alias` - Must be a valid
-  [room alias](https://spec.matrix.org/v1.15/appendices/#room-aliases).
-- `event_id` - Must be a valid
-  [event ID](https://spec.matrix.org/v1.15/appendices/#event-ids).
+  room version encoded as a string.
 - `server_name` - Must be a valid
   [server name](https://spec.matrix.org/v1.15/appendices/#server-name).
-- `permalink` - Must be a valid
-  [permalink URI](https://spec.matrix.org/v1.15/appendices/#uris) (either
-  `matrix.to` or `matrix:`) for an event ID.
-- When an object is provided, the type is a composite type described by the
-  property `kind`:
-  - The `array` composite type specifies the type of the items with the `items`
-    property.
-  - The `union` composite type specifies the types of the variants with the
-    `variants` property. Which is an array of type schema.
-  - The `literal` composite type specifies a literal value with the `value`
-    property and the type of the literal value with the `literal_type` property.
+- `room_alias` - Must be a valid
+  [room alias](https://spec.matrix.org/v1.15/appendices/#room-aliases).
+
+Room reference types:
+
+- `room_id` - An object with the property `room_id` which must be a valid
+  [room ID](https://spec.matrix.org/v1.15/appendices/#room-ids). The object
+  SHOULD also contain a `via` property that contains an array of server names
+  that the room can be joined via.
+- `event_id` - An object with the same properties as `room_id` with the addition
+  of an `event_id` property that must be a valid
+  [event ID](https://spec.matrix.org/v1.15/appendices/#event-ids).
+
+When an object is provided as the type schema, the type is a derived from a
+schema described by the property `schema_type`:
+
+- The `array` schema type specifies the type of the items with the `items`
+  property.
+- The `union` schema type specifies the types of the variants with the
+  `variants` property. Which is an array of type schema.
+- The `literal` schema type specifies a literal value with the `value` property
+  and the type of the literal value with the `literal_type` property.
 
 **Tip**: Clients can accept a wider variety of inputs for some types, provided
 they reduce them down to the expected value types when sending the command. For
