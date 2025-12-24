@@ -34,8 +34,6 @@ commands, scoped by the `sender` of the description.
 
 The `content` for such an event fits the following implied schema:
 
-TODO: Literal types.
-
 TODO: enabled_commands state event?
 
 ```json
@@ -202,6 +200,8 @@ The following are the predefined `types` for an argument:
     property.
   - The `union` composite type specifies the types of the variants with the
     `variants` property. Which is an array of type schema.
+  - The `literal` composite type specifies a literal value with the `value`
+    property and the type of the literal value with the `literal_type` property.
 
 **Tip**: Clients can accept a wider variety of inputs for some types, provided
 they reduce them down to the expected value types when sending the command. For
