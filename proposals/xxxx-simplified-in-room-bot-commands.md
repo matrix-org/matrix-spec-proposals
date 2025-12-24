@@ -1,5 +1,12 @@
 # MSC0000: Simplified in-room bot commands
 
+> [!NOTE]
+>
+> This proposal is a simplification of
+> [MSC4332: In-room bot commands](https://github.com/matrix-org/matrix-spec-proposals/pull/4332)
+> that specifies only an object format for bot commands, and keeps syntax and
+> command interaction implementation dependant.
+
 Many bots on Matrix have a command interface consisting of `!botname <command>`,
 and have a pretty long help menus which can make it difficult to find the right
 command. Many clients already have a concept of "slash commands" which are
@@ -8,17 +15,14 @@ command. Many clients already have a concept of "slash commands" which are
 finding a way to populate this feature with bot-specific details is beneficial.
 
 This proposal suggests that bots maintain a state event in the rooms it joins to
-advertise available commands, and their syntax. This does require that bots need
-power levels to maintain their state event though, so bots without such power
-level (or are looking to maintain backwards compatibility with clients which
-don't support this MSC) will need to rely on the existing `!botname help`
-convention.
-
-_Note_: There's a good chance that this MSC is over-engineered for what it
-_actually_ needs to accomplish. It may get broken down into smaller MSCs as use
-cases materialize around it.
+advertise available commands. This does require that bots need power levels to
+maintain their state event though, so bots without such power level (or are
+looking to maintain backwards compatibility with clients which don't support
+this MSC) will need to rely on the existing `!botname help` convention.
 
 ## Proposal
+
+### Command description
 
 A new state event type is introduced: `m.bot.commands`. The state key is the
 bot's own user ID to prevent other users/bots from changing it (this is a
@@ -33,6 +37,15 @@ as unjoined users: an empty string, "not_a_user_id", etc can't join rooms, but
 
 The `content` for such an event fits the following implied schema:
 
+TODO: A single event for all commands is bad and we will probably easily exhaust
+that with Draupnir.
+
+TODO: Variadic arguments should be replaced with an array schema.
+
+TODO: Enum should be replaced with union and literal types.
+
+TODO: number instead of integer type
+
 ```jsonc
 {
   "sigil": "!", // Defaults to `!` if not specified. Clients can use this to show the user a consistent
@@ -41,11 +54,11 @@ The `content` for such an event fits the following implied schema:
   // becomes `!botname` upon sending.
   "commands": [
     {
-      "syntax": "botname {action} {roomId} {timeoutSeconds} {applyToPolicy} {userId...}", // `{words}` are positional arguments.
-      "arguments": [
-        // First argument implied as `{action}` due to position.
+      "designator": ["ban"],
+      "parameters": [
         {
-          "type": "enum", // can also be more types discussed later in this proposal
+          "key": "target_room",
+          "type": "room_id",
           "description": {
             // Descriptions use m.text from MSC1767 Extensible Events to later support MSC3554-style translations.
             // See https://spec.matrix.org/v1.15/client-server-api/#mroomtopic_topiccontentblock
@@ -53,32 +66,27 @@ The `content` for such an event fits the following implied schema:
             // See https://github.com/matrix-org/matrix-spec-proposals/pull/3554
             "m.text": [{ "body": "The room ID" }],
           },
-          "enum": [
-            // only required (and used) when type == enum.
-            "ban",
-            "ban_and_suspend",
-          ],
         },
 
         {
-          "type": "room_id",
-          "description": { "m.text": [{ "body": "The room ID" }] },
-        },
-
-        {
+          "key": "timeout_seconds",
           "type": "integer",
           "description": { "m.text": [{ "body": "The timeout in seconds" }] },
         },
 
         {
+          "key": "apply_to_policy",
           "type": "boolean",
           "description": {
             "m.text": [{ "body": "Whether to apply this to the policy" }],
           },
+          // This argument is not required
+          "required": false,
         },
 
         // The final argument is variadic in this case, but doesn't need to be.
         {
+          "key": "target_users",
           "type": "user_id",
           "description": { "m.text": [{ "body": "The user ID(s)" }] },
           "variadic": true, // can only apply to the last argument. Default false when not supplied.
@@ -93,30 +101,32 @@ The `content` for such an event fits the following implied schema:
 }
 ```
 
-**Note**: It's not currently proposed that a command can include a literal `{`
-in its syntax. A future iteration of this MSC may introduce an escape sequence,
-but for now the text between an opening curly brace and closing curly brace is
-considered the argument name. This includes more curly braces: `{{var}}` becomes
-the argument `{var}` with another `}` tacked on. `{var with spaces}` becomes
-`var with spaces`.
-
-**Reminder**: A convention among Matrix bots is to use their project name as the
-prefix for commands. It's expected that this prefix goes into the `syntax`
-rather than `sigil` to avoid conflicts with built-in client commands (discussed
-later in this proposal). **TODO**: change this if clients ultimately implement
-`/ban@botname` support instead of showing `/ban` as-is.
-
 A client may show the arguments and commands similar to Discord:
 
 ![](./images/4332-discord-example.png)
 
+#### Invariants of command descriptions
+
+- A command description with parameters that have duplicate keys is invalid and
+  the command SHOULD be hidden by clients.
+
+- The position of parameter descriptions in the _parameters_ property that are
+  _required_ is significant and clients SHOULD use the same order when prompting
+  for arguments.
+
+- The position of parameter descriptions that are not _required_ is not
+  significant.
+
+### Command invocation
+
 When the user sends the command, the client creates either an `m.room.message`
-event with the following `content` shape:
+or an `m.room.bot.command` event with the following `content` shape:
 
 ```jsonc
 {
-  // These fields would be replaced by MSC1767 Extensible Events in future.
-  "body": "!botname ban_and_suspend !room:example.org 42 true @alice:example.org @bob:example.org", // note that the syntax template is populated
+  // body is client supplied and may not match at all with the bot's fallback syntax.
+  // body may be omitted entirely in an `m.room.bot.command`.
+  "body": "@bot:example.org ban !room:example.org 42 true @alice:example.org @bob:example.org",
   "msgtype": "m.text",
 
   // Mentions should always be added, to lower the chances of command conflicts.
@@ -132,29 +142,29 @@ event with the following `content` shape:
   // commands are sent this way. Bots may still need to unpack `body` when users
   // send commands manually or without client support.
   "m.bot.command": {
-    // The syntax is effectively used as a "command ID", so bots can identify which
-    // command the client is using without needing to track arbitrary strings. Whether
-    // the bot unpacks this string is an implementation detail for the bot.
-    "syntax": "botname {action} {roomId} {timeoutSeconds} {applyToPolicy} {userId...}",
+    "designator": ["ban"],
     "arguments": {
       // These are just the arguments and their user-supplied values.
-      "action": "ban_and_suspend", // enums have a value type of string
-      "roomId": {
+      "room_id": {
         // Room IDs are special because they can carry routing information too.
+        // Object types have a type specifier.
         "id": "!room:example.org",
         "via": ["second.example.org"], // Optional, but recommended.
+        "type": "room_id",
       },
-      "timeoutSeconds": 42, // integers and booleans use appropriate value types (converted from (probably) strings)
-      "applyToPolicy": true, // tip: clients can convert user input like "yes" to booleans
-      "userId...": ["@alice:example.org", "@bob:example.org"], // variadic arguments have array value types
-
-      // Note: all other types are represented as simple string values
+      "timeout_seconds": 42, // integers and booleans use appropriate value types (converted from (probably) strings)
+      "apply_to_policy": true, // tip: clients can convert user input like "yes" to booleans
+      "users": ["@alice:example.org", "@bob:example.org"],
     },
   },
 }
 ```
 
 Bots can then respond however they normally would to the command input.
+
+TODO: I don't know if this text below about conflicting commands is even
+relevant. Especially if we are going to make the descriptions go in one event
+each and have a `state_key` of `hmac_sha256(mxid, ...designator_parts)`
 
 Clients SHOULD be aware that some bots may attempt to create conflicts with
 built-in commands or other bots. Where conflicts with built-in events exist,
@@ -165,17 +175,17 @@ commands like this to avoid future conflicts with built-in commands. From an
 implementation perspective, clients might cause their built-in commands to
 always take precedence over any bot's commands to avoid users becoming confused.
 
-**Tip**: Bots which don't use `m.bot.command` and need to support spaces in
-their arguments can use quotes in the command syntax to surround user input. For
-example, `"syntax": "gif \"{search}\""`.
+### Type schema
+
+TODO: distinction of room_id, alias, event AND permalink seems like a disaster,
+each of these should be permalinks. And permalinks should be provided in object
+format like the room_id was.
 
 The following are the predefined `types` for an argument:
 
 - `string` - An arbitrary string.
 - `integer` - An arbitrary whole number. May be negative or zero.
 - `boolean` - `true` or `false` literal.
-- `enum` - When paired with the `enum` options array, a string representing one
-  of the options.
 - `user_id` - Must be a valid
   [user ID](https://spec.matrix.org/v1.15/appendices/#user-identifiers) for the
   room version.
@@ -190,10 +200,6 @@ The following are the predefined `types` for an argument:
 - `permalink` - Must be a valid
   [permalink URI](https://spec.matrix.org/v1.15/appendices/#uris) (either
   `matrix.to` or `matrix:`) for an event ID.
-
-**Note**: For clarity, the above arguments do not have to point at a
-room/user/server/etc that is known to the client. They just need to _look_ valid
-per the grammar.
 
 **Tip**: Clients can accept a wider variety of inputs for some types, provided
 they reduce them down to the expected value types when sending the command. For
@@ -217,36 +223,21 @@ The following extensions/features are best considered by future MSCs:
   to send state events to prevent bots from tricking users into changing power
   levels, join rules, etc.
 
-  Such an event template could be used to quickly add features to clients ahead
-  of mainline releases. For example, a client which doesn't yet have support for
-  polls may suggest adding a "poll bot" that sets its command event template to
-  [an `m.poll.start` event](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3381-polls.md).
-
 - Support for non-text-like arguments like images, files, etc.
 
 - Some predefined validation on arguments, like a range for integers or
   maximum/minimum length of strings.
 
-- Support for optional arguments. For example: `[roomId]`, if a room ID is not
-  required.
-
 ## Potential issues
 
-Mentioned in the proposal, the lack of argument escaping isn't great.
-
-Using state events limits a bot's ability to advertise commands if it isn't
-given power to do so.
-
-The lack of formal "command IDs" isn't great - there's no clear reason to
-include them at this stage, however.
-
-There are probably more potential issues this MSC needs to consider.
+- Using state events limits a bot's ability to advertise commands if it isn't
+  given power to do so.
 
 ## Alternatives
 
-Not using state events would work, but can be tricky to manage. This proposal
-fills a gap until proposals which solve the problem space more completely are
-written and proven by implementation.
+- Not using state events would work, but can be tricky to manage. This proposal
+  fills a gap until proposals which solve the problem space more completely are
+  written and proven by implementation. Sticky events maybe?
 
 ## Security considerations
 
@@ -259,8 +250,8 @@ measures to minimize this confusion from happening.
 ## Unstable prefix
 
 While this proposal is not considered stable, implementations should use
-`org.matrix.msc4332.commands` in place of `m.bot.commands` and
-`org.matrix.msc4332.command` in place of `m.bot.command`.
+`org.matrix.msc0000.commands` in place of `m.bot.commands` and
+`org.matrix.msc0000.command` in place of `m.bot.command`.
 
 ## Dependencies
 
