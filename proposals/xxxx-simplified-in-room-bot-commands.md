@@ -252,7 +252,8 @@ Mentioned in the proposal, clients should be explicitly aware that bots may try
 to create confusion for users and override built-in commands or another bot's
 commands. For example, a bot may advertise a `myroomnick` command which leads to
 the client's functionality not working as expected. Clients should be taking
-measures to minimize this confusion from happening.
+measures to minimize this confusion from happening, and always showing the
+profile of the sender that registered the command.
 
 ## Unstable prefix
 
