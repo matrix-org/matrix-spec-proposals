@@ -34,11 +34,7 @@ commands, scoped by the `sender` of the description.
 
 The `content` for such an event fits the following implied schema:
 
-TODO: Variadic arguments should be replaced with an array schema.
-
-TODO: Enum should be replaced with union and literal types.
-
-TODO: number instead of integer type
+TODO: Literal types.
 
 TODO: enabled_commands state event?
 
@@ -79,12 +75,10 @@ TODO: enabled_commands state event?
         "required": false
       },
 
-      // The final argument is variadic in this case, but doesn't need to be.
       {
         "key": "target_users",
-        "type": "user_id",
-        "description": { "m.text": [{ "body": "The user ID(s)" }] },
-        "variadic": true // can only apply to the last argument. Default false when not supplied.
+        "type": { "kind": "array", "items": "user_id" },
+        "description": { "m.text": [{ "body": "The user ID(s)" }] }
       }
     ],
     "description": {
@@ -143,7 +137,7 @@ or an `m.room.bot.command` event with the following `content` shape:
     "designator": ["ban"],
     "arguments": {
       // These are just the arguments and their user-supplied values.
-      "room_id": {
+      "target_room": {
         // Room IDs are special because they can carry routing information too.
         // Object types have a type specifier.
         "id": "!room:example.org",
@@ -152,7 +146,7 @@ or an `m.room.bot.command` event with the following `content` shape:
       },
       "timeout_seconds": 42, // integers and booleans use appropriate value types (converted from (probably) strings)
       "apply_to_policy": true, // tip: clients can convert user input like "yes" to booleans
-      "users": ["@alice:example.org", "@bob:example.org"],
+      "target_users": ["@alice:example.org", "@bob:example.org"],
     },
   },
 }
@@ -171,6 +165,13 @@ clients might cause their built-in commands to always take precedence over any
 bot's commands to avoid users becoming confused.
 
 ### Type schema
+
+> [!NOTE]
+>
+> The reason for providing an _integer_ type instead of a _number_ type to match
+> the [JSON value](https://datatracker.ietf.org/doc/html/rfc8259#section-6) is
+> because matrix.org's canonical JSON
+> [does not support encoding floats](https://spec.matrix.org/v1.15/appendices/#canonical-json).
 
 TODO: distinction of room_id, alias, event AND permalink seems like a disaster,
 each of these should be permalinks. And permalinks should be provided in object
@@ -195,6 +196,12 @@ The following are the predefined `types` for an argument:
 - `permalink` - Must be a valid
   [permalink URI](https://spec.matrix.org/v1.15/appendices/#uris) (either
   `matrix.to` or `matrix:`) for an event ID.
+- When an object is provided, the type is a composite type described by the
+  property `kind`:
+  - The `array` composite type specifies the type of the items with the `items`
+    property.
+  - The `union` composite type specifies the types of the variants with the
+    `variants` property. Which is an array of type schema.
 
 **Tip**: Clients can accept a wider variety of inputs for some types, provided
 they reduce them down to the expected value types when sending the command. For
