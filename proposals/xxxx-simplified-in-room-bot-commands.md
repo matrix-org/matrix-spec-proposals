@@ -11,20 +11,71 @@
 > command invocation protocol, which is similar in nature to
 > [JSON-RPC](https://www.jsonrpc.org/specification).
 
-Many bots on Matrix have a command interface consisting of `!botname <command>`,
-and have a pretty long help menus which can make it difficult to find the right
-command. Many clients already have a concept of "slash commands" which are
-[desirable to reuse](https://github.com/matrix-org/matrix-spec/issues/93) and
-[come up occasionally](https://github.com/matrix-org/matrix-spec/issues/2170) -
-finding a way to populate this feature with bot-specific details is beneficial.
+## Background
 
-This proposal suggests that bots maintain a state event in the rooms it joins to
-advertise available commands. This does require that bots need power levels to
-maintain their state event though, so bots without such power level (or are
-looking to maintain backwards compatibility with clients which don't support
-this MSC) will need to rely on the existing `!botname help` convention.
+Interaction with matrix bots today is done by sending shell-like command within
+the body of a Matrix `m.room.message` e.g.
+`!draupnir unban @example:example.com --invite --no-confirm`.
+
+This interface has the following problems:
+
+- Users unfamiliar with command line interfaces have to learn heavily by example
+  in order to start using bots, which may be providing essential functions
+  within a matrix room or community.
+
+- No feedback is provided within the clients if a user enters incorrect syntax,
+  an unexpected argument, or a value of an incorrect type. Additionally, bots
+  have to explain these failure modes to a range of users.
+
+- The `body` emitted in `m.room.message` content is treated as _plain text
+  fallback_ or markdown by most matrix clients, preferring to render
+  `org.matrix.custom.html`. This means there are a number of inconsistencies in
+  clients, particularly around the fallback for room and user pills, which can
+  complicate and limit argument parsing
+  https://github.com/the-draupnir-project/Draupnir/issues/131.
+
+- Long help menus that can make it difficult to find the right command. Many
+  clients already have a concept of "slash commands" which are
+  [desirable to reuse](https://github.com/matrix-org/matrix-spec/issues/93) and
+  [come up occasionally](https://github.com/matrix-org/matrix-spec/issues/2170) -
+  finding a way to populate this feature with bot-specific details is
+  beneficial.
+
+- [_prompt_](https://github.com/the-draupnir-project/Draupnir?tab=readme-ov-file#prompt-ux)
+  and [_button_](https://core.telegram.org/api/bots/buttons) interfaces have to
+  be implemented with `m.reaction` events.
+
+- _partial commands_ have to be implemented with `m.reaction`
+  [prompts](https://github.com/the-draupnir-project/Draupnir?tab=readme-ov-file#prompt-ux)
+  and replies containing an arbitrary payload of suggestions or a default. This
+  also leads to noisy timeline views when there are multiple partial steps to
+  entering a complete command (e.g. `!draupnir ban @spam:example.com`:
+  [demo](https://github.com/the-draupnir-project/Draupnir/blob/main/docs/ban-command-prompt.gif)).
 
 ## Proposal
+
+This proposal introduces the following in order to solve the above problems:
+
+- _command description_ state events that can be used by a bot to communicate to
+  clients the parameters of the command and the types of arguments that those
+  parameters can accept.
+
+- A JSON representation of a command and the user supplied arguments, which a
+  client can send to the bot within a matrix event. This is a similar idea to a
+  JSON-RPC request object.
+
+- While a response format is not specified in this MSC, the MSC is designed to
+  be forward compatible with a follow up MSC for _partial commands_ and
+  _prompts_.
+
+The proposal makes no attempt to specify the syntax of commands within an
+`m.room.message` body or describe the syntax of those commands. This is
+specifically because when
+[MSC4332 tried to do this](https://github.com/matrix-org/matrix-spec-proposals/pull/4332/files#r2313755345)
+it was not found to be easy to do in a backwards compatible way and would have
+required some existing bots to make changes to their parsers. Additionally the
+argument and overloading semantics in MSC4332 make _partial commands_ and
+_prompts_ difficult to design.
 
 ### Command description
 
@@ -245,6 +296,17 @@ The following extensions/features are best considered by future MSCs:
 - Not using state events would work, but can be tricky to manage. This proposal
   fills a gap until proposals which solve the problem space more completely are
   written and proven by implementation. Sticky events maybe?
+
+- [MSC4332](https://github.com/matrix-org/matrix-spec-proposals/pull/4332). As
+  stated throughout this proposal, MSC4332 makes a number of complicated
+  considerations for command syntax that are not backwards compatible for all
+  bots. In addition the semantics for variadic and positional arguments as they
+  appear in the MSC make it difficult to implement _options_, _prompts_ and
+  _partial commands_
+  https://github.com/matrix-org/matrix-spec-proposals/pull/4332#discussion_r2313755345.
+  This MSC uses a JSON object to supply arguments to a command and provides
+  union and array types that can be used to implement variadic arguments and
+  various styles of options.
 
 ## Security considerations
 
