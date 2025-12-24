@@ -4,8 +4,12 @@
 >
 > This proposal is a simplification of
 > [MSC4332: In-room bot commands](https://github.com/matrix-org/matrix-spec-proposals/pull/4332)
-> that specifies only an object format for bot commands, and keeps syntax and
-> command interaction implementation dependant.
+> that specifies only an object format for bot commands, to be embedded within
+> message event content. The proposal does not make any impositions on the
+> textual command syntax used by bots or clients. To make use of the MSC,
+> clients and bots will have to implement a simple parser for the proposal's
+> command invocation protocol, which is similar in nature to
+> [JSON-RPC](https://www.jsonrpc.org/specification).
 
 Many bots on Matrix have a command interface consisting of `!botname <command>`,
 and have a pretty long help menus which can make it difficult to find the right
@@ -166,14 +170,15 @@ TODO: I don't know if this text below about conflicting commands is even
 relevant. Especially if we are going to make the descriptions go in one event
 each and have a `state_key` of `hmac_sha256(mxid, ...designator_parts)`
 
-Clients SHOULD be aware that some bots may attempt to create conflicts with
-built-in commands or other bots. Where conflicts with built-in events exist,
-clients SHOULD NOT show the bot's option to the user. Where conflicts with other
-bots exist, clients SHOULD show the bot's name/user ID in the autocomplete text.
-For example, "@Giphy /gif {search}". Clients MAY wish to always disambiguate
-commands like this to avoid future conflicts with built-in commands. From an
-implementation perspective, clients might cause their built-in commands to
-always take precedence over any bot's commands to avoid users becoming confused.
+Clients SHOULD be aware that some bots may attempt to create conflicts with the
+client's built-in commands (such as `/myroomnick`) or the commands of other
+bots. Where conflicts with built-in events exist, clients SHOULD NOT show the
+bot's option to the user. Where conflicts with other bots exist, clients SHOULD
+show the bot's name/user ID in the autocomplete text. For example, "@Giphy /gif
+{search}". Clients MAY wish to always disambiguate commands like this to avoid
+future conflicts with built-in commands. From an implementation perspective,
+clients might cause their built-in commands to always take precedence over any
+bot's commands to avoid users becoming confused.
 
 ### Type schema
 
@@ -209,6 +214,9 @@ example, accepting a room permalink for a `room_id` type, or "yes" in place of
 ## Extensions
 
 The following extensions/features are best considered by future MSCs:
+
+- A standardised command response similar to JSON-RPC response object. This
+  would also enable dynamic and arbitrary prompt flow.
 
 - Specifying a minimum power level required to send a command, to hint to users
   that a command may be unavailable to them. This wouldn't be enforced by auth
