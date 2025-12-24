@@ -34,8 +34,6 @@ commands, scoped by the `sender` of the description.
 
 The `content` for such an event fits the following implied schema:
 
-TODO: enabled_commands state event?
-
 ```json
 {
   "type": "m.bot.command_description",
