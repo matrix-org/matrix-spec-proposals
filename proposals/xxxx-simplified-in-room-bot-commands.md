@@ -28,21 +28,11 @@ this MSC) will need to rely on the existing `!botname help` convention.
 
 ### Command description
 
-A new state event type is introduced: `m.bot.commands`. The state key is the
-bot's own user ID to prevent other users/bots from changing it (this is a
-feature of rooms: see
-[`state_key`](https://spec.matrix.org/v1.15/client-server-api/#room-event-format)).
-
-When presenting command options to users, clients SHOULD use this event to
-suggest per-bot commands too, unless the user ID implied by the `state_key` is
-not joined to the room. (Note that this means "invalid" state keys get treated
-as unjoined users: an empty string, "not_a_user_id", etc can't join rooms, but
-`@bot:example.org` can.)
+A new state event type is introduced: `m.bot.command_description`. When
+presenting command options to users, clients SHOULD use this event to suggest
+commands, scoped by the `sender` of the description.
 
 The `content` for such an event fits the following implied schema:
-
-TODO: A single event for all commands is bad and we will probably easily exhaust
-that with Draupnir.
 
 TODO: Variadic arguments should be replaced with an array schema.
 
@@ -50,58 +40,58 @@ TODO: Enum should be replaced with union and literal types.
 
 TODO: number instead of integer type
 
-```jsonc
+TODO: enabled_commands state event?
+
+```json
 {
-  "sigil": "!", // Defaults to `!` if not specified. Clients can use this to show the user a consistent
-  // experience in the form of slash commands, but ultimately send the command as a
-  // sigil-prefixed string to the room. Eg: the UI might say `/botname`, but the command
-  // becomes `!botname` upon sending.
-  "commands": [
-    {
-      "designator": ["ban"],
-      "parameters": [
-        {
-          "key": "target_room",
-          "type": "room_id",
-          "description": {
-            // Descriptions use m.text from MSC1767 Extensible Events to later support MSC3554-style translations.
-            // See https://spec.matrix.org/v1.15/client-server-api/#mroomtopic_topiccontentblock
-            // See https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md
-            // See https://github.com/matrix-org/matrix-spec-proposals/pull/3554
-            "m.text": [{ "body": "The room ID" }],
-          },
-        },
-
-        {
-          "key": "timeout_seconds",
-          "type": "integer",
-          "description": { "m.text": [{ "body": "The timeout in seconds" }] },
-        },
-
-        {
-          "key": "apply_to_policy",
-          "type": "boolean",
-          "description": {
-            "m.text": [{ "body": "Whether to apply this to the policy" }],
-          },
-          // This argument is not required
-          "required": false,
-        },
-
-        // The final argument is variadic in this case, but doesn't need to be.
-        {
-          "key": "target_users",
-          "type": "user_id",
-          "description": { "m.text": [{ "body": "The user ID(s)" }] },
-          "variadic": true, // can only apply to the last argument. Default false when not supplied.
-        },
-      ],
-      "description": {
-        // We also use m.text here for the same reason as the argument descriptions above.
-        "m.text": [{ "body": "An example command with arguments" }],
+  "type": "m.bot.command_description",
+  "sender": "@draupnir:draupnir.space",
+  // derived from `sha256(designator.join('') + mxid)`
+  "state_key": "JBDLR6YMe+72yqsEMi/MVdTmjN3ynPThMz+M7QLATZQ=",
+  "content": {
+    "designator": ["ban"],
+    "parameters": [
+      {
+        "key": "target_room",
+        "type": "room_id",
+        "description": {
+          // Descriptions use m.text from MSC1767 Extensible Events to later support MSC3554-style translations.
+          // See https://spec.matrix.org/v1.15/client-server-api/#mroomtopic_topiccontentblock
+          // See https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md
+          // See https://github.com/matrix-org/matrix-spec-proposals/pull/3554
+          "m.text": [{ "body": "The room ID" }]
+        }
       },
-    },
-  ],
+
+      {
+        "key": "timeout_seconds",
+        "type": "integer",
+        "description": { "m.text": [{ "body": "The timeout in seconds" }] }
+      },
+
+      {
+        "key": "apply_to_policy",
+        "type": "boolean",
+        "description": {
+          "m.text": [{ "body": "Whether to apply this to the policy" }]
+        },
+        // This argument is not required
+        "required": false
+      },
+
+      // The final argument is variadic in this case, but doesn't need to be.
+      {
+        "key": "target_users",
+        "type": "user_id",
+        "description": { "m.text": [{ "body": "The user ID(s)" }] },
+        "variadic": true // can only apply to the last argument. Default false when not supplied.
+      }
+    ],
+    "description": {
+      // We also use m.text here for the same reason as the argument descriptions above.
+      "m.text": [{ "body": "An example command with arguments" }]
+    }
+  }
 }
 ```
 
@@ -120,6 +110,10 @@ A client may show the arguments and commands similar to Discord:
 
 - The position of parameter descriptions that are not _required_ is not
   significant.
+
+- Command descriptions only specify commands for the sender of the
+  `m.bot.command_description`. If the `sender` is not currently joined to the
+  room, the command should be hidden.
 
 ### Command invocation
 
@@ -165,10 +159,6 @@ or an `m.room.bot.command` event with the following `content` shape:
 ```
 
 Bots can then respond however they normally would to the command input.
-
-TODO: I don't know if this text below about conflicting commands is even
-relevant. Especially if we are going to make the descriptions go in one event
-each and have a `state_key` of `hmac_sha256(mxid, ...designator_parts)`
 
 Clients SHOULD be aware that some bots may attempt to create conflicts with the
 client's built-in commands (such as `/myroomnick`) or the commands of other
@@ -258,8 +248,8 @@ measures to minimize this confusion from happening.
 ## Unstable prefix
 
 While this proposal is not considered stable, implementations should use
-`org.matrix.msc0000.commands` in place of `m.bot.commands` and
-`org.matrix.msc0000.command` in place of `m.bot.command`.
+`org.matrix.msc0000.command_description` in place of `m.bot.command_description`
+and `org.matrix.msc0000.command` in place of `m.bot.command`.
 
 ## Dependencies
 
