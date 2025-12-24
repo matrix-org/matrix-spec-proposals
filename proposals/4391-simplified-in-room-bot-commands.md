@@ -1,4 +1,4 @@
-# MSC0000: Simplified in-room bot commands
+# MSC4391: Simplified in-room bot commands
 
 > [!NOTE]
 >
@@ -320,8 +320,8 @@ profile of the sender that registered the command.
 ## Unstable prefix
 
 While this proposal is not considered stable, implementations should use
-`org.matrix.msc0000.command_description` in place of `m.bot.command_description`
-and `org.matrix.msc0000.command` in place of `m.bot.command`.
+`org.matrix.msc4391.command_description` in place of `m.bot.command_description`
+and `org.matrix.msc4391.command` in place of `m.bot.command`.
 
 ## Dependencies
 
