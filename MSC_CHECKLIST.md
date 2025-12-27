@@ -41,3 +41,4 @@ clarification of any of these points.
   - [ ] Chosen unstable prefixes do not pollute any global namespace (use “org.matrix.mscXXXX”, not “org.matrix”).
 - [ ] Changes have applicable [Sign Off](https://github.com/matrix-org/matrix-spec-proposals/blob/main/CONTRIBUTING.md#sign-off) from all authors/editors/contributors
 - [ ] There is a dedicated "Security Considerations" section which detail any possible attacks/vulnerabilities this proposal may introduce, even if this is "None.". See [RFC3552](https://datatracker.ietf.org/doc/html/rfc3552) for things to think about, but in particular pay attention to the [OWASP Top Ten](https://owasp.org/www-project-top-ten/).
+- [ ] There also is a dedicated "Privacy Considerations" section which detail any possible implications on the users' privacy, even if this is "None.". See [RFC6973](https://datatracker.ietf.org/doc/html/rfc6973) for things to think about, especially sections 5, 6 and 7 of the RFC.
