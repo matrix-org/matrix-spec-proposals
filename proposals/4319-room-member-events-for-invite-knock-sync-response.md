@@ -55,15 +55,17 @@ format.
 > or `knock` in the first place. Providing the full event format allows clients to access details
 > like the `origin_server_ts`, the `event_id` or the `unsigned` object.
 
-For compatibility with the current client implementations, homeservers SHOULD also include this
-event in the `events` array of the `invite_state` or `knock_state` in stripped format.
+For compatibility with the current client implementations, homeservers SHOULD also continue to
+include this event in the `events` array of the `invite_state` or `knock_state` in the same format
+as in `State` for a time limited to 1 spec release after this proposal is released in a new spec
+version.
 
-Clients SHOULD expect the `state` key to be missing and SHOULD look for the `m.room.member` event in
-`invite_state` or `knock_state` as a fallback.
+For compatibility with the current server implementations, clients MAY look for the `m.room.member`
+event in `invite_state` or `knock_state` as a fallback if it is not found under the `state` key.
 
 > [!NOTE]
-> The example for the response of `GET /sync` already includes the stripped `m.room.member` event
-> although it is not specified.
+> The example for the response of `GET /sync` includes the stripped `m.room.member` event although
+> it is not specified.
 
 Finally, the list of events that should be included in the stripped state is extended with the
 stripped `m.room.member` event of the `sender` of the invite. This allows clients to be able to
