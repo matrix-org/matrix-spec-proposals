@@ -9,7 +9,7 @@ This stripped state comes over federation, via the
 and [`PUT /send_knock`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1send_knockroomideventid)
 endpoints in the Server-Server API.
 
-In the definition of the [stripped state](https://spec.matrix.org/v1.15/client-server-api/#stripped-state)
+In the definition of the [stripped state][stripped-state]
 it is recommended to contain the following state events:
 
 - `m.room.create`
@@ -67,9 +67,10 @@ event in `invite_state` or `knock_state` as a fallback if it is not found under 
 > The example for the response of `GET /sync` includes the stripped `m.room.member` event although
 > it is not specified.
 
-Finally, the list of events that should be included in the stripped state is extended with the
-stripped `m.room.member` event of the `sender` of the invite. This allows clients to be able to
-display information about the sender of an invite, like their display name or avatar.
+Finally, the [list of events that should be included in the stripped state][stripped-state] over the
+Client-Server and Server-Server APIs is extended with the stripped `m.room.member` event of the
+`sender` of the invite. This allows clients to be able to display information about the sender of an
+invite, like their display name or avatar.
 
 Example of an `InvitedState` object:
 
@@ -181,3 +182,5 @@ for the `state` key in `InvitedRoom` and `KnockedRoom`.
 ## Dependencies
 
 None.
+
+[stripped-state]: https://spec.matrix.org/v1.15/client-server-api/#stripped-state
