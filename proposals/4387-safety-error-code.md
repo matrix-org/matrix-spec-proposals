@@ -51,7 +51,7 @@ below) SHOULD also be present alongside `expiry` if applicable. `expiry` is the 
 timestamp in milliseconds for when the user can retry the request and probably get a different
 response. Clients SHOULD NOT assume that the timestamp is precise. If the same input is unlikely to
 succeed in a reasonable timeframe upon retry, the server should elide `expiry` or set it to `null`
-to indicate it's an effectively permanent response.
+to indicate it's an effectively permanent response. This makes `expiry` optional.
 
 An example of a permanent failure might be searching for illegal material in the room directory:
 
@@ -168,6 +168,7 @@ subtyped for slightly more specific use. Where a subtyped harm doesn't apply, th
 * `m.violence.glorification`
 * `m.violence.extremist`
 * `m.violence.human_trafficking`
+* `m.violence.domestic`
 
 **Child Safety**
 
@@ -194,12 +195,13 @@ subtyped for slightly more specific use. Where a subtyped harm doesn't apply, th
 
 ## Future scope
 
-The harms list is intended to be reused in other areas of Matrix, such as ban reasons, account
-suspensions, and room takedowns. These areas need significant thought before becoming standalone
-proposals however, so are excluded here in favour of future MSCs.
+The harms list is intended to be reused as an input signal for other areas of Matrix, such as when
+reporting concerns to server or community moderators. Further expansion into "outputs" like account
+suspensions, bans, policy rooms, and room takedowns requires significant thought before being used.
 
-The harms list is also expected to be used in submitting event/user/room reports during the "reporting
-v2" project being undertaken by the Foundation's T&S team.
+Future MSCs are encouraged to explore using the harms list *safely*. [MSC4204](https://github.com/matrix-org/matrix-spec-proposals/pull/4204)
+and [MSC4205](https://github.com/matrix-org/matrix-spec-proposals/pull/4205) both discuss challenges
+related to classifying content against users.
 
 ## Potential issues
 
@@ -240,6 +242,9 @@ Other alternatives include:
   [MSC4176](https://github.com/matrix-org/matrix-spec-proposals/pull/4176). `M_SAFETY` is compatible
   with MSC4176, but decided against using it directly due to concerns about server projects needing
   to sprout a translations layer and the complexities involved in doing that.
+
+  Note that the `error` message returned alongside `M_SAFETY` is likely to be English, but like other
+  errors in Matrix, is not required to be English.
 
 ## Security considerations
 
