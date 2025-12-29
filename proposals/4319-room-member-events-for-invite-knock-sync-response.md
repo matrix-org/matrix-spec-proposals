@@ -21,7 +21,7 @@ it is recommended to contain the following state events:
 - `m.room.encryption`
 
 Although these events are useful to be able to present information about the room, they don't
-contain information about the event itself.
+contain information about the invite/knock event itself.
 
 The following information can be useful for clients:
 
