@@ -137,7 +137,7 @@ Example of an `InvitedState` object:
 
 This changes the current expectations of clients by moving the `m.room.member` event outside of the
 `invite_state` and `knock_state` so they will need to adapt to the change. This is mitigated by
-encouraging servers are to keep sending the event in these objects.
+encouraging servers to keep sending the event in these objects.
 
 By showing more information about the sender of an invite, users might be subject to undesirable
 content like abusive language or images. Mitigating this is out of scope of this MSC, and other MSCs
@@ -160,8 +160,8 @@ homeserver, which is currently not possible
 (see [this discussion in MSC4311](https://github.com/matrix-org/matrix-spec-proposals/pull/4311#discussion_r2274781824)).
 Besides, those fields are really only necessary for the `invite` or `knock` `m.room.member` event.
 
-This doesn't solve the case where a room doesn't an `m.room.name` or `m.room.canonical_alias` state
-event, so [its display name should be computed using the room summary](https://spec.matrix.org/v1.15/client-server-api/#calculating-the-display-name-for-a-room).
+This doesn't solve the case where a room doesn't have an `m.room.name` or `m.room.canonical_alias`
+state event, so [its display name should be computed using the room summary](https://spec.matrix.org/v1.15/client-server-api/#calculating-the-display-name-for-a-room).
 This is left to another MSC.
 
 
@@ -173,7 +173,7 @@ No potential security issues are known to the author.
 ## Unstable prefix
 
 While this proposal is not considered stable, implementations should use `org.matrix.msc4319.state`
-for the `state` key in `InvitedRoom` and `JoinedRoom`.
+for the `state` key in `InvitedRoom` and `KnockedRoom`.
 
 
 ## Dependencies
