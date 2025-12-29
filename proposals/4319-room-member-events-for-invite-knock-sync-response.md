@@ -1,4 +1,4 @@
-# MSC4139: Room member events in stripped state
+# MSC4139: Room member events for invite and knock rooms in the `/sync` response
 
 In the Client-Server API, the response of the [`GET /sync`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync)
 endpoint, the `events` array in the `invite_state` for rooms under `invite` and in the `knock_state`
