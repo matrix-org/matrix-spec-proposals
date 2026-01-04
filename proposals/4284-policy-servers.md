@@ -326,6 +326,14 @@ reserved for that future MSC.
   server implementation, or rely on a third party to host it for them. More considerations around
   third party instances are explored in the Safety Considerations below.
 
+* The `m.room.policy` event type is named generically, and conflicts with the existing concept of
+  [Moderation Policy Lists](https://spec.matrix.org/v1.17/client-server-api/#moderation-policy-lists).
+  This is intentional: policy servers provide a function near to what would be described as "additional
+  authorization rules" currently, and are expected to expand into features beyond event authorization
+  in the future. For example, a policy server might be responsible for checking all media uploads on
+  a homeserver against a media policy. Or, a policy server might provide enhanced requirements on who
+  can join a room.
+
 Further issues are discussed in the Safety Considerations, Security Considerations, and Alternatives
 below.
 
@@ -493,6 +501,7 @@ While this proposal is not considered stable, implementations should use the fol
 | Stable | Unstable |
 |-|-|
 | `/_matrix/policy/v1/sign` | `/_matrix/policy/unstable/org.matrix.msc4284/sign` |
+| `/.well-known/matrix/policy_server` | `/.well-known/matrix/org.matrix.msc4284.policy_server` |
 | `m.room.policy` | `org.matrix.msc4284.policy` |
 
 **Note**: Due to iteration within this proposal, implementations SHOULD fall back to `/check` (described
