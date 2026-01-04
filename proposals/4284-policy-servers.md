@@ -10,16 +10,17 @@ Communities on Matrix are typically formed through [Spaces](https://spec.matrix.
 but can be made up of singular rooms or loose collections of rooms. These communities often have a
 desire to push unwelcome content out of their chats, and rely on bots like [Mjolnir](https://github.com/matrix-org/mjolnir),
 [Draupnir](https://github.com/the-draupnir-project/Draupnir), and [Meowlnir](https://github.com/maunium/meowlnir)
-to help manage their community. Many of these communities have additionally seen a large increase in
-abusive content being sent to their rooms recently (as of originally writing). While these existing tools allow for reactive
-moderation (redactions after the fact), some impacted communities may benefit from having an option
-to use a server of their choice to automatically filter events at a server level, reducing the spread
-of abusive content. This proposal experiments with this idea, calling the concept *Policy Servers*.
+to help manage their community. Many public communities additionally see abusive content sent to their
+rooms. While these existing tools allow for reactive moderation (redactions after the fact), some
+impacted communities may benefit from having an option to use a server of their choice to automatically
+filter events at a server level, reducing the spread of abusive content. This proposal explores this
+idea, calling the concept *Policy Servers*.
 
 This proposal does not seek to replace community management provided by the existing moderation bots,
 but does intend to supplement a large part of the "protections" concept present in many of these bots
 to the room's designated policy server. It is expected that protections will continue to be developed
-and maintained within moderation bots as an additional layer of safety.
+and maintained within moderation bots as an additional layer of safety, especially for content which
+makes it through the policy server.
 
 At a high level, policy servers are *optional* recommendation systems which help proactively moderate
 communities on Matrix. Communities which elect to use a policy server advertise their choice through
@@ -38,7 +39,8 @@ This tooling is entirely optional, and decided upon by the room/community itself
 bots. The specific filtering behaviour is left as an implementation detail, and is expected to be
 configurable by the community using the policy server. Some examples may include preventing images
 from being sent to their rooms, disallowing lots of messages from being sent in a row, and limiting
-the number of mentions a user can make.
+the number of mentions a user can make. More filter ideas can be found in the Foundation's
+[policyserv](https://github.com/matrix-org/policyserv) implementation of this proposal.
 
 While there isn't anything which prevents policy servers from operating in private or encrypted rooms,
 the intended audience is public (or near-public) rooms and communities. Most communities may not need
@@ -47,8 +49,6 @@ decide to use a policy server may find that they have it disabled or in a low po
 time.
 
 ## Proposal
-
-**This is a work in progress.**
 
 A *Policy Server* (PS) is a server which implements the newly-defined `/sign` API described below.
 This may be an existing logical server, such as matrix.org, or a dedicated host which implements the
@@ -64,12 +64,11 @@ Some dedicated host implementations may also wish to support:
 
 * [Invites](https://spec.matrix.org/v1.15/server-server-api/#inviting-to-a-room) to be added to rooms.
 * [Receiving transactions](https://spec.matrix.org/v1.15/server-server-api/#transactions) (possibly
-  routing to `/dev/null`) to minimize risk of remote servers flagging them as "down".
+  routing to `/dev/null`) to minimize risk of remote servers flagging them as "offline".
 * Supporting [device lookups](https://spec.matrix.org/v1.15/server-server-api/#get_matrixfederationv1userdevicesuserid)
-  to again minimize risk of remote servers flagging the policy server as down.
+  to again minimize risk of remote servers flagging the policy server as offline.
 
-Logical servers may prefer to have dedicated software run their `/sign` API, but otherwise leave the
-remaining Federation API endpoints to be served by their existing software.
+Logical servers might prefer to route `/sign` to dedicated software at their reverse proxy.
 
 Existing homeserver software, such as Synapse, may further benefit by supporting `/sign`, but deferring
 the actual spam/neutral check to a module or appservice (via API not defined by this MSC). In this
@@ -82,51 +81,61 @@ event (empty state key). The `content` has the following implied schema:
 
 ```json5
 {
-    "via": "policy.example.org", // the server name of the policy server
-    "public_key": "unpadded_base64_signing_key" // that server's *public* signing key used for `/sign`
+  "via": "policy.example.org", // the server name of the policy server
+  "public_key": "unpadded_base64_signing_key" // that server's *public* signing key used for `/sign`
 }
 ```
 
-**TODO**: Array for multiple policy servers?
+**Note**: Only a single server can be listed. See the Alternatives section for details on what a
+multi-server setup might require.
 
-Provided `policy.example.org` is in the room, that server receives events as any other homeserver
-in the room would, *plus* becomes a Policy Server. If `policy.example.org` is not in the room, the
-assignment acts as though it was undefined: the room does not use a policy server. This check is to
-ensure the policy server has agency to decide which rooms it actually generates recommendations for,
-as otherwise any random (potentially malicious) community could drag the policy server into rooms and
-overwhelm it.
+If the client already knows the policy server's `public_key`, it can populate the event itself. This
+is not expected to be the typical case, however. To help clients discover the the `public_key`, the
+policy server MAY implement the following `/.well-known/matrix/policy_server` endpoint. If the policy
+server doesn't implement the endpoint, the client (or sender of the `m.room.policy` event) will be
+required to get it from elsewhere.
 
-When creating an event locally, homeservers SHOULD call the `/sign` API defined below to acquire a
-signature from the policy server, if one is configured for the room. The homeserver then appends the
-signature to the event prior to delivering the event to other servers in the room.
+`GET /.well-known/matrix/policy_server` is a Client-Server API endpoint similar to the existing
+[`/support`](https://spec.matrix.org/v1.17/client-server-api/#getwell-knownmatrixsupport) well-known
+endpoint. It MAY be rate limited, and MUST NOT require authentication. Like other well-known endpoints,
+the request is made to the server name *before* resolving it to something the Federation API can
+use. Also like other well-known endpoints, it [supports CORS](https://spec.matrix.org/v1.17/client-server-api/#web-browser-clients).
 
-Upon receipt of an event in a room with a policy server, the homeserver SHOULD verify that the policy
-server's signature is present on the event *and* uses the key from the `m.room.policy` state event.
-If the signature is missing, invalid, or for the wrong key, the homeserver SHOULD [soft fail](https://spec.matrix.org/v1.15/server-server-api/#soft-failure)
-the event.
+The `GET /.well-known/matrix/policy_server` endpoint returns the following, ideally with a
+`Content-Type: application/json` header:
 
-Servers MUST NOT validate that policy server signatures exist on `m.room.policy` state events with
-empty state keys. This is to ensure that rooms have agency to remove/disable the policy server,
-especially if the policy server they're using has become obstructive to the room's function.
+```jsonc
+{
+  "public_key": "unpadded_base64_signing_key" // required; the same key that appears in the state event
+}
+```
 
-**Note**: Policy servers are consulted on *all* other event types. This includes membership events,
-power level changes, room name changes, room messages, reactions, redactions, etc.
+The state event's `via` is the same as the domain name used to get the JSON document. Callers MUST
+use `https://` when calling the endpoint.
 
-For clarity, when a room doesn't use a policy server (either because the state event is unset, or
-because the policy server isn't joined), events SHOULD NOT be impeded by lack of policy server signatures.
-This also applies to events which are topologically ordered at a point in the DAG where a policy
-server was not in effect, but were received late.
+Using the event example above: provided `policy.example.org` is in the room, that server receives
+events as any other homeserver in the room would, *plus* becomes a Policy Server. If `policy.example.org`
+is not in the room, the assignment acts as though it was undefined: the room does not use a policy server.
+This check is to ensure the policy server has agency to decide which rooms it actually generates
+recommendations for, as otherwise any random (potentially malicious) community could drag the policy
+server into rooms and overwhelm it.
 
-When implemented fully, users attempting to send "spammy" events according to the policy server will
-not be sent to the room because the homeserver will have failed to acquire a signature. Users also
-won't see events which lacked a valid signature from the policy server, for events which originate
-from a homeserver that sent events without asking the policy server to sign them (or did ask and got
-a refusal to sign, but sent the event anyway).
+If a valid policy server is configured for the room (joined + valid `m.room.policy` event), all
+homeservers wanting to send an event in the room MUST call the `/sign` API defined below. If that
+endpoint returns a signature, the homeserver appends that signature to the event before sending it
+to other servers in the room. The endpoint may also refuse to sign the event, effectively marking it
+spammy. When this happens, the homeserver SHOULD cease trying to send the event to other servers and
+reject/fail any applicable Client-Server API requests that were creating the event.
 
-**Note**: A future MSC may make the signature required in a future room version, otherwise the event
-is rejected. The centralization concerns of that architecture are best reserved for that future MSC.
+**Note**: Later on, this proposal discusses a case where the homeserver is asked to evaluate an event
+against the policy server. Which `m.room.policy` event is used (if any) and whether that policy server
+is joined to the room is based upon the room state before the subject event. For example, if the
+homeserver is evaluating an `m.room.member` event, it would look at the state of that event's
+`prev_events` (including the `prev_events`), but not the `m.room.member` event itself. For the currently
+discussed case of "trying to send a net-new event", the room state is almost certainly going to be
+current state as far as the sending server is concerned.
 
-The new `/sign` endpoint uses normal Federation API authentication, per above, and MAY be rate limited.
+The `/sign` API uses normal Federation API authentication, per above, and MAY be rate limited.
 It has the following implied schema:
 
 ```
@@ -145,89 +154,337 @@ a signature for the event using the key implied by `public_key` in the state eve
 
 ```jsonc
 {
-    "policy.example.org": {
-        "ed25519:policy_server": "zLFxllD0pbBuBpfHh8NuHNaICpReF/PAOpUQTsw+bFGKiGfDNAsnhcP7pbrmhhpfbOAxIdLraQLeeiXBryLmBw"
-    }
+  "policy.example.org": {
+    "ed25519:policy_server": "zLFxllD0pbBuBpfHh8NuHNaICpReF/PAOpUQTsw+bFGKiGfDNAsnhcP7pbrmhhpfbOAxIdLraQLeeiXBryLmBw"
+  }
 }
 ```
 
-If the policy server refuses to sign the event, it returns 200 OK with an empty JSON object instead
-of a normal error response. This is to leave error codes open for problems with the request itself,
-such as invalid events for the room version (`400 Bad Request`). **TODO**: define such error codes.
+If the policy server refuses to sign the event, it MAY return 200 OK with an empty JSON object, or
+a 400 Bad Request with appropriate error code. Using the [Common Error Codes](https://spec.matrix.org/v1.17/client-server-api/#common-error-codes)
+from the Client-Server API, the following are supported on HTTP 400 responses:
 
-For improved security, policy servers SHOULD NOT publish the key they use inside the state event on
-[`/_matrix/key/v2/server`](https://spec.matrix.org/v1.15/server-server-api/#get_matrixkeyv2server).
-This is to prevent an attack surface where a signing key is compromised and thus allows the attacker
-to impersonate the server itself (though, they'll still be able to spam events as much as they want
-because they can self-sign).
+* `M_BAD_JSON` - The supplied PDU-formatted event was improperly formatted (ie: missing required
+  keys for the room version).
+* `M_NOT_JSON` - The request body wasn't JSON.
+* `M_NOT_FOUND` - The room ID is not known or not protected by the policy server.
+* [MSC4387's `M_SAFETY` error code](https://github.com/matrix-org/matrix-spec-proposals/pull/4387)
+  (if accepted into the spec).
 
-In some implementations, a homeserver may cooperate further with the policy server to issue redactions
-for spammy events, helping to keep the room clear for users on servers which don't validate the signature
-on events. For example, `matrix.example.org` may have a user in the room with permission to send
-redactions and redacts all events that aren't properly signed by the policy server.
+**Note**: To clarify, servers are *not* required to return an error. They can hide the underlying
+reason with a 200+`{}` response instead.
+
+A 403 `M_FORBIDDEN` error MAY be returned by the policy server if the caller is
+[ACL'd](https://spec.matrix.org/v1.17/server-server-api/#server-access-control-lists-acls). This is
+not a "MUST" because policy servers may not always have full room state context when optimized for
+content moderation over Matrix moderation.
+
+A standard 429 `M_LIMIT_EXCEEDED` is returned when the policy server is rate limiting the caller.
+
+Upon receipt of an event in a room with a policy server, the homeserver SHOULD verify that the policy
+server's signature is present on the event *and* uses the key from the `m.room.policy` state event.
+If the signature is invalid or for the wrong key, the homeserver SHOULD [soft fail](https://spec.matrix.org/v1.15/server-server-api/#soft-failure)
+the event. If the signature is plainly missing, the homeserver SHOULD call `/sign` on the policy
+server and use that result to determine whether to pass the event through unimpeded or soft fail it.
+The homeserver SHOULD persist the policy server's signature with the event so the signature is passed
+transitively to other servers which request the event from the homeserver.
+
+**Note**: Advanced tooling, likely built into moderation bots, may further send redactions for events
+which are soft failed due to the policy server's recommendation. This helps remove content from the
+room for users which are stuck on an older/uncooperative homeserver.
+
+**Note**: Events can be missing signatures either maliciously or accidentally. Outdated servers which
+don't support this proposal wouldn't know that they need to get the signature, and servers which
+intentionally don't request a signature would be trying to send unwanted content to the room. Communities
+which are concerned about this
+
+Servers MUST NOT validate that policy server signatures exist on `m.room.policy` state events with
+empty state keys. This is to ensure that rooms have agency to remove/disable the policy server,
+especially if the policy server they're using has become obstructive to the room's function.
+
+**Note**: Policy servers are consulted on *all* other event types. This includes membership events,
+power level changes, room name changes, room messages, reactions, redactions, `m.room.policy` events
+with non-empty state keys, etc.
+
+For clarity, when a room doesn't use a policy server (either because the state event is unset, or
+because the policy server isn't joined), events SHOULD NOT be impeded by lack of policy server signatures.
+This also applies to events which were sent where the current state at that event doesn't have a
+policy server set.
+
+When implemented fully, users attempting to send "spammy" events according to the policy server will
+not be sent to the room because the homeserver will have failed to acquire a signature. Users also
+won't see events which lacked a valid signature from the policy server, for events which originate
+from a homeserver that sent events without asking the policy server to sign them (or did ask and got
+a refusal to sign, but sent the event anyway).
+
+**Note**: A future MSC is expected to make the signature required in a future room version when a
+policy server is in use by the room. Centralization concerns related to that architecture are best
+reserved for that future MSC.
 
 ### Implementation considerations
 
-When determining whether to sign an event, policy servers might wish to consider the following cases
-in addition to any implementation-specific checks/filters:
+* For improved security, policy servers SHOULD NOT publish the key they use inside the state event on
+  [`/_matrix/key/v2/server`](https://spec.matrix.org/v1.15/server-server-api/#get_matrixkeyv2server).
+  This keeps the concerns of "can send federation traffic" and "can mark events as neutral (not spammy)"
+  separate, and further means that a room can revoke the key without cooperation from the policy
+  server.
 
-* Is the requesting server [ACL'd](https://spec.matrix.org/v1.15/server-server-api/#server-access-control-lists-acls)?
-  The `/sign` endpoint is open to ACL'd servers, but that doesn't mean it needs to return a signature
-  for such servers.
-* **TODO**: Add more as they are encountered.
+* Homeservers or moderation bots MAY cooperate with policy servers to issue redactions for spammy
+  events, helping to keep the room clear for users on servers which don't involve the policy server
+  in their checks. For example, a room with `policy.example.org` and `matrix.example.org` might have
+  redactions sent by `@mod:matrix.example.org` rather than anyone from `policy.example.org`. How this
+  cooperation happens is left as an implementation detail.
+
+* If a policy server implements rate limiting, those rate limits *SHOULD* be relatively high. Clients
+  often retry events potentially dozens of times before giving up, which can quickly exhaust a server's
+  burst limit. Some servers may also be more chatty than others depending on how many active users
+  they have.
+
+* Policy servers SHOULD cache and deduplicate requests to `/sign` based on the event ID. When a server
+  sends an event not signed by the policy server in a popular room, all of the other servers in that
+  room may request that signature from the policy server right away. This can be a lot of requests.
+
+  Caching is also important for consistency. There is no mechanism to inform servers that an event's
+  spam or neutral designation has changed. If the policy server does change designation of an event,
+  it can lead to user-visible split brains as one server soft fails the spam and another doesn't.
+
+  A room's policies may also change over time, which may affect an event's designation (if the
+  designation were allowed to change).
+
+* Policy servers are *not* required to track the full DAG of the room. Logical servers which implement
+  endpoints like [`GET /event`](https://spec.matrix.org/v1.17/server-server-api/#get_matrixfederationv1eventeventid)
+  might need to track the DAG in order to reply appropriately, but dedicated policy servers which
+  implement the minimal API surface described earlier in this proposal might not have any need to.
+
+  This can be useful for implementations which are primarily concerned about what is about to be seen
+  by users rather than what could have been seen by users a long time ago (for example). Such policy
+  server implementations might track some definition of "current state", but might not be able to
+  evaluate whether a given event is actually authorized in the room.
+
+  This is expected: policy servers do *not* replace authorization rules. They do however add behaviour
+  for legal-but-spammy events. Events which are neutral by a policy server's standards might still
+  be illegal under the room's authorization rules, and are rejected accordingly.
 
 ## Potential issues
 
-**TODO**: This section.
+* Already noted in the proposal, existing rooms might have servers in them which don't know about
+  policy servers. This can lead to events which aren't signed by the policy server, and thus could
+  be considered spam automatically. This proposal aims to minimize that by suggesting that receiving
+  servers for an event ask for a signature from the policy server, though prior versions of this
+  proposal already tried such a mechanism (`/check`) with limited success. Unstable policy server
+  implementations have found that single-digit kHz amounts of requests are trivially possible with
+  rooms not much larger than the v12 HQ room (created ~1-2 months ago as of writing).
 
-Notes for TODO:
-* Redacting the policy server event is 😬, especially because it causes the key to vanish
-* Broadly: Lack of batching is unfortunate (**TODO**: Fix this(maybe??))
-* "SHOULD soft fail when no signature is present" is problematic when operating a room with outdated
-  servers which don't know they're supposed to get a signature. **TODO**: figure out migration plan
-  and/or advice for how to handle that case (allow anyway but (somehow) flag as "possible spam"?).
-* If the policy server can't be reached, servers are forced to assume that the event is spammy. Those
-  servers probably should retry the request. As of writing, it's believed to be a feature that *no*
-  events can be sent when the policy server is down (aside from removing the policy server, so rooms
-  have an escape hatch during extended outages).
+  This is expected to be fixed in a future room version with a future MSC. That future MSC will likely
+  make getting a signature required, which removes the need for a fallback `/sign` request. In the
+  meantime, policy servers SHOULD be designed, built, and deployed with the assumption that they will
+  receive an extremely high volume of requests, especially during spam waves.
+
+* The `m.room.policy` event is *not* protected from redaction in this proposal. Doing so would require
+  a new room version, which delays availability of this tooling to communities. A future MSC (probably
+  the same one which fixes the DoS issue above) is expected to alter the redaction algorithm to protect
+  critical portions of the `m.room.policy` state event.
+
+  In the meantime, it's advised to never redact `m.room.policy` state events with empty state keys.
+  If the intention is to "unset" or "remove" the policy server from the room, setting the content to
+  an empty JSON object is sufficient. Alternatively, kicking all users belonging to the policy server
+  from the room would also work.
+
+* The `/sign` endpoint as proposed does not support batching. This limits a server's ability to send
+  consecutive events quickly, which is currently considered a feature rather than a bug. A future
+  MSC may explore a `/sign_many` or similar endpoint which handles checking a small number of events
+  for spam. If such a future MSC is written, that MSC should consider what an appropriate value should
+  be for "a small number" of events, and whether a single spammy event in the batch causes the whole
+  batch to fail. Some use cases include bots which need to send consecutive events, but only want to
+  do so if *all* of those events would be sent.
+
+* When the policy server is offline or unreachable, the room is effectively unable to send events.
+  Though events not signed by the policy server can be sent to the room, tooling such as moderation
+  bots or natural homeserver behaviour might prevent those events from being readable by humans. For
+  example, a homeserver might hold the event in purgatory until it can get a response from the policy
+  server, or a moderation bot might immediately redact the event for missing a signature.
+
+  Rooms can restore regular communication while a policy server is offline by unsetting the `m.room.policy`
+  state event. Such events are explicitly not checked by the policy server to enable this exact
+  escape hatch during an outage/problem.
+
+* Events sent prior to a policy server being in place are not checked by the policy server. Moderation
+  bots and similar are best positioned to handle those events as the time they are received is often
+  far later than the DAG position claimed on the event.
+
+* Homeservers might be confused if the policy server is ACL'd from the room. The `/sign` endpoint is
+  not protected by the ACL, but the policy server can't participate in the room itself. In this
+  scenario, tooling (possibly including the policy server itself) is encouraged to make the room's
+  moderators aware of the situation so they can fix it. This is otherwise "don't do that" territory.
+
+* Communities which don't have access to server hosting infrastructure may not be able to self-host
+  a policy server. An example of this is a community which has deployed a moderation bot, but is not
+  confident enough or financially able to run a proper Matrix homeserver (or policy server, by extension).
+
+  In such cases, communities are likely also depending on publicly available homeservers for the bulk
+  of their moderation and administration. Those communities can aim to find an easy-to-setup policy
+  server implementation, or rely on a third party to host it for them. More considerations around
+  third party instances are explored in the Safety Considerations below.
+
+Further issues are discussed in the Safety Considerations, Security Considerations, and Alternatives
+below.
 
 ## Safety considerations
 
-**TODO**: This section.
+* This proposal intentionally makes no attempt to define "unwelcome" or "harmful" content. The precise
+  filters or checks performed by a policy server are left as implementation details because they may
+  vary from community to community.
+
+* Policy servers are proactive rather than reactive to reduce the chance or ability for a harmful
+  event to reach users. Prior to policy servers, communities had extremely limited options for proactive
+  tooling, which could result in a harmful event being visible to room members for a moment while the
+  reactive tooling caught up. With policy servers, such events get rejected before reactive tooling
+  needs to kick in (in the vast majority of cases - see Potential Issues).
+
+* Rooms and communities are not forced to use a policy server, and they may opt to use one during
+  particular spam incidents then disable them after. This is critical to the feature design to
+  ensure that rooms retain ownership and control over themselves.
+
+  This is especially important when a room decides to (maybe temporarily) use a policy server instance
+  which is supplied by a third party. The room is not required to give up control to the third party,
+  and can cease using the third party at any time.
+
+* Related to room ownership, rooms intentionally do not need to give any users from the policy server
+  a high power level in the room. The room just needs a user to be joined. Some policy server
+  implementations may be capable of going a bit above and beyond this MSC's scope by auto-redacting
+  spam and similar, which requires higher power levels in most cases, but using that functionality
+  should be optional.
+
+* Policy servers are also not forced to participate in a room. They can refuse to join or self-eject
+  as they see fit, causing other homeservers to stop checking new events with them.
+
+  However, if a policy server participates in a room (and is designated the policy server for that
+  room) and is later removed, that policy server will still be responsible for checking events sent
+  during that portion of the DAG. Whether a policy server chooses to consider all events after leaving,
+  being removed, or being unset as the room's policy server as spam is left as an implementation detail.
 
 ## Security considerations
 
-**TODO**: This section.
+As is the case with most safety tooling, attempts to work around the tooling are often considered
+security issues. Policy servers are new tech for Matrix and might have unforseen or undisclosed
+issues/concerns. Readers are encouraged to review the [Security Disclosure Policy](https://matrix.org/security-disclosure-policy/)
+ahead of reading this section, as it also applies to MSCs.
 
-Notes for TODO:
-* Policy servers are natural targets for DDoS attempts, especially because when they can't be reached,
-  the room is unusable.
+This proposal's security considerations are:
+
+* Though rooms are given an escape hatch to unresponsive policy servers, a room's policy server is a
+  natural Denial of Service (DoS) target. As already mentioned, policy servers MUST be tolerable to
+  DoS attacks. To what scale they need to tolerate is left as a deployment detail. A policy server
+  dedicated to a small community may not have the same requirements as a policy server available for
+  many communities to use.
+
+* Spammy events can still become visible in the room due to outdated servers or maliciously not checking
+  the events against the policy server. This proposal has a number of mechanisms to minimize this
+  risk as much as possible, but it's still possible. Those mechanisms include secondary `/sign` requests,
+  moderation bot/advanced tooling redactions, and eventually considering those events as spammy.
+
+  As already mentioned, a future MSC is expected to de-risk this completely through a new room version
+  which requires relevant signatures on events.
+
+* Sending servers can attempt to find a place in the DAG where a policy server wasn't set or wasn't
+  joined and place their event there. Such events are likely to become [soft failed](https://spec.matrix.org/v1.17/server-server-api/#soft-failure)
+  in rooms which layer their safety protections. For example, banning users which routinely work
+  around the policy server.
+
+  It's also worth considering that a homeserver or other moderation tool could cooperate with a policy
+  server to check events this proposal would otherwise decline to check. For example, a moderation
+  tool could check *every* event it sees with the room's policy server (if allowed by that policy
+  server), regardless of whether this proposal says it *should* be checked in that way. This can
+  highlight potentially spammy messages or attempts (accidental or malicious) to reference old parts
+  of the DAG.
+
+* A homeserver might deliberately ask for signatures from the policy server, but never actually send
+  the event to other homeservers. There are not many great options for avoiding this. One of the more
+  successful approachs is to monitor clock drift (both positive and negative) on `origin_server_ts`
+  and take action against extreme cases.
+
+  This could be implemented by policy servers, moderation bots, and other moderation tooling, though
+  is likely best placed in a moderation bot. In short, when the clock drift exceeds a threshold, take
+  action against the event/sender. This might be a redaction + kick, or could be a warning to the user
+  followed by increased action if it happens again in a short period of time.
+
+  Policy servers wanting to detect this case might be required to implement full room DAG support and
+  "chase" the latest events more than a typical server would. This is because the policy server might
+  not receive events from malicious (or broken) homeservers, so might have an outdated idea of whether
+  an event was actually sent to the room. If a policy server sees that it signed an event and (reliably)
+  knows it wasn't sent to the room after some threshold of time, the policy server might, for example,
+  change the event's designation to "spammy" and find a way to get a redaction sent out for it just
+  in case. That redaction might originate from the policy server itself, or in cooperation with other
+  moderation tooling per earlier in this proposal.
+
+  Policy servers should note that sometimes not receiving an event over federation may be server
+  misconfiguration rather than malicious behaviour. For example, by setting Synapse's
+  [`federation_domain_whitelist`](https://element-hq.github.io/synapse/v1.144/usage/configuration/config_documentation.html#federation_domain_whitelist)
+  configuration option.
 
 ## Alternatives
 
-**TODO**: More alternatives.
+Some alternatives are implied through the above sections and are excluded for brevity. For example,
+"what if we didn't use policy servers?" is answered multiple times above.
 
-One possible alternative is to have servers `/check` events at time of receipt rather than `/sign` at
-send time, though this has a few issues:
+* One possible alternative is to have servers `/check` events at time of receipt rather than `/sign` at
+  send time, though this has a few issues:
 
-1. It's non-deterministic. If the policy server forgets what it replied for a given event, it may
-   cause one server to soft fail it while another doesn't. This has proven to be the case in practice,
-   especially when the policy server cannot be reached right away.
+  1. It's non-deterministic. If the policy server forgets what it replied for a given event, it may
+     cause one server to soft fail it while another doesn't. This has proven to be the case in practice,
+     especially when the policy server cannot be reached right away.
 
-2. It's `O(n)` rather than `O(1)` scale, where `n` is the number of servers in the room. This can lead
-   to traffic patterns in the single-digit kHz range in practice.
+  2. It's `O(n)` rather than `O(1)` scale, where `n` is the number of servers in the room. This can lead
+     to traffic patterns in the single-digit kHz range in practice.
 
-3. It requires the policy server to have near-100% uptime as a `/check` request could come in late
-   when a receiving server has fallen behind on federation traffic. By putting the signing key into
-   the room state itself, we ensure that servers can validate the signatures without needing the
-   policy server to be online. Outages on the policy server will still affect net-new event sending,
-   but events already signed and working their way through federation don't need 100% SLA uptime to
-   work.
+  3. It requires the policy server to have near-100% uptime as a `/check` request could come in late
+     when a receiving server has fallen behind on federation traffic. By putting the signing key into
+     the room state itself, we ensure that servers can validate the signatures without needing the
+     policy server to be online. Outages on the policy server will still affect net-new event sending,
+     but events already signed and working their way through federation don't need 100% SLA uptime to
+     work.
 
-   The approach of putting the key into the room itself is similarly used in [MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243)
-   to ensure that user-sent events have less dependency on their server being online and reachable to
-   accept into the DAG. Readers are encouraged to review MSC4243 for additional context on why it's
-   important to remove the network dependency from signature verification (where possible).
+     The approach of putting the key into the room itself is similarly used in [MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243)
+     to ensure that user-sent events have less dependency on their server being online and reachable to
+     accept into the DAG. Readers are encouraged to review MSC4243 for additional context on why it's
+     important to remove the network dependency from signature verification (where possible).
+
+* The `m.room.policy` state event could support multiple servers being listed instead of exactly one.
+  This would allow the room to (theoretically) continue chatting if one of the policy servers went
+  offline for whatever reason, though carries some costs:
+
+  1. One of the reasons to consider multiple servers is to ensure a room cannot experience a denial
+     of service through DoSing the policy server itself. Listing multiple servers increases how many
+     targets are known to an attacker rather than provide meaningful redundancy.
+
+     Most communities would also be able to tolerate a brief interruption and likely would not have
+     the resources available to run/deploy multiple servers anyway. Policy servers protecting multiple
+     communities, like the Foundation's own instance, are encouraged to consider anti-DDoS measures
+     to limit interruptions among their protected communities.
+
+     Further, the `m.room.policy` state event is explicitly *not* checked by a policy server itself,
+     allowing communities to remove or replace which server they're using in the event of an outage.
+
+  2. Assuming the setup involves getting a signature from any one of the listed servers rather than
+     all servers, the server with the weakest configuration would always win. Communities may find
+     it difficult to keep configurations in sync, especially if using different providers or software
+     to run those servers.
+
+     Exposing server configuration in the room state so it can be shared across all listed servers
+     is not considered a solution as communities would generally prefer to keep precise configuration
+     a relative secret (for example, exactly how long of a message is too long). This is aside from
+     compatibility issues where one server supports message length filtering but another doesn't.
+
+  3. Assuming that signatures are required from *all* rather than any one listed server, the denial
+     of service risk remains: an attacker is only required to bring down a single server rather than
+     all of them.
+
+     This setup would fix the weakest link issue though. Communities could use multiple providers to
+     gain different capabilities. For example, one provider might do static analysis on events while
+     another tries to determine how "on topic" messages are. With a single server setup, that single
+     server needs to perform *all* capabilities required by the community. In practice, it's expected
+     that policy servers will have the same set of "essential" capabilities, and some may support the
+     effect of multiple servers by calling out to downstream servers to get an opinion on an event.
 
 ## Unstable prefix
 
@@ -244,7 +501,12 @@ state event.
 
 ## Dependencies
 
-This proposal has no direct dependencies.
+This proposal has a **soft dependency** on the following MSCs. They are not blocking for this MSC's
+acceptance.
+
+* [MSC4387: `M_SAFETY` error code](https://github.com/matrix-org/matrix-spec-proposals/pull/4387).
+
+This proposal has no other dependencies.
 
 ## Prior iteration
 
@@ -309,7 +571,7 @@ Homeserver implementations SHOULD fail safely and assume events are *not* spam w
 the policy server. However, they SHOULD also attempt to retry the request for a reasonable amount of
 time.
 
-Comments not incorporated into text:
+Comments not incorporated into `/check` text:
 * https://github.com/matrix-org/matrix-spec-proposals/pull/4284/files#r2107839742 - Why optional body?
 * https://github.com/matrix-org/matrix-spec-proposals/pull/4284/files#r2051075167 - Require signature check on body?
 * https://github.com/matrix-org/matrix-spec-proposals/pull/4284/files#r2254883244 - Error for when the policy server
