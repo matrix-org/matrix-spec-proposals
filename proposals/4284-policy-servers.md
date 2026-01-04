@@ -374,7 +374,7 @@ below.
 ## Security considerations
 
 As is the case with most safety tooling, attempts to work around the tooling are often considered
-security issues. Policy servers are new tech for Matrix and might have unforseen or undisclosed
+security issues. Policy servers are new tech for Matrix and might have unforeseen or undisclosed
 issues/concerns. Readers are encouraged to review the [Security Disclosure Policy](https://matrix.org/security-disclosure-policy/)
 ahead of reading this section, as it also applies to MSCs.
 
@@ -408,7 +408,7 @@ This proposal's security considerations are:
 
 * A homeserver might deliberately ask for signatures from the policy server, but never actually send
   the event to other homeservers. There are not many great options for avoiding this. One of the more
-  successful approachs is to monitor clock drift (both positive and negative) on `origin_server_ts`
+  successful approaches is to monitor clock drift (both positive and negative) on `origin_server_ts`
   and take action against extreme cases.
 
   This could be implemented by policy servers, moderation bots, and other moderation tooling, though
