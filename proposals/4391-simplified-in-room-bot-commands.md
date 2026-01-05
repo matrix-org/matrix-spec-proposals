@@ -257,9 +257,17 @@ When an object is provided as the type schema, the type is a derived from a
 schema described by the property `schema_type`:
 
 - The `array` schema type specifies the type of the items with the `items`
-  property.
+  property. The following additional restrictions apply to `array`:
+  - Arrays can only appear at the top level, `items` can only be a schema type
+    of `union`, `primitive`, and `literal`.
 - The `union` schema type specifies the types of the variants with the
-  `variants` property. Which is an array of type schema.
+  `variants` property. Which is an array of type schema. The following
+  restrictions apply to unions:
+  - Outside of the top-level, only an array of unions is permitted.
+  - Nested unions are not permitted as they are unnecessary and should be
+    flatted.
+  - A union of arrays is not permitted.
+  - Therefore `variants` can only be a schema type of `primitive` or `literal`.
 - The `literal` schema type specifies a literal value with the `value` property
   and the type of the literal value with the `literal_type` property.
 
