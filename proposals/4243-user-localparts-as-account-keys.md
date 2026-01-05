@@ -68,6 +68,7 @@ Terminology for the rest of this proposal:
  - Account Name User ID: user IDs as they exist today, formed of an account name and domain e.g `@alice:example.com`
  - Account Key User ID: user IDs of the form `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`, formed of an account key and domain.
  - Localpart / Domain: segments of a user ID as they are defined today. 'Localpart' is ambiguous and should be qualified as 'account name' or 'account key'.
+   'Domain' may be _unverified_ or _verified_.
 
 >[!NOTE]
 > Naming is a famously hard problem. The term "Account Key" was chosen for a few reasons:
@@ -117,10 +118,9 @@ Returns:
 }
 ```
 Unknown account keys are explicitly marked as unknown. If an account key is missing, then the sending server should try again later with that key
-to resolve it. Like all federation requests, this request _is authenticated_ using the server's signing key.
-This creates a bidirectional link:
+to resolve it. This creates a bidirectional link:
  - By signing event JSON, the account key claims to belong to a particular domain. This is embedded into the DAG.
- - By responding to the endpoint with that account key, the domain claims to own that particular account key. This is not embedded into the DAG so it is possible that not all servers will agree on this.
+ - By responding to the endpoint[^tls] with that account key, the domain claims to own that particular account key. This is not embedded into the DAG so it is possible that not all servers will agree on this[^cas].
  - Taken together, the two claims prove that the domain owns the key.
 
 >[!NOTE]
@@ -144,7 +144,8 @@ on another server's user needs to talk to that server to discover the account ke
 >
 > Considering the chicken/egg problem only exists for invites and pre-emptive bans, it feels acceptable to keep the scope small and
 > only add a generic lookup function as and when the use cases present themselves. This allows servers to rate-limit these requests to
-> prevent enumeration of accounts.
+> prevent enumeration of accounts e.g. unsolicited federated ban operations should be infrequent and so can have aggressive rate limits,
+> whereas it's not clear what a sensible limit is for a generic single account lookup operation.
 >
 > An alternative design would be to exclude the `/ban` endpoint entirely, making it impossible to do pre-emptive bans in room version `vNext`.
 > In practice this works well with moderation tooling (e.g Mjolnir, Draupnir) which instead reactively ban the user if they join a moderated room, rather
@@ -184,7 +185,7 @@ the event signatures of the DAG or to apply auth rules, thus ensuring that all s
 
 The server SHOULD group each key according to its claimed domain and perform a single `/accounts` query to fetch the account name for each
 account key. Requests SHOULD be batched to ensure that the HTTP request/response size doesn't become too large for reverse proxies to handle: this proposal
-recommends that keys for the same domain SHOULD be batched into groups of 512 keys. This SHOULD be done prior to sending the room information to clients.
+recommends that keys for the same domain SHOULD be batched into groups of 2048 keys[^reqsize]. This SHOULD be done prior to sending the room information to clients.
 Based on the result of the query, the server should then group account keys into two categories:
  - Verified: the domain is aware of the account key because it was contained in the response. The JSON in the response has been correctly signed by the account key.
  - Unverified: the domain is unaware of the account key because it was not contained in the response or the domain is unreachable[^unreach], returned a non 2xx status,
@@ -413,3 +414,7 @@ combined into one category.
 For now, this is just a peculiarity and isn't a problem. But, we can't really consider the full account key user ID to be the principal; only the account key
 itself is the principal. This _matters_ for portable accounts, so perhaps we should be defining the account key as the unchanging identifier to anticipate
 this?
+[^tls]: Specifically, the bidirectional link is created only when the requesting server verifies the TLS certificate of the responding server and confirms
+it is valid. The TLS certificate confirms ownership over the domain, and is subsequently used to send back the HTTP response claiming the account key.
+[^cas]: Further disagreements could happen if two servers don't have the same set of trusted certificate authorities or if the certificate has been revoked.
+[^reqsize]: The length of a public key with `"` and `,` is 45 bytes. For 2048 keys, this results in ~90KB requests and ~1MB responses (assuming maximum user ID length).
