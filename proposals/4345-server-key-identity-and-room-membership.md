@@ -201,7 +201,8 @@ loss of control from the key controller or because of an intervention by the
 server admins for moderation purposes. Once a key is revoked, if a Matrix
 homeserver is to participate again it must rejoin the room with a new keypair.
 
-A key controller can revoke their own key at any time.
+A key controller can revoke their own key at any time. Typically only the server
+admins of a particular homeserver deployment will do this.
 
 A user with the _accept_ power level may change the _participation_ of any
 server to `revoked` when the server has less implicit power level than the user
@@ -248,16 +249,6 @@ within the room if their server does not already have a `participation` of
 
 Servers can only accept invitations and emit a join event when their current
 participation state in the room is set to `accepted`.
-
-### Key revocation
-
-We define a _key revocation event_ to be an `m.server.participation` event with
-the following properties:
-
-1. The event's signature can be verified with the key found in the `state_key`.
-2. The event's `participation` is `revoked`.
-
-Key revocations are enforced by auth rules to be immutable.
 
 ### The `m.server.participation` authorization rule
 
