@@ -57,20 +57,21 @@ Instead, the homeserver allocates a `delay_id` to the scheduled event which is u
 
 ### Scheduling a delayed event
 
-An optional `delay` query parameter is added to the existing
-[`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
-and
+A new endpoint is introduced for scheduling the sending of a message or state event:
+
+`PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}`
+
+The path parameters of this endpoint are the same as for the existing
 [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
-endpoints.
+endpoint. It also makes use of [transaction identifiers](https://spec.matrix.org/v1.16/client-server-api/#transaction-identifiers).
 
-The new query parameter is used to configure the event scheduling:
+The body for requests to this endpoint is a JSON object containing the following fields:
 
-- `delay` - Optional number of positive non-zero milliseconds the homeserver should wait before sending the event. If
-  no `delay` is provided, the event is sent immediately as normal.
+- `delay` - Required. A positive non-zero number of milliseconds the homeserver should wait before sending the event.
+- `state_key` - Optional. The state key for the event to be sent, if it is to be a state event.
+- `content` - Required. The content of the event to be sent.
 
-The body of the request is the same as it is currently.
-
-If a `delay` is provided, the homeserver schedules the event to be sent with the specified delay and responds with an
+The homeserver schedules the event to be sent with the specified delay and responds with an
 opaque `delay_id` field (omitting the `event_id` as it is not available):
 
 ```http
@@ -397,13 +398,17 @@ Before sending the join event, it also schedules a delayed "hangup" state event 
 marks the end of its participation:
 
 ```http
-PUT /_matrix/client/v3/rooms/!wherever:example.com/state/m.rtc.member/@someone:example.com?delay=10000
+PUT /_matrix/client/v3/rooms/!wherever:example.com/delayed_event/m.rtc.member/txn0
 Content-Type: application/json
 
 {
-  "application": "m.call",
-  "call_id": "",
-  ...
+  "delay": 10000,
+  "state_key": "@someone:example.com",
+  "content": {
+    "application": "m.call",
+    "call_id": "",
+    ...
+  }
 }
 ```
 
@@ -445,11 +450,14 @@ is available):
 ```
 
 then send:
-`PUT /_matrix/client/v3/rooms/{roomId}/send/m.room.redaction/{txnId}?delay=600000`
+`PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/m.room.redaction/{txnId}`
 
 ```jsonc
 {
-  "redacts": "{event_id}"
+  "delay": 600000,
+  "content": {
+    "redacts": "{event_id}"
+  }
 }
 ```
 
@@ -541,17 +549,24 @@ already proposes a `batch_send` endpoint. However, it is limited to application 
 data. Since the additional capability to use a template `event_id` parameter is also needed,
 this probably is not a good fit.
 
-### Not reusing the `send`/`state` endpoint
+### Reusing the `send`/`state` endpoints
 
-Alternatively, new endpoints could be introduced to not overload the `send` and `state` endpoint.
-Those endpoints could be called:
+Instead of creating a new endpoint for scheduling a delayed event,
+the `send` and `state` endpoints could support sending events with a delay,
+via an optional query parameter for specifying the desired delay:
 
-`PUT /_matrix/client/v1/rooms/{roomId}/send_delayed_event/{eventType}/{txnId}?delay={delay_ms}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send/{eventType}/{txnId}?delay={delay_ms}`
 
-`PUT /_matrix/client/v1/rooms/{roomId}/state_delayed_event/{eventType}/{stateKey}?delay={delay_ms}`
+`PUT /_matrix/client/v1/rooms/{roomId}/state/{eventType}/{stateKey}?delay={delay_ms}`
 
-This would allow the response for the `send` and `state` endpoints to remain as they are currently,
-and to have a different return type for the new `send_delayed_event` and `state_delayed_event` endpoints.
+This would require the endpoints to give a different response body when sending a delayed event,
+as the usual response of the event ID is unavailable at the time of scheduling a delayed event.
+
+The main benefit of reusing the endpoints as described is the potential for code reuse in server implementations.
+However, this could be negated by the complexity of having to support multiple response body formats.
+
+This approach also requires using a query parameter for a purpose other than filtering,
+which defies the usual semantics of a URI query.
 
 ### Allocating the event ID at the point of scheduling the send
 
