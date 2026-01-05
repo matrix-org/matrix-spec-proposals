@@ -800,7 +800,8 @@ mitigate this risk, as well as limiting the number of scheduled events a user ca
 
 Whilst the MSC is in the proposal stage, the following should be used:
 
-- `org.matrix.msc4140.delay` should be used instead of the `delay` query parameter.
+- `PUT /_matrix/client/unstable/org.matrix.msc4140/rooms/{roomId}/delayed_event/{eventType}/{txnId}` should be used instead of
+  the `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` endpoint.
 - `POST /_matrix/client/unstable/org.matrix.msc4140/delayed_events/{delay_id}` should be used instead of
   the `POST /_matrix/client/v1/delayed_events/{delay_id}` endpoint.
 - `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used instead of
