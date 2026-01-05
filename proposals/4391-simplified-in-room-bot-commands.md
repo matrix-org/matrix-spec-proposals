@@ -123,7 +123,7 @@ The `content` for such an event fits the following implied schema:
           "m.text": [{ "body": "Whether to apply this to the policy" }],
         },
         // This argument is not required
-        "required": false,
+        "optional": true,
       },
 
       {
