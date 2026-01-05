@@ -88,7 +88,7 @@ commands, scoped by the `sender` of the description.
 
 The `content` for such an event fits the following implied schema:
 
-```json
+```jsonc
 {
   "type": "m.bot.command_description",
   "sender": "@draupnir:draupnir.space",
@@ -100,43 +100,46 @@ The `content` for such an event fits the following implied schema:
     "parameters": [
       {
         "key": "target_room",
-        "type": "room_id",
+        "schema": { "schema_type": "primitive", "type": "room_id" },
         "description": {
           // Descriptions use m.text from MSC1767 Extensible Events to later support MSC3554-style translations.
           // See https://spec.matrix.org/v1.15/client-server-api/#mroomtopic_topiccontentblock
           // See https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md
           // See https://github.com/matrix-org/matrix-spec-proposals/pull/3554
-          "m.text": [{ "body": "The room ID" }]
-        }
+          "m.text": [{ "body": "The room ID" }],
+        },
       },
 
       {
         "key": "timeout_seconds",
-        "type": "integer",
-        "description": { "m.text": [{ "body": "The timeout in seconds" }] }
+        "schema": { "schema_type": "primitive", "type": "integer" },
+        "description": { "m.text": [{ "body": "The timeout in seconds" }] },
       },
 
       {
         "key": "apply_to_policy",
-        "type": "boolean",
+        "schema": { "schema_type": "primitive", "type": "boolean" },
         "description": {
-          "m.text": [{ "body": "Whether to apply this to the policy" }]
+          "m.text": [{ "body": "Whether to apply this to the policy" }],
         },
         // This argument is not required
-        "required": false
+        "required": false,
       },
 
       {
         "key": "target_users",
-        "type": { "schema_type": "array", "items": "user_id" },
-        "description": { "m.text": [{ "body": "The user ID(s)" }] }
-      }
+        "schema": {
+          "schema_type": "array",
+          "items": { "schema_type": "primitive", "type": "user_id" },
+        },
+        "description": { "m.text": [{ "body": "The user ID(s)" }] },
+      },
     ],
     "description": {
       // We also use m.text here for the same reason as the argument descriptions above.
-      "m.text": [{ "body": "An example command with arguments" }]
-    }
-  }
+      "m.text": [{ "body": "An example command with arguments" }],
+    },
+  },
 }
 ```
 
