@@ -89,10 +89,11 @@ The `content` for such an event fits the following implied schema:
 {
   "type": "m.bot.command_description",
   "sender": "@draupnir:draupnir.space",
-  // derived from `sha256(designator.join('') + mxid)`
+  // derived from `sha256(command + mxid)`
   "state_key": "JBDLR6YMe+72yqsEMi/MVdTmjN3ynPThMz+M7QLATZQ=",
   "content": {
-    "designator": ["ban"],
+    // space separated string for commands such as "rooms add"
+    "command": "ban",
     "parameters": [
       {
         "key": "target_room",
@@ -181,7 +182,7 @@ or an `m.room.bot.command` event with the following `content` shape:
   // commands are sent this way. Bots may still need to unpack `body` when users
   // send commands manually or without client support.
   "m.bot.command": {
-    "designator": ["ban"],
+    "command": "ban",
     "arguments": {
       // These are just the arguments and their user-supplied values.
       "target_room": {
