@@ -70,12 +70,15 @@ This proposal introduces the following in order to solve the above problems:
 
 The proposal makes no attempt to specify the syntax of commands within an
 `m.room.message` body or describe the syntax of those commands. This is
-specifically because when
-[MSC4332 tried to do this](https://github.com/matrix-org/matrix-spec-proposals/pull/4332/files#r2313755345)
-it was not found to be easy to do in a backwards compatible way and would have
-required some existing bots to make changes to their parsers. Additionally the
-argument and overloading semantics in MSC4332 make _partial commands_ and
-_prompts_ difficult to design.
+specifically to avoid the fallback version of the command becoming the source of
+truth over the JSON representation, which was previously a source of
+[compatibility issues](https://github.com/matrix-org/matrix-spec-proposals/pull/4332/files#r2313755345)
+in [MSC4332](https://github.com/matrix-org/matrix-spec-proposals/pull/4332).
+Advanced bots would be required some to make changes to their parsers.
+Additionally the argument and overloading semantics in MSC4332 make _partial
+commands_ and _prompts_ difficult to design. However, this proposal may be
+extended by another proposal to specify a fallback derived from the JSON
+representation that may work for many simple bots.
 
 ### Command description
 
