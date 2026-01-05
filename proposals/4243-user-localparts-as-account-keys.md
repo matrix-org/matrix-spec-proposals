@@ -226,13 +226,13 @@ can specify this by **TODO: we need something that works across ALL CSAPI endpoi
 > A third server might then fail to query `example.com` (e.g because it is temporarily unavailable), and could incorrectly
 > assume that the account key _is_ for `alice` on `example.com`, which it isn't. To avoid this, we rely on `/accounts` to
 > know the account name, and must handle the cases where we cannot perform that operation. As an aside,
-> if we forced all messages to be cryptographically signed (not necessarily encrypted), we would avoid this
+> if we forced all messages to be cryptographically signed (not necessarily encrypted) _by the client_, we would avoid this
 > impersonation attack, but that is orthogonal to this proposal.
 
 Once a mapping has been verified, it can be permanently cached. Servers MAY retry unverified mappings in the future,
 prioritising servers which have never responded over servers which have responded with the absence of the key.
 Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
-If an unverified user becomes verified:
+If an unverified user later becomes verified:
  - the _current state events_ for that user (e.g their `m.room.member` event and any current state they are the `sender` of) MUST be
    sent down client's sync streams.
 
