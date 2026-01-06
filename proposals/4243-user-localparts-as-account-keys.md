@@ -162,6 +162,71 @@ on another server's user needs to talk to that server to discover the account ke
 > than flooding the DAG with thousands of potentially unnecessary ban events. This would mean the chicken/egg problem would exist solely for invites,
 > which would then mean a simple modification to the `/invite` API is enough.
 
+#### Server behaviour
+
+When a server joins a room, it will receive a list of account keys that are joined to the room. No external requests need to be made in order to verify
+the event signatures of the DAG or to apply auth rules, thus ensuring that all servers will converge on the same room state.
+
+The server SHOULD group each key according to its claimed domain and perform a single `/accounts` query to fetch the account name for each
+account key. Requests SHOULD be batched to ensure that the HTTP request/response size doesn't become too large for reverse proxies to handle: this proposal
+recommends that keys for the same domain SHOULD be batched into groups of 2048 keys[^reqsize]. This SHOULD be done prior to sending the room information to clients.
+Based on the result of the query, the server should then group account keys into two categories:
+ - Verified: the domain is aware of the account key because it was contained in the response. The JSON in the response has been correctly signed by the account key.
+ - Unverified: the domain is unaware of the account key because it was not contained in the response or the domain is unreachable[^unreach], returned a non 2xx status,
+   or the server cannot decode the response body.
+
+This proposal tries to avoid clients needing to know or care about these account keys. As such, it takes steps to replace the account key
+with the account name in the user ID where possible in event JSON sent to clients/bots/bridges/appservices. For a given account key `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`:
+ - The server should replace the account key with the account name in the user ID for verified keys. E.g `@kegan:matrix.org`.
+ - The server should _filter out_ both state and message events from unverified users from being sent down the Client-Server API.
+
+The act of filtering out unverified user IDs means clients will potentially see different events in the same room. However, _servers_ will always see
+the same events, and be able to perform state resolution / apply event auth rules consistently. Clients that do not want to have these events filtered out
+can specify this by **TODO: we need something that works across ALL CSAPI endpoints so no sync filter, on a per device basis.**
+
+>[!NOTE]
+> We could _alternatively_ replace the `domain` of the user ID with "invalid" for unverified keys e.g. `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`.
+> We replace the domain with 'invalid' for unverified keys because otherwise it implies that user ID is an
+> account on that server. The domain part of the user ID is
+> not verified with this proposal. If we did not replace the domain with 'invalid', abusive or illegal activity
+> may be incorrectly tied back to a particular victim server. The word "invalid" is specifically
+> [reserved](https://www.rfc-editor.org/rfc/rfc2606.html#section-2) so it cannot become a valid TLD in the future.
+> Conversely, by doing this we enable domainless accounts
+> because malicious servers may purposefully omit their own users from the response, thus causing all their users
+> to appear with an "invalid" domain. [Moderation tooling](https://github.com/matrix-org/matrix-spec-proposals/pull/4284)
+> may decide to automatically soft-fail events sent from unverified domains to protect against abuse. On the flip side,
+> this is exactly what we want for peer-to-peer applications, where the identity and routing information is solely the
+> public key (e.g used in a distributed hash table). If we chose to inform clients about unverified users, it would make
+> the MSC depend on [MSC4284: Policy Servers](https://github.com/matrix-org/matrix-spec-proposals/pull/4284) to ensure that
+> events sent by invalid domains can be moderated safely.
+>
+> However, we would need to handle the case where the user ID eventually becomes verified. This is error-prone and complex because
+> servers would need to issue synthetic leave events for the old user ID and synthetic join events for the new user ID and keep track of
+> those interactions across lazy-loading, sync filters, etc.
+>
+> Embedding the account name into the event JSON would not resolve the problem
+> as malicious servers could lie about their domain, creating impersonation attacks. For example,
+> Eve on `evil.com` could generate an account key with the name 'alice' then claim the domain part as `example.com`.
+> A third server might then fail to query `example.com` (e.g because it is temporarily unavailable), and could incorrectly
+> assume that the account key _is_ for `alice` on `example.com`, which it isn't. To avoid this, we rely on `/accounts` to
+> know the account name, and must handle the cases where we cannot perform that operation. As an aside,
+> if we forced all messages to be cryptographically signed (not necessarily encrypted) _by the client_, we would avoid this
+> impersonation attack, but that is orthogonal to this proposal.
+
+Once a mapping has been verified, it can be permanently cached. Servers MAY retry unverified mappings in the future,
+prioritising servers which have never responded over servers which have responded with the absence of the key.
+Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
+If an unverified user later becomes verified:
+ - the _current state events_ for that user (e.g their `m.room.member` event and any current state they are the `sender` of) SHOULD be
+   sent down client's sync streams. For [Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186),
+   this is via `required_state` if those state tuples are being tracked. For [the current sync API](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3sync),
+   this is the `state` block if and only if [`use_state_after`](https://github.com/matrix-org/matrix-spec-proposals/pull/4222) is enabled.
+   If that option is disabled, then the events for that user SHOULD NOT be sent.[^stateafter]
+ - historical messages for that user SHOULD NOT be sent down client's sync streams. This avoids creating confusion that the user actively
+   sent those messages. The messages MAY be returned via [`/messages`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3roomsroomidmessages),
+   [`/context`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3roomsroomidcontexteventid) and
+   [`/event`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3roomsroomideventeventid).
+
 #### Handling GDPR erasure
 
 The account keys for erased users MUST return an `errcode` of `M_ERASED` to indicate that the key was valid but is now deleted.
@@ -266,72 +331,17 @@ POST /_matrix/federation/v1/query/accounts
 }
 ```
 
-Servers MAY make `/accounts` requests only for erased users, as the example above does. Servers MAY combine this request with specific account keys, in which case the maximum number of keys in the `account_keys` response MUST NOT be larger than the request's `len(account_keys) + erasure.limit`.
+Servers MAY make `/accounts` requests only for erased users, as the example above does. Servers MAY combine this request
+with specific account keys, in which case the maximum number of keys in the `account_keys` response MUST NOT be larger than
+the request's `len(account_keys) + erasure.limit`.
 
-#### Server behaviour
+Upon receiving an erased account key with a valid signature, the receiving server MUST delete the account name mapping for
+that account key, effectively making the account key unverified again. However, unlike unverified account keys, an erased
+account key cannot become verified again (see the state machine diagram above). Erased account keys otherwise function the
+same as unverified account keys: events for this key MUST NOT be sent down sync streams. This means erased users will also
+'erase' events that they have sent. However, there is currently no mechanism to inform clients that have already seen the
+events to 'erase' the events in a similar manner.
 
-When a server joins a room, it will receive a list of account keys that are joined to the room. No external requests need to be made in order to verify
-the event signatures of the DAG or to apply auth rules, thus ensuring that all servers will converge on the same room state.
-
-The server SHOULD group each key according to its claimed domain and perform a single `/accounts` query to fetch the account name for each
-account key. Requests SHOULD be batched to ensure that the HTTP request/response size doesn't become too large for reverse proxies to handle: this proposal
-recommends that keys for the same domain SHOULD be batched into groups of 2048 keys[^reqsize]. This SHOULD be done prior to sending the room information to clients.
-Based on the result of the query, the server should then group account keys into two categories:
- - Verified: the domain is aware of the account key because it was contained in the response. The JSON in the response has been correctly signed by the account key.
- - Unverified: the domain is unaware of the account key because it was not contained in the response or the domain is unreachable[^unreach], returned a non 2xx status,
-   or the server cannot decode the response body.
-
-This proposal tries to avoid clients needing to know or care about these account keys. As such, it takes steps to replace the account key
-with the account name in the user ID where possible in event JSON sent to clients/bots/bridges/appservices. For a given account key `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`:
- - The server should replace the account key with the account name in the user ID for verified keys. E.g `@kegan:matrix.org`.
- - The server should _filter out_ both state and message events from unverified users from being sent down the Client-Server API.
-
-The act of filtering out unverified user IDs means clients will potentially see different events in the same room. However, _servers_ will always see
-the same events, and be able to perform state resolution / apply event auth rules consistently. Clients that do not want to have these events filtered out
-can specify this by **TODO: we need something that works across ALL CSAPI endpoints so no sync filter, on a per device basis.**
-
->[!NOTE]
-> We could _alternatively_ replace the `domain` of the user ID with "invalid" for unverified keys e.g. `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`.
-> We replace the domain with 'invalid' for unverified keys because otherwise it implies that user ID is an
-> account on that server. The domain part of the user ID is
-> not verified with this proposal. If we did not replace the domain with 'invalid', abusive or illegal activity
-> may be incorrectly tied back to a particular victim server. The word "invalid" is specifically
-> [reserved](https://www.rfc-editor.org/rfc/rfc2606.html#section-2) so it cannot become a valid TLD in the future.
-> Conversely, by doing this we enable domainless accounts
-> because malicious servers may purposefully omit their own users from the response, thus causing all their users
-> to appear with an "invalid" domain. [Moderation tooling](https://github.com/matrix-org/matrix-spec-proposals/pull/4284)
-> may decide to automatically soft-fail events sent from unverified domains to protect against abuse. On the flip side,
-> this is exactly what we want for peer-to-peer applications, where the identity and routing information is solely the
-> public key (e.g used in a distributed hash table). If we chose to inform clients about unverified users, it would make
-> the MSC depend on [MSC4284: Policy Servers](https://github.com/matrix-org/matrix-spec-proposals/pull/4284) to ensure that
-> events sent by invalid domains can be moderated safely.
->
-> However, we would need to handle the case where the user ID eventually becomes verified. This is error-prone and complex because
-> servers would need to issue synthetic leave events for the old user ID and synthetic join events for the new user ID and keep track of
-> those interactions across lazy-loading, sync filters, etc.
->
-> Embedding the account name into the event JSON would not resolve the problem
-> as malicious servers could lie about their domain, creating impersonation attacks. For example,
-> Eve on `evil.com` could generate an account key with the name 'alice' then claim the domain part as `example.com`.
-> A third server might then fail to query `example.com` (e.g because it is temporarily unavailable), and could incorrectly
-> assume that the account key _is_ for `alice` on `example.com`, which it isn't. To avoid this, we rely on `/accounts` to
-> know the account name, and must handle the cases where we cannot perform that operation. As an aside,
-> if we forced all messages to be cryptographically signed (not necessarily encrypted) _by the client_, we would avoid this
-> impersonation attack, but that is orthogonal to this proposal.
-
-Once a mapping has been verified, it can be permanently cached. Servers MAY retry unverified mappings in the future,
-prioritising servers which have never responded over servers which have responded with the absence of the key.
-Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
-If an unverified user later becomes verified:
- - the _current state events_ for that user (e.g their `m.room.member` event and any current state they are the `sender` of) SHOULD be
-   sent down client's sync streams. For [Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186),
-   this is via `required_state` if those state tuples are being tracked. For [the current sync API](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3sync),
-   this is the `state` block if and only if [`use_state_after`](https://github.com/matrix-org/matrix-spec-proposals/pull/4222) is enabled.
-   If that option is disabled, then the events for that user SHOULD NOT be sent.[^stateafter]
- - historical messages for that user SHOULD NOT be sent down client's sync streams. This avoids creating confusion that the user actively
-   sent those messages. The messages MAY be returned via [`/messages`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3roomsroomidmessages),
-   [`/context`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3roomsroomidcontexteventid) and
-   [`/event`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3roomsroomideventeventid).
 
 #### Gradual compatibility
 
