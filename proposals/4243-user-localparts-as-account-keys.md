@@ -266,6 +266,8 @@ POST /_matrix/federation/v1/query/accounts
 }
 ```
 
+Servers MAY make `/accounts` requests only for erased users, as the example above does. Servers MAY combine this request with specific account keys, in which case the maximum number of keys in the `account_keys` response MUST NOT be larger than the request's `len(account_keys) + erasure.limit`.
+
 #### Server behaviour
 
 When a server joins a room, it will receive a list of account keys that are joined to the room. No external requests need to be made in order to verify
