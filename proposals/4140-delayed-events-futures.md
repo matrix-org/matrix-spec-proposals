@@ -665,7 +665,7 @@ The existing `M_INVALID_PARAM` error code could be used instead of introducing a
 ### `M_MAX_DELAYED_EVENTS_EXCEEDED` instead of `M_RESOURCE_LIMIT_EXCEEDED`
 
 A new error code `M_MAX_DELAYED_EVENTS_EXCEEDED` could be used instead of reusing the existing `M_RESOURCE_LIMIT_EXCEEDED` error code.
-The purpose of using a new error code would be to better distunguish delayed event scheduling limits from other resource limits.
+The purpose of using a new error code would be to better distinguish delayed event scheduling limits from other resource limits.
 
 ### Naming
 
