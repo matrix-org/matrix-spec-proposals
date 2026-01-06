@@ -108,16 +108,17 @@ Content-Type: application/json
 The homeserver **should** apply rate limiting to the scheduling of delayed events to provide mitigation against the
 [High Volume of Messages](https://spec.matrix.org/v1.17/appendices/#threat-high-volume-of-messages) threat.
 
-If the user has too many outstanding delayed events, the server will respond with HTTP 400 and a new
-`M_MAX_DELAYED_EVENTS_EXCEEDED` error code:
+If the user has too many outstanding delayed events, the server will respond with HTTP 403 and the
+`M_RESOURCE_LIMIT_EXCEEDED` error code:
 
 ```http
-400 Bad Request
+403 Forbidden
 Content-Type: application/json
 
 {
-  "errcode": "M_MAX_DELAYED_EVENTS_EXCEEDED",
+  "errcode": "M_RESOURCE_LIMIT_EXCEEDED",
   "error": "The maximum number of delayed events has been reached.",
+  "admin_contact": "mailto:admin@server.com",
 }
 ```
 
@@ -661,6 +662,11 @@ Will if the MatrixRTC app fails.
 
 The existing `M_INVALID_PARAM` error code could be used instead of introducing a new error code `M_MAX_DELAY_EXCEEDED`.
 
+### `M_MAX_DELAYED_EVENTS_EXCEEDED` instead of `M_RESOURCE_LIMIT_EXCEEDED`
+
+A new error code `M_MAX_DELAYED_EVENTS_EXCEEDED` could be used instead of reusing the existing `M_RESOURCE_LIMIT_EXCEEDED` error code.
+The purpose of using a new error code would be to better distunguish delayed event scheduling limits from other resource limits.
+
 ### Naming
 
 The following alternative names for this concept are considered:
@@ -824,25 +830,6 @@ instead of:
   "errcode": "M_MAX_DELAY_EXCEEDED",
   "error": "The requested delay exceeds the allowed maximum.",
   "max_delay": 86400000
-}
-```
-
-- The `M_UNKNOWN` `errcode` should be used instead of `M_MAX_DELAYED_EVENTS_EXCEEDED` as follows:
-
-```json
-{
-  "errcode": "M_UNKNOWN",
-  "error": "The maximum number of delayed events has been reached.",
-  "org.matrix.msc4140.errcode": "M_MAX_DELAYED_EVENTS_EXCEEDED"
-}
-```
-
-instead of:
-
-```json
-{
-  "errcode": "M_MAX_DELAYED_EVENTS_EXCEEDED",
-  "error": "The maximum number of delayed events has been reached."
 }
 ```
 
