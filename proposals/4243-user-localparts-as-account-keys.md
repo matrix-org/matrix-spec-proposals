@@ -522,10 +522,9 @@ the part of the sender of the event. This contrasted with "unknown" keys which w
 due to munging the user ID in a slightly different way. However, there is no guarantee that a server responding negatively to the existence of a
 key is actually malicious (recreating your database would do this for example). Therefore, the distinction isn't important, meaning they can be
 combined into one category.
-[^idunchange]: TODO: This isn't actually unchanging, as a key K known to two servers S1 and S2 can map the 'same' event to the same underlying key.
-For now, this is just a peculiarity and isn't a problem. But, we can't really consider the full account key user ID to be the principal; only the account key
-itself is the principal. This _matters_ for portable accounts, so perhaps we should be defining the account key as the unchanging identifier to anticipate
-this?
+[^idunchange]: Previous iterations had this key be the account key _user ID_ (with domain) but that wasn't unique as a key K known to two servers
+S1 and S2 can map the 'same' event to the same underlying key. This _matters_ for portable accounts and so was changed to ensure clients are keying
+off the actual principal: the account key alone.
 [^tls]: Specifically, the bidirectional link is created only when the requesting server verifies the TLS certificate of the responding server and confirms
 it is valid. The TLS certificate confirms ownership over the domain, and is subsequently used to send back the HTTP response claiming the account key.
 [^cas]: Further disagreements could happen if two servers don't have the same set of trusted certificate authorities or if the certificate has been revoked.
