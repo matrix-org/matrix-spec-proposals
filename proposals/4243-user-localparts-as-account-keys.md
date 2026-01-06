@@ -233,8 +233,15 @@ Once a mapping has been verified, it can be permanently cached. Servers MAY retr
 prioritising servers which have never responded over servers which have responded with the absence of the key.
 Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
 If an unverified user later becomes verified:
- - the _current state events_ for that user (e.g their `m.room.member` event and any current state they are the `sender` of) MUST be
-   sent down client's sync streams.
+ - the _current state events_ for that user (e.g their `m.room.member` event and any current state they are the `sender` of) SHOULD be
+   sent down client's sync streams. For [Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186),
+   this is via `required_state` if those state tuples are being tracked. For [the current sync API](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3sync),
+   this is the `state` block if and only if [`use_state_after`](https://github.com/matrix-org/matrix-spec-proposals/pull/4222) is enabled.
+   If that option is disabled, then the events for that user SHOULD NOT be sent.[^stateafter]
+ - historical messages for that user SHOULD NOT be sent down client's sync streams. This avoids creating confusion that the user actively
+   sent those messages. The messages MAY be returned via [`/messages`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3roomsroomidmessages),
+   [`/context`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3roomsroomidcontexteventid) and
+   [`/event`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3roomsroomideventeventid).
 
 #### Gradual compatibility
 
@@ -418,3 +425,5 @@ this?
 it is valid. The TLS certificate confirms ownership over the domain, and is subsequently used to send back the HTTP response claiming the account key.
 [^cas]: Further disagreements could happen if two servers don't have the same set of trusted certificate authorities or if the certificate has been revoked.
 [^reqsize]: The length of a public key with `"` and `,` is 45 bytes. For 2048 keys, this results in ~90KB requests and ~1MB responses (assuming maximum user ID length).
+[^stateafter]: We allow servers to opt-out simply because the current sync API, in absence of `use_state_after`, is not actually tracking the current state, thus
+it isn't safe to just inject the events randomly.
