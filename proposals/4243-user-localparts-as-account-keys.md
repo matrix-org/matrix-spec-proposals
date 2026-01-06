@@ -88,7 +88,12 @@ POST /_matrix/federation/v1/query/accounts
         "l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ",
         "EgdGx+0oy/9IX5k7tCobr0JoiwMvmmQ8sDOVlZODh/o",
         "cWm64pdXOGz1DbIXTuH+24szY/+9HjPP7jZwbDjn12s"
-    ]
+    ],
+    // See "Handling GDPR erasure" section
+    "erasure": {
+      "id": 17,
+      "limit": 64
+    }
 }
 ```
 Returns:
@@ -114,6 +119,11 @@ Returns:
             // alternatively this can be another error code to indicate why this key is unknown
             "errcode": "M_UNKNOWN"
         }
+    },
+    // See "Handling GDPR erasure" section
+    "erasure": {
+      "id": 17,
+      "has_more": false
     }
 }
 ```
@@ -167,6 +177,15 @@ In addition, the JSON object MUST include the domain and signatures keys to conf
 }
 ```
 
+This means all user IDs navigate the following state machine:
+```mermaid
+stateDiagram-v2
+    [*] --> Unverified
+    Unverified --> Verified
+    Unverified --> Erased
+    Verified --> Erased
+```
+
 >[!NOTE]
 > The object is signed to prevent DNS takeover attacks erasing users, where DNS is compromised to point to an unauthorised server who then responds
 > with erased users. By including the signature, it forces the attacker to also have access to the private key for the account key.
@@ -177,6 +196,75 @@ In addition, the JSON object MUST include the domain and signatures keys to conf
 > Further work could improve the temporality of these signatures e.g including a timestamp for when this attestation was made, but this is out-of-scope
 > for this proposal.
 
+GDPR requires erasure to be communicated to other servers. This ensures other servers transition an erased user from verified to erased in a timely manner.
+To accomodate this, the `/accounts` API includes a server-scoped "erasure ID" to track erased users. This effectively means servers are publishing a list[^eraselist]
+of erased keys, and the erasure ID is used to retrieve deltas on this list.
+
+Requesting servers SHOULD persist the erasure ID per-server and include it in their `/accounts` requests, along with a limit of how many erased users to return.
+Servers processing an `/accounts` request MUST:
+ - check for the presence of an `erasure` section. If omitted, no erasure handling is performed.
+ - compare the `erasure.id` with the latest erasure ID.
+ - send all erased users between the two IDs _even if those keys were not requested_, along with the latest erasure ID and whether there are more results beyond the
+   request supplied limit.
+
+This allows servers to periodically poll[^poll] for erased users as shown in the example below:
+```js
+POST /_matrix/federation/v1/query/accounts
+{
+  "erasure": {
+    "id": 5,
+    "limit": 3
+  }
+}
+
+200 OK
+{
+    "account_keys": {
+        "l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ": {
+            "errcode": "M_ERASED",
+            "domain": "matrix.org",
+            "signatures": { ... }
+        },
+        "EgdGx+0oy/9IX5k7tCobr0JoiwMvmmQ8sDOVlZODh/o": {
+            "errcode": "M_ERASED",
+            "domain": "matrix.org",
+            "signatures": { ... }
+        },
+        "cWm64pdXOGz1DbIXTuH+24szY/+9HjPP7jZwbDjn12s": {
+            "errcode": "M_ERASED",
+            "domain": "matrix.org",
+            "signatures": { ... }
+        }
+    },
+    "erasure": {
+      "id": 8,
+      "has_more": true
+    }
+}
+
+POST /_matrix/federation/v1/query/accounts
+{
+  "erasure": {
+    "id": 8,
+    "limit": 3
+  }
+}
+
+200 OK
+{
+    "account_keys": {
+        "KGft5qXKnE2fHrg3G4-W8gELQ111N13JkluMfmn2AN": {
+            "errcode": "M_ERASED",
+            "domain": "matrix.org",
+            "signatures": { ... }
+        }
+    },
+    "erasure": {
+      "id": 9,
+      "has_more": false
+    }
+}
+```
 
 #### Server behaviour
 
@@ -432,3 +520,9 @@ it is valid. The TLS certificate confirms ownership over the domain, and is subs
 [^reqsize]: The length of a public key with `"` and `,` is 45 bytes. For 2048 keys, this results in ~90KB requests and ~1MB responses (assuming maximum user ID length).
 [^stateafter]: We allow servers to opt-out simply because the current sync API, in absence of `use_state_after`, is not actually tracking the current state, thus
 it isn't safe to just inject the events randomly.
+[^eraselist]: This means servers with users who have never communicated with an erased key will be informed that the key is erased. This doesn't leak any
+information beyond the fact that the key is erased as the signed JSON object has no other information.
+[^poll]: Polling incurs inevitable latency, and is recommended to be no longer than 3 days. This is preferable to push-based approaches which could be a denial-of-service
+risk if a malicious server constantly generates keys only to immediately push erasure notices to other servers, forcing those servers to process the request. By
+combining the pull-based approach with a `limit` we ensure servers only consume as many keys as they are able to process. Malicious servers could ignore the limit and
+send back millions of erased keys, but this would breach HTTP response size limits and cause the malicious response to be dropped.
