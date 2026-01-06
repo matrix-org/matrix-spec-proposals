@@ -33,7 +33,7 @@ The MSC introduces a new push kind: webpush.
 - `url`: is updated to be required if `kind` is `http`, not used otherwise (to clarify this isn't used with webpush).
 - `endpoint`: is introduced, required if `kind` is `webpush`, not used otherwise. The URL to send the notification to, as defined as a
 `push resource` by RFC8030. MUST be an HTTPS URL.
-- `auth`: is introduced, required if `kind` is `webpush`, not used else. The authentication secret. This is 16 random bytes
+- `auth`: is introduced, required if `kind` is `webpush`, not used else. The authentication secret as specified by RFC8291. This is 16 random bytes
 encoded in base64 url.
 
 The POST request to the endpoint dedicated to the creation, modification and deletion of pushers,
