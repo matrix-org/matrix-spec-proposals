@@ -60,7 +60,7 @@ A new endpoint is introduced, dedicated to pusher validation:
 - Rate limited: No, Requires authentication: Yes
 - The request contains the `app_id` and `ack_token` parameters, received with the push notification.
 - The response, with status code 200, contains the `app_id` and `status`, which can be one of the following values:
-    - "unknown_app_id" if no pusher with this app_id exists
+		- "unknown_app_id" if no pusher with this app_id exists
 		- "expired" if this token for this app_id is expired
 		- "unknown_token" if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
 		- "ok" if the pusher has been activated
