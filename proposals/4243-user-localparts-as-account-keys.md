@@ -246,27 +246,31 @@ If an unverified user later becomes verified:
 #### Gradual compatibility
 
 To enable clients to gradually become aware of account keys, servers MUST set the `unsigned.sender_account.key` property of the event JSON to be the account key
-and the `unsigned.sender_account.name` property of the event JSON to be the account name returned from `/accounts` e.g:
+and the `unsigned.sender_account.user_id` property of the event JSON to be the account name + verified domain returned from `/accounts` e.g:
 
 ```js
 {
     // .. event fields
     "unsigned": {
         "sender_account": {
-            "key": "@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org",
-            "name": "kegan",
+            "key": "l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ",
+            "user_id": "@kegan:matrix.org",
         }
     }
 }
 ```
+If the user is unverified then the `user_id` field MUST be omitted.
 
 Clients can then use the `unsigned.sender_account.key` field as an unchanging identifier[^idunchange] for the sender of the event, akin to how they use the `sender` field today.
-A later room version or version of the CSAPI can then:
- - Revert the `sender` of the event to be the wire-format over federation and not modify it, meaning the `sender` becomes identical to `unsigned.sender_account.key`.
- - Tell clients to form the user ID by replacing the account key with the `unsigned.sender_account.name` if it is present. The absence of a `name` means the
-   key is not verified. Abusive `name` strings can be redacted by the server without breaking user identification.
+Clients can render the `unsigned.sender_account.user_id` field (if it exists) as a human-readable displayable identifier for the user. When the user is deleted, the key can be
+rendered instead. This is slightly more wasteful on bandwidth, but provides much more convenience for clients as the data they need is in the same struct.
 
-This is slightly more wasteful on bandwidth, but provides much more convenience for clients as the data they need is in the same struct.
+A later room version or version of the CSAPI can then:
+ - Transform the `sender` of the event to be of the form `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`. By using the `invalid` top-level domain we ensure this cannot be a
+   valid account name user ID. By universally replacing the domain with `invalid` we ensure that we do not send unverified domains to clients, who may otherwise think that e.g.
+   `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org` resides on matrix.org.
+ - Tell clients to form the user ID by using `unsigned.sender_account.user_id` if it exists, falling back to `unsigned.sender_account.key`. Abusive user IDs can be redacted which will
+   remove the `user_id` property from the event.
 
 #### Impacts on end-to-end encryption
 
