@@ -116,7 +116,7 @@ There are a few notable details in this example:
 2. `X-Matrix-Request-Async-File` is a header on the third part. By setting this to `true`, the caller
    is saying that it doesn't yet have the media and would like to use the (newly defined)
    `PUT /_matrix/client/v1/media/upload/:serverName/:mediaId` endpoint instead. The caller discovers
-   the media ID to upload to via the endpoint's reponse.
+   the media ID to upload to via the endpoint's response.
 
    The async media has the same time-to-upload and similar restrictions from the now-deprecated
    `/create` endpoint.
@@ -294,7 +294,7 @@ upload it, then share a link to the resulting media.
 
 Servers MAY also synthesize (un)restricted media as needed. There is no requirement that the event ID
 referenced in `visibility` actually have an `m.media` array referencing the media ID. Servers can use
-this to internally create `world_readable` or visibile-to-some-users media. Such cases include icons
+this to internally create `world_readable` or visible-to-some-users media. Such cases include icons
 on a website, creating their own server-managed emoji packs, populating a user's profile, etc.
 
 ### Backwards compatibility
