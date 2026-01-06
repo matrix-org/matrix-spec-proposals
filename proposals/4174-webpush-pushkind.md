@@ -1,6 +1,6 @@
 # MSC4174: Web push
 
-This MSC supersedes and replaces [MSC3013](https://github.com/matrix-org/matrix-spec-proposals/pull/3013), which introduced push notification encryption first.```
+This MSC supersedes and replaces [MSC3013](https://github.com/matrix-org/matrix-spec-proposals/pull/3013), which introduced push notification encryption first.
 
 Push notifications typically go through third-party push providers in order to be delivered: 1) a push gateway (sygnal) and
 2) e.g. FCM (Google) or APNs (Apple). In order to prevent these push providers and
