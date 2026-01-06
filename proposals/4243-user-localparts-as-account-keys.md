@@ -268,7 +268,8 @@ rendered instead. This is slightly more wasteful on bandwidth, but provides much
 A later room version or version of the CSAPI can then:
  - Transform the `sender` of the event to be of the form `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`. By using the `invalid` top-level domain we ensure this cannot be a
    valid account name user ID. By universally replacing the domain with `invalid` we ensure that we do not send unverified domains to clients, who may otherwise think that e.g.
-   `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org` resides on matrix.org.
+   `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org` resides on matrix.org. Alternatively, the room version could finally break away the domain and simply use the account
+   ket e.g `l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ` (this would be a pre-requisite for portable accounts).
  - Tell clients to form the user ID by using `unsigned.sender_account.user_id` if it exists, falling back to `unsigned.sender_account.key`. Abusive user IDs can be redacted which will
    remove the `user_id` property from the event.
 
