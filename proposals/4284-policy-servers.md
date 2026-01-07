@@ -89,11 +89,20 @@ event (empty state key). The `content` has the following implied schema:
 **Note**: Only a single server can be listed. See the Alternatives section for details on what a
 multi-server setup might require.
 
-If the client already knows the policy server's `public_key`, it can populate the event itself. This
-is not expected to be the typical case, however. To help clients discover the the `public_key`, the
-policy server MAY implement the following `/.well-known/matrix/policy_server` endpoint. If the policy
-server doesn't implement the endpoint, the client (or sender of the `m.room.policy` event) will be
-required to get it from elsewhere.
+The sender of the `m.room.policy` state event will need to know the server's `public_key` in order
+to populate the event. If the power levels of the room allow, the policy server itself or a dedicated
+bot might be able to set the state event directly. In other cases, a human user might be trying to
+configure their room's policy server from their client and might not know the `public_key` for their
+chosen policy server, but they likely know the server name.
+
+To help clients convert a server name to a public key, policy servers SHOULD implement the following
+`/.well-known/matrix/policy_server` endpoint. If the endpoint is not supported by the policy server,
+the `public_key` will need to be sourced out of band to populate the state event.
+
+**Note**: Servers MUST only use the `m.room.policy` state event as a source of truth for the policy
+server's public key. The well-known endpoint exists exclusively for clients to use to populate the
+state event. The endpoint does *not* exist to make `public_key` optional or act as a secondary lookup
+for the key.
 
 `GET /.well-known/matrix/policy_server` is a Client-Server API endpoint similar to the existing
 [`/support`](https://spec.matrix.org/v1.17/client-server-api/#getwell-knownmatrixsupport) well-known
@@ -120,20 +129,17 @@ This check is to ensure the policy server has agency to decide which rooms it ac
 recommendations for, as otherwise any random (potentially malicious) community could drag the policy
 server into rooms and overwhelm it.
 
-If a valid policy server is configured for the room (joined + valid `m.room.policy` event), all
-homeservers wanting to send an event in the room MUST call the `/sign` API defined below. If that
-endpoint returns a signature, the homeserver appends that signature to the event before sending it
-to other servers in the room. The endpoint may also refuse to sign the event, effectively marking it
-spammy. When this happens, the homeserver SHOULD cease trying to send the event to other servers and
-reject/fail any applicable Client-Server API requests that were creating the event.
+If the room's *current state* has a valid policy server configured for the room (joined + valid
+`m.room.policy` event), all homeservers wanting to send an event in the room MUST call the `/sign`
+API defined below. If that endpoint returns a signature, the homeserver appends that signature to the
+event before sending it to other servers in the room. The endpoint may also refuse to sign the event,
+effectively marking it spammy. When this happens, the homeserver SHOULD cease trying to send the event
+to other servers and reject/fail any applicable Client-Server API requests that were creating the event.
 
-**Note**: Later on, this proposal discusses a case where the homeserver is asked to evaluate an event
-against the policy server. Which `m.room.policy` event is used (if any) and whether that policy server
-is joined to the room is based upon the room state before the subject event. For example, if the
-homeserver is evaluating an `m.room.member` event, it would look at the state of that event's
-`prev_events` (including the `prev_events`), but not the `m.room.member` event itself. For the currently
-discussed case of "trying to send a net-new event", the room state is almost certainly going to be
-current state as far as the sending server is concerned.
+"Current state" is the same state used to evaluate an event for [soft failure](https://spec.matrix.org/v1.17/server-server-api/#soft-failure).
+That state might be different on different servers, though the `m.room.policy` state event is not
+expected to change frequently enough for this to be a major concern: at the time of trying to send
+any given event, the policy server has likely been set for a long while already.
 
 The `/sign` API uses normal Federation API authentication, per above, and MAY be rate limited.
 It has the following implied schema:
@@ -182,7 +188,7 @@ content moderation over Matrix moderation.
 A standard 429 `M_LIMIT_EXCEEDED` is returned when the policy server is rate limiting the caller.
 
 Upon receipt of an event in a room with a policy server, the homeserver SHOULD verify that the policy
-server's signature is present on the event *and* uses the key from the `m.room.policy` state event.
+server's signature is present on the event *and* uses the key from the current `m.room.policy` state event.
 If the signature is invalid or for the wrong key, the homeserver SHOULD [soft fail](https://spec.matrix.org/v1.15/server-server-api/#soft-failure)
 the event. If the signature is plainly missing, the homeserver SHOULD call `/sign` on the policy
 server and use that result to determine whether to pass the event through unimpeded or soft fail it.
@@ -195,8 +201,14 @@ room for users which are stuck on an older/uncooperative homeserver.
 
 **Note**: Events can be missing signatures either maliciously or accidentally. Outdated servers which
 don't support this proposal wouldn't know that they need to get the signature, and servers which
-intentionally don't request a signature would be trying to send unwanted content to the room. Communities
-which are concerned about this
+intentionally don't request a signature would be trying to send unwanted content to the room.
+
+**Note**: Because servers will check events against the current policy server for the room, a policy
+server might get asked to sign events from "before" it was enabled in the room. This could be because
+a server has discovered old history in the room that the policy server hasn't seen before, or due to
+the event's sender allow the `origin_server_ts` timestamp to drift. This proposal leaves it as an
+implementation detail for policy servers to determine how to handle such events. The Implementation
+Considerations section has some suggestions.
 
 Servers MUST NOT validate that policy server signatures exist on `m.room.policy` state events with
 empty state keys. This is to ensure that rooms have agency to remove/disable the policy server,
@@ -208,8 +220,6 @@ with non-empty state keys, etc.
 
 For clarity, when a room doesn't use a policy server (either because the state event is unset, or
 because the policy server isn't joined), events SHOULD NOT be impeded by lack of policy server signatures.
-This also applies to events which were sent where the current state at that event doesn't have a
-policy server set.
 
 When implemented fully, users attempting to send "spammy" events according to the policy server will
 not be sent to the room because the homeserver will have failed to acquire a signature. Users also
@@ -265,6 +275,25 @@ reserved for that future MSC.
   for legal-but-spammy events. Events which are neutral by a policy server's standards might still
   be illegal under the room's authorization rules, and are rejected accordingly.
 
+* DAG-aware policy servers MAY check events sent before the policy server was involved (according to
+  the DAG, not according to timestamps) differently from those after the policy server became involved.
+
+  This might include:
+
+  * Allowing the event because it was (presumably) legal at the time in the DAG.
+  * Running "critical" checks, but skipping others. For example, scanning media for unwanted content
+    but not applying message length limits.
+  * Treating the event no different than any other event and running the full suite of checks against
+    it.
+
+* Policy servers SHOULD be aware of clock drift, both malicious and accidental. In some cases it may
+  be possible to detect events that are being sent before the room was even created, though any
+  definition of `time.now()` will need a fairly forgiving range of values to handle slow or out of
+  sync servers.
+
+  Policy servers SHOULD NOT use `origin_server_ts` to determine if an event was sent "before" the
+  policy server was involved in the room.
+
 ## Potential issues
 
 * Already noted in the proposal, existing rooms might have servers in them which don't know about
@@ -308,10 +337,6 @@ reserved for that future MSC.
   state event. Such events are explicitly not checked by the policy server to enable this exact
   escape hatch during an outage/problem.
 
-* Events sent prior to a policy server being in place are not checked by the policy server. Moderation
-  bots and similar are best positioned to handle those events as the time they are received is often
-  far later than the DAG position claimed on the event.
-
 * Homeservers might be confused if the policy server is ACL'd from the room. The `/sign` endpoint is
   not protected by the ACL, but the policy server can't participate in the room itself. In this
   scenario, tooling (possibly including the policy server itself) is encouraged to make the room's
@@ -333,6 +358,13 @@ reserved for that future MSC.
   in the future. For example, a policy server might be responsible for checking all media uploads on
   a homeserver against a media policy. Or, a policy server might provide enhanced requirements on who
   can join a room.
+
+* There is no mechanism for a policy server to change an event's designation reliably. Once an event
+  is signed by the policy server, it's signed (effectively) forever. Policy servers might cooperate
+  with other moderation tooling to ensure redactions are sent for events they want to change from
+  neutral to spammy, but going from spammy to neutral is a challenge.
+
+  A future MSC is best placed to consider a mechanism to communicate designation changes.
 
 Further issues are discussed in the Safety Considerations, Security Considerations, and Alternatives
 below.
@@ -364,12 +396,24 @@ below.
   should be optional.
 
 * Policy servers are also not forced to participate in a room. They can refuse to join or self-eject
-  as they see fit, causing other homeservers to stop checking new events with them.
+  as they see fit, causing other homeservers to stop checking new events with them. Doing so also
+  stops the policy server from being consulted on events sent "during" the policy server's time in
+  the room because the other servers in the room will be looking at the current state only.
 
-  However, if a policy server participates in a room (and is designated the policy server for that
-  room) and is later removed, that policy server will still be responsible for checking events sent
-  during that portion of the DAG. Whether a policy server chooses to consider all events after leaving,
-  being removed, or being unset as the room's policy server as spam is left as an implementation detail.
+  Allowing the policy server to shut down cleanly and not be responsible for chunks of the DAG/room
+  forever is a feature.
+
+* Further because the current policy server applies to all events regardless of when they were sent,
+  policy servers are able to be responsive to shifting regulatory or other environments. For example,
+  a community might not have a rule against long messages, but then one day does and wants to apply
+  it to past messages too. While the policy server shouldn't be re-checking events it's already
+  checked, it's possible that another server in the room has just found a section of DAG that the
+  policy server hasn't checked before. The "no long messages" rule could then be applied to those
+  events.
+
+  It's left as an implementation detail whether communities can change this behaviour within their
+  chosen policy server. Servers will still always ask for an opinion from the policy server, but
+  whether the policy server returns a spammy or neutral response is entirely up to it.
 
 ## Security considerations
 
@@ -393,18 +437,6 @@ This proposal's security considerations are:
 
   As already mentioned, a future MSC is expected to de-risk this completely through a new room version
   which requires relevant signatures on events.
-
-* Sending servers can attempt to find a place in the DAG where a policy server wasn't set or wasn't
-  joined and place their event there. Such events are likely to become [soft failed](https://spec.matrix.org/v1.17/server-server-api/#soft-failure)
-  in rooms which layer their safety protections. For example, banning users which routinely work
-  around the policy server.
-
-  It's also worth considering that a homeserver or other moderation tool could cooperate with a policy
-  server to check events this proposal would otherwise decline to check. For example, a moderation
-  tool could check *every* event it sees with the room's policy server (if allowed by that policy
-  server), regardless of whether this proposal says it *should* be checked in that way. This can
-  highlight potentially spammy messages or attempts (accidental or malicious) to reference old parts
-  of the DAG.
 
 * A homeserver might deliberately ask for signatures from the policy server, but never actually send
   the event to other homeservers. There are not many great options for avoiding this. One of the more
