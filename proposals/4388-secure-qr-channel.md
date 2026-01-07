@@ -681,7 +681,7 @@ string `MATRIX_QR_CODE_LOGIN_OK`:
 
 ```
 TaggedCiphertext := ResponseContext_G.Seal("MATRIX_QR_CODE_LOGIN_OK", "")
-LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext) || ResponseNonce
+LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext || ResponseNonce)
 ```
 
 Device G sends **LoginOkMessage** as the `data` payload via a `PUT` request to the insecure rendezvous session.
