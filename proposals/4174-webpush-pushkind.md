@@ -28,13 +28,13 @@ Extending the push kind to [`POST /_matrix/client/v3/pushers/set`](https://spec.
 
 The MSC introduces a new push kind: webpush.
 
-`PusherData` is extended as as follow:
+`PusherData` is extended as follows:
 - `format`: is updated to be required if `kind` is `http` or `webpush`
 - `url`: is updated to be required if `kind` is `http`, not used otherwise (to clarify this isn't used with webpush).
 - `endpoint`: is introduced, required if `kind` is `webpush`, not used otherwise. The URL to send the notification to, as defined as a
 `push resource` by RFC8030. MUST be an HTTPS URL.
-- `auth`: is introduced, required if `kind` is `webpush`, not used else. The authentication secret as specified by RFC8291. This is 16 random bytes
-encoded in base64 url.
+- `auth`: is introduced, required if `kind` is `webpush`, not used else. This holds the authentication secret as
+specified by RFC8291 - 16 random bytes encoded in URL-sage Base64 without padding.
 
 The POST request to the endpoint dedicated to the creation, modification and deletion of pushers,
 `POST /_matrix/client/v3/pushers/set` now supports a new `kind`: `webpush`.
@@ -43,10 +43,10 @@ pusher that sends Web Push encrypted messages.
 - `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key in the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf), section 2.3.3, replicated from X9.62), encoded in base64 url. The public key comes from a ECDH
 keypair using the P-256 (prime256v1, cf. FIPS186) curve.
 
-If the request creates a new pusher or modify the `pushkey`, the `PusherData.endpoint`, or the `PusherData.auth`, then
-the server respond with a 201, "The pusher is set but needs to be activated". The Server send a push notification to the
+If the request creates a new pusher or modifies values under `pushkey` , `PusherData.endpoint`, or `PusherData.auth`, then
+the server MUST respond with 201, "The pusher is set but needs to be activated". The server MUST send a push notification to the
 endpoint, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key with a message containing
-the `app_id` and a `ack_token`, a UUIDv4 token in the hyphen form, valid for 5 minutes:
+`app_id` and `ack_token`, a UUIDv4 token in the hyphen form, valid for 5 minutes:
 
 ```
 {
@@ -119,25 +119,25 @@ the right specifications, in case of  `aesgcm` it uses the draft version.
 ## Alternatives
 
 `pushkey` could be a random ID, and we can add `p256dh` in the `PusherData`. But it would require client to store it,
-while the public key already identify that pusher. And, client already use the PusherData that way.
+while the public key already identifies that pusher. And the client already uses the PusherData that way.
 
 `vapid` parameter could be made optional considering it is officially not a requirement, however it seems
-existing big players push servers need it anyway to be able to subscribe, so it was decided to make it mandatory
+existing push servers from big players need it anyway to be able to subscribe, so it was decided to make it mandatory
 to avoid issues with those.
 
 ## Security considerations
 
-Security considerations are listed by [RFC8030](https://www.rfc-editor.org/rfc/rfc8030#section-8), there are mainly resolved with [RFC8291](https://datatracker.ietf.org/doc/html/rfc8291) (Encryption) and
+Security considerations are listed by [RFC8030](https://www.rfc-editor.org/rfc/rfc8030#section-8), they are mainly resolved with [RFC8291](https://datatracker.ietf.org/doc/html/rfc8291) (Encryption) and
 [RFC8292](https://datatracker.ietf.org/doc/html/rfc8292) (VAPID).
 
 Like any other federation request, there is a risk of SSRF. This risk is limited since the post data isn't
-arbitrary (the content is encrypted), and a potential malicious actor don't have access to the response.
-Nevertheless, it is recommended to not post to private addresses, with the possibility with a setting to
-whitelist a private IP. (Synapse already implements [`ip_range_whitelist`](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#ip_range_whitelist))
+arbitrary (the content is encrypted), and a potential malicious actor doesn't have access to the response.
+Nevertheless, it is recommended to not post to arbitrary private addresses but offer the option to
+safelist a private IP. (Synapse already implements [`ip_range_whitelist`](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#ip_range_whitelist))
 It is also recommended to not follow redirection, to avoid implementation issue where the destination is checked
 before sending the request but not for redirection.
 
-Like any other federation request, there is a risk of DOS amplification. One malicious actor register many users
+Like any other federation request, there is a risk of DOS amplification. One malicious actor can register many users
 to a valid endpoint, then change the DNS record and target another server, then notify all these users. This
 amplification is very limited since HTTPS is required and the TLS certificate of the target will be rejected. The
 request won't reach any functionality of the targeted application. The home server can reject pusher if the response
