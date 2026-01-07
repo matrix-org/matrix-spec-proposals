@@ -42,7 +42,7 @@ Starting in room version `vNext`:
    Servers still determine which servers are in the room based on the domain of the user ID.
    
 Signatures on an event follow the same format as today for backwards compatibility with existing server code, but:
- - the [entity](https://spec.matrix.org/v1.14/appendices/#checking-for-a-signature) signing the event is now public part of the account key.
+ - the [entity](https://spec.matrix.org/v1.14/appendices/#checking-for-a-signature) signing the event is now the **url-safe** base64 encoded public part of the account key.
  - the [signing key identifier](https://spec.matrix.org/v1.14/appendices/#checking-for-a-signature) is now the constant `ed25519:1`[^keyid].
 ```json
 {
