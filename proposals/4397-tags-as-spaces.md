@@ -16,11 +16,12 @@ The normal spaces API is then used to tag rooms within these subspaces.  Clients
 
 ## Potential issues
 
-* Custom tags already exist in the spec, and they work..  
-* Clients already implement tags everywhere for Favourites & Low Priority  
+* Custom tags already exist in the spec, and they work.
+* Clients already implement tags everywhere for Favourites & Low Priority.
 * The benefits for client (and server) implementers are therefore small right now for moving to spaces, given they likely already have tag support implemented.  
 * Changing space membership is currently ratelimited; for a good UX we’d need to special-case ratelimiting for private spaces, which then runs the risk of letting abusive users DoS the server with (relatively heavy) state events.  
-* We’d want to do a coordinated ecosystem-wide migration of Favs & Low Priority over to the new space system
+* We’d want to do a coordinated ecosystem-wide migration of Favs & Low Priority over to the new space system.
+* Rooms + state events are heavier on servers (and clients) than account_data
 
 ## Alternatives
 
