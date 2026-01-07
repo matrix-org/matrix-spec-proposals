@@ -181,8 +181,9 @@ with the account name in the user ID where possible in event JSON sent to client
  - The server should _filter out_ both state and message events from unverified users from being sent down the Client-Server API.
 
 The act of filtering out unverified user IDs means clients will potentially see different events in the same room. However, _servers_ will always see
-the same events, and be able to perform state resolution / apply event auth rules consistently. Clients that do not want to have these events filtered out
-can specify this by **TODO: we need something that works across ALL CSAPI endpoints so no sync filter, on a per device basis.**
+the same events, and be able to perform state resolution / apply event auth rules consistently. Servers are free to implement custom mechanisms to
+enable specific clients to see these filtered events [similar to viewing soft-failed events](https://github.com/element-hq/synapse/pull/18238) in order
+to process spam effectively.
 
 >[!NOTE]
 > We could _alternatively_ replace the `domain` of the user ID with "invalid" for unverified keys e.g. `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`.
