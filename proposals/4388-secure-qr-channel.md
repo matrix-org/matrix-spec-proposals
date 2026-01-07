@@ -595,7 +595,7 @@ Secret := LabeledExtract(shared_secret, "secret", SharedSecret)
 Mode := 0x00
 PskIdHash := LabeledExtract("", "psk_id_hash", "")
 InfoHash := LabeledExtract("", "info_hash", "MATRIX_QR_CODE_LOGIN")
-KeyScheduleContext := concat(Mode, PskIdHash, InfoHash)
+KeyScheduleContext := Mode || PskIdHash || InfoHash
 
 AeadKey_S := LabeledExpand(secret, "key", KeyScheduleContext, 32)
 BaseNonce := LabeledExpand(secret, "base_nonce", key_schedule_context, 12)
@@ -637,7 +637,7 @@ Secret := LabeledExtract(shared_secret, "secret", SharedSecret)
 Mode := 0x00
 PskIdHash := LabeledExtract("", "psk_id_hash", "")
 InfoHash := LabeledExtract("", "info_hash", "MATRIX_QR_CODE_LOGIN")
-KeyScheduleContext := concat(Mode, PskIdHash, InfoHash)
+KeyScheduleContext := Mode || PskIdHash || InfoHash
 
 AeadKey_S := LabeledExpand(secret, "key", KeyScheduleContext, 32)
 BaseNonce := LabeledExpand(secret, "base_nonce", key_schedule_context, 12)
