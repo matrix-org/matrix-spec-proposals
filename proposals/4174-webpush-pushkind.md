@@ -55,7 +55,7 @@ endpoint, encrypted with `pushKey` and `PusherData.auth`, authenticated with the
 }
 ```
 
-A new endpoint is introduced, dedicated to pusher validation:
+A new endpoint is introduced, dedicated to pusher validation. This is called by the matrix client to validate the pusher once it has received the `ack_token` from the validation push message:
 - POST `/_matrix/client/v3/pushers/ack`
 - Rate limited: No, Requires authentication: Yes
 - The request contains the `app_id` and `ack_token` parameters, received with the push notification.
@@ -65,8 +65,8 @@ A new endpoint is introduced, dedicated to pusher validation:
 		- "unknown_token" if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
 		- "ok" if the pusher has been activated
 
-The Pusher Data get a new optional field, `activated`, a boolean which is false until the pusher is activated with the request to
-`/_matrix/client/v3/pushers/ack`.
+The Pusher Data get a new field, `activated`, a boolean which the client must not include and the server must add. It is set to false until the pusher is activated with the request to
+`/_matrix/client/v3/pushers/ack`. Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.endpoint` and `PusherData.auth` doesn't change its value.
 
 A VAPID (Voluntary Application Server Identification, cf RFC8292) is often needed to be able to register with a push
 server.
