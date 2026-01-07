@@ -530,8 +530,10 @@ Regardless of which device generates the QR code, either device can be the exist
 other device is then the new device (one seeking to be signed in).
 
 Symmetric encryption uses a separate encryption key for each sender, both derived from a shared secret using HKDF.
+
 Separate nonces are used for each direction of the communication channel. Device S will create a base nonce from the
-shared secret, while Device G will create a new random base nonce. Each base nonce is mixed with a
+shared secret, while Device G will create a new random base nonce.
+As described by [HPKE](https://www.rfc-editor.org/rfc/rfc9180.html#section-5.2-7), each base nonce is mixed with a
 monotonically-incrementing sequence number. Devices initially set both numbers to `0` and increment the corresponding
 number by `1` for each message sent and received. The per-message nonce is is the result of XORing the base nonce with
 the current sequence number, encoded as a big-endian integer of the same length as base nonce.
@@ -684,6 +686,9 @@ TaggedCiphertext := ResponseContext_G.Seal("MATRIX_QR_CODE_LOGIN_OK", "")
 LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext || ResponseNonce)
 ```
 
+We rely on the  `Seal()` operation computing and incrementing the nonce for us as described in
+[HPKE](https://www.rfc-editor.org/rfc/rfc9180.html#section-5.2-7).
+
 Device G sends **LoginOkMessage** as the `data` payload via a `PUT` request to the insecure rendezvous session.
 
 6. **Verification by Device S**
@@ -719,6 +724,9 @@ Plaintext := ResponseContext_S.Open(TaggedCiphertext, "")
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
      FAIL
 ```
+
+We rely on the  `Open()` operation computing and incrementing the nonce for us as described in
+[HPKE](https://www.rfc-editor.org/rfc/rfc9180.html#section-5.2-7).
 
 If the above was successful, Device S then calculates a two digit **CheckCode** code using the [HPKE export
 interface](https://www.rfc-editor.org/rfc/rfc9180.html#hpke-export) of its main context, **Context_S**. **Gp** and
@@ -756,10 +764,13 @@ CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 If the code that the user enters matches then the secure channel is established.
 
 Subsequent payloads sent from G should be encrypted using the response context **ResponseContext_G**, while payloads
-sent from S should be encrypted with **Context_S**, incrementing the corresponding nonce for each message sent/received.
+sent from S should be encrypted with **Context_S**.
 
 Similarly, payloads received by G should be decrypted using the main context **Context_G**, while payloads received by S
 should be decrypted using the response context **ResponseContext_S**.
+
+We rely on the `Context.Seal()` and `Context.Open()` operations to compute and increment the corresponding nonces for
+each message sent/received, as described in [HPKE](https://www.rfc-editor.org/rfc/rfc9180.html#section-5.2-7).
 
 ### Sequence diagram
 
