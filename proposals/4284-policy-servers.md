@@ -1,11 +1,5 @@
 # MSC4284: Policy Servers
 
-**Note**: The concepts and architecture proposed by this MSC are rapidly iterating and will change.
-Review is appreciated with the understanding that absolutely nothing is set in stone. Where security
-issues are present, please use the [Security Disclosure Policy](https://matrix.org/security-disclosure-policy/)
-rather than leaving inline comments. This is to ensure application integrity for those opting to use
-highly experimental and changing implementations of this proposal.
-
 Communities on Matrix are typically formed through [Spaces](https://spec.matrix.org/v1.14/client-server-api/#spaces),
 but can be made up of singular rooms or loose collections of rooms. These communities often have a
 desire to push unwelcome content out of their chats, and rely on bots like [Mjolnir](https://github.com/matrix-org/mjolnir),
