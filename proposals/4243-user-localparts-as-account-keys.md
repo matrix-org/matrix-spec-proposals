@@ -257,12 +257,9 @@ stateDiagram-v2
 >
 > The `domain` is included to ensure that the signature for `{ "errcode": "M_ERASED" }` isn't enough to confirm the erasure, else the signature could
 > be reused for different unauthorised domains.
->
-> Further work could improve the temporality of these signatures e.g including a timestamp for when this attestation was made, but this is out-of-scope
-> for this proposal.
 
-GDPR requires erasure to be communicated to other servers. This ensures other servers transition an erased user from verified to erased in a timely manner.
-To accomodate this, the `/accounts` API includes a server-scoped "erasure ID" to track erased users. This effectively means servers are publishing a list[^eraselist]
+GDPR requires erasure to be communicated to other servers. This ensures other servers transition an erased user from Verified to Erased in a timely manner.
+To accommodate this, the `/accounts` API includes a server-scoped "erasure ID" to track erased users. This effectively means servers are publishing a list[^eraselist]
 of erased keys, and the erasure ID is used to retrieve deltas on this list.
 
 Requesting servers SHOULD persist the erasure ID per-server and include it in their `/accounts` requests, along with a limit of how many erased users to return.
@@ -369,7 +366,7 @@ A later room version or version of the CSAPI can then:
  - Transform the `sender` of the event to be of the form `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`. By using the `invalid` top-level domain we ensure this cannot be a
    valid account name user ID. By universally replacing the domain with `invalid` we ensure that we do not send unverified domains to clients, who may otherwise think that e.g.
    `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org` resides on matrix.org. Alternatively, the room version could finally break away the domain and simply use the account
-   ket e.g `l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ` (this would be a pre-requisite for portable accounts).
+   key e.g `l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ` (this would be a pre-requisite for portable accounts).
  - Tell clients to form the user ID by using `unsigned.sender_account.user_id` if it exists, falling back to `unsigned.sender_account.key`. Abusive user IDs can be redacted which will
    remove the `user_id` property from the event.
 
