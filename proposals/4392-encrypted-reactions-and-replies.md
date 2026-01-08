@@ -58,6 +58,14 @@ level of support for the encrypted reply metadata has been reached.
 Reactions could use a similar migration period, but it is uncertain whether
 current clients will accept encrypted `m.reaction` events at all.
 
+### Push notifications
+The proposed reaction format is indistinguishable from normal encrypted messages,
+which means servers would have to send wakeup pushes to mobile clients for all
+of them. This could be remediated with a separate flag in the unencrypted payload
+that indicates it should not trigger a push, e.g. `"m.priority": "low"`.
+[MSC3996](https://github.com/matrix-org/matrix-spec-proposals/pull/3996) has
+explored a similar problem for encrypted mentions-only rooms.
+
 ## Alternatives
 Some sort of breaking change is required to fix metadata leakage. It could be
 done as a part of a bigger breaking change, such as switching to extensible
