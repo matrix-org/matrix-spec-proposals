@@ -11,6 +11,13 @@
 > command invocation protocol, which is similar in nature to
 > [JSON-RPC](https://www.jsonrpc.org/specification).
 
+> [!NOTE]
+>
+> While this MSC expects and anticipates clients will start with text parsing of
+> commands, for clients to provide their own syntax, and that TUI clients will
+> likely always use text parsing. The MSC is designed specifically so that it is
+> possible to support clients that will only provide a full command UI.
+
 ## Background
 
 Interaction with matrix bots today is done by sending shell-like command within
@@ -162,6 +169,12 @@ A client may show the arguments and commands similar to Discord:
 - Command descriptions only specify commands for the sender of the
   `m.bot.command_description`. If the `sender` is not currently joined to the
   room, the command should be hidden.
+
+- Parameters with an _array_ schema may appear in any place, not just at the end
+  of the parameter list. This is to provide a ubiquitous way of providing
+  multiple arguments. Clients that parse command text may need to provide
+  special syntax for lists or multiple arguments in order to support _required_
+  parameters that have an array schema.
 
 ### Command invocation
 
