@@ -245,6 +245,11 @@ bot's commands to avoid users becoming confused.
 > because matrix.org's canonical JSON
 > [does not support encoding floats](https://spec.matrix.org/v1.15/appendices/#canonical-json).
 
+> [!NOTE]
+>
+> Bots SHOULD NOT rely on clients to validate or build input with respect to the
+> input and should perform their own parsing of command arguments.
+
 The following essential types are the predefined `types` for an argument:
 
 - `string` - An arbitrary string.
@@ -291,10 +296,12 @@ schema described by the property `schema_type`:
   - For simplicity only `boolean`, `integer`, and `string` may be provided for
     the `value` property. This may be extended in future if need is found.
 
-**Tip**: Clients can accept a wider variety of inputs for some types, provided
-they reduce them down to the expected value types when sending the command. For
-example, accepting a room permalink for a `room_id` type, or "yes" in place of
-`true` for a `boolean`.
+> [!TIP]
+>
+> Clients can accept a wider variety of inputs for some types, provided they
+> reduce them down to the expected value types when sending the command. For
+> example, accepting a room permalink for a `room_id` type, or "yes" in place of
+> `true` for a `boolean`.
 
 ## Extensions
 
