@@ -176,6 +176,11 @@ A client may show the arguments and commands similar to Discord:
   special syntax for lists or multiple arguments in order to support _required_
   parameters that have an array schema.
 
+- The state_key MUST be a padded base64 encoded SHA256 digest of the `command`
+  property of the command description AND the mxid of the sender. This is in
+  order to ensure that command descriptions are deduplicated and conflict free
+  between different bots.
+
 ### Command invocation
 
 When the user sends the command, the client creates either an `m.room.message`
