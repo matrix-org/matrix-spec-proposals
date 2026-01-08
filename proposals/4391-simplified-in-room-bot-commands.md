@@ -288,6 +288,8 @@ schema described by the property `schema_type`:
   - Therefore `variants` can only be a schema type of `primitive` or `literal`.
 - The `literal` schema type specifies a literal value with the `value` property
   and the type of the literal value with the `literal_type` property.
+  - For simplicity only `boolean`, `integer`, and `string` may be provided for
+    the `value` property. This may be extended in future if need is found.
 
 **Tip**: Clients can accept a wider variety of inputs for some types, provided
 they reduce them down to the expected value types when sending the command. For
