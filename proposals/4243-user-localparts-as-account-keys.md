@@ -21,7 +21,11 @@ and its parent [MSC1228: Removing mxids from events](https://github.com/matrix-o
 However, these proposals drastically alter one of the fundamental data types in Matrix. This has a
 negative effect on the (particularly client) ecosystem as they need to update their code to handle the changes.
 This was seen in [MSC4291: Room IDs as hashes of the create event](https://github.com/matrix-org/matrix-spec-proposals/pull/4291)
-which removed the `:domain` part of the room ID. Furthermore, both of those MSCs suffer from scope creep: MSC4014 had per-room per-user keys, and MSC1228 had room keys complete with new `^` and `~` sigils. 
+which removed the `:domain` part of the room ID. Furthermore, both of those MSCs suffer from scope creep: MSC4014 had per-room per-user keys, and MSC1228 had room keys complete with new `^` and `~` sigils. The removal of the domain part of the user ID is particularly problematic as that is used to implement
+some features such as whether rooms can federate via `m.federate`, as well as determining which servers are in the room and how to
+implement [redaction rules](https://spec.matrix.org/v1.17/rooms/v12/#handling-redactions). The removal
+of the `@` sigil is problematic because certain [auth rules](https://spec.matrix.org/v1.17/rooms/v12/#authorization-rules) rely on the `@` e.g.
+_If the event has a state_key that starts with an @ and does not match the sender, reject._
 
 Instead, this proposal solely addresses the problem with allowing direct personal data in the user ID and using the server signing key
 to sign events, taking care to keep the user ID format compatible with the existing ecosystem. This makes the proposal very light, and
@@ -415,6 +419,9 @@ TODO: if we are serious about this, we should probably introduce some kind of re
 Servers may lie about their domain e.g `foo.com` may join the room as `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:bar.com`.
 This means `foo.com` will not get events in the room routed to them, but a victim server `bar.com` will instead be pushed events as a form of amplification attack.
 Servers MUST have a global backoff timer per-domain to ensure that attackers cannot repeatedly join users with fake domains to popular rooms to cause amplification attacks.
+
+Servers are more complicated to implement because some features need the account key user ID (auth rules, state resolution) and
+some need the account name user ID (E2EE, ignoring users
 
 ### Security Considerations
 
