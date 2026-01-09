@@ -46,14 +46,15 @@ offered by a homeserver and being used as transport by clients.
 
 The name of a LiveKit room is referred to as the **LiveKit alias** (`livekit_alias`). The alias MUST
 be globally unique and dependent on a given MatrixRTC slot in a Matrix room. A minimal
-implementation that ensures a baseline of pseudonymity is given by the SHA-256 hash of the
-concatenation of the Matrix `room_id`, a pipe character (`|`), and the `slot_id`,
-e.g.,`SHA256(room_id|slot_id)`.
+implementation that ensures a baseline of pseudonymity is given by the
+[unpadded base64 encoding](https://spec.matrix.org/v1.17/appendices/#unpadded-base64) of the SHA-256
+hash of the concatenation of the Matrix `room_id`, a pipe character (`|`), and the `slot_id`, i.e.
+`base64(SHA256(room_id|slot_id))`.
 
 For improved metadata protection, the `livekit_alias` SHOULD be derived as
-`SHA256(room_id|slot_id|truly random bits)`, where the `truly random bits` are maintained by the
-LiveKit SFU authorisation service. This approach enhances pseudonymity but requires the service to
-be **stateful** in order to manage and persist the random bits.
+`base64(SHA256(room_id|slot_id|truly random bits))`, where the `truly random bits` are maintained by
+the LiveKit SFU authorisation service. This approach enhances pseudonymity but requires the service
+to be **stateful** in order to manage and persist the random bits.
 
 The resulting value is opaque to the MatrixRTC application. Within the LiveKit namespace, the
 `livekit_alias` uniquely represents a MatrixRTC slot. Participants from the same Matrix deployment
@@ -304,9 +305,10 @@ event has been reached, whichever occurs first.
 ### Pseudonymous LiveKit Participant Identity
 
 To protect user privacy, a pseudonymous LiveKit participant identity is used, so the Matrix user ID
-is not exposed to the LiveKit SFU backend. This pseudonymous identity is equal to the unpadded base64 encoding of the SHA-256 hash 
-of the concatenation of the Matrix `user_id`, a pipe character (`|`) , the `claimed_device_id`, 
-a pipe character (`|`) and the `member.id` field, i.e. `base64(SHA256(user_id|claimed_device_id|member.id))`.
+is not exposed to the LiveKit SFU backend. This pseudonymous identity is equal to the unpadded
+base64 encoding of the SHA-256 hash  of the concatenation of the Matrix `user_id`, a pipe character
+(`|`), the `claimed_device_id`,  a pipe character (`|`) and the `member.id` field, i.e.
+`base64(SHA256(user_id|claimed_device_id|member.id))`.
 
 ### LiveKit JWT Permission Grants
 
@@ -336,7 +338,7 @@ Example for publishing RTC data using a full-access grant:
   "video": {
     "canPublish": true,
     "canSubscribe": true,
-    "room": "SHA256(!gIpOlaUSrXBmgtveWK:call.ems.host|m.call#ROOM)",
+    "room": "base64(SHA256(!gIpOlaUSrXBmgtveWK:call.ems.host|m.call#ROOM))",
     "roomCreate": true,
     "roomJoin": true
   }
@@ -354,7 +356,7 @@ Example for subscribing RTC data with restricted-access grant
   "video": {
     "canPublish": false,
     "canSubscribe": true,
-    "room": "SHA256(!gIpOlaUSrXBmgtveWK:call.ems.host|m.call#ROOM)",
+    "room": "base64(SHA256(!gIpOlaUSrXBmgtveWK:call.ems.host|m.call#ROOM))",
     "roomCreate": false,
     "roomJoin": true
   }
@@ -386,8 +388,8 @@ Clients that publish their media through the same SFU and use the same `slot_id`
 Matrix room are considered to share the same LiveKit room (`livekit_alias`), which minimizes the
 number of active LiveKit SFU connections.
 
-The derivation of the LiveKit room alias is defined as: `livekit_alias = SHA256(room_id | slot_id |
-truly_random_bits)`. 
+The derivation of the LiveKit room alias is defined as:
+`livekit_alias = base64(SHA256(room_id | slot_id | truly_random_bits))`.
 
 This construction is part of the proposal and ensures that aliases remain pseudonymous while still
 being deterministically derived for a given Matrix room and MatrixRTC slot. The open consideration
