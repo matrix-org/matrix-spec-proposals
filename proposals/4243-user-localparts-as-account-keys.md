@@ -421,7 +421,9 @@ This means `foo.com` will not get events in the room routed to them, but a victi
 Servers MUST have a global backoff timer per-domain to ensure that attackers cannot repeatedly join users with fake domains to popular rooms to cause amplification attacks.
 
 Servers are more complicated to implement because some features need the account key user ID (auth rules, state resolution) and
-some need the account name user ID (E2EE, ignoring users
+some need the account name user ID (E2EE, ignoring users). Some features are ambiguous which form to use e.g push notifications
+may want to send the account name user ID as the user ID may be displayed on the notification, but some clients may want to map
+the name to an account key user ID.
 
 ### Security Considerations
 
