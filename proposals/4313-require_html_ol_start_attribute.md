@@ -78,15 +78,22 @@ which could mean that fewer clients could choose to implement `ol` at all.
 
 ## Alternatives
 
-- Define a list of all HTML tags whose displaying must be supported if `formatted_body` is used to display
-  messages at all, based on whether tags can replace characters such as in the demonstrated example.
-  This could apply recursively also for all attributes.
-- Find a way for clients to determine whether the `body` matches its supported interpretation of the
-  `formatted_body`.
-  This could end up very similar to the previous alternative and additionally lead to inconsistent
-  behavior on clients where `formatted_body` is only sometimes used for display as a result.
-- Remove HTML from the spec entirely. Possibly replace it with another markup language that prevents
-  this issue.
+1. Define a list of all HTML tags whose displaying must be supported if `formatted_body` is used to display
+   messages at all, based on whether tags can replace characters such as in the demonstrated example.
+   This could apply recursively also for all attributes.
+2. Find a way for clients to determine whether the `body` matches its supported interpretation of the
+   `formatted_body`.
+   This could end up very similar to the previous alternative and additionally lead to inconsistent
+   behavior on clients where `formatted_body` is only sometimes used for display as a result.
+3. Remove support for `start` and possibly other attributes and tags that can lead to this type of issue.
+   This is obviously not backwards compatible, though perhaps closer to common expectations about messenger UX.
+   (Note that the spec usually leaves this type of decision as an implementation detail.
+   Feedback discussing this MSC has shown that even with the current proposal implemented, many wish for the UX of
+   currently commonly used clients to adapt to different expectations of their users regarding numbered lists.)
+   In keeping to the spirit of this MSC, this would change the spec to introduce some "MUST NOT use" attributes
+   on top of the current list of "strongly suggested" ones.
+4. Remove HTML from the spec entirely. Possibly replace it with another markup language that prevents
+   this issue.
 
 
 ## Security considerations
