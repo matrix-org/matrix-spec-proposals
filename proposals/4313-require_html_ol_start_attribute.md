@@ -4,8 +4,11 @@ The Matrix specification allows text messages to optionally contain a HTML-forma
 body.
 A set of "safe" tags [is recommended](https://spec.matrix.org/v1.17/client-server-api/#mroommessage-msgtypes),
 along with a set of "safe" attributes for some of the tags that support them. 
-Additional Matrix-specific attributes are also introduced. However, all of this is optional on any level:
+Additional Matrix-specific attributes are also introduced.
+However, all of this is optional on any level:
+
 Clients may choose for example to
+
 - not implement sending or showing or HTML-formatting at all
 - only implement some tags
 - implement additional tags outside of the existing recommendation
@@ -21,17 +24,24 @@ The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL 
 and “OPTIONAL” in this document are to be interpreted as described in
 [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
+
 ## Proposal
 
 Imagine the following conversation to illustrate:
 
-Alice asks:  
-1. \<a very long option\>
-2. \<another very long description\>
-3. \<a huge third description\>
+Alice asks:
 
-Bob replies:  
+```
+1. <a very long option>
+2. <another very long description>
+3. <a huge third description>
+```
+
+Bob replies:
+
+```
 2.
+```
 
 Let's assume Bob's client takes the option to translate the plain text `2.` to HTML.
 Assuming further that Bob's client has full support to the extent recommended by the spec, then Bob's
@@ -42,10 +52,13 @@ Let's assume Alice's client also implements HTML markup in a configuration allow
 Her client supports `ol` tags, but not the `start` attribute.
 A common implementation is to parse the HTML and simply remove any tags not implemented by the client.
 After safely ingesting the message, Alice's client ends up with `"formatted_body": "<ol><li></li></ol>"`.
-Rendering this, Alices screen shows:
+Rendering this, Alice's screen shows:
 
-Bob said:  
+Bob said:
+
+```
 1.
+```
 
 This is a clear break in communication, since this message has an entirely different meaning not only
 from Bob's intended meaning, but also as it is viewed from different client implementations.
@@ -57,7 +70,7 @@ loss of meaning of a message.
 
 ## Potential issues
 
-This proposal increases the load on client developers, though presumable only a tiny bit,
+This proposal increases the load on client developers (though presumably only a tiny bit),
 which could mean that fewer clients could choose to implement `ol` at all.
 
 
@@ -77,13 +90,14 @@ which could mean that fewer clients could choose to implement `ol` at all.
 ## Security considerations
 
 No potential security issues are known to the author.
-Only options already allowed are being defined more precisely.
+We are only defining more precisely combinations of options that are already allowed, removing some of them.
 
 
 ## Unstable prefix
 
 Not required, since implementations of this MSC would only allow an existing subclass of the currently legal
 HTML-formatted messages.
+
 
 ## Dependencies
 
