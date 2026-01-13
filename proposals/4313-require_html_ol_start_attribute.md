@@ -29,7 +29,9 @@ and “OPTIONAL” in this document are to be interpreted as described in
 
 Imagine the following conversation to illustrate:
 
-Alice asks:
+Alice asks a question, giving multiple options.
+How these are formatted is not relevant to this example, important is
+instead that they can clearly be referenced by number.
 
 ```
 1. <a very long option>
@@ -37,7 +39,7 @@ Alice asks:
 3. <a huge third description>
 ```
 
-Bob replies:
+Bob replies very minimally, using the number indices Alice conveniently provided:
 
 ```
 2.
