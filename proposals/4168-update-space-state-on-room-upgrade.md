@@ -11,6 +11,19 @@ In the following sentences, "relevant space state events" refer to `m.space.pare
 room types, in addition to `m.space.child` events for rooms with a type of
 [`m.space`](https://spec.matrix.org/v1.16/client-server-api/#types).
 
+In addition, "updating relevant space state events" refers to the following:
+- For `m.space.child` events, a new `m.space.child` event with `state_key` set to the new room's ID
+  should be sent, copying the `order` and `suggested` field from the `content` of the
+  `m.space.child` with `state_key` of the previous room ID.
+- For `m.space.parent` events, a new `m.space.parent` event with `state_key` set to the new room's
+  ID should be sent. If the
+  space event pointing to the room to be upgraded has `canonical` set to `true` in `content`,
+  homeservers SHOULD update that space event to set `canonical` to `false`, while setting it to
+  `true` in the space event pointing to the new room.
+Additionally, for both event types, homeserver implementations MAY remove the `via` field of the
+event pointing to the previous room, to signal to clients that they shouldn't join the upgraded
+room.
+
 When a room upgrade is performed, servers SHOULD copy relevant space state events from the old room
 to the new room. The sender field in the new event should be set to the user who performed the
 upgrade.
@@ -20,9 +33,10 @@ In addition, servers SHOULD update relevant space state events in rooms that ref
 user (or any other user on the same homeserver, if the implementation decides to use any user it
 can) has the power to do so.
 
-The `via` field of each new state event SHOULD only contain the server name of the server,
-regardless of its previous content. This is because the server's listed in the previous `via` field
-may not have joined the upgraded room yet, and thus servers may not be able to join through them.
+The `via` field of each new state event SHOULD only contain the server name of the server doing
+the upgrade, regardless of its previous content. This is because the server's listed in the
+previous `via` field may not have joined the upgraded room yet, and thus servers may not be able to
+join through them.
 
 
 ## Potential issues
