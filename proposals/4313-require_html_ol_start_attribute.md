@@ -2,8 +2,8 @@
 
 The Matrix specification allows text messages to optionally contain a HTML-formatted version over the plain text
 body.
-A set of "safe" tags is recommended, along with a set of "safe" attributes for some of the tags that
-support them. 
+A set of "safe" tags [is recommended](https://spec.matrix.org/v1.17/client-server-api/#mroommessage-msgtypes),
+along with a set of "safe" attributes for some of the tags that support them. 
 Additional Matrix-specific attributes are also introduced. However, all of this is optional on any level:
 Clients may choose for example to
 - not implement sending or showing or HTML-formatting at all
