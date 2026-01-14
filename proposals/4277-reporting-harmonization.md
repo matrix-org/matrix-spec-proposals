@@ -6,12 +6,12 @@ Matrix currently has three reporting endpoints:
   0.4.0, no MSC known)
 - [`/_matrix/client/v3/rooms/{roomId}/report`] ([added][1] in Matrix 1.13 as per
   [MSC4151])
-- `/_matrix/client/v3/users/{userId}/report` (to be [added][2] to Matrix as per
+- [`/_matrix/client/v3/users/{userId}/report`] ([added][2] in Matrix 1.14 as per
   [MSC4260])
 
 The spec contains a number of subtle differences for these endpoints:
 
-1.  The user reporting endpoint [allows] servers to respond with 200 even if the
+1.  The user reporting endpoint allows servers to respond with 200 even if the
     user doesn't exist to deny enumerating users. This option is not allowed in
     the event and room reporting endpoints.
 2.  The user and event reporting endpoints allow servers to add a random delay
@@ -74,9 +74,9 @@ None.
   [`/_matrix/client/v3/rooms/{roomId}/report/{eventId}`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3roomsroomidreporteventid
   [added]: https://github.com/matrix-org/matrix-spec-proposals/pull/1264
   [`/_matrix/client/v3/rooms/{roomId}/report`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3roomsroomidreport
+  [`/_matrix/client/v3/users/{userId}/report`]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3usersuseridreport
   [1]: https://github.com/matrix-org/matrix-spec/pull/1938
   [MSC4151]: https://github.com/matrix-org/matrix-spec-proposals/pull/4151
   [2]: https://github.com/matrix-org/matrix-spec/pull/2093
   [MSC4260]: https://github.com/matrix-org/matrix-spec-proposals/pull/4260
-  [allows]: https://github.com/matrix-org/matrix-spec-proposals/pull/4260/files#diff-cbb17920e2617e7a20ab0838879675f7aa70e828f0263a3cfa5f4c53913ce5f7R34-R35
   [MSC2414]: https://github.com/matrix-org/matrix-spec-proposals/pull/2414
