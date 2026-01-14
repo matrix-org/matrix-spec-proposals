@@ -734,7 +734,7 @@ interface](https://www.rfc-editor.org/rfc/rfc9180.html#hpke-export) of its main 
 **Sp** are used as inputs for the export interface:
 
 ```
-CheckBytes := Context_S.Export("MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp || "|" || Sp , size=2)
+CheckBytes := Context_S.Export("MATRIX_QR_CODE_LOGIN_CHECKCODE" || Gp || Sp , size=2)
 CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 ```
 
@@ -758,7 +758,7 @@ Device G compares the code that the user has entered with the **CheckCode** that
 as before:
 
 ```
-CheckBytes := Context_G.Export("MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp "|" || Sp , size=2)
+CheckBytes := Context_G.Export("MATRIX_QR_CODE_LOGIN_CHECKCODE" || Gp || Sp , size=2)
 CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 ```
 
