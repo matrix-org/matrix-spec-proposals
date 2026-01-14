@@ -1,4 +1,4 @@
-# MSC4398: Remove the depth field from PDUs
+# MSC4400: Remove the depth field from PDUs
 
 The depth field is useless ever since room v3 (possibly
 v2?) and seems to only cause problems, especially on
@@ -57,7 +57,7 @@ None.
 
 ## Unstable prefix
 
-The room version for this MSC is `com.nhjkl.msc4398.opt1`, and it is
+The room version for this MSC is `com.nhjkl.msc4400.opt1`, and it is
 based on room version `12`.
 
 ## Dependencies
