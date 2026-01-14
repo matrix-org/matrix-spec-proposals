@@ -29,7 +29,7 @@ might want to:
 On a server that automatically forgets rooms on leave, these would result in
 confusing UX, however.
 
-The present proposal seeks to standaradize the currently proprietary behaviour
+The present proposal seeks to standardize the currently proprietary behaviour
 of automatically forgetting rooms on leave in way that allows clients to discover
 the server's configuration and adapt their UI accordingly.
 
