@@ -534,7 +534,7 @@ Symmetric encryption uses a separate encryption key for each sender, both derive
 Separate nonces are used for each direction of the communication channel. Device S will create a base nonce from the
 shared secret, while Device G will create a new random base nonce.
 As described by [HPKE](https://www.rfc-editor.org/rfc/rfc9180.html#section-5.2-7), each base nonce is mixed with a
-monotonically-incrementing sequence number. Devices initially set both numbers to `0` and increment the corresponding
+monotonically-incrementing sequence number before being used as a per-message nonce. Devices initially set both sequence numbers to `0` and increment the corresponding
 number by `1` for each message sent and received. The per-message nonce is is the result of XORing the base nonce with
 the current sequence number, encoded as a big-endian integer of the same length as base nonce.
 
