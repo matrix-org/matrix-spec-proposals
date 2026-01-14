@@ -50,7 +50,7 @@ is not clear why the spec should differentiate the endpoints here.
 
 ## Potential issues
 
-Some Clients may send `score` on event reports today. These clients are not
+Some clients may send `score` on event reports today. These clients are not
 broken by this proposal because servers that implement it will simply ignore any
 `score` property.
 
