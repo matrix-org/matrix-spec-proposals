@@ -583,7 +583,8 @@ From this common **Secret**, the HPKE key schedule derives the following values:
 * a **BaseNonce**
 
 These values are then used to initialize an [HPKE encryption
-context](https://www.rfc-editor.org/rfc/rfc9180.html#name-encryption-and-decryption). This context encapsulates the
+context](https://www.rfc-editor.org/rfc/rfc9180.html#name-encryption-and-decryption) 
+**Context_S**. This context encapsulates the
 derived key material and maintains the cryptographic state needed to protect messages. It provides functions for
 encrypting messages in a single direction using AEAD, and exposes an exporter interface for deriving additional secrets
 bound to the established context.
@@ -609,11 +610,11 @@ Context_S := Context<S>(AeadKey_S, BaseNonce_S, 0, ExporterSecret)
 With this, Device S has established its sending side of the secure channel. Device S then derives a confirmation payload
 that Device G can use to confirm that the channel is secure. It contains:
 
-- The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305.
+- The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305 using **Context_S**.
 - Its public ephemeral key **Sp**.
 
 ```
-TaggedCiphertext := Context_S_S.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", "")
+TaggedCiphertext := Context_S.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", "")
 LoginInitiateMessage := UnpaddedBase64(TaggedCiphertext) || "|" || UnpaddedBase64(Sp)
 ```
 
@@ -664,8 +665,8 @@ It then derives a response context, which enables bidirectional communication:
 ```
 Secret := Context_G.Export("MATRIX_QR_CODE_LOGIN response", 32)
 
-ResponseNonce := random(32)
-Salt := Sp || ResponseNonce
+ResponseBaseNonce := random(32)
+Salt := Sp || ResponseBaseNonce
 
 AeadKey_G := HKDF_SHA256(Secret, "key", salt=Salt, size=32)
 AeadNonce := HKDF_SHA256(Secret, "key", salt=Salt, size=12)
@@ -683,7 +684,7 @@ string `MATRIX_QR_CODE_LOGIN_OK`:
 
 ```
 TaggedCiphertext := ResponseContext_G.Seal("MATRIX_QR_CODE_LOGIN_OK", "")
-LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext || ResponseNonce)
+LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext || ResponseBaseNonce)
 ```
 
 We rely on the  `Seal()` operation computing and incrementing the nonce for us as described in
@@ -702,10 +703,10 @@ creating a response context on its own.
 **ResponseContext_S**
 
 ```
-(TaggedCiphertext, ResponseNonce) := Unpack(LoginOkMessage)
+(TaggedCiphertext, ResponseBaseNonce) := Unpack(LoginOkMessage)
 
 Secret := Context_S.Export("MATRIX_QR_CODE_LOGIN response", 32)
-Salt := Sp || ResponseNonce
+Salt := Sp || ResponseBaseNonce
 
 AeadKey_G := HKDF_SHA256(Secret, "key", salt=Salt, size=32)
 AeadNonce := HKDF_SHA256(Secret, "nonce", salt=Salt, size=12)
