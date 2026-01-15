@@ -27,6 +27,9 @@ future members of the room should have access to. Specifically, those are the
 megolm sessions associated with that room which were marked with
 `shared_history`: see [below](#shared_history-property-in-mroom_key-events).
 
+It is RECOMMENDED that Alice first makes sure she has downloaded any keys for
+the relevant room from the server-side key storage.
+
 The keys are assembled into a JSON object with the following structure:
 
 ```json5
