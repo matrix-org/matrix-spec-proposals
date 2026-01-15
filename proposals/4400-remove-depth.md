@@ -8,6 +8,7 @@ timeline ordering.
 ## Proposal
 
 Remove the depth field from PDUs.
+`depth` is also no longer included after an event has been redacted.
 
 This change would result in a PDU now looking like this:
 
