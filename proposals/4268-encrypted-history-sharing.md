@@ -1,7 +1,7 @@
 # MSC4268: Sharing room keys for past messages
 
 In Matrix, rooms can be configured via the
-[`m.room.history_visibility`](https://spec.matrix.org/v1.14/client-server-api/#room-history-visibility)
+[`m.room.history_visibility`](https://spec.matrix.org/v1.17/client-server-api/#room-history-visibility)
 state event such that previously-sent messages can be visible to users that
 join the room. However, this is ineffective in encrypted rooms, where new
 joiners will lack the keys necessary to decrypt historical messages.
@@ -57,7 +57,7 @@ The keys are assembled into a JSON object with the following structure:
 
 The properties in the object are defined as:
 
-  * `room_keys`: an array of objects each with the following fields from [`ExportedSessionData`](https://spec.matrix.org/v1.14/client-server-api/#definition-exportedsessiondata):
+  * `room_keys`: an array of objects each with the following fields from [`ExportedSessionData`](https://spec.matrix.org/v1.17/client-server-api/#definition-exportedsessiondata):
 
      * `algorithm`
      * `room_id`
@@ -71,7 +71,7 @@ The properties in the object are defined as:
    implication).
 
  * `withheld`: an array of objects with the same format as the content of an
-   [`m.room_key.withheld`](https://spec.matrix.org/v1.14/client-server-api/#mroom_keywithheld)
+   [`m.room_key.withheld`](https://spec.matrix.org/v1.17/client-server-api/#mroom_keywithheld)
    message, usually with code `m.history_not_shared` (see
    [below](#new-withheld-code)) to indicate that the recipient isn't allowed to
    receive the key.
@@ -79,9 +79,9 @@ The properties in the object are defined as:
 A single session MUST NOT appear in both the `room_keys` and `withheld` sections.
 
 The JSON object is then encrypted using the same algorithm as [encrypted
-attachments](https://spec.matrix.org/v1.14/client-server-api/#sending-encrypted-attachments)
+attachments](https://spec.matrix.org/v1.17/client-server-api/#sending-encrypted-attachments)
 (i.e., with AES256-CTR), and uploaded with [`POST
-/_matrix/media/v3/upload`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixmediav3upload).
+/_matrix/media/v3/upload`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixmediav3upload).
 
 The details of this key bundle are then shared with Bob, as below.
 
@@ -90,13 +90,14 @@ The details of this key bundle are then shared with Bob, as below.
 Having uploaded the encrypted key bundle, Alice must share the details with each of Bob's devices.
 
 She first ensures she has an up-to-date list of his devices (performing a
-[`/keys/query`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixclientv3keysquery)
-request if necessary. She then sends a to-device message to each of his devices
+
+[`/keys/query`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3keysquery)
+request if necessary). She then sends a to-device message to each of his devices
 **which are correctly signed by his cross-signing keys**.
 
 A new to-device message type is defined, `m.room_key_bundle`, which MUST be
 encrypted using
-[Olm](https://spec.matrix.org/v1.14/client-server-api/#molmv1curve25519-aes-sha2).
+[Olm](https://spec.matrix.org/v1.17/client-server-api/#molmv1curve25519-aes-sha2).
 
 The plaintext content of such a message should be:
 
@@ -151,7 +152,7 @@ them.
 
 Suppose Alice and Bob are participating in an encrypted room, and Bob now
 wishes to invite Charlie to join the chat. If the [history
-visibility](https://spec.matrix.org/v1.14/client-server-api/#room-history-visibility)
+visibility](https://spec.matrix.org/v1.17/client-server-api/#room-history-visibility)
 settings allow, Bob can share the message decryption keys for previously sent
 messages with Charlie. However, it is dangerous for Bob to take the server's
 word for the history visibility setting: a malicious server admin collaborating
@@ -161,7 +162,7 @@ been changed over time and it can be difficult for clients to estalish which
 setting was in force for a particular Megolm session.
 
 To counter this, we add a `shared_history` property to
-[`m.room_key`](https://spec.matrix.org/v1.14/client-server-api/#mroom_key)
+[`m.room_key`](https://spec.matrix.org/v1.17/client-server-api/#mroom_key)
 messages, indicating that the creator of that Megolm session understands and
 agrees that the session keys may be shared with newly-invited users in
 future. For example:
@@ -193,10 +194,10 @@ or `world_readable`, or vice versa), then clients MUST rotate their outbound
 megolm session before sending more messages.
 
 In addition, a `shared_history` property is added to the [`BackedUpSessionData`
-type](https://spec.matrix.org/v1.14/client-server-api/#definition-backedupsessiondata)
+type](https://spec.matrix.org/v1.17/client-server-api/#definition-backedupsessiondata)
 in key backups (that is, the plaintext object that gets encrypted into the
 `session_data` field) and the [`ExportedSessionData`
-type](https://spec.matrix.org/v1.14/client-server-api/#definition-exportedsessiondata). In
+type](https://spec.matrix.org/v1.17/client-server-api/#definition-exportedsessiondata). In
 both cases, the new property is set to `true` if the session was shared with us
 with `shared_history: true`, and `false` otherwise.
 
@@ -223,7 +224,7 @@ In all cases, an absent or non-boolean `shared_history` property is treated the 
 ### New "withheld" code
 
 The spec currently
-[defines](https://spec.matrix.org/v1.14/client-server-api/#mroom_keywithheld) a
+[defines](https://spec.matrix.org/v1.17/client-server-api/#mroom_keywithheld) a
 number of "withheld" codes which are used to indicate that a client is
 deliberately *not* sharing a megolm session key with another. Normally these
 codes are used in `m.room_key.withheld` to-device events; as the text above
@@ -285,13 +286,85 @@ be when importing a key export; however:
     MUST show that information to the user, since he has only that user's word
     for the authenticity of those sessions.
 
-TODO: tell the sender we have finished with the bundle, so they can delete it?
+### Out-of-scope (for now, at least)
+
+* Ideally, the bundle would be deleted once the recipient has successfully
+  downloaded it. An implementation is left for a future MSC. This is tracked at
+  https://github.com/matrix-org/matrix-rust-sdk/issues/5113.
+
+* In future, we will need to extend the
+  [`BackedUpSessionData`](https://spec.matrix.org/v1.17/client-server-api/#definition-backedupsessiondata)
+  structure (used for server-side key backups) and
+  [`ExportedSessionData`](https://spec.matrix.org/v1.17/client-server-api/#key-export-format)
+  (used for key exports) to include information about whether the key was
+  forwarded by another user (and if so, by whom). However, this is redundant
+  until we have authenticated backups (MSC4048). This is tracked at
+  https://github.com/matrix-org/matrix-rust-sdk/issues/5110.
 
 ## Potential issues
 
+* As noted in the "Security considerations" section below, current
+  implementations make assumptions about when it is necessary to rotate
+  outgoing megolm sessions that are no longer sufficient.
+
 ## Alternatives
 
+We considered, and dismissed, a number of alternative approaches to solving
+this problem:
+
+* MSC3061, but without the security flaw.
+
+  Where MSC3061 implementations previously shared keys with *all* of the
+  recipient's devices, we could limit this behaviour to only *verified*
+  devices, hence mitigating the security concern.
+
+  However, this approach still had performance problems: sending a to-device
+  message to each recipient device, for each megolm session ever used in the
+  room, is prohibitive.
+
+* Shared key store
+
+  We considered whether it was possible for members in a room to somehow
+  collaborate on building some sort of "shared key store"; new members could
+  then be granted access.
+
+  However, we were unable to find satisfactory solutions to a number of
+  practical questions. For example:
+
+  * should the store be populated by all users, or just admins? If the former,
+    what if a mischeivous user uploads incorrect keys? If the latter, what if
+    no admins are online?
+
+  * What happens if there are users on multiple servers: do we need to
+    replicate the keystore between servers, or risk the keystore being
+    unavailable?
+
+  * How do we orchestrate rotating the keystore when a user leaves the room?
+
+* Request keys from existing room members
+
+  A new joiner could request keys to the room from existing room
+  members. However, this is (a) intrusive to existing room members, and (b)
+  very vulnerable to social-engineering attacks.
+
+These alternatives are also discussed in a presentation made at Matrix Conference
+2025: https://youtu.be/_E4ArQopptM?t=168.
+
 ## Security considerations
+
+* In an encrypted room, senders are required to rotate their outgoing Megolm
+  sessions after a user leaves the room, to ensure that the now-departed user
+  cannot decrypt messages sent after they left.
+
+  Currently, most implementations only do this if they have actually shared the
+  key to the session with the departed user (i.e., typically, they sent at
+  least one message while the user was in the room); they otherwise assume that
+  the user does not have a copy of the session decryption key and it is safe to
+  continue using the same session.
+
+  This latter is no longer a valid assumption.
+
+  TODO: how to solve this? https://github.com/element-hq/element-meta/issues/3078.
 
 * The proposed mechanism allows clients to share the decryption keys for
   significant amounts of encrypted content. Sharing historical keys in this way
@@ -313,7 +386,7 @@ TODO: tell the sender we have finished with the bundle, so they can delete it?
   inviter working in cahoots with a homeserver administrator could make it
   appear as though events sent by one user were in fact sent by another.
 
-  Ultimately, the recipient of a key bundle is taking the world of the sender
+  Ultimately, the recipient of a key bundle is taking the word of the sender
   of that key bundle as to the actual owner of each megolm session. This is an
   inevitable consequence of the deniability property of encrypted messaging.
 
