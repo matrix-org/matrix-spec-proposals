@@ -8,7 +8,7 @@ these events, even though they are perfectly valid.
 
 ## Proposal
 
-Remove the `event_id` key from redacted events.
+Remove the `event_id` key from redacted events. This will require a new room version.
 
 ## Potential issues
 
