@@ -9,6 +9,7 @@ timeline ordering.
 
 Remove the depth field from PDUs.
 `depth` is also no longer included after an event has been redacted.
+This will require a new room version.
 
 This change would result in a PDU now looking like this:
 
