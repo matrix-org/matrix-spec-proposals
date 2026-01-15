@@ -1,4 +1,4 @@
-# MSC4403: Remove `event_id` from redacted events
+# MSC4403: Forbid `event_id` on events
 
 The top-level `event_id` key has no use ever since room
 version 3, and there is also no defined behaviour in spec
@@ -8,7 +8,11 @@ these events, even though they are perfectly valid.
 
 ## Proposal
 
-Remove the `event_id` key from redacted events. This will require a new room version.
+Forbid `event_id` from appearing on the top-level of events. 
+This also removes it from the protected keys list in the
+redaction algorithm.
+
+This will require a new room version.
 
 ## Potential issues
 
@@ -24,7 +28,7 @@ None.
 
 ## Unstable prefix
 
-The room version for this proposal is `com.nhjkl.msc4403.opt1`,
+The room version for this proposal is `com.nhjkl.msc4403.opt2`,
 and it is based on room version 12.
 
 ## Dependencies
