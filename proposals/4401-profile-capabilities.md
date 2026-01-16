@@ -56,6 +56,9 @@ the FHIR event from [MSC4302] on a device `ABCDEFG`.
 }
 ```
 
+To avoid stale capabilities filling up the profile, servers SHOULD remove a device's
+`m.client_capability.{DEVICE_ID}` key when the device is logged out.
+
 ## Potential issues
 
 Profiles are currently limited to 64 KiB in size which may be reached through excessive usage of
