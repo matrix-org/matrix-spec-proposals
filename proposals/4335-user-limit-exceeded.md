@@ -21,7 +21,7 @@ This proposal adds a new [common error code]
 `M_USER_LIMIT_EXCEEDED` to the Matrix specification. This error code should be returned when a user has exceeded
 limits that are specifically associated with their account, such as:
 
-* **Storage quotas**: When a user has exceeded their allocated storage space for media uploads,
+* **Storage quotas**: When a user has exceeded their allocated storage space for smedia uploads,
   message history, or other persistent data.
 * **Resource limits**: When a user has reached their maximum number of allowed rooms, devices,
   or other account-scoped resources.
@@ -33,16 +33,14 @@ limits that are specifically associated with their account, such as:
 The error response must also contain additional fields:
 
 * `info_uri` string (required) - an opaque URI that the client can link the user to in order to get more context on the
-  encountered limit.
-* `soft_limit` boolean (optional, default `false`) - `true` means that the specific limit encountered can be increased.
+  encountered limit and, if applicable, guidance on upgrading their account to increase the limit.
+* `can_upgrade` boolean (optional, default `false`) - `true` means that the specific limit encountered can be increased.
   Otherwise it is a hard limit that cannot be increased.
-* `increase_uri` (required if `soft_limit` is `true`) - an opaque URI where the user can undertake actions to increase
-  the encountered limit.
 
-The `info_uri` and `increase_uri` are "opaque" in the sense that the homeserver implementation may choose to encode
+The `info_uri` is "opaque" in the sense that the homeserver implementation may choose to encode
 information, such as the type of limit encountered, within the URI but it may do so using an encoding of its choosing.
 
-The homeserver may return *different* values for `info_uri` and `increase_uri` depending on what type of limit was
+The homeserver may return *different* values for `info_uri` depending on what type of limit was
 reached.
 
 The HTTP response code should be chosen based on the specification for the individual endpoint. For
@@ -55,8 +53,7 @@ An example response body for the error might look as follows:
   "errcode": "M_USER_LIMIT_EXCEEDED",
   "error": "You have exceeded your storage quota of 10GB",
   "info_uri": "https://example.com/homeserver/about?limit_type=quota",
-  "soft_limit": true,
-  "increase_uri": "https://example.com/homeserver/upgrade"
+  "can_upgrade": true
 }
 ```
 
@@ -97,7 +94,7 @@ rely on the human-readable `error` field to provide specific details. Instead th
 provides a way for the homeserver to apply arbitrary limits without the client having to understand
 every type in advance.
 
-The homeserver can choose to provide localised and personalised content on the `info_uri` and `increase_uri` if it
+The homeserver can choose to provide localised and personalised content on the `info_uri` if it
 wishes.
 
 The error code does not provide machine-readable information about current usage or limits,
@@ -210,8 +207,7 @@ An example might be:
   "errcode": "M_USER_LIMIT_EXCEEDED",
   "error": "User has exceeded a media upload limit",
   "info_uri": "https://example.com/homeserver/about?limit_type=quota",
-  "soft_limit": true,
-  "increase_uri": "https://example.com/homeserver/upgrade",
+  "can_upgrade": true,
   "messages": {
     "en": "You have reached your daily upload limit. More information on the usage limits that apply to your account is available <a href=\"https://matrix.org/homeserver/pricing/#usage-limits\">here</a>. You can upgrade to a Premium account to increase the limits <a href=\"https://account.matrix.org/account?action=org.matrix.plan_management\">here</a>.",
     "fr": "Vous avez atteint votre limite de téléchargement quotidienne. Pour plus d'informations sur les limites d'utilisation applicables à votre compte, cliquez <a href=\"https://matrix.org/homeserver/pricing/#usage-limits\">ici</a>. Vous pouvez passer à un compte Premium pour augmenter ces limites <a href=\"https://account.matrix.org/account?action=org.matrix.plan_management\">ici</a>.",
@@ -234,8 +230,7 @@ While this proposal is being developed and refined, implementations should use t
 
 * `ORG.MATRIX.MSC4335_USER_LIMIT_EXCEEDED` instead of `M_USER_LIMIT_EXCEEDED`
 * `org.matrix.msc4335.info_uri` instead of `info_uri`
-* `org.matrix.msc4335.soft_limit` instead of `soft_limit`
-* `org.matrix.msc4335.increase_uri` instead of `increase_uri`
+* `org.matrix.msc4335.can_upgrade` instead of `can_upgrade`
 
 For example:
 
@@ -244,10 +239,20 @@ For example:
   "errcode": "ORG.MATRIX.MSC4335_USER_LIMIT_EXCEEDED",
   "error": "User has exceeded their fair usage limit of 2GB",
   "org.matrix.msc4335.info_uri": "https://example.com/homeserver/about?limit_type=quota",
-  "org.matrix.msc4335.soft_limit": true,
-  "org.matrix.msc4335.increase_uri": "https://example.com/homeserver/upgrade"
+  "org.matrix.msc4335.can_upgrade": true
 }
 ```
+
+### Include a URI to complete the upgrade action
+
+An earlier version of the proposal included an `increase_uri` that could be attached as a UI button for the user to
+take start the action of upgrading.
+
+However, this led to [uncertainty](https://github.com/matrix-org/matrix-spec-proposals/pull/4335#discussion_r2582153412)
+about what exactly would happen when the button is pressed.
+
+To remove this uncertainty `increase_uri` was removed and the homserver gets to provide a single `info_uri` and it is
+the responsibility of the homeserver to provide a UX that makes sense and is clear about what is happening.
 
 ## Dependencies
 
