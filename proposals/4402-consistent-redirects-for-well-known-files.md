@@ -47,6 +47,10 @@ domain](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/d
 In corporate networks with strict firewall rules however, the reverse proxy might not necessarily be
 able to access the source files on the matrix server.
 
+This MSC is a narrowed down version of
+[MSC2499](https://github.com/matrix-org/matrix-spec-proposals/pull/2499) that seems to be inactive.
+Should MSC2499 be merged first, this MSC becomes obsolete.
+
 ## Security considerations
 
 An attacker with the capability to setup or tamper with a redirect from the base domain, usually
@@ -64,7 +68,3 @@ Client-Server-API, seems negligible.
 ## Unstable prefix
 
 ## Dependencies
-
-This MSC is a narrowed down version of
-[MSC2499](https://github.com/matrix-org/matrix-spec-proposals/pull/2499) that seems to be inactive.
-Should MSC2499 be merged first, this MSC becomes obsolete.
