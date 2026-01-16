@@ -12,6 +12,9 @@ Forbid `event_id` from appearing on the top-level of PDUs
 received over federation. This also removes it from the
 protected keys list in the redaction algorithm.
 
+A new rule is added to the top of the auth rules:
+> If the event has an `event_id`, reject.
+
 This will require a new room version.
 
 ## Potential issues
