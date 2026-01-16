@@ -34,6 +34,9 @@ new step 3.1. should be added as such:
 >     2.  If the returned status code is 404, then `IGNORE`.
 >     3.  If the returned status code is not 200, or the response body is empty, then `FAIL_PROMPT`.
 
+A note about CORS should be added, e.g.:
+> Servers SHOULD ensure each redirect offers CORS headers as per the [existing CORS section of the spec](https://spec.matrix.org/v1.17/client-server-api/#web-browser-clients)
+
 ## Potential issues
 
 This change breaks backwards compatibility between servers relying on 30x-redirects and old clients
