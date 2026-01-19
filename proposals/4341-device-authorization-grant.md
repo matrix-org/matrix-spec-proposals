@@ -12,7 +12,7 @@ used for this purpose.
 
 ## Proposal
 
-Add the [RFC 8628 OAuth 2.0 Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628) to the [list of supported
+Homeservers MAY advertise the [RFC 8628 OAuth 2.0 Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628) in the [list of supported
 grant types](https://spec.matrix.org/v1.15/client-server-api/#grant-types) in the Client-Server API.
 
 This grant requires the client to know the following authorization server metadata:
