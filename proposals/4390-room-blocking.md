@@ -245,8 +245,7 @@ it MUST perform no duplicate actions, instead only returning the room's ID.
 **403 `M_FORBIDDEN`**: The requesting user does not have permission to un/block rooms via the
 admin API.
 
-**404 `M_NOT_FOUND`**: The room in question was not found. If the client wanted to delete+block a
-room by its hash, the client should instead send `PUT [...]/blocked`.
+**404 `M_NOT_FOUND`**: The room in question was not found.
 
 ### Check room delete status
 
