@@ -37,23 +37,12 @@ having to have knowledge of the underlying server implementation.
 Complementing [section 10.22 (Server Administration)][p1] of the client-to-server specification,
 four new endpoints are introduced:
 
-1. `GET /_matrix/client/v1/admin/rooms/{roomIDOrHash}` - Get room information, including block status
-2. `PUT /_matrix/client/v1/admin/rooms/{roomIDOrHash}/blocked` - Block or unblock a room
-3. `DELETE /_matrix/client/v1/admin/rooms/{roomIDOrHash}` - Start deleting a room
+1. `GET /_matrix/client/v1/admin/rooms/{roomID}` - Get room information, including block status
+2. `PUT /_matrix/client/v1/admin/rooms/{roomID}/blocked` - Block or unblock a room
+3. `DELETE /_matrix/client/v1/admin/rooms/{roomID}` - Start deleting a room
 4. `GET /_matrix/client/v1/admin/rooms/{roomID}/status` - Get the progress of room deletion
 
 [p1]: https://spec.matrix.org/v1.16/client-server-api/#server-administration
-
-Note that **hashes MAY be used instead of bare room IDs\*** - the server implementation SHOULD allow
-hashes of room IDs to be processed in the event that the calling tool does not know the unhashed
-room ID, as is expected without database access or another way to list all rooms the server knows
-about. Entity hashes are defined in [MSC4205: Hashed moderation policy entities][MSC4205], but
-in summary are the base64-encoded SHA256 sum of the entity (in this case, a room ID).
-If the server implementation does not support hashed entities, and receives one in a request,
-`M_BAD_JSON` with HTTP 400 (Bad Request) must be returned, indicating to the caller that the server
-cannot process the request further as it doesn't understand it.
-
-\* *"get progress" does not adhere to this.*
 
 Servers SHOULD advertise to clients that the authenticated user is capable of using these admin
 endpoints via capabilities, like so:
@@ -68,14 +57,14 @@ endpoints via capabilities, like so:
 }
 ```
 
-[MSC4205]: https://github.com/matrix-org/matrix-spec-proposals/pull/4205
-
 ### Get room information
 
-`GET /_matrix/client/v1/admin/rooms/{roomIDOrHash}`
+`GET /_matrix/client/v1/admin/rooms/{roomID}`
 
-This endpoint returns some basic information regarding the provided room, if known. This may also
-serve as an avenue for tools to reverse hashes by nature.
+This endpoint returns some basic information regarding the provided room, if known.
+
+**TODO**: Instead suggest implementations allow admin override for /state? Reinventing the wheel
+a bit here.
 
 #### Response
 
@@ -107,16 +96,14 @@ serve as an avenue for tools to reverse hashes by nature.
     "local_members": 0,
     // The number of local members that have pending invites to this room.
     "invited_local_members": 0,
-    // The room version, if known.
-    "room_version": "12",
-    // The room creators. The `sender` of `m.room.create` MUST be the first element in the array,
-    // additional creators (in room versions that support such) MUST come after. See below for
-    // justification.
-    "creators": ["@example:example.org"],
-    // Whether this room is encrypted.
-    "encrypted": false,
-    // Whether this room allowed federation when it was created.
-    "federated": true,
+    // The `m.room.create` event for this room. MUST always be present.
+    "create_event": {
+        "sender": "@example:example.org",
+        "content": {
+            "room_version": "12"
+        }
+        // Other client-formatted event fields here
+    },
     // The `m.room.join_rules` event body for this room, if known.
     "join_rules": {"join_rule": "restricted", "allow": []},
     // The history visibility (world_readable/shared/invited/joined) for this room.
@@ -129,9 +116,10 @@ serve as an avenue for tools to reverse hashes by nature.
 ```
 
 > [!IMPORTANT]
-> The **only** REQUIRED keys in this body are `room_id` and `blocked`. The implementation MAY omit
-> unknown values, values that resolve to empty arrays, values that resolve to false, values that
-> resolve to zero, however event bodies that themselves are found but empty SHOULD NOT be omitted.
+> The **only** REQUIRED keys in this body are `room_id`, `blocked`, and `create_event`.
+> The implementation MAY omit unknown values, values that resolve to empty arrays,
+> values that resolve to false, values that resolve to zero, however event bodies that themselves
+> are found but empty SHOULD NOT be omitted.
 
 Note that in some cases here, entire event bodies are included in the response. `topic` returns
 the entire body as [`m.room.topic` allows multiple different representations][m.room.topic] of a
@@ -148,7 +136,7 @@ admin API.
 
 ### Block or Unblock room
 
-`PUT /_matrix/client/v1/admin/rooms/{roomIDOrHash}/blocked`
+`PUT /_matrix/client/v1/admin/rooms/{roomID}/blocked`
 
 This endpoint allows the caller to block or unblock a room.
 If a room is being blocked, inbound *and* outbound federation with the blocked room MUST be
@@ -177,13 +165,6 @@ Rooms MUST be able to be unblocked at any time - being blocked should be conside
 state. When unblocking a room, the server should stop serving error responses for events and
 requests pertaining to the room, and should resume federation and permitting invites/joins.
 
-If the server receives a request for a room hash it does not yet know the reversed value of yet,
-it SHOULD store the hash later and continually check it when attempts to join new rooms are made,
-or when a local user is invited to a room with an ID that matches the hash. Servers MAY, however,
-choose to respond with `M_NOT_FOUND`, deferring the burden to the invoking client. If clients
-receive this error response, they SHOULD continue to re-issue this request with exponential backoff,
-giving up if the room is not blocked after a long time (which is up to the client).
-
 #### Request
 
 ```jsonc
@@ -200,23 +181,18 @@ giving up if the room is not blocked after a long time (which is up to the clien
 ```jsonc
 {
     // Whether this room is now blocked (in most cases will mirror the input value)
-    "blocked": true,
-    // Indicates whether this room was known at the time of the request being made.
-    // If `false`, the server MUST block the room internally as soon as it is discovered,
-    // as the client will not be expected to re-issue the block.
-    "known": false
+    "blocked": true
 }
 ```
 
 **403 `M_FORBIDDEN`**: The requesting user does not have permission to un/block rooms via the
 admin API.
 
-**404 `M_NOT_FOUND`**: The room requested is not known to the server and it is not willing to
-wait to discover it - the request was effectively ignored.
+**404 `M_NOT_FOUND`**: The room requested is not known to the server.
 
 ### Delete Room
 
-`DELETE /_matrix/client/v1/admin/rooms/{roomIDOrHash}`
+`DELETE /_matrix/client/v1/admin/rooms/{roomID}`
 
 Allows the removal of a room from the server.
 As a convenience, blocking the room may also be done as part of this request. Blocking + removing
@@ -233,6 +209,17 @@ This SHOULD perform at least some the following tasks when deleting a room:
 
 If the server receives subsequent requests to start deleting a room when it is already doing so,
 it MUST perform no duplicate actions, instead only returning the room's ID.
+
+> [!IMPORTANT]
+> Servers **MUST NOT** permit further actions with the room while it is being deleted.
+> It is suggested that the implementation marks the room as unavailable **before** taking further
+> actions, thus allowing this endpoint to be idempotent. Obviously, if the client did not request
+> a room block, the block should be removed once the deletion is complete.
+>
+> Servers **MUST** take responsibility for ensuring the request is fulfilled eventually.
+> Situations like mid-operation restarts cannot be allowed to permanently destroy the task, it must
+> resume at the next available opportunity. Only once the task has completed should the room become
+> available again. This removes the responsibility for ensuring this from the client.
 
 #### Request
 
@@ -267,10 +254,6 @@ room by its hash, the client should instead send `PUT [...]/blocked`.
 
 This endpoint fetches the status or result of a room delete task.
 
-> [!IMPORTANT]
-> This endpoint MUST NOT accept a hash in its entity parameter - if a task is in progress, the
-> relevant room ID would've been returned in `DELETE /_matrix/client/v1/admin/rooms/{roomIDOrHash}`.
-
 #### Response
 
 **200 OK**: There is an ongoing task, or the last one finished:
@@ -297,8 +280,6 @@ This endpoint fetches the status or result of a room delete task.
 
 ## Potential issues
 
-- The whole "room ID or hash" entity system is very squishy and may lead to undefined behaviour,
-  despite the best efforts to combat such in this proposal.
 - The specification of what a server implementation should do once receiving a block/delete request
   is intentionally vague to permit application-specific behaviours under the hood. This may
   unintentionally work against the proposed endpoints, as clients might expect that the server
