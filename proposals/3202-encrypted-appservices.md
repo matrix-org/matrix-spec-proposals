@@ -6,7 +6,7 @@ only work in unencrypted rooms due to not having enough context on the encryptio
 function properly.
 
 This MSC targets the missing bits to support encryption at the appservice level: other MSCs, such as
-[MSC2409](https://github.com/matrix-org/matrix-doc/pull/2409) and [MSC2778](https://github.com/matrix-org/matrix-doc/pull/2778)
+[MSC4203](https://github.com/matrix-org/matrix-doc/pull/4203) and [MSC2778](https://github.com/matrix-org/matrix-doc/pull/2778)
 give appservices foundational pieces to get device IDs and to-device messages, as required by encryption.
 
 ## Proposal
