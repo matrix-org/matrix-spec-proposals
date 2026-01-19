@@ -102,6 +102,20 @@ which could be useful for clients to display progress bars or usage statistics. 
 such fields would require a more complex specification change and could be addressed in a future
 MSC if deemed necessary.
 
+### Backwards compatibility for existing clients
+
+Existing clients which do not understand the new error code might have a degradation in UX as a
+result of this new error code.
+
+To understand the likelihood of this the common Web and iOS clients on the
+[Matrix.org Ecosystem](https://matrix.org/ecosystem/clients/) web page were tested.
+
+The results of this are attached as a
+[comment](https://github.com/matrix-org/matrix-spec-proposals/pull/4335#issuecomment-3769636127)
+on the proposal PR.
+
+No significant degradation was identified for the clients tested.
+
 ## Alternatives
 
 Several alternatives were considered for this proposal:
