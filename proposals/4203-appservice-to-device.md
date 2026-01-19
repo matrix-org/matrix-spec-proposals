@@ -67,10 +67,10 @@ controlling those users explicitly. Typically, inclusive users are also calling 
 the appservice should be CC'd on the to-device messages that would normally go down `/sync`.
 
 For inclusive namespaces, servers may also track who created a device, and not wait for `/sync`
-if the device was created using [appservice login] or equivalent future methods like [MSC4190].
+if the device was created using [appservice login] or [appservice device management].
 
-[appservice login]: https://spec.matrix.org/v1.11/application-service-api/#server-admin-style-permissions
-[MSC4190]: https://github.com/matrix-org/matrix-spec-proposals/pull/4190
+[appservice login]: https://spec.matrix.org/v1.17/application-service-api/#server-admin-style-permissions
+[appservice device management]: https://spec.matrix.org/v1.17/application-service-api/#device-management
 
 ## Potential issues
 If servers forget to delete to-device events, they may accumulate in the
@@ -88,7 +88,7 @@ Instead of mixing `to_user_id` and `to_device_id` in with the existing fields,
 the existing fields could be nested inside another object. However, unlike room
 events, custom fields are not allowed in the top level of to-device events. The
 federation format is already quite different than the client-server format:
-<https://spec.matrix.org/unstable/server-server-api/#definition-mdirect_to_device>.
+<https://spec.matrix.org/v1.17/server-server-api/#definition-mdirect_to_device>.
 Existing server implementations ignore custom top-level fields over federation
 when converting to the client format.
 
