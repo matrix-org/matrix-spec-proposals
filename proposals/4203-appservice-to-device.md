@@ -104,4 +104,6 @@ the key in transactions requests instead of `to_device`. The key is different
 than the MSC number to preserve compatibility with the older version which was
 a part of [MSC2409].
 
-[MSC2409]: https://github.com/matrix-org/matrix-spec-proposals/pull/2409
+## Dependencies
+[MSC3202] is likely necessary for this MSC to be useful, but there is no hard
+dependency: they can land in any order.
