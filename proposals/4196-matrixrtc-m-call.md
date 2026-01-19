@@ -120,17 +120,6 @@ schema:
 * `sticky_key` — Same as above  
 * `disconnect_reason` as defined below
 
-```
-{
-  "* `disconnect_reason` as defined below
-": {
-    "class": "server_error",
-    "reason": "ice_failed",
-    "description": "Failed to establish peer-to-peer connection via ICE",
-  }
-}
-```
-
 `disconnect_reason` **field explanations:**
 
 | Class | Example Reason | Description / When Used |
