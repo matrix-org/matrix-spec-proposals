@@ -5,6 +5,9 @@ deprecated with [MSC1802] in [r0.1.4] of the federation API in 2020. Given the t
 fact that the continued presence of the derpecated endpoint occasionally causes confusion[^1], it
 should be removed from the spec.
 
+This proposal additionally affects the [/_matrix/federation/v1/send_leave/{roomId}/{eventId}]
+endpoint as it is similarly superseded by a v2 variant.
+
 ## Proposal
 
 [/_matrix/federation/v1/send_join/{roomId}/{eventId}] is removed from the spec.
