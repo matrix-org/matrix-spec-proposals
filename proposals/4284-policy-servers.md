@@ -110,10 +110,10 @@ The `GET /.well-known/matrix/policy_server` endpoint returns the following, idea
 The state event's `via` is the same as the domain name used to get the JSON document. Callers MUST
 use `https://` when calling the endpoint.
 
-The server name in `via` MUST additionally have at least one *joined* user in the room. This is to
-ensure the policy server itself has agency to decide which rooms it actually generates recommendations
-for. Otherwise, any random (potentially malicious) community could drag the policy server into rooms
-and overwhelm it.
+The server name in `via` MUST additionally have at least one *joined* user in the room. That user does
+not need any special power levels - they just need to be joined. This is to ensure the policy server
+itself has agency to decide which rooms it actually generates recommendations for. Otherwise, any
+random (potentially malicious) community could drag the policy server into rooms and overwhelm it.
 
 If the room's *current state* has a valid policy server configured for the room (joined + valid
 `m.room.policy` event), all homeservers wanting to send an event in the room MUST call the `/sign`
