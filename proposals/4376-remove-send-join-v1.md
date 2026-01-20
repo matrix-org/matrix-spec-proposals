@@ -100,6 +100,7 @@ None.
     https://github.com/matrix-org/matrix-spec/issues/1515.
 
   [/_matrix/federation/v1/send_join/{roomId}/{eventId}]: https://spec.matrix.org/v1.16/server-server-api/#put_matrixfederationv1send_joinroomideventid
+  [/_matrix/federation/v1/send_leave/{roomId}/{eventId}]: https://spec.matrix.org/v1.16/server-server-api/#put_matrixfederationv1send_leaveroomideventid
   [MSC1802]: https://github.com/matrix-org/matrix-spec-proposals/blob/old_master/proposals/1802-standardised-federation-response-format.md
   [r0.1.4]: https://spec.matrix.org/legacy/server_server/r0.1.4.html
   [v1.8.0]: https://github.com/matrix-org/synapse/releases/tag/v1.8.0
