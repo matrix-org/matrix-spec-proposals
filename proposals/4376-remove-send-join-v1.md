@@ -37,6 +37,8 @@ This behaviour is still present in the currently latest release [v1.141.0] (Octo
 - https://github.com/element-hq/synapse/blob/v1.141.0/synapse/federation/federation_client.py#L1356
   (outgoing)
 
+Nearby, Synapse prefers `v2` for `/send_leave` as well.
+
 ### Dendrite
 
 Dendrite has stopped supporting the `v1` endpoint for incoming requests in December 2019 and to this
