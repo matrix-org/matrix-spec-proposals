@@ -47,7 +47,7 @@ Example:
 Would result in Alice and Bob both seeing something like this in the UI as the verification string:
 
 ```
-   🍄       ⌛      🌽     🌏    
+   🍄       ⌛       🌽      🌏
 Mushroom Hourglass  Corn   Globe  
  (Pilz)  (Sanduhr) (Mais) (Globus)
 
