@@ -152,26 +152,31 @@ a signature for the event using the key implied by `public_key` in the state eve
 }
 ```
 
-If the policy server refuses to sign the event, it MAY return 200 OK with an empty JSON object, or
-a 400 Bad Request with appropriate error code. Using the [Common Error Codes](https://spec.matrix.org/v1.17/client-server-api/#common-error-codes)
-from the Client-Server API, the following are supported on HTTP 400 responses:
+If the request was invalid or the policy server refuses to sign the event, it returns any of the
+following errors. The error codes are reused from the Client-Server API's [Common Error Codes](https://spec.matrix.org/v1.17/client-server-api/#common-error-codes).
 
-* `M_BAD_JSON` - The supplied PDU-formatted event was improperly formatted (ie: missing required
+* `400 M_BAD_JSON` - The supplied PDU-formatted event was improperly formatted (ie: missing required
   keys for the room version).
-* `M_NOT_JSON` - The request body wasn't JSON.
-* `M_NOT_FOUND` - The room ID is not known or not protected by the policy server.
-* [MSC4387's `M_SAFETY` error code](https://github.com/matrix-org/matrix-spec-proposals/pull/4387)
-  (if accepted into the spec).
+* `400 M_NOT_JSON` - The request body wasn't JSON.
+* `404 M_NOT_FOUND` - The room ID is not known or not protected by the policy server.
+* `403 M_FORBIDDEN` - The caller is ACL'd (see below).
+* `400 M_FORBIDDEN` - The policy server refuses to sign the event. In future, this may be extended
+  with more detail, like in [MSC4387: `M_SAFETY` error code](https://github.com/matrix-org/matrix-spec-proposals/pull/4387).
 
-**Note**: To clarify, servers are *not* required to return an error. They can hide the underlying
-reason with a 200+`{}` response instead.
+**Note**: Policy servers MAY return *any* of the above errors to indicate failure. For example, if a
+policy server wishes to hide whether it knows about a room, it MAY return `400 M_FORBIDDEN` instead
+(or, it MAY sign the event anyway).
 
-A 403 `M_FORBIDDEN` error MAY be returned by the policy server if the caller is
+The 403 `M_FORBIDDEN` error MAY be returned by the policy server if the caller is
 [ACL'd](https://spec.matrix.org/v1.17/server-server-api/#server-access-control-lists-acls). This is
 not a "MUST" because policy servers may not always have full room state context when optimized for
 content moderation over Matrix moderation.
 
-A standard 429 `M_LIMIT_EXCEEDED` is returned when the policy server is rate limiting the caller.
+The following errors are returned per normal specification requirements:
+
+* `404 M_UNRECOGNIZED` - The server is not a policy server (the endpoint isn't implemented).
+* `405 M_UNRECOGNIZED` - The server is a policy server, but the caller used the wrong HTTP method.
+* `429 M_LIMIT_EXCEEDED` - The server is rate limiting the caller.
 
 Upon receipt of an event in a room with a policy server, the homeserver SHOULD verify that the policy
 server's signature is present on the event *and* uses the key from the current `m.room.policy` state event.
@@ -525,6 +530,10 @@ While this proposal is not considered stable, implementations should use the fol
 **Note**: Due to iteration within this proposal, implementations SHOULD fall back to `/check` (described
 below) when `/sign` is unavailable or when `public_key` is not present in the `org.matrix.msc4284.policy`
 state event.
+
+**Note**: Also due to iteration within this proposal, unstable implementations using unstable `/sign`
+MUST interpret a 200 OK with empty JSON object response as refusal to sign. Errors might not be raised
+by the policy server.
 
 ## Dependencies
 
