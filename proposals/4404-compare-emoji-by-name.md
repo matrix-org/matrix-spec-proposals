@@ -1,4 +1,4 @@
-x# MSC4404: Compare emoji by name rather than image
+# MSC4404: Compare emoji by name rather than image
 
 ## Problem
 
