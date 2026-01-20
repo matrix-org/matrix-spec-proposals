@@ -2,7 +2,7 @@
 
 [/_matrix/federation/v1/send_join/{roomId}/{eventId}] has been superseded by a `v2` endpoint and
 deprecated with [MSC1802] in [r0.1.4] of the federation API in 2020. Given the time elapsed and the
-fact that the continued presence of the derpecated endpoint occasionally causes confusion[^1], it
+fact that the continued presence of the deprecated endpoint occasionally causes confusion[^1], it
 should be removed from the spec.
 
 This proposal additionally affects the [/_matrix/federation/v1/send_leave/{roomId}/{eventId}]
