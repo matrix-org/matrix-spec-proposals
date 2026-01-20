@@ -1,7 +1,6 @@
 # MSC4284: Policy Servers
 
-Communities on Matrix are typically formed through [Spaces](https://spec.matrix.org/v1.14/client-server-api/#spaces),
-but can be made up of singular rooms or loose collections of rooms. These communities often have a
+Communities on Matrix are formed through collections of rooms. These communities often have a
 desire to push unwelcome content out of their chats, and rely on bots like [Mjolnir](https://github.com/matrix-org/mjolnir),
 [Draupnir](https://github.com/the-draupnir-project/Draupnir), and [Meowlnir](https://github.com/maunium/meowlnir)
 to help manage their community. Many public communities additionally see abusive content sent to their
