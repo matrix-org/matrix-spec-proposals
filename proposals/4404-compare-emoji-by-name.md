@@ -1,4 +1,4 @@
-# MSC4404: Compare emoji by name rather than image
+x# MSC4404: Compare emoji by name rather than image
 
 ## Problem
 
@@ -6,7 +6,8 @@ SAS verification via emoji comparison is problematic because users treat the req
 emoji literally, and then trip over whether the images literally match, as well as whether
 the label of the emoji is the same (causing problems with i18n).
 
-One solution is to hardcode the emoji representation into the spec as per MSC4347.
+One solution is to hardcode the emoji representation into the spec as per 
+[MSC4347](https://github.com/matrix-org/matrix-spec-proposals/pull/4347).
 However, this poses more problems: as a client implementor, i don't want *any* of the pixel layout
 of my app dictated by a communication protocol - i want to pick the aesthetics, a11y,
 branding, image licence, theming, UI idiom (TUI, XR, Braille reader, etc) that works for me.
@@ -47,7 +48,7 @@ Example:
 Would result in Alice and Bob both seeing something like this in the UI as the verification string:
 
 ```
-   🍄       ⌛       🌽      🌏
+   🍄       ⌛        🌽      🌏
 Mushroom Hourglass  Corn   Globe  
  (Pilz)  (Sanduhr) (Mais) (Globus)
 
@@ -79,8 +80,11 @@ consistency and ease of comparison, but this would be a MAY rather than a MUST.
  * Emoji comparison is basically flawed, and while fun and quirky, has awkward edge cases like this.
    We could/should deprecate it in favour of simple decimal SAS comparison, but we're stuck with
    emoji for compatibility, hence this incremental fix.
- * We could hardcode emoji visual representation into the spec, as per MSC4347. However:
-    * this has the problems outlined in the Problem section above
+ * We could hardcode emoji visual representation into the spec, as per
+   [MSC4347](https://github.com/matrix-org/matrix-spec-proposals/pull/4347). However:
+    * this has the problems outlined in the Problem section above:
+      * as an app developer, i want to pick the aesthetics, accessibility, branding, image licencing, theming,
+        UI idiom (TUI, XR, Braille reader, etc) for my own app, and not have it dictated by a protocol.
     * and also makes the spec even more sprawling and bloated and is a much bigger change to land and maintain.
     * it also hardcodes any 'bugs' in the image representation into the spec without any possible migration mechanism -
       e.g. if one day we decide that a handgun emoji should be displayed as a waterpistol rather than a revolver, etc.
