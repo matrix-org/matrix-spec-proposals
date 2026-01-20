@@ -79,9 +79,11 @@ consistency and ease of comparison, but this would be a MAY rather than a MUST.
  * Emoji comparison is basically flawed, and while fun and quirky, has awkward edge cases like this.
    We could/should deprecate it in favour of simple decimal SAS comparison, but we're stuck with
    emoji for compatibility, hence this incremental fix.
- * We could hardcode emoji visual representation into the spec, as per MSC4347. However, this has
-   the problems outlined in the Problem section above, and also makes the spec even more sprawling
-   and bloated.  It also hardcodes any 'bugs' in the image representation into the spec.
+ * We could hardcode emoji visual representation into the spec, as per MSC4347. However:
+    * this has the problems outlined in the Problem section above
+    * and also makes the spec even more sprawling and bloated and is a much bigger change to land and maintain.
+    * it also hardcodes any 'bugs' in the image representation into the spec without any possible migration mechanism -
+      e.g. if one day we decide that a handgun emoji should be displayed as a waterpistol rather than a revolver, etc.
 
 ## Security considerations
 
