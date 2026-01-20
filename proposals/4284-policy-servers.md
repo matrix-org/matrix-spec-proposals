@@ -197,9 +197,10 @@ intentionally don't request a signature would be trying to send unwanted content
 **Note**: Because servers will check events against the current policy server for the room, a policy
 server might get asked to sign events from "before" it was enabled in the room. This could be because
 a server has discovered old history in the room that the policy server hasn't seen before, or due to
-the event's sender allow the `origin_server_ts` timestamp to drift. This proposal leaves it as an
-implementation detail for policy servers to determine how to handle such events. The Implementation
-Considerations section has some suggestions.
+the event's sending server experiencing clock drift (potentially maliciously). This would typically
+manifest as `origin_server_ts` being "wrong" from the policy server's view. This proposal leaves
+handling such events as an implementation detail for policy servers. The Implementation Considerations
+section has some suggestions.
 
 Servers MUST NOT validate that policy server signatures exist on `m.room.policy` state events with
 empty state keys. This is to ensure that rooms have agency to remove/disable the policy server,
@@ -439,19 +440,25 @@ This proposal's security considerations are:
   action against the event/sender. This might be a redaction + kick, or could be a warning to the user
   followed by increased action if it happens again in a short period of time.
 
-  Policy servers wanting to detect this case might be required to implement full room DAG support and
-  "chase" the latest events more than a typical server would. This is because the policy server might
-  not receive events from malicious (or broken) homeservers, so might have an outdated idea of whether
-  an event was actually sent to the room. If a policy server sees that it signed an event and (reliably)
-  knows it wasn't sent to the room after some threshold of time, the policy server might, for example,
-  change the event's designation to "spammy" and find a way to get a redaction sent out for it just
-  in case. That redaction might originate from the policy server itself, or in cooperation with other
-  moderation tooling per earlier in this proposal.
+  Policy servers which aren't tracking the DAG might find difficulty in doing the same. A call to
+  `/sign` might have a sane `origin_server_ts` value, but the event isn't "sent" yet. The server would
+  have to wait for the event to be echoed [`/send`](https://spec.matrix.org/v1.17/server-server-api/#put_matrixfederationv1sendtxnid)
+  before being able to determine if it was actually sent. A server could refuse to deliver the echo
+  though, either maliciously or accidentally with something like Synapse's [`federation_domain_whitelist`](https://element-hq.github.io/synapse/v1.144/usage/configuration/config_documentation.html#federation_domain_whitelist).
 
-  Policy servers should note that sometimes not receiving an event over federation may be server
-  misconfiguration rather than malicious behaviour. For example, by setting Synapse's
-  [`federation_domain_whitelist`](https://element-hq.github.io/synapse/v1.144/usage/configuration/config_documentation.html#federation_domain_whitelist)
-  configuration option.
+  A policy server which does track (and ideally, expose) the DAG for a room can do a little bit more.
+  Instead of waiting for an echo, the policy server can consider the call to `/sign` as "sending" the
+  event. If there isn't an echo in a reasonable time frame, the policy server could emit its own event
+  which references that event via `prev_events`. Other servers in the room will then attempt to pull
+  in the sent-but-not-delivered event using normal eventual consistency measures.
+
+  Whether DAG tracking or not, policy servers might also get a redaction sent out for events they
+  signed but didn't see echoed back in some time frame. This may require cooperation with something
+  that can send redactions, like a moderation bot, if the policy server cannot send events itself.
+
+  In any case, functionality which monitors clock drift MUST be aware that some amount of drift is
+  expected. Sometimes, servers legitimately go down and try to re-send all of their events upon network
+  being restored, which will have incorrect timestamps.
 
 ## Alternatives
 
