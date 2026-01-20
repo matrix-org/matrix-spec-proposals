@@ -83,12 +83,7 @@ event (empty state key). The `content` has the following implied schema:
 multi-server setup might require.
 
 The sender of the `m.room.policy` state event will need to know the server's `public_key` in order
-to populate the event. If the power levels of the room allow, the policy server itself or a dedicated
-bot might be able to set the state event directly. In other cases, a human user might be trying to
-configure their room's policy server from their client and might not know the `public_key` for their
-chosen policy server, but they likely know the server name.
-
-To help clients convert a server name to a public key, policy servers SHOULD implement the following
+to populate the event. To help clients convert a server name to a public key, policy servers SHOULD implement the following
 `/.well-known/matrix/policy_server` endpoint. If the endpoint is not supported by the policy server,
 the `public_key` will need to be sourced out of band to populate the state event.
 
@@ -115,12 +110,10 @@ The `GET /.well-known/matrix/policy_server` endpoint returns the following, idea
 The state event's `via` is the same as the domain name used to get the JSON document. Callers MUST
 use `https://` when calling the endpoint.
 
-Using the event example above: provided `policy.example.org` is in the room, that server receives
-events as any other homeserver in the room would, *plus* becomes a Policy Server. If `policy.example.org`
-is not in the room, the assignment acts as though it was undefined: the room does not use a policy server.
-This check is to ensure the policy server has agency to decide which rooms it actually generates
-recommendations for, as otherwise any random (potentially malicious) community could drag the policy
-server into rooms and overwhelm it.
+The server name in `via` MUST additionally have at least one *joined* user in the room. This is to
+ensure the policy server itself has agency to decide which rooms it actually generates recommendations
+for. Otherwise, any random (potentially malicious) community could drag the policy server into rooms
+and overwhelm it.
 
 If the room's *current state* has a valid policy server configured for the room (joined + valid
 `m.room.policy` event), all homeservers wanting to send an event in the room MUST call the `/sign`
