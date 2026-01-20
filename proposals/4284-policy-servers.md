@@ -186,6 +186,10 @@ server and use that result to determine whether to pass the event through unimpe
 The homeserver SHOULD persist the policy server's signature with the event so the signature is passed
 transitively to other servers which request the event from the homeserver.
 
+**Note**: Signatures might be present but invalid/wrong due to the policy server's key rotating. In
+these cases, it's appropriate for a homeserver to request another signature from the policy server
+to confirm whether the event is spammy. See the Security Considerations section for details.
+
 **Note**: Advanced tooling, likely built into moderation bots, may further send redactions for events
 which are soft failed due to the policy server's recommendation. This helps remove content from the
 room for users which are stuck on an older/uncooperative homeserver.
@@ -459,6 +463,21 @@ This proposal's security considerations are:
   In any case, functionality which monitors clock drift MUST be aware that some amount of drift is
   expected. Sometimes, servers legitimately go down and try to re-send all of their events upon network
   being restored, which will have incorrect timestamps.
+
+* As mentioned in the Implementation Considerations section, policy servers SHOULD NOT publish the
+  signing key they use in `m.room.policy` state events as "real" keys in `/_matrix/key/v2/server`.
+  This keeps separation of concerns between signing keys, and enables rooms to force-rotate/disable
+  a policy server on their own without needing to cooperate with the policy server itself.
+
+  If the signing key used in `m.room.policy` is compromised, rooms SHOULD disable their use of a
+  policy server by setting the event's `content` to an empty object. Later, when the policy server
+  rotates its key, the event SHOULD be re-populated with the updated key instead.
+
+  Events are evaluated against the current policy server rather than the one defined at an event's
+  position in the DAG, meaning that spammy events might temporarily be allowed during this rotation.
+  Already-signed events might become soft failed due to having the wrong key being used to sign the
+  events, however. To limit this case, servers MAY request a new signature from the policy server to
+  doubly confirm that the event is in fact meant to be spammy.
 
 ## Alternatives
 
