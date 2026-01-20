@@ -1,4 +1,4 @@
-# MSC4376: Remove /v1/send_join
+# MSC4376: Remove /v1/send_join and /v1/send_leave
 
 [/_matrix/federation/v1/send_join/{roomId}/{eventId}] has been superseded by a `v2` endpoint and
 deprecated with [MSC1802] in [r0.1.4] of the federation API in 2020. Given the time elapsed and the
