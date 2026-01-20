@@ -213,11 +213,11 @@ with non-empty state keys, etc.
 For clarity, when a room doesn't use a policy server (either because the state event is unset, or
 because the policy server isn't joined), events SHOULD NOT be impeded by lack of policy server signatures.
 
-When implemented fully, users attempting to send "spammy" events according to the policy server will
-not be sent to the room because the homeserver will have failed to acquire a signature. Users also
-won't see events which lacked a valid signature from the policy server, for events which originate
-from a homeserver that sent events without asking the policy server to sign them (or did ask and got
-a refusal to sign, but sent the event anyway).
+When implemented fully, a user will see an error message when attempting to send "spammy" events. The
+policy server gets to decide what "spammy" means. If the user's homeserver sends the event without
+the signature from the policy server (either because it never requested one or because it decided to
+send the event despite being refused a signature), other servers will hide the event from users by
+soft failing it for lacking that signature.
 
 **Note**: A future MSC is expected to make the signature required in a future room version when a
 policy server is in use by the room. Centralization concerns related to that architecture are best
