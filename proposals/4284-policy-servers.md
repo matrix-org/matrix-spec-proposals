@@ -74,7 +74,7 @@ event (empty state key). The `content` has the following implied schema:
 
 ```json5
 {
-  "via": "policy.example.org", // the server name of the policy server
+  "via": "policy.example.org", // the server name providing room policy (the "policy server")
   "public_key": "unpadded_base64_signing_key" // that server's *public* signing key used for `/sign`
 }
 ```
