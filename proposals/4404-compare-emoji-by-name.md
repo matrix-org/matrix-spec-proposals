@@ -15,7 +15,7 @@ branding, image licence, theming, UI idiom (TUI, XR, Braille reader, etc) that w
 
  * Advise clients to ask users to compare SAS by name rather than image. "Do the words match?" rather
    than "Do the emoji match?".
- * Pass an optional i18n parameter in the `content` block of the m.key.verification.start` and
+ * Pass an optional `accept_languages` parameter in the `content` block of the m.key.verification.start` and
    `m.key.verification.accept` messages containing a list of accepted languages, so that the other party knows
    what languages to display the SAS words in for comparison purposes.
  * Recommend that clients should display the initiator's language first on both screens, followed by any other
@@ -27,7 +27,7 @@ Example:
 { // from Alice (UI in en_GB)
   "content": { 
     "from_device": "AliceDevice",
-    "i18n": ["en_GB", "en", "fr_FR"],
+    "accept_languages": ["en_GB", "en", "fr_FR"],
     ...
   },
   "type": "m.key.verification.start"
@@ -37,7 +37,7 @@ Example:
 ```json5
 { // from Bob (UI in de_DE)
   "content": {
-    "i18n": ["de_DE"],
+    "accept_languages": ["de_DE"],
     ...
   },
   "type": "m.key.verification.accept"
@@ -49,7 +49,7 @@ Would result in Alice and Bob both seeing something like this in the UI as the v
 ```
    🍄       ⌛      🌽     🌏    
 Mushroom Hourglass  Corn   Globe  
-(Pilz)   (Sanduhr) (Mais) (Globus)
+ (Pilz)  (Sanduhr) (Mais) (Globus)
 
       🍎      ⌛       ⚓
     Apple  Hourglass Anchor
