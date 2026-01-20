@@ -78,6 +78,8 @@ Again, this behaviour is still present in Conduit and derivates such as tuwunel 
 
 - https://github.com/matrix-construct/tuwunel/blob/d24986edf198cc8b37a47ed94b50a72a566c5cca/src/service/membership/join.rs#L710
 
+These implementations prefer `/v2/send_leave` in nearby code as well.
+
 ## Alternatives
 
 None.
