@@ -51,6 +51,8 @@ falling back to `v1` only when `v2` is not available.
 
 - https://github.com/matrix-org/gomatrixserverlib/commit/5539854e4abc4ce179e991fbffaccde06b695dbc
 
+gomatrixserverlib's preference of `/v2/send_leave` is https://github.com/matrix-org/gomatrixserverlib/pull/208
+
 ### Conduit & friends
 
 Conduit has first started to support the `v2` endpoint for incoming requests in April 2021.
