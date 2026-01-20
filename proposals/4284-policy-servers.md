@@ -229,8 +229,8 @@ reserved for that future MSC.
 
 ### Implementation considerations
 
-* For improved security, policy servers SHOULD NOT publish the key they use inside the state event on
-  [`/_matrix/key/v2/server`](https://spec.matrix.org/v1.15/server-server-api/#get_matrixkeyv2server).
+* For improved security, policy servers SHOULD NOT publish the key they use inside the `m.room.policy`
+  state event on [`/_matrix/key/v2/server`](https://spec.matrix.org/v1.15/server-server-api/#get_matrixkeyv2server).
   This keeps the concerns of "can send federation traffic" and "can mark events as neutral (not spammy)"
   separate, and further means that a room can revoke the key without cooperation from the policy
   server.
@@ -250,7 +250,7 @@ reserved for that future MSC.
   sends an event not signed by the policy server in a popular room, all of the other servers in that
   room may request that signature from the policy server right away. This can be a lot of requests.
 
-  Caching is also important for consistency. There is no mechanism to inform servers that an event's
+  Caching and persistent storage is also important for consistency. There is no mechanism to inform servers that an event's
   spam or neutral designation has changed. If the policy server does change designation of an event,
   it can lead to user-visible split brains as one server soft fails the spam and another doesn't.
 
