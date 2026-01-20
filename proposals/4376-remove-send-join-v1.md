@@ -10,7 +10,10 @@ endpoint as it is similarly superseded by a v2 variant.
 
 ## Proposal
 
-[/_matrix/federation/v1/send_join/{roomId}/{eventId}] is removed from the spec.
+The following endpoints are removed (they're already deprecated):
+
+* [/_matrix/federation/v1/send_join/{roomId}/{eventId}]
+* [/_matrix/federation/v1/send_leave/{roomId}/{eventId}]
 
 ## Potential issues
 
