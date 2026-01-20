@@ -1,4 +1,4 @@
-# MSCxxxx: Deprecate the emoji method for SAS verification
+# MSC4405: Deprecate the emoji method for SAS verification
 
 Emojis are cute and fun.  They can be used to make things seem more friendly,
 and to make a very technical process feel more approachable.  That was the hope
