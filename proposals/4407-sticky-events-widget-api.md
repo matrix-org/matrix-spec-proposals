@@ -47,4 +47,4 @@ Two new capabilities will be introduces:
 The following strings will have unstable prefixes:
 
 - The send delayed event capability:\
-  `m.send_receive_sticky_events` -> `org.matrix.mscXXXX.send_receive_sticky_events`
+  `m.send_receive_sticky_events` -> `org.matrix.msc4407.send_receive_sticky_events`
