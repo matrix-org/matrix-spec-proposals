@@ -95,8 +95,9 @@ for the key.
 `GET /.well-known/matrix/policy_server` is a Client-Server API endpoint similar to the existing
 [`/support`](https://spec.matrix.org/v1.17/client-server-api/#getwell-knownmatrixsupport) well-known
 endpoint. It MAY be rate limited, and MUST NOT require authentication. Like other well-known endpoints,
-the request is made to the server name *before* resolving it to something the Federation API can
-use. Also like other well-known endpoints, it [supports CORS](https://spec.matrix.org/v1.17/client-server-api/#web-browser-clients).
+the request is made to the server's [`server_name`](https://spec.matrix.org/v1.17/appendices/#server-name)
+rather than the base URL of the client-server API. Also like other well-known endpoints, it
+[supports CORS](https://spec.matrix.org/v1.17/client-server-api/#web-browser-clients).
 
 The `GET /.well-known/matrix/policy_server` endpoint returns the following, ideally with a
 `Content-Type: application/json` header:
