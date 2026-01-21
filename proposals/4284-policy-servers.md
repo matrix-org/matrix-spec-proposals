@@ -306,15 +306,15 @@ reserved for that future MSC.
 
 * Already noted in the proposal, existing rooms might have servers in them which don't know about
   policy servers. This can lead to events which aren't signed by the policy server, and thus could
-  be considered spam automatically. This proposal aims to minimize that by suggesting that receiving
-  servers for an event ask for a signature from the policy server, though prior versions of this
-  proposal already tried such a mechanism (`/check`) with limited success. Unstable policy server
-  implementations have found that single-digit kHz amounts of requests are trivially possible with
-  rooms not much larger than the v12 HQ room (created ~1-2 months ago as of writing).
+  be considered spam automatically. This proposal aims to minimize this by suggesting that servers
+  should ask for a signature from the policy server if the event is missing one, though this can
+  lead to a lot of traffic for the policy server.
 
-  This is expected to be fixed in a future room version with a future MSC. That future MSC will likely
-  make getting a signature required, which removes the need for a fallback `/sign` request. In the
-  meantime, policy servers SHOULD be designed, built, and deployed with the assumption that they will
+  In a future MSC and room version, it's expected that the auth rules will be adapted to require a
+  signature from the policy server in order to accept an event (if a policy server is configured for
+  the room). This will limit the number of excess calls the policy server receives.
+
+  In the meantime, policy servers SHOULD be designed, built, and deployed with the assumption that they will
   receive an extremely high volume of requests, especially during spam waves.
 
 * The `m.room.policy` event is *not* protected from redaction in this proposal. Doing so would require
