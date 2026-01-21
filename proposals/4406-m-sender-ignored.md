@@ -45,10 +45,8 @@ Errors with `M_SENDER_IGNORED` SHOULD include a `sender` property in their error
 This will allow clients to know which user was ignored, which may allow them to present a button
 to un-ignore the relevant user, or otherwise provider richer information to the user.
 
-Endpoints that return multiple, potentially unrelated events, should instead filter out events
-from ignored senders, as if they simply didn't exist. Per the current specification, should state
-events be a required part of the endpoint's context (e.g. sync's `state`), those event should
-remain in the results.
+Endpoints that return multiple, potentially unrelated events, MUST instead filter out events
+from ignored senders, as if they simply didn't exist.
 
 * [`/_matrix/client/v3/sync`][sync]
 * [`/_matrix/client/v3/events`][events]
@@ -60,6 +58,19 @@ remain in the results.
 * [`/_matrix/client/v1/rooms/{roomId}/relations/{eventId}`][relations]
 * [`/_matrix/client/v1/rooms/{roomId}/relations/{eventId}/{relType}`][relations2]
 * [`/_matrix/client/v1/rooms/{roomId}/relations/{eventId}/{relType}/{eventType}`][relations3]
+
+> [!TIP]
+> `/context/` and `/relations/...` MUST only return `M_SENDER_IGNORED` if the sender of the event
+> with the ID `eventId` is ignored - events that end up being in the relations or context
+> MUST be omitted instead.
+
+> [!NOTE]
+> For endpoints like `/sync` and `/messages`, state events from ignored senders MUST still be
+> included for the same reason currently specified:
+>
+> > State events will still be sent to the client, even if the user is ignored. This is to ensure
+> > parts, such as the room name, do not appear different to the user just because they ignored 
+> > the sender.
 
 Future endpoints that deal with returning event data should take these same ignore behaviours into
 account.
