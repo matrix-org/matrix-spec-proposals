@@ -1,22 +1,21 @@
-# Sticky Events (widget-api)
+# Sticky Events (Widget API)
 
-With [MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354) a way to sticky events is introduced.
-Sticky events are room events with a time limited delivery guarantee. They will be synced by participating clients even with gappy syncs.
-(For the duration of the sticky duration `sticky_duration_ms`)
+With [MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354), a way to send sticky events is introduced.
+Sticky events are room events with a time-limited delivery guarantee. They will be synced by participating clients even across gappy syncs, for the duration specified by `sticky_duration_ms`.
 
-This msc only specifies how the widget api uses this concept. [MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354)
-gives more details about the sticky events themselves.
+This MSC only specifies how the Widget API uses this concept. [MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354)
+gives more details about sticky events themselves.
 
-Exposing sticky events to the widget is required for widgets implementing MatrixRTC.
-Sticky events are needed for encrypted MatrixRTC memberships that get reliably delivered.
+Exposing sticky events to widgets is required for widgets implementing MatrixRTC.
+Sticky events are needed for encrypted MatrixRTC membership events to be reliably delivered.
 
-Since ElementCall (EC) is a widget and based on MatrixRTC this widget api proposal is required for EC to work.
+Since ElementCall (EC) is a widget and is based on MatrixRTC, this Widget API proposal is required for EC to work.
 
 ## Proposal
 
-### Sending Sticky events
+### Sending sticky events
 
-We extend the `"send_event"` request defined by [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762)
+We extend the "send_event" request defined by [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762)
 as follows:
 
 ```jsonc
@@ -32,25 +31,25 @@ as follows:
 }
 ```
 
-
 ### Capabilities
 
-Two new capabilities will be introduces:
+Two new capabilities will be introduced:
 
 - `m.send.sticky_event`\
-  allows to send sticky events by using the optional `sticky_duration_ms` property in a `fromWidget send_event` widget action.
-  All other `m.send.*` capabilities still apply. This capability allows sending sticky events of those types.
+  Allows sending sticky events by using the optional `sticky_duration_ms` property in a `fromWidget send_event` widget action.
+  All other `m.send.*` capabilities still apply. This capability allows sending sticky events for those types.
 - `m.receive.sticky_event`\
-  If this capability is allowed the client will make sure the widget is aware about events that are currently sticky.
-  All events that are currently stikcy of types that are allowed by `m.send.*` capabilities will be included.
+  If this capability is allowed, the client will make sure the widget is aware of events that are currently sticky.
+  All events that are currently sticky, of types that are allowed by `m.send.*` capabilities, will be included.
 
 ### Widget Client Implementation
-This has the following behavior impact in the widget client implementation:
- - on widget startup the client will send all sticky events the widget is allowed to see.
- - on capability negotiation where the widget gets granted `m.receive.sticky_event` the client will send all sticky events the widget is allowed to see.
 
- If the capability `m.send.sticky_event` is granted and the client receives a send event with `sticky_duration_ms` set, the client has to send a sticky event
- as described in the [Sticky Events Widget API 4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354) using the `sticky_duration_ms`.
+This has the following behavioral impact on the widget client implementation:
+- On widget startup, the client will send all sticky events that the widget is allowed to see.
+- After capability re-negotiation, when the widget is granted `m.receive.sticky_event`, the client will send all currently sticky events that the widget is allowed to see.
+
+If the capability `m.send.sticky_event` is granted and the client receives a send event with `sticky_duration_ms` set, the client must send a sticky event
+as described in [MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354), using the `sticky_duration_ms`.
 
 ## Alternatives
 
@@ -60,5 +59,5 @@ The following strings will have unstable prefixes:
 
 - The send sticky event capability:\
   `m.send.sticky_event` -> `org.matrix.msc4407.send.sticky_event`
-- The send sticky event capability:\
+- The receive sticky event capability:\
   `m.receive.sticky_event` -> `org.matrix.msc4407.receive.sticky_event`
