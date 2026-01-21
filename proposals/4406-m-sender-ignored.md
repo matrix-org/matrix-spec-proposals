@@ -106,9 +106,9 @@ None.
 
 ## Unstable prefix
 
-| Unstable | Stable |
+| Stable | Unstable |
 | -------- | ------ |
-| `M_SENDER_IGNORED` | `uk.timedout.msc4406.sender_ignored` |
+| `M_SENDER_IGNORED` | `UK_TIMEDOUT_MSC4406_SENDER_IGNORED` |
 
 ## Dependencies
 
