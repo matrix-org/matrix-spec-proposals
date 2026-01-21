@@ -75,21 +75,25 @@ event (empty state key). The `content` has the following implied schema:
 ```json5
 {
   "via": "policy.example.org", // the server name providing room policy (the "policy server")
-  "public_key": "unpadded_base64_signing_key" // that server's *public* signing key used for `/sign`
+  "public_keys": {
+    // MUST contain at least `ed25519` for event signing. The key version will be "policy_server",
+    // defined later.
+    "ed25519": "unpadded_base64_signing_key" // that server's *public* signing key used for `/sign`
+  }
 }
 ```
 
 **Note**: Only a single server can be listed. See the Alternatives section for details on what a
 multi-server setup might require.
 
-The sender of the `m.room.policy` state event will need to know the server's `public_key` in order
+The sender of the `m.room.policy` state event will need to know the server's `public_keys` in order
 to populate the event. To help clients convert a server name to a public key, policy servers SHOULD implement the following
 `/.well-known/matrix/policy_server` endpoint. If the endpoint is not supported by the policy server,
-the `public_key` will need to be sourced out of band to populate the state event.
+the `public_keys` will need to be sourced out of band to populate the state event.
 
 **Note**: Servers MUST only use the `m.room.policy` state event as a source of truth for the policy
 server's public key. The well-known endpoint exists exclusively for clients to use to populate the
-state event. The endpoint does *not* exist to make `public_key` optional or act as a secondary lookup
+state event. The endpoint does *not* exist to make `public_keys` optional or act as a secondary lookup
 for the key.
 
 `GET /.well-known/matrix/policy_server` is a Client-Server API endpoint similar to the existing
@@ -105,7 +109,9 @@ The `GET /.well-known/matrix/policy_server` endpoint returns the following, idea
 
 ```jsonc
 {
-  "public_key": "unpadded_base64_signing_key" // required; the same key that appears in the state event
+  "public_keys": { // required; the same thing that appears in the state event
+    "ed25519": "unpadded_base64_signing_key" // also required, and the same as in the state event
+  }
 }
 ```
 
@@ -143,12 +149,15 @@ Content-Type: application/json
 The request body is **required**.
 
 If the policy server deems the event "neutral" (or "probably not spam"), the policy server returns
-a signature for the event using the key implied by `public_key` in the state event and a Key ID of
-`ed25519:policy_server`, like so:
+a signature using *all* of the keys in `m.room.policy`'s `public_keys`. The key version is *always*
+`policy_server` for these keys.
+
+Example:
 
 ```jsonc
 {
   "policy.example.org": {
+    // This uses `public_keys.ed25519` from the `m.room.policy` state event
     "ed25519:policy_server": "zLFxllD0pbBuBpfHh8NuHNaICpReF/PAOpUQTsw+bFGKiGfDNAsnhcP7pbrmhhpfbOAxIdLraQLeeiXBryLmBw"
   }
 }
@@ -189,7 +198,7 @@ The homeserver SHOULD persist the policy server's signature with the event so th
 transitively to other servers which request the event from the homeserver.
 
 **Note**: Signatures might be present but invalid/wrong due to the policy server's key rotating (the
-`public_key` changes between the `m.room.policy` state event *at* the event and the current state's
+`public_keys` changing between the `m.room.policy` state event *at* the event and the current state's
 `m.room.policy` event). In these cases, it's appropriate for a homeserver to request another signature from the policy server
 to confirm whether the event is spammy. See the Security Considerations section for details.
 
@@ -565,12 +574,15 @@ While this proposal is not considered stable, implementations should use the fol
 | `m.room.policy` | `org.matrix.msc4284.policy` |
 
 **Note**: Due to iteration within this proposal, implementations SHOULD fall back to `/check` (described
-below) when `/sign` is unavailable or when `public_key` is not present in the `org.matrix.msc4284.policy`
+below) when `/sign` is unavailable or when `public_key(s)` is not present in the `org.matrix.msc4284.policy`
 state event.
 
 **Note**: Also due to iteration within this proposal, unstable implementations using unstable `/sign`
 MUST interpret a 200 OK with empty JSON object response as refusal to sign. Errors might not be raised
 by the policy server.
+
+**Note**: `org.matrix.msc4284.policy` state events MAY have a `public_key` field rather than `public_keys`.
+The `public_key` is a single string denoting the `ed25519:policy_server` key for the server.
 
 ## Dependencies
 
