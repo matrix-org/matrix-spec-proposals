@@ -21,7 +21,7 @@ This proposal adds a new [common error code]
 `M_USER_LIMIT_EXCEEDED` to the Matrix specification. This error code should be returned when a user has exceeded
 limits that are specifically associated with their account, such as:
 
-* **Storage quotas**: When a user has exceeded their allocated storage space for smedia uploads,
+* **Storage quotas**: When a user has exceeded their allocated storage space for media uploads,
   message history, or other persistent data.
 * **Resource limits**: When a user has reached their maximum number of allowed rooms, devices,
   or other account-scoped resources.
@@ -270,7 +270,7 @@ take start the action of upgrading.
 However, this led to [uncertainty](https://github.com/matrix-org/matrix-spec-proposals/pull/4335#discussion_r2582153412)
 about what exactly would happen when the button is pressed.
 
-To remove this uncertainty `increase_uri` was removed and the homserver gets to provide a single `info_uri` and it is
+To remove this uncertainty `increase_uri` was removed and the homeserver gets to provide a single `info_uri` and it is
 the responsibility of the homeserver to provide a UX that makes sense and is clear about what is happening.
 
 ## Dependencies
