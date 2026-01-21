@@ -16,7 +16,7 @@ The spec contains a number of subtle differences for these endpoints:
     the event and room reporting endpoints.
 2.  The user and event reporting endpoints allow servers to add a random delay
     when generating responses. This is a more sophisticated measure against
-    enumeration attacks. While the spec doesn't explicit forbid this technique
+    enumeration attacks. While the spec doesn't explicitly forbid this technique
     on the room reporting endpoint it doesn't explicitly mention or recommend it
     either.
 3.  The event reporting endpoint contains a `score` property in the request body
