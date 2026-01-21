@@ -256,7 +256,7 @@ reserved for that future MSC.
 * If a policy server implements rate limiting, those rate limits *SHOULD* be relatively high. Clients
   often retry events potentially dozens of times before giving up, which can quickly exhaust a server's
   burst limit. Some servers may also be more chatty than others depending on how many active users
-  they have.
+  they have. Servers are encouraged to cache results to avoid being overly chatty as well.
 
 * Policy servers SHOULD cache and deduplicate requests to `/sign` based on the event ID. When a server
   sends an event not signed by the policy server in a popular room, all of the other servers in that
