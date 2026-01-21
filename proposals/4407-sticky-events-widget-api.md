@@ -21,12 +21,14 @@ as follows:
 
 ```jsonc
 {
+    // new
+    sticky_duration_ms?: number;
+    // other fields
     state_key?: string;
     type: string;
     content: unknown;
     room_id?: string;
     delay?: number; // from https://github.com/matrix-org/matrix-spec-proposals/pull/4157
-    sticky_duration_ms?: number;
 }
 ```
 
@@ -47,6 +49,8 @@ This has the following behavior impact in the widget client implementation:
  - on widget startup the client will send all sticky events the widget is allowed to see.
  - on capability negotiation where the widget gets granted `m.receive.sticky_event` the client will send all sticky events the widget is allowed to see.
 
+ If the capability `m.send.sticky_event` is granted and the client receives a send event with `sticky_duration_ms` set, the client has to send a sticky event
+ as described in the [Sticky Events Widget API 4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354) using the `sticky_duration_ms`.
 
 ## Alternatives
 
