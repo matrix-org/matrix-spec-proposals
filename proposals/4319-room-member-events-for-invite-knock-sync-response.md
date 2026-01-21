@@ -35,8 +35,13 @@ received via `/_matrix/app/v1/transactions`, so they need to be able to identify
 easiest way to do this is to use its `event_id`.
 
 > [!NOTE]
-> Part of this proposed change is based on behavior that has been implemented for a long time in
-> homeserver implementations and that clients already rely on, but that is currently unspecced.
+> The initial purpose of this proposed change was to specify behavior that has been implemented for
+> a long time in some homeserver implementations and that clients already rely on, but that is
+> currently unspecced.
+>
+> Because current homeserver implementations differ there is no clear consensus on what this
+> solution should actually look like, so the purpose of this MSC has shifted to propose a change
+> that still includes all the same data necessary for clients but offers a more coherent API.
 
 
 ## Proposal
