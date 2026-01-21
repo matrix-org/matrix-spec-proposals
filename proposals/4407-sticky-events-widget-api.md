@@ -35,9 +35,17 @@ as follows:
 
 Two new capabilities will be introduces:
 
-- `m.send_receive_sticky_events`\
+- `m.send.sticky_event`\
   allows to send sticky events by using the optional `sticky_duration_ms` property in a `fromWidget send_event` widget action.
   All other `m.send.*` capabilities still apply. This capability allows sending sticky events of those types.
+- `m.receive.sticky_event`\
+  If this capability is allowed the client will make sure the widget is aware about events that are currently sticky.
+  All events that are currently stikcy of types that are allowed by `m.send.*` capabilities will be included.
+
+### Widget Client Implementation
+This has the following behavior impact in the widget client implementation:
+ - on widget startup the client will send all sticky events the widget is allowed to see.
+ - on capability negotiation where the widget gets granted `m.receive.sticky_event` the client will send all sticky events the widget is allowed to see.
 
 
 ## Alternatives
@@ -46,5 +54,7 @@ Two new capabilities will be introduces:
 
 The following strings will have unstable prefixes:
 
-- The send delayed event capability:\
-  `m.send_receive_sticky_events` -> `org.matrix.msc4407.send_receive_sticky_events`
+- The send sticky event capability:\
+  `m.send.sticky_event` -> `org.matrix.msc4407.send.sticky_event`
+- The send sticky event capability:\
+  `m.receive.sticky_event` -> `org.matrix.msc4407.receive.sticky_event`
