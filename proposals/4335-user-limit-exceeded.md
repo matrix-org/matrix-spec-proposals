@@ -154,6 +154,11 @@ of limits (e.g., `M_STORAGE_LIMIT_EXCEEDED`, `M_ROOM_LIMIT_EXCEEDED`). However, 
 would require many new error codes and doesn't provide significant benefits over a single code
 with descriptive error messages.
 
+This would also prevent homeservers from implementing new limits without writing an MSC.
+
+However, it would solve the translation problem without the homeserver needing to define every
+translation.
+
 ### Define specific endpoints
 
 Instead of making this a [common error code] instead it could be an
