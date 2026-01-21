@@ -1,4 +1,4 @@
-# Sticky-events for the widget api
+# Sticky Events (widget-api)
 
 With [MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354) a way to sticky events is introduced.
 Sticky events are room events with a time limited delivery guarantee. They will be synced by participating clients even with gappy syncs.
