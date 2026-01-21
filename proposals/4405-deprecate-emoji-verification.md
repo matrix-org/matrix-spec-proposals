@@ -45,7 +45,7 @@ In addition, we made at least one error in choosing emojis: 🔧 is "spanner" in
 en_GB, but "wrench" in en_US, so there may even be confusion between users
 speaking the same language.  The spec picks "spanner" as the name, and if a
 British and American user are verifying each other, the British user can explain
-it to the American user.  But if two American users verifying each other may
+it to the American user.  But if two American users are verifying each other, they may
 need to figure out on their own what a "spanner" is.  (✈️ suffers a similar
 problem, but less severely, since it is likely that users can figure out that
 "aeroplane" is the same as "airplane".)
@@ -57,6 +57,15 @@ terminal-based clients) may not have a choice in which font is used.  Thus users
 may not see the exact same images on the clients, causing them to wonder if the
 difference is significant.  The standardised names were intended to help with
 this, but in practice, it turns out that people still get confused.
+
+#### Complexity of user instructions
+
+It can be difficult to formulate instructions for what to actually compare during
+emoji verification for non-technical users. For instance, users have to understand
+that they don't need to compare the emoji graphics pixel by pixel. They also need
+to understand that they don't need to compare the emoji names letter by letter
+because they might not be in the same language. This complexity undermines the
+anticipated simplicity that emoji verification was meant to provide.
 
 ### Decimal numbers do not have the same issues
 
@@ -112,7 +121,7 @@ translation issue.
 
 [MSC4404](https://github.com/matrix-org/matrix-spec-proposals/pull/4404)
 proposes to specify that the emoji names should be used rather than the visual
-representations.  This MSC tries to fix the both the issue of differences in
+representations.  This MSC tries to fix both the issue of differences in
 emoji representation, and the translation issue.  As a historical note, this
 would in some sense, make emoji verification more similar to the original ZRTP,
 which SAS verification was based on, and which uses a sequence of words as the
