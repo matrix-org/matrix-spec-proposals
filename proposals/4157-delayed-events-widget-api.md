@@ -1,4 +1,4 @@
-# Futures for the widget api
+# Delayed Events (widget-api)
 
 With [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) a way to send Delayed events is introduced.
 Delayed events are events that will be inserted into the dag (and distributed to all clients and federating
@@ -12,13 +12,13 @@ This msc only specifies how the widget api uses this concept. [MSC4140](https://
 gives more details about the delayed events themselves.
 
 Exposing delayed events to the widget is required for widgets implementing MatrixRTC.
-Futures are needed for reliable MatrixRTC memberships that get cleaned up when a client looses network connection.
+Delayed events are needed for reliable MatrixRTC memberships that get cleaned up when a client looses network connection.
 
 Since ElementCall (EC) is a widget and based on MatrixRTC this widget api proposel is required for EC to work.
 
 ## Proposal
 
-### Sending Future events
+### Sending delayed events
 
 We extend the `"send_event"` request defined by [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762)
 as follows:
