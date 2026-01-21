@@ -4,17 +4,17 @@ With [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) a 
 Delayed events are events that will be inserted into the dag (and distributed to all clients and federating
 servers) a time after **now** (based on a delay that can be refreshed).
 
-Those events are useful to implement scheduled messages or a last will mechanisms. Since the delayed events are refreshable,
+Those events are useful to implement scheduled messages or a "last will" mechanism. Since the delayed events are refreshable,
 it is possible to send an event with a short timeout and send restarts to that timeout. This behaves like a heartbeat and
 the event is sent once the heartbeat stops: As a last will.
 
-This msc only specifies how the widget api uses this concept. [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
-gives more details about the delayed events themselves.
+This MSC only specifies how the widget api uses this concept.
+[MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) gives more details about the delayed events themselves.
 
 Exposing delayed events to the widget is required for widgets implementing MatrixRTC.
 Delayed events are needed for reliable MatrixRTC memberships that get cleaned up when a client looses network connection.
 
-Since ElementCall (EC) is a widget and based on MatrixRTC this widget api proposel is required for EC to work.
+Since Element Call (EC) is a widget and based on MatrixRTC this widget api proposal is required for EC to work.
 
 ## Proposal
 
@@ -44,7 +44,7 @@ and the `"send_event"` response:
 ```
 
 To provide the same properties needed for [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140).
-The client is responsible to check for the `delay` field of the widget action and send the correct http request if it
+The client is responsible to check for the `delay` field of the widget action and send the correct HTTP request if it
 is present.
 
 ### Sending `update_delayed_event` actions
