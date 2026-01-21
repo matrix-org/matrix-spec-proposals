@@ -422,7 +422,7 @@ ahead of reading this section, as it also applies to MSCs.
 This proposal's security considerations are:
 
 * Though rooms are given an escape hatch to unresponsive policy servers, a room's policy server is a
-  natural Denial of Service (DoS) target. As already mentioned, policy servers MUST be tolerable to
+  natural Denial of Service (DoS) target. As already mentioned, policy servers MUST be tolerant to
   DoS attacks. To what scale they need to tolerate is left as a deployment detail. A policy server
   dedicated to a small community may not have the same requirements as a policy server available for
   many communities to use.
