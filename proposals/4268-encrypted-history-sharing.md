@@ -93,7 +93,6 @@ The details of this key bundle are then shared with Bob, as below.
 Having uploaded the encrypted key bundle, Alice must share the details with each of Bob's devices.
 
 She first ensures she has an up-to-date list of his devices (performing a
-
 [`/keys/query`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3keysquery)
 request if necessary). She then sends a to-device message to each of his devices
 **which are correctly signed by his cross-signing keys**.
@@ -161,7 +160,7 @@ messages with Charlie. However, it is dangerous for Bob to take the server's
 word for the history visibility setting: a malicious server admin collaborating
 with Charlie could tell Bob that the history visibility was open when in fact
 it was restricted. In addition, the history visibility in a given room may have
-been changed over time and it can be difficult for clients to estalish which
+been changed over time and it can be difficult for clients to establish which
 setting was in force for a particular Megolm session.
 
 To counter this, we add a `shared_history` property to
@@ -365,7 +364,7 @@ These alternatives are also discussed in a presentation made at Matrix Conferenc
   the user does not have a copy of the session decryption key and it is safe to
   continue using the same session.
 
-  This latter is no longer a valid assumption.
+  The latter is no longer a valid assumption.
 
   TODO: how to solve this? https://github.com/element-hq/element-meta/issues/3078.
 
