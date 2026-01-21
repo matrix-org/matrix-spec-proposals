@@ -61,7 +61,7 @@ None.
 ## Security considerations
 
 Enumeration attacks are likely more severe for users than for rooms or events.
-There are still not irrelevant, however.
+They are still not irrelevant, however.
 
 ## Unstable prefix
 
