@@ -105,16 +105,19 @@ perceived usability of using emojis.
 ## Alternatives
 
 [MSC4347](https://github.com/matrix-org/matrix-spec-proposals/issues/4347)
-proposes to standardize the visual representation of the emojis.
+proposes to standardize the visual representation of the emojis.  This MSC tries
+to fix the issue of differences in emoji representation, but does not fix the
+translation issue.
+
 
 [MSC4404](https://github.com/matrix-org/matrix-spec-proposals/pull/4404)
 proposes to specify that the emoji names should be used rather than the visual
-representations.  As a historical note, this would in some sense, make emoji
-verification more similar to the original ZRTP, which SAS verification was based
-on, and which uses a sequence of words as the Short Authentication String.
+representations.  This MSC tries to fix the both the issue of differences in
+emoji representation, and the translation issue.  As a historical note, this
+would in some sense, make emoji verification more similar to the original ZRTP,
+which SAS verification was based on, and which uses a sequence of words as the
+Short Authentication String.
 
-These two MSCs try to fix the issue of differences in emoji representation, but
-do not fix the translation issue.
 
 ## Security considerations
 
