@@ -100,7 +100,7 @@ n.b. Once a new payload has been sent there is no mechanism to retrieve previous
 ### Expiry
 
 The rendezvous session (i.e. the payload) SHOULD expire after a period of time communicated to clients via the
-`expires_ts` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
+`expires_in_ms` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
 the payload MUST fail. The rendezvous session can be manually expired with a `DELETE` call to the rendezvous session.
 
 ### `POST /_matrix/client/v1/rendezvous` - Create a rendezvous session and send initial payload
@@ -139,7 +139,7 @@ Response body for `200 OK` is `application/json` with contents:
 |-|-|-|
 |`id`|required `string`|Opaque identifier for the rendezvous session|
 |`sequence_token`|required `string`|The token opaque token to identify if the payload has changed|
-|`expires_ts`|required `integer`|The timestamp (in milliseconds since the epoch) at which the rendezvous session will expire|
+|`expires_in_ms`|required `integer`|The number of milliseconds remaining until the rendezvous session expires|
 
 Example response:
 
@@ -150,7 +150,7 @@ Content-Type: application/json
 {
     "id": "abcdEFG12345",
     "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=",
-    "expires_ts": 1662560931000
+    "expires_in_ms": 300000
 }
 ```
 
@@ -233,7 +233,7 @@ Response body for `200 OK` is `application/json` with contents:
 |-|-|-|
 |`data`|required `string`|The data payload from the last POST or PUT.|
 |`sequence_token`|required `string`|The token opaque token to identify if the payload has changed|
-|`expires_ts`|required `integer`|The timestamp (in milliseconds since the epoch) at which the rendezvous session will expire|
+|`expires_in_ms`|required `integer`|The number of milliseconds remaining until the rendezvous session expires|
 
 ```http
 HTTP 200 OK
@@ -242,7 +242,7 @@ Content-Type: application/json
 {
     "data": "data from the previous POST/PUT",
     "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=",
-    "expires_ts": 1662560931000
+    "expires_in_ms": 300000
 }
 ```
 
@@ -277,7 +277,7 @@ sequenceDiagram
   Note over A: Device A determines which rendezvous server to use
 
   A->>+HS: POST /_matrix/client/v1/rendezvous<br>{"data":"Hello from A"}
-  HS->>-A: 200 OK<br>{"id":"abc-def-123-456","sequence_token": "1", "expires_ts": 1234567}
+  HS->>-A: 200 OK<br>{"id":"abc-def-123-456","sequence_token": "1", "expires_in_ms": 300000}
 
   A-->>B: Rendezvous ID and homeserver base URL shared out of band as QR code: e.g. id=abc-def-123-456 baseURL=https://matrix.example.com
 
@@ -291,7 +291,7 @@ sequenceDiagram
   loop Device A polls the rendezvous session for a new payload
     A->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
     alt is not modified
-      HS->>-A: 200 OK<br>{"sequence_token": "1", "data": "Hello from A", "expires_ts": 1234567}
+      HS->>-A: 200 OK<br>{"sequence_token": "1", "data": "Hello from A", "expires_in_ms": 300000}
     end
   end
 
@@ -305,13 +305,13 @@ sequenceDiagram
   loop Device B polls the rendezvous session for a new payload
     B->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
     alt is not modified
-      HS->>-B: 200 OK<br>{"sequence_token": "2", "data": "Hello from A", "expires_ts": 1234567}
+      HS->>-B: 200 OK<br>{"sequence_token": "2", "data": "Hello from A", "expires_in_ms": 300000}
     end
   end
 
   note over A: Device A then receives the new payload
   opt modified
-      HS->>A: 200 OK<br>{"sequence_token": "2", "data": "Hello from B", "expires_ts": 1234567}
+      HS->>A: 200 OK<br>{"sequence_token": "2", "data": "Hello from B", "expires_in_ms": 300000}
   end
   deactivate A
 
@@ -321,7 +321,7 @@ sequenceDiagram
 
   note over B: Device B then receives the new payload
   opt modified
-      HS->>B: 200 OK<br>{"sequence_token": "3", "data": "Hello again from B", "expires_ts": 1234567}
+      HS->>B: 200 OK<br>{"sequence_token": "3", "data": "Hello again from B", "expires_in_ms": 300000}
   end
 
   deactivate B
@@ -788,7 +788,7 @@ sequenceDiagram
     activate G
     note over G: 2) Device G creates a rendezvous session as follows
     G->>+Z: POST /_matrix/client/v1/rendezvous <br>{"data": ""}
-    Z->>-G: 200 OK<br>{"id": "abc-def", "sequence_token": "1", "expires_ts": 1234567}
+    Z->>-G: 200 OK<br>{"id": "abc-def", "sequence_token": "1", "expires_in_ms": 300000}
 
     note over G: 3) Device G generates and displays a QR code containing:<br>its ephemeral public key, the rendezvous session ID, the server base URL
 
@@ -799,7 +799,7 @@ sequenceDiagram
     note over S: Device S validates QR scanned and the rendezvous session ID
 
     S->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
-    Z->>-S: 200 OK<br>{"sequence_token": "1", "expires_ts": 1234567, "data": ""}
+    Z->>-S: 200 OK<br>{"sequence_token": "1", "expires_in_ms": 300000, "data": ""}
 
     note over S: 4) Device S creates context Context_S and LoginInitiateMessage.<br>It sends LoginInitiateMessage via the rendezvous session
     S->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "1", "data": "<LoginInitiateMessage>"}
@@ -808,7 +808,7 @@ sequenceDiagram
 
     G->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
     activate G
-    Z->>-G: 200 OK<br>{"sequence_token": "2", "expires_ts": 1234567, "data": "<LoginInitiateMessage>"}
+    Z->>-G: 200 OK<br>{"sequence_token": "2", "expires_in_ms": 300000, "data": "<LoginInitiateMessage>"}
     note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after creating Context_G
     note over G: Device G checks that the plaintext matches MATRIX_QR_CODE_LOGIN_INITIATE
 
@@ -821,7 +821,7 @@ sequenceDiagram
 
     activate S
     S->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
-    Z->>-S: 200 OK<br>{"sequence_token": "3", "expires_ts": 1234567, "data": "<LoginOkMessage>"}
+    Z->>-S: 200 OK<br>{"sequence_token": "3", "expires_in_ms": 300000, "data": "<LoginOkMessage>"}
 
     note over S: 6) Device S attempts to parse Data as LoginOkMessage
     note over S: 6) Device S creates ResponseContext_S
