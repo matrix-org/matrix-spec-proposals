@@ -188,8 +188,9 @@ server and use that result to determine whether to pass the event through unimpe
 The homeserver SHOULD persist the policy server's signature with the event so the signature is passed
 transitively to other servers which request the event from the homeserver.
 
-**Note**: Signatures might be present but invalid/wrong due to the policy server's key rotating. In
-these cases, it's appropriate for a homeserver to request another signature from the policy server
+**Note**: Signatures might be present but invalid/wrong due to the policy server's key rotating (the
+`public_key` changes between the `m.room.policy` state event *at* the event and the current state's
+`m.room.policy` event). In these cases, it's appropriate for a homeserver to request another signature from the policy server
 to confirm whether the event is spammy. See the Security Considerations section for details.
 
 **Note**: Advanced tooling, likely built into moderation bots, may further send redactions for events
