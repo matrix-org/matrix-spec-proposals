@@ -94,7 +94,8 @@ for the key.
 
 `GET /.well-known/matrix/policy_server` is a Client-Server API endpoint similar to the existing
 [`/support`](https://spec.matrix.org/v1.17/client-server-api/#getwell-knownmatrixsupport) well-known
-endpoint. It MAY be rate limited, and MUST NOT require authentication. Like other well-known endpoints,
+endpoint. Policy servers SHOULD support it, where feasible/applicable. It MAY be rate limited, and
+MUST NOT require authentication. Like other well-known endpoints,
 the request is made to the server's [`server_name`](https://spec.matrix.org/v1.17/appendices/#server-name)
 rather than the base URL of the client-server API. Also like other well-known endpoints, it
 [supports CORS](https://spec.matrix.org/v1.17/client-server-api/#web-browser-clients).
@@ -362,6 +363,14 @@ reserved for that future MSC.
   neutral to spammy, but going from spammy to neutral is a challenge.
 
   A future MSC is best placed to consider a mechanism to communicate designation changes.
+
+* Policy server deployments which do decide to offer the `/.well-known/matrix/policy_server` endpoint
+  might find that those deployments are more complex. This can lead to reliability issues as the
+  endpoint might get missed in regular website maintenance, for example. This endpoint is exclusively
+  used by clients during setup however, so the endpoint can afford some reliability issues.
+
+  [element-meta#3046](https://github.com/element-hq/element-meta/issues/3046) goes into more detail
+  on these concerns on a related endpoint.
 
 Further issues are discussed in the Safety Considerations, Security Considerations, and Alternatives
 below.
