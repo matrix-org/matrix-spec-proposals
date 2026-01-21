@@ -66,7 +66,7 @@ The response is empty on success or otherwise a widget error response.
 
 Two new capabilities will be introduces:
 
-- `m.send.delay_events`\
+- `m.send.delayed_event`\
   allows to send delayed events by using the optional `delay` property in a `fromWidget send_event` widget action.
 - `m.update_delayed_event`\
   allows to update delayed events using the `fromWidget update_delayed_event` widget action.
@@ -74,7 +74,7 @@ Two new capabilities will be introduces:
 Receiving events does not require a special permission since delayed events are not distinguishable from normal events
 from the receiver side.
 
-For sending a delayed event two capabilities are required. One for sending the event type itself and the `m.send.delay_events`
+For sending a delayed event two capabilities are required. One for sending the event type itself and the `m.send.delayed_event`
 capability to send it as a delayed event.
 
 ## Alternatives
