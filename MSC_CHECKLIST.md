@@ -38,7 +38,7 @@ clarification of any of these points.
   - Security considerations
   - Unstable prefix
   - Dependencies
-- [ ] The "Security considerations" section **must** be present, even if None. See [RFC3552](https://datatracker.ietf.org/doc/html/rfc3552) for things to think about, but in particular pay attention to the [OWASP Top Ten](https://owasp.org/www-project-top-ten/).
+- [ ] The "Security considerations" section **must** be present, even if it's just "None". See [RFC3552](https://datatracker.ietf.org/doc/html/rfc3552) for things to think about, but in particular pay attention to the [OWASP Top Ten](https://owasp.org/www-project-top-ten/).
 - [ ] Stable identifiers are used throughout the proposal, except for the unstable prefix section
   - [ ] Unstable prefixes [consider](https://github.com/matrix-org/matrix-spec-proposals/blob/main/README.md#unstable-prefixes) the awkward accepted-but-not-merged state
   - [ ] Chosen unstable prefixes do not pollute any global namespace (use “org.matrix.mscXXXX”, not “org.matrix”).
