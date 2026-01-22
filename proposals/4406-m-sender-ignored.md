@@ -108,7 +108,7 @@ None.
 
 | Stable | Unstable |
 | -------- | ------ |
-| `M_SENDER_IGNORED` | `UK_TIMEDOUT_MSC4406_SENDER_IGNORED` |
+| `M_SENDER_IGNORED` | `UK.TIMEDOUT.MSC4406.SENDER_IGNORED` |
 
 ## Dependencies
 
