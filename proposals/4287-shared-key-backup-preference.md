@@ -60,6 +60,14 @@ data, to `"enabled": true`.
 If the user turns off key backups, clients MUST set this event type in account
 data, to `"enabled": false`.
 
+### Not actively monitoring this setting
+
+We do not propose that clients actively monitor the `m.key_backup` account data
+and enable or disable key backup based on changes. Clients MAY monitor the
+setting but should be aware that changing this setting without user interaction
+based on choices made in a different client (or a compromised homeserver) may
+cause unforseen security problems or simply be unexpected by users.
+
 ## Potential issues
 
 It is possible that some use cases would involve a user having several clients,
