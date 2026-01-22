@@ -26,7 +26,7 @@ like:
 
 ```
 {
-    "m.key_backup": { "enabled": true }
+    "enabled": true
 }
 ```
 
