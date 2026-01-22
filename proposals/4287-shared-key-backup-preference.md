@@ -66,7 +66,7 @@ We do not propose that clients actively monitor the `m.key_backup` account data
 and enable or disable key backup based on changes. Clients MAY monitor the
 setting but should be aware that changing this setting without user interaction
 based on choices made in a different client (or a compromised homeserver) may
-cause unforseen security problems or simply be unexpected by users.
+cause unforeseen security problems or simply be unexpected by users.
 
 ## Potential issues
 
