@@ -40,7 +40,7 @@ update the value to reflect it.
 When a user signs in:
 
 * If this event type exists in account data and contains the specified property
-  in the correct format, clients MUST use it to determine whether key backups
+  in the correct format, clients which support key backup MUST use it to determine whether key backups
   should be enabled.
 
 * If this event type does not exist in account data, or if it does not contain
