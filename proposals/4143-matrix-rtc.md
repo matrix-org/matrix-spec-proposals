@@ -304,7 +304,7 @@ A valid `m.rtc.member` event as a prerequisite for connecting to a slot has the 
 ```json5
 // event type: "m.rtc.member"
 {
-  "slot_id": "m.call#.ROOM",
+  "slot_id": "m.call#ROOM",
   "application": {
     "type": "m.call",
     // further fields for the application (optional)
