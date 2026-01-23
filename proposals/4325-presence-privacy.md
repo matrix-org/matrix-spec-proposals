@@ -121,7 +121,9 @@ The list of `allowed_recipients` in the federation EDU may get very large.
 A possible solution would be for servers to federate presence to servers with many recipients less frequently or based
 on additional heuristics (e.g. prioritise DMs, invite-only rooms, etc).
 
-TODO: event size limit EDU?
+Though the spec does not currently limit the size of EDUs, this proposal can lead to extremely long lists of `allowed_recipients` being sent over federation, e.g. when presence is shared with big rooms.
+We recommend to chunk the presence EDUs to chunks of 256 MXIDs per presence EDU.
+This is trivial to implement: any remaining MXIDs can be transmitted in a second EDU.
 
 ## Alternatives
 
