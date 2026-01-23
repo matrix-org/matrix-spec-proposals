@@ -998,7 +998,7 @@ A threat analysis has been done within each of the key layers in the proposal ab
 
 While this feature is in development the new API endpoints should be exposed using the following unstable prefix:
 
-- `/_matrix/client/unstable/io.element.msc4388rendezvous` instead of `/_matrix/client/v1/rendezvous`
+- `/_matrix/client/unstable/io.element.msc4388/rendezvous` instead of `/_matrix/client/v1/rendezvous`
 
 Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions` response, with the
 key `io.element.msc4388` set to true. So, the response could look then as following:
