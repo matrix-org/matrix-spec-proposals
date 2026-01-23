@@ -69,7 +69,7 @@ To do this, the server follows this algorithm:
   2. The receiving user is listed in `denied_users` explicitly or by matching a glob
   3. The room's ID is listed under `denied_users`
 
-This makes it explicit that a server MUST NOT send presence to any user that the sending user does share a room with or lists in `allowed_users`.
+This makes it explicit that a server MUST NOT send presence to any user that the sending user does not share a room with or lists in `allowed_users`.
 
 Servers MAY pre-configure arbitrary values for this event.
 
