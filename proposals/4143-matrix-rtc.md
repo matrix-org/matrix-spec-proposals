@@ -765,18 +765,18 @@ schema:
 // event type: "m.rtc.encryption_key"
 {
     "room_id": "!roomid:matrix.domain",
-    "member.id": "xyzABCDEF0123"
+    "member_id": "xyzABCDEF0123",
     "media_key": {
-            "index": 10,
-            "key": "base64encodedkey"
+      "index": 10,
+      "key": "base64encodedkey",
     },
+    "version": "0"
 }
 ```
 
 **Field explanations:**
 
-* `slot_id` required string: `slot_id` of the slot this key is related to.   
-* `member.id` required string: The `member.id` from the target `m.rtc.member` event. Note, because
+* `member_id` required string: The `member.id` from the target `m.rtc.member` event. Note, because
   `member.id` is globally unique per member instance, it is sufficient to disambiguate multiple key
   events for the same device, even if they use the same `media_key.index` value.  
 * `media_key` The media key to use to decrypt  the participant media:  
