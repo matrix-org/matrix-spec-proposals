@@ -785,8 +785,7 @@ schema:
     between 0 and 255 inclusive. In some implementations of MatrixRTC this may correspond to the
     `keyID` field of the WebRTC [SFrame](https://www.w3.org/TR/webrtc-encoded-transform/#sframe)
     header.  
-  * `format` the key export format, `0` for the raw bytes base64 encoded.  
-* consecutive sessions within the same slot.  
+* `format` the key export format, `0` for the raw bytes base64 encoded.  
 * Depending on the RTC application, additional fields may be added to this event.
 
 Upon receipt, any `m.rtc.encryption_key` to-device event sent in cleartext SHOULD be discarded. The
