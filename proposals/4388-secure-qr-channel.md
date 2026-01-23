@@ -615,7 +615,7 @@ that Device G can use to confirm that the channel is secure. It contains:
 
 ```
 TaggedCiphertext := Context_S.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", "")
-LoginInitiateMessage := UnpaddedBase64(TaggedCiphertext) || "|" || UnpaddedBase64(Sp)
+LoginInitiateMessage := UnpaddedBase64(Sp || TaggedCiphertext)
 ```
 
 Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request.
@@ -684,7 +684,7 @@ string `MATRIX_QR_CODE_LOGIN_OK`:
 
 ```
 TaggedCiphertext := ResponseContext_G.Seal("MATRIX_QR_CODE_LOGIN_OK", "")
-LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext || ResponseBaseNonce)
+LoginOkMessage := UnpaddedBase64Encode(ResponseBaseNonce || TaggedCiphertext)
 ```
 
 We rely on the  `Seal()` operation computing and incrementing the nonce for us as described in
