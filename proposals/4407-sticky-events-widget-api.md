@@ -44,9 +44,9 @@ Two new capabilities will be introduced:
 
 ### Widget Client Implementation
 
-This has the following behavioral impact on the widget client implementation:
+If a widget is granted the `m.receive.sticky_event` capability, the host client must do the following:
 - On widget startup, the client will send all sticky events that the widget is allowed to see.
-- After capability re-negotiation, when the widget is granted `m.receive.sticky_event`, the client will send all currently sticky events that the widget is allowed to see.
+- After capability re-negotiation, when the widget is now granted `m.receive.sticky_event` and was not before, the client will send all currently sticky events that the widget is allowed to see.
 
 If the capability `m.send.sticky_event` is granted and the client receives a send event with `sticky_duration_ms` set, the client must send a sticky event
 as described in [MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354), using the `sticky_duration_ms`.
