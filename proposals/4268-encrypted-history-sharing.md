@@ -135,7 +135,7 @@ The plaintext content of such a message should be:
 The properties within the `content` are defined as:
 
  * `room_id`: the room to which the keys in the key bundle relate. (This is
-   required so that Bob can download the key bundle at the right time.)
+   required so that Bob can defer downloading the bundle until he joins the room.)
 
  * `file`: `EncryptedFile` from the [encrypted attachment
    format](https://spec.matrix.org/v1.13/client-server-api/#extensions-to-mroommessage-msgtypes).
