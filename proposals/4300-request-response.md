@@ -32,6 +32,7 @@ Clients MAY add `m.request.status` as a top-level property in `content` on any e
   "content": {
     "m.request.status": {
       "from_device": "RJYKSTBOIE",
+      "to_device": "EIOBTSKYJR", // optional the receiving device
       "lifetime": 90000, // 90s
     },
     // properties specific to m.pizza
@@ -45,6 +46,8 @@ the original event as well as an `m.response.status` content block with the foll
 
 - `from_device` (required, string): The sending device's device ID. Helps clients identify the
   remote echo of their own responses.
+- `to_device`(optional, string): The receiving device's device ID. Should be set in case the sender
+  want to a adress a specific receiving client.
 - `status` (required, string, one of `success`, `error`): Whether the sending device has understood
   and successfully processed the event.
 - `messages` (array): An optional array of messages to help recipients understand the `status`.
