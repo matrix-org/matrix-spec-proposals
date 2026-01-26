@@ -83,14 +83,14 @@ new event type `m.fhir` is introduced. This type mandates the following properti
     [`StructureDefinition.type`].
   - `fhir_version` (string, required): The version of the FHIR specification on which the
     `StructureDefinition` is based. This is equivalent to [`StructureDefinition.fhirVersion`].
-- `m.fhir.resource` (object, required if `m.fhir.file` is missing): The serialised JSON if it fits within
-  the [64 KiB event size limit].
-- `m.fhir.file` (object, required if `m.fhir.resource` is missing): An [MSC3551] content block describing
-  an uploaded JSON or XML serialisation of the resource if it is too large to be inlined.
-- `m.text` (object, required): Alternative textual information that shall be displayed in case the client is not able
-  to render the fhir content.
-- `m.file` (object, optional): A downloadable alternative for the content of the fhir structure
-  for example an editable pdf file represanting the same information
+- `m.fhir.resource` (object, required if `m.fhir.file` is missing): The serialised JSON if it fits
+  within the [64 KiB event size limit].
+- `m.fhir.file` (object, required if `m.fhir.resource` is missing): An [MSC3551] content block
+  describing an uploaded JSON or XML serialisation of the resource if it is too large to be inlined.
+- `m.text` (object, optional): Alternative textual information that can be displayed in case the
+  client is not able to render the FHIR content.
+- `m.file` (object, optional): A downloadable alternative for the content of the FHIR structure for
+  example an editable PDF file represanting the same information
 
 ``` json5
 {
@@ -114,14 +114,14 @@ new event type `m.fhir` is introduced. This type mandates the following properti
       "url": "mxc://example.org/abcd1234",
       "mimetype": "application/fhir+json",
       // further properties as per MSC3551
-    }
-    // alternativ text in case the client does not support the fhir content
+    },
+    // Alternative text in case the client does not support the FHIR content
     "m.text": [
-      { "body": "<b>Please complete the anamnesis question and send it back.<b>", "mimetype": "text/html" },
-      { "body": "Please complete the anamnesis question and send it back." }
+        { "body": "<b>Please complete the anamnesis question and send it back.<b>", "mimetype": "text/html" },
+        { "body": "Please complete the anamnesis question and send it back." }
       ]
-    }
-    // optional downloadable file representation of the fhir content
+    },
+    // Optional downloadable file representation of the FHIR content
     "m.file": {
       "url": "mxc://example.org/abcd5678",
       "mimetype": "application/pdf",
@@ -135,6 +135,10 @@ The `url` and `version` properties, on the one hand, allow implementations with 
 particular profile to activate dedicated display or processing logic. The `type` and `fhir_version`
 properties, on the other hand, enable implementations *without* support for the specific profile to
 offer fallback behaviour if they have generic support for the resource's base type.
+
+For the case that recipients don't support the contained FHIR resource or don't recognise `m.fhir`
+events at all, two fallback representations `m.text` and `m.file` MAY be included in the event.
+This allows conveying the contained information in other forms such as plain text or a PDF file.
 
 ## Potential issues
 
