@@ -125,7 +125,7 @@ place of a previously trusted entity.
 | Stable | Unstable replacement |
 | ------ | -------------------- |
 | `/_matrix/client/v1/media/redact/{server_name}/{media_id}` | `/_matrix/client/unstable/uk.timedout.msc4322/media/redact/{server_name}/{media_id}` |
-| `/_matrix/federation/v1/media/redact/{server_name}/{media_id}` | `/_matrix/federation/unstable/uk.timedout.msc4322/media/redact/{server_name}/{media_id}` |
+| `m.media_redaction` | `uk.timedout.msc4322.media_redaction` |
 
 ## Dependencies
 
