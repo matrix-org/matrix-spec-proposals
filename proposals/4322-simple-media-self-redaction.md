@@ -110,6 +110,12 @@ So adding in `DELETE /media/{sn}/{mid}` would not fit the current pattern. Addit
 A future MSC may be created to unify the media endpoints, however in an effort to keep this MSC
 as simple as possible, it will not be done here.
 
+A previous iteration of this proposal also introduced a new federation endpoint,
+`POST /_matrix/federation/v1/media/redact/{server_name}/{media_id}`. This endpoint was replaced by
+the current EDU suggestion, as most servers already have the infrastructure required to send and
+receive EDUs, and this brings deliverability and other benefits, and namely reduces the need to
+"re-invent the wheel" when transmitting the redaction notification.
+
 ## Security considerations
 
 As mentioned in [potential issues](#potential-issues), abusive users may upload abusive media,
