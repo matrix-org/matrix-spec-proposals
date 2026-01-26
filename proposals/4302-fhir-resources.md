@@ -87,7 +87,7 @@ new event type `m.fhir` is introduced. This type mandates the following properti
   the [64 KiB event size limit].
 - `m.fhir.file` (object, required if `m.fhir.resource` is missing): An [MSC3551] content block describing
   an uploaded JSON or XML serialisation of the resource if it is too large to be inlined.
-- `m.text` (object, required): Alternativ textual information that shall be displayed in case the client is not able
+- `m.text` (object, required): Alternative textual information that shall be displayed in case the client is not able
   to render the fhir content.
 - `m.file` (object, optional): A downloadable alternative for the content of the fhir structure
   for example an editable pdf file represanting the same information
