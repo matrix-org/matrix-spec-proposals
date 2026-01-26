@@ -19,6 +19,8 @@ clients when sending events. It has the following properties in `content`:
 
 - `from_device` (required, string): The sending device's device ID. Allows recipients to optionally
   submit their responses privately via to-device messages in the future.
+- `to_device`(optional, string): The receiving device's device ID. Should be set when the sender
+  wants to a adress a specific receiving device only.
 - `lifetime` (integer): The duration in milliseconds during which the sender will consider responses
   to this request. Prevents meaningless delayed responses when new or previously disconnected
   devices encounter requests on older events.
@@ -40,14 +42,13 @@ Clients MAY add `m.request.status` as a top-level property in `content` on any e
 }
 ```
 
-Clients that receive events containing `m.request.status` content blocks MAY respond to them with a
-new room event type `m.response.status`. The latter contains an `m.reference` relation pointing to
-the original event as well as an `m.response.status` content block with the following properties:
+Clients that receive events containing `m.request.status` content blocks where `to_device` is either
+missing or identical to their own device ID, MAY respond to them with a new room event type
+`m.response.status`. The latter contains an `m.reference` relation pointing to the original event as
+well as an `m.response.status` content block with the following properties:
 
 - `from_device` (required, string): The sending device's device ID. Helps clients identify the
   remote echo of their own responses.
-- `to_device`(optional, string): The receiving device's device ID. Should be set in case the sender
-  want to a adress a specific receiving client.
 - `status` (required, string, one of `success`, `error`): Whether the sending device has understood
   and successfully processed the event.
 - `messages` (array): An optional array of messages to help recipients understand the `status`.
