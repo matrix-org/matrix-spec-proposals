@@ -60,7 +60,7 @@ the media. For this, the new EDU type `m.media_redaction` is created, shaped as 
 
 ```json
 {
-   "type": "m.media_redaction",
+   "edu_type": "m.media_redaction",
    "media_id": "opaque_identifier"
 }
 ```
