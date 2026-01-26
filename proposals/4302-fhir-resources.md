@@ -83,7 +83,7 @@ new event type `m.fhir` is introduced. This type mandates the following properti
     [`StructureDefinition.type`].
   - `fhir_version` (string, required): The version of the FHIR specification on which the
     `StructureDefinition` is based. This is equivalent to [`StructureDefinition.fhirVersion`].
-- `m.fhir.resource` (object, required if `m.file` is missing): The serialised JSON if it fits within
+- `m.fhir.resource` (object, required if `m.fhir.file` is missing): The serialised JSON if it fits within
   the [64 KiB event size limit].
 - `m.fhir.file` (object, required if `m.fhir.resource` is missing): An [MSC3551] content block describing
   an uploaded JSON or XML serialisation of the resource if it is too large to be inlined.
