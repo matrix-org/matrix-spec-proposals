@@ -20,7 +20,7 @@ clients when sending events. It has the following properties in `content`:
 - `from_device` (required, string): The sending device's device ID. Allows recipients to optionally
   submit their responses privately via to-device messages in the future.
 - `to_device`(optional, string): The receiving device's device ID. Should be set when the sender
-  wants to a adress a specific receiving device only.
+  wants to a address a specific receiving device only.
 - `lifetime` (integer): The duration in milliseconds during which the sender will consider responses
   to this request. Prevents meaningless delayed responses when new or previously disconnected
   devices encounter requests on older events.
