@@ -85,8 +85,12 @@ new event type `m.fhir` is introduced. This type mandates the following properti
     `StructureDefinition` is based. This is equivalent to [`StructureDefinition.fhirVersion`].
 - `m.fhir.resource` (object, required if `m.file` is missing): The serialised JSON if it fits within
   the [64 KiB event size limit].
-- `m.file` (object, required if `m.fhir.resource` is missing): An [MSC3551] content block describing
+- `m.fhir.file` (object, required if `m.fhir.resource` is missing): An [MSC3551] content block describing
   an uploaded JSON or XML serialisation of the resource if it is too large to be inlined.
+- `m.text` (object, required): Alternativ textual information that shall be displayed in case the client is not able
+  to render the fhir content.
+- `m.file` (object, optional): A downloadable alternative for the content of the fhir structure
+  for example an editable pdf file represanting the same information
 
 ``` json5
 {
@@ -106,10 +110,23 @@ new event type `m.fhir` is introduced. This type mandates the following properti
       // further properties as per the questionnaire's schema
     },
     // Or: A file representing the resource
-    "m.file": {
+    "m.fhir.file": {
       "url": "mxc://example.org/abcd1234",
       "mimetype": "application/fhir+json",
       // further properties as per MSC3551
+    }
+    // alternativ text in case the client does not support the fhir content
+    "m.text": [
+      { "body": "<b>Please complete the anamnesis question and send it back.<b>", "mimetype": "text/html" },
+      { "body": "Please complete the anamnesis question and send it back." }
+      ]
+    }
+    // optional downloadable file representation of the fhir content
+    "m.file": {
+      "url": "mxc://example.org/abcd5678",
+      "mimetype": "application/pdf",
+      // further properties as per MSC3551
+    }
   }
 }
 ```
