@@ -84,7 +84,7 @@ clients SHOULD document how they deviate from this document, and why.
 
 Instances of a client are called **devices** or alternatively **sessions**.
 Devices that have not been cross-signed by the user who owns them are
-**unconfirmed**. It is important that devices are confirmed, to prevent
+**unconfirmed**. It is important that devices are **confirmed**, to prevent
 security problems like a compromised server creating fake devices that
 can impersonate users (see
 [MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153)).
