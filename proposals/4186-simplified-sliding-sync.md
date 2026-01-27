@@ -429,12 +429,13 @@ with `initial: true` and no `name` field.
 
 #### Common fields
 
-These fields are always included no matter the membership.
+These fields are common to all `RoomResult` values. Further fields may be included depending on the user's `membership`, and
+are defined below.
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `bump_stamp` | `int` | Yes | An integer that can be used to sort rooms based on the last "proper" activity in the room. Greater means more recent. <br/><br/> "Proper" activity is defined as an event being received is one of the following types: `m.room.create`, `m.room.message`, `m.room.encrypted`, `m.sticker`, `m.call.invite`, `m.poll.start`, `m.beacon_info`. <br/><br/> For rooms that the user is not currently joined to, this instead represents when the relevant membership happened, e.g. when the user left the room. <br/><br/> The exact value of `bump_stamp` is opaque to the client, a server may use e.g. an auto-incrementing integer, a timestamp, etc. <br/><br/> The `bump_stamp` may decrease in subsequent responses, if e.g. an event was redacted/removed (or purged in cases of retention policies). |
-| `membership` | `string` | No | The current membership of the user, or omitted if user not in room (for peeking). |
+| `membership` | `string` | No | The current membership of the user, or omitted if the does not a have a membership event in the room (for peeking). |
 | `lists` | `[string]` | No | The name of the lists that match this room. The field is omitted if it doesn't match any list and is included only due to a subscription. |
 
 #### Currently or previously joined rooms
