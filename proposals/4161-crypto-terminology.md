@@ -112,17 +112,17 @@ logged in and confirmed.
 In contrast to some other services, **logging out** (or **signing out**) of a
 Matrix device is quite a significant operation: it means your encryption data on
 the device is lost, and if you log out of all devices you will need to use your
-recovery key to re-establish your identity and regain access to your old
+recovery key to re-establish your digital identity and regain access to your old
 messages.
 
 If using a trusted physical device, the right choice for a user may well be not
 to log out, but simply to close the app or browser and re-open it later. This
-preserves their identity and their access to message history.
+preserves their digital identity and their access to message history.
 
 > "Are you sure you want to log out?"
 
 > "If you log out of all devices, you will lose access to message history and
-> will need to reset your identity."
+> will need to reset your digital identity."
 
 ### Verified user
 
@@ -133,31 +133,31 @@ this if you suspect someone in a room may be using a malicious homeserver.)
 In many contexts, most users are **not verified**: verification is a manual
 step ([scanning a QR code](https://spec.matrix.org/v1.12/client-server-api/#qr-codes) or [comparing emojis](https://spec.matrix.org/v1.12/client-server-api/#sas-method-emoji)). (In future, verification will
 probably become more common thanks to [MSC2882 Transitive Trust](https://github.com/matrix-org/matrix-spec-proposals/pull/2882) or something similar).
-When an unverified contact resets their identity, the user should be warned that
+When an unverified contact resets their digital identity, the user should be warned that
 this happened.
 
-If Alice is verified with Bob, and then Alice's identity changes
+If Alice is verified with Bob, and then Alice's digital identity changes
 (i.e. Alice resets their master cross-signing key) then this is very important to
 Bob: Bob verified Alice because they care about proof that no-one is listening,
 and now someone could be. Bob can choose to **withdraw verification** (i.e.
 "demote" Alice from being verified), or **re-verify** with Alice. Until Bob does
 one or the other, Bob's communication with Alice should contain a prominent and
-serious warning that Alice's **identity has been reset**.
+serious warning that Alice's **digital identity has been reset**.
 
 > "This user is verified."
 
-> "WARNING: Bob's identity has been reset!"
+> "WARNING: Bob's digital identity has been reset!"
 
-> "You verified this user's identity, but it has been reset. Please choose to
+> "You verified this user's digital identity, but it has been reset. Please choose to
 > re-verify them or withdraw verification."
 
 ⚠️ Avoid using "cross-signing", which requires a deeper understanding of
 cryptography to understand.
 
 ⚠️ Avoid using "trust on first use (TOFU)", which is a colloquial name for noting
-the identity of users who are not verified so that we can notify the user if it
+the digital identity of users who are not verified so that we can notify the user if it
 changes. (This is a kind of "light" form of verification where we assume that
-the first identity we can see is trusted.)
+the first digital identity we can see is trusted.)
 
 ⚠️ Avoid confusing verification of users with confirmation of devices: the
 mechanism is similar but the purpose is different. Devices must be confirmed to
@@ -165,54 +165,54 @@ make them secure, but users can optionally be verified to ensure no-one is
 listening in or tampering with communications.
 
 ⚠️ Avoid talking about "mismatch" or "verification mismatch" which is very
-jargony - it is the identity which is mismatched, not the verification process.
-Just say "Bob's identity has been reset".
+jargony - it is the digital dentity which is mismatched, not the verification process.
+Just say "Bob's digital identity has been reset".
 
 ⚠️ Where possible, avoid talking about "cryptographic identity" which is very jargony.
-In many contexts, just the word "identity" is sufficient: the dictionary definition of
+In many contexts, just the phrase "digital identity" is sufficient: the dictionary definition of
 identity meaning that someone is who they claim they are, not someone else. The
-fact we confirm identity cryptographically is usually irrelevant to the user.
+fact we confirm digital identity cryptographically is usually irrelevant to the user.
 
-### Identity
+### Digital Identity
 
-A user's **identity** is proof of who they are, and, if you have verified them,
-proof that you have a secure communication channel with them. Your own identity
+A user's **digital identity** is proof of who they are, and, if you have verified them,
+proof that you have a secure communication channel with them. Your own digital identity
 proves who you are, and gives you access to key storage.
 
-Technical note: we use "identity" here to describe a collection of keys: the
+Technical note: we use "digital identity" here to describe a collection of keys: the
 master signing key, user signing key, device signing key, key storage key and
 others.
 
-Your identity allows you to be identified by other users, and also allows you to
-access key storage and therefore see message history. This identity may be
+Your digital identity allows you to be identified by other users, and also allows you to
+access key storage and therefore see message history. This digital identity may be
 stored on the server by using recovery. The recovery key is not part of your
-identity, but allows you to re-establish your identity if you lose all your
+digital identity, but allows you to re-establish your digital identity if you lose all your
 devices.
 
-> When a non-verified user resets their identity:
-> "Alice's identity has been reset."
+> When a non-verified user resets their digital identity:
+> "Alice's digital identity has been reset."
 >
 > Longer explanation:
 > This can happen if the user lost all their devices and the recovery key, but
 > it can also be a sign of someone taking over the account. To be sure, please
-> verify their identity by going to their profile.
+> verify their digital identity by going to their profile.
 
-> When a verified user resets their identity:
-> "WARNING: Bob's identity has been reset!"
+> When a verified user resets their digital identity:
+> "WARNING: Bob's digital identity has been reset!"
 
 (During login, at the "Confirm it's you" stage):
 
 > "If you don't have any other device and you have lost your recovery key, you
-> can create a new identity. (Warning: you will lose access to your old
-> messages!)" button text (in red or similar): "Reset my identity"
+> can create a new digital identity. (Warning: you will lose access to your old
+> messages!)" button text (in red or similar): "Reset my digital identity"
 
-> "Are you sure you want to reset your identity? You will lose access to your
+> "Are you sure you want to reset your digital identity? You will lose access to your
 > message history."
 
 ⚠️ Avoid saying "master key" - this is an implementation detail.
 
 ⚠️ Avoid saying "Alice reset their encryption" - the change was to the user's
-identity.
+digital identity.
 
 References:
 
@@ -231,7 +231,7 @@ References:
   https://support.signal.org/hc/en-us/articles/6829998083994-Phone-Number-Privacy-and-Usernames-Deeper-Dive#verification
 
 All of the above are describing ways of proving who you are, which is close to
-the use of "identity" here.
+the use of "digital identity" here.
 
 ### Message key
 
@@ -315,7 +315,7 @@ for disaster recovery.
 
 ⚠️ Avoid talking about more keys: "the backup key is stored in the secret
 storage, and this allows us to decrypt the messages keys from key backup".
-Instead, we simply say that both identity and message keys are
+Instead, we simply say that both digital identity and message keys are
 stored in key storage.
 
 ### Recovery
@@ -323,22 +323,22 @@ stored in key storage.
 Recovery is useful when a user loses all their devices (or logs out of them
 all).
 
-If **recovery** is enabled, the user's identity is saved on the server, allowing
+If **recovery** is enabled, the user's digital identity is saved on the server, allowing
 them to recover it if they lose all their devices. This in turn allows them to
-recover their key storage and see message history. To recover their identity the
+recover their key storage and see message history. To recover their digital identity the
 user must enter the **recovery key**.
 
-The server is not able to read or manipulate the saved identity, because it is
+The server is not able to read or manipulate the saved digital identity, because it is
 encrypted using the recovery key.
 
-If a user loses their recovery key, they may **reset** their identity. Unless
+If a user loses their recovery key, they may **reset** their digital identity. Unless
 they have old devices, they will not be able to access old encrypted messages
-because the new identity does not have access to the old key storage.
+because the new digital identity does not have access to the old key storage.
 
 A **recovery key** (or **recovery code**) is a way of re-establishing your
-identity if you lose all your devices. This in turn allows you to access key
-storage, and therefore see message history. If you re-establish your identity
-instead of resetting it, other users won't see "Alice's identity has been reset"
+digital identity if you lose all your devices. This in turn allows you to access key
+storage, and therefore see message history. If you re-establish your digital identity
+instead of resetting it, other users won't see "Alice's digital identity has been reset"
 messages, and you will be able to read your message history, even if you logged
 out everywhere or lost your devices.
 
@@ -353,13 +353,13 @@ or "4S".
 > "Write down your recovery key in a safe place"
 
 > "If you lose access to your devices and your recovery key, you will need to
-> reset your identity, meaning you will lose all your message history"
+> reset your digital identity, meaning you will lose all your message history"
 
 ⚠️ Avoid "4S" or "quad-S" - these are not descriptive terms.
 
 ⚠️ Avoid using "security key", "security code", "master key". A
 recovery key allows "unlocking" the key storage, which is a "box" that is on the
-server, containing your identity and message keys. It is used to
+server, containing your digital identity and message keys. It is used to
 recover the situation if you lose access to your devices. None of these other
 terms express this concept so clearly.
 
@@ -379,29 +379,29 @@ in the spec as the
 #### Losing the recovery key
 
 If the user loses their recovery key, they no longer have a way to recover their
-identity.
+digital identity.
 
 If the user still has a secure device, then that device has its own copy of the
-identity information, so they can **change recovery key** without losing their
-identity, meaning other users will not see "Alice's identity has been reset", and
+digital identity information, so they can **change recovery key** without losing their
+digital identity, meaning other users will not see "Alice's digital identity has been reset", and
 they will be able to continue using key storage to access message history.
 
 Note: users should be encouraged to change their recovery key if they have forgotten
 their recovery key, because they are in a precarious position - if they lose
-access to their device, they will be forced to reset their identity and lose
+access to their device, they will be forced to reset their digital identity and lose
 message history.
 
 If the user does not have a device, or all their devices are insecure, then they
-will need to reset their identity, meaning other users
-see "Alice's identity has been reset", and they lose access to their old key
+will need to reset their digital identity, meaning other users
+see "Alice's digital identity has been reset", and they lose access to their old key
 storage, meaning they cannot read message history.
 
 > "If you lose your recovery key you can generate a new one if you are signed in
 > elsewhere"
 
-⚠️ Distinguish between "Reset identity" and "Change recovery key" - these are
-very different actions: resetting identity is destructive, whereas changing
-recovery key from a device that holds the full identity information is benign.
+⚠️ Distinguish between "Reset digital identity" and "Change recovery key" - these are
+very different actions: resetting digital identity is destructive, whereas changing
+recovery key from a device that holds the full digital identity information is benign.
 
 ## Potential issues
 
