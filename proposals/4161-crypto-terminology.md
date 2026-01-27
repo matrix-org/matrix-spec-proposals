@@ -99,6 +99,14 @@ cryptography to understand.
 ⚠️ Avoid mentioning "device keys". While a device may have keys, the user
 is only concerned about whether it is secure or not.
 
+When a mechanism for simultaneously logging in and confirming a device
+is available (e.g.
+[MSC4108: QR code login](https://github.com/matrix-org/matrix-spec-proposals/pull/4108))
+then we talk about **linking** the device. After a device is linked, it is
+logged in and confirmed.
+
+> "Link this device by scanning the QR code"
+
 #### Logging out
 
 In contrast to some other services, **logging out** (or **signing out**) of a
