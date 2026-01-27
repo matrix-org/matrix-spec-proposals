@@ -84,11 +84,14 @@ clients SHOULD document how they deviate from this document, and why.
 
 Instances of a client are called **devices** or alternatively **sessions**.
 Devices that have not been cross-signed by the user who owns them are
-**insecure**.
+**unconfirmed**. It is important that devices are confirmed, to prevent
+security problems like a compromised server creating fake devices that
+can impersonate users (see
+[MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153)).
 
-> "This device is not secure. Please verify it to continue."
+> "This device is not confirmed. Please confirm it to continue."
 
-> "Confirm it's you" (when asking to verify a device during login)
+> "Confirm it's you" (when asking to confirm a device during login)
 
 ⚠️ Avoid using "cross-signing", which requires a deeper knowledge of
 cryptography to understand.
@@ -148,8 +151,8 @@ the identity of users who are not verified so that we can notify the user if it
 changes. (This is a kind of "light" form of verification where we assume that
 the first identity we can see is trusted.)
 
-⚠️ Avoid confusing verification of users with verification of devices: the
-mechanism is similar but the purpose is different. Devices must be verified to
+⚠️ Avoid confusing verification of users with confirmation of devices: the
+mechanism is similar but the purpose is different. Devices must be confirmed to
 make them secure, but users can optionally be verified to ensure no-one is
 listening in or tampering with communications.
 
