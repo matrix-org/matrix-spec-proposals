@@ -317,7 +317,8 @@ the server will return the membership events for:
    in `/v3/sync`.
 
 
-Memberships returned to the client due to `lazy_members` are *not* filtered by `exclude`.
+Memberships returned to the client due to `lazy_members` are *not* filtered by `exclude`. This is a somewhat arbitrary
+decision as there aren't any known use cases for either filtering or not filtering lazy memberships.
 
 
 #### Combining `required_state`
