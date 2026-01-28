@@ -39,6 +39,13 @@ is invited:
 Any rejected requests should result in an HTTP 403 status code, with the Matrix
 error code `M_INVITE_BLOCKED`. This is a new error code.
 
+Note: in the case of `POST /createRoom`, it is possible for one of the invited users
+to be rejected whilst the room creation as a whole succeeds. This is an
+[existing problem](https://github.com/matrix-org/matrix-spec/issues/1951) in
+Matrix which we do not attempt to resolve here; we specify only that
+implementations should handle such rejections similarly to other failed
+invites.
+
 In addition, existing events already in the database MUST NOT be served over client synchronisation endpoints such as
 [`GET
 /_matrix/client/v3/sync`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync)
