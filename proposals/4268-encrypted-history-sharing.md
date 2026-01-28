@@ -238,6 +238,9 @@ have the `shared_history` flag set (which means that the creator of that
 session believed that the room history visibility did not allow new members to
 access history).
 
+The `m.history_not_shared` withheld code SHOULD NOT be used in
+`m.room_key.withheld` messages, since they would not be meaningful there.
+
 * Aside: the spec currently contains a definition for a `withheld` code
   `m.unauthorised`. However, its semantics are unclear: the spec defines it as
   meaning "the user/device is not allowed to have the key", but is unclear
@@ -259,7 +262,7 @@ access history).
   used in non-Element clients.
 
   In short, a new code is likely to cause less confusion than repurposing
-  `m.unauthorised`,
+  `m.unauthorised`.
 
 ### Actions as a receiving client
 
