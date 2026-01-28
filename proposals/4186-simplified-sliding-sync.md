@@ -312,6 +312,10 @@ the server will return the membership events for:
    to happen e.g. to send an encrypted message to the room. Note that clients can't rely on seeing membership changes in
    the `timeline` section to keep the current state up-to-date, due to state resolution.
 
+   Note that the fact that membership updates are *not* necessarily sent when `limited` is true means that clients must
+   flush any "membership" cache when `limited` is true. This is in contrast to Synapse's implementation of lazy-loading
+   in `/v3/sync`.
+
 
 Memberships returned to the client due to `lazy_members` are *not* filtered by `exclude`.
 
