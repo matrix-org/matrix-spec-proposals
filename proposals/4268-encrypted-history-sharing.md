@@ -337,7 +337,7 @@ this problem:
   practical questions. For example:
 
   * should the store be populated by all users, or just admins? If the former,
-    what if a mischeivous user uploads incorrect keys? If the latter, what if
+    what if a mischievous user uploads incorrect keys? If the latter, what if
     no admins are online?
 
   * What happens if there are users on multiple servers: do we need to
