@@ -118,8 +118,10 @@ A pack object consists of the following keys:
     room's avatar.
     Otherwise, the pack does not have an avatar.
 - `usage`: **Optional, Array[String]**. An array of the usages for this pack.
-    Possible usages are `emoticon` and `sticker`. If the usage is absent or
-    empty, all possible usage types are assumed.
+    Possible usages are `emoticon` and `sticker`. If the usage array is absent or
+    empty, all possible usage types are assumed. Client SHOULD use this field to
+    determine when to suggest images to use (i.e. in a sticker picker, emoji
+    picker) from an image pack.
 - `attribution`: **Optional, String**. The attribution for this pack.
 
 An example of a pack object:
