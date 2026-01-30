@@ -143,14 +143,6 @@ An image object consists of the following keys:
 - `info`: **Optional, ImageInfo**. The already specified
     [`ImageInfo`](https://spec.matrix.org/v1.14/client-server-api/#msticker_imageinfo) 
     object (from `m.sticker`).
-- `usage`: **Optional, Array[String]**. An array of the usages for this
-    image. The possible values match those of the `usage` key of a pack object.
-
-    If present and non-empty, this overrides the usage defined at pack level for
-    this particular image. This is useful to e.g. have one pack contain mixed
-    emotes and stickers. Additionally, as there is only a single account data
-    level image pack, this is required to have a mixture of emotes and stickers
-    available in account data.
 
 An example of an image object:
 
@@ -158,7 +150,6 @@ An example of an image object:
 {
   "url": "mxc://element.io/1c8cac2c949b11649140b446d969d1934c59facf",
   "body": "a lazy cat lays on the floor",
-  "usage": ["sticker"],
   "info": {
     // ... ImageInfo ...
   }
@@ -210,7 +201,7 @@ The `m.image_pack.rooms` account data event consists of the following:
 This data structure allows specifying a single room image pack given the pack's
 room ID and `state_key`.
 
-Clients should make the corresponding room image pack globally accessible in all
+Clients should make the corresponding room image packs globally accessible in all
 rooms.
 
 While this MSC does not define any keys for the bottom-level object, defining it
