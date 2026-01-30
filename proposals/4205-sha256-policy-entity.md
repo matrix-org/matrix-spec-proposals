@@ -33,7 +33,8 @@ provided with the policy.
 
 We therefore propose a new optional field `hashes` to the top level of all
 moderation policy events. Embedded within this, we propose a simple `sha256`
-entity hash field.
+entity hash field. This MUST be a padded base64 encoded SHA256 digest of the
+target entity.
 
 ```json
 {
