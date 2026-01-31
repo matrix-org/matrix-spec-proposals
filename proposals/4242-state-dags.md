@@ -170,7 +170,8 @@ Finally, faulty servers may simply avoid sending events after a ban,
 instead opting to send events earlier in the DAG, as concurrent events. This could simply be a delayed event, so would be
 sent to clients if not for Step 6: soft failure. Soft failure stops old events from reaching client
 devices if the event fails auth checks at the _current state_. This proposal alters soft failure,
-see the section on "Soft Failure" below.
+see the section on "Soft Failure" below. If the concurrent event is a state event, state resolution
+ensures that the event never makes it into the room state because bans are applied first.
 
 ## Proposal
 
@@ -668,9 +669,9 @@ between 1k-10k additional events for those rooms.
 
 This hints at a missing data structure for Matrix, given 3 specific use cases only need reliable
 pubsub for per-user room state: profile changes, MSC3401 call members, MSC3489 beacons. Per-user
-room state cannot have conflicts in any meaningful sense as it can only be sent by one user. A
-future MSC will propose adding this data structure to enhance the performance of these features,
-which may replace proposals such as [MSC4218](https://github.com/matrix-org/matrix-spec-proposals/pull/4218).
+room state cannot have conflicts in any meaningful sense as it can only be sent by one user.
+This is what [MSC4354: Sticky Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354)
+tries to achieve.
 
 ## Alternatives
  - Change the state resolution algorithm to pull in more events. Whilst this may fix certain classes
