@@ -37,7 +37,7 @@ It also proposes removing some unnecessary fields from the Widget postMessage AP
      * api: We do need to know the direction as it's not always implicit (because of mobile js injection fun) but renamed to 'source'). `widget` === `fromWidget`, `host` === `toWidget`.
      * request: From responses, ie. don't repeat the request back in responses, it's not necessary.
 
-![](./images/xxxx-widget-base-postmessage-api_host-widget-flow.png)
+![](https://github.com/matrix-org/matrix-spec-proposals/raw/9d689ab2d960b416eed3ef1abe6feac6c7ae56b7/proposals/images/4412-widget-base-postmessage-api_host-widget-flow.png)
 
 This defines four possible postMessage types:
   - a toWidget request as
