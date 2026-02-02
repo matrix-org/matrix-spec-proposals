@@ -25,7 +25,7 @@ This is unhelpful, because:
    and Element X Android incorrectly setting `private` join_rules at the time of writing.
  * In practice, we're not aware of anyone ever deliberating using the `private` join_rule, either clientside
    or serverside.
- * Rooms already have too many ways in which they can be 'public' or 'private' around various different axises;
+ * Rooms already have too many ways in which they can be 'public' or 'private' around various different axes;
    this eliminates one of the possible flavours of confusion.
 
 ## Proposal
