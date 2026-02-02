@@ -94,17 +94,6 @@ property with an empty string for an image pack's `state_key`.
 }
 ```
 
-#### `m.image_pack` account data event
-
-A user may store a single, personal image pack within their account data using
-the `m.image_pack` account data event.
-
-The structure of this event is identical to the `m.image_pack` state event,
-other than the lack of a `state_key` field.
-
-`m.image_pack` account data events are exclusive to user account data. They
-should not be placed or searched for in room account data.
-
 #### Pack object
 
 A pack object consists of the following keys:
@@ -181,17 +170,13 @@ Taking all of this into account, a full image pack event may look like:
 
 #### User and room image packs
 
-The user SHOULD be presented with the images in their `m.image_pack` account
-data event while interacting in all rooms.
-
 A room itself can have an unlimited amount of image packs by specifying the
 `m.image_pack` state event with different state keys. By default, the user
 SHOULD be presented with these images only when interacting in the room that
 the packs are defined in.
 
 For a user to enable a room image pack to be presented in all rooms, the room ID
-can be added to a `m.image_pack.rooms` account data event. Note that this is
-separate from the `m.image_pack` account data event defined above.
+can be added to a `m.image_pack.rooms` account data event.
 
 #### `m.image_pack.rooms` account data event
 
@@ -524,7 +509,6 @@ left in.
 | **Stable identifier** | **Unstable identifier** |
 |---|---|
 | `m.image_pack` state event type | `im.ponies.room_emotes` |
-| `m.image_pack` account data event type | `im.ponies.user_emotes` |
 | `m.image_pack.rooms` account data event type | `im.ponies.emote_rooms` |
 
 ## Potential Issues
