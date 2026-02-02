@@ -30,10 +30,10 @@ This is unhelpful, because:
 
 ## Proposal
 
-We remove `private` from the spec entirely as of the next room version.
+We remove `private` join_rules from the spec entirely.
 
 This means that it will not be explicitly "reserved" per se, but given join_rules doesn't allow extensible
-identifiers, all strings are reserved there anyway.
+identifiers as values, all strings are effectively reserved there anyway.
 
 This then means that libraries like Ruma can then remove `private` from their join_rules enum and avoid future
 confusion.
