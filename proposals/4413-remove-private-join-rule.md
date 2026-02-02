@@ -9,7 +9,7 @@ join_rule, which meant that no new users would be able to join a given room (eve
 This was never fully implemented by Synapse (particularly the `may_join` concept, which was eventually
 overtaken by the `restricted` join_rule).
 
-Meanwhile, `private` made it into the spec as a restricted keyword (presumably to reflect that some
+Meanwhile, `private` made it into the spec as a reserved keyword (presumably to reflect that some
 implementations might have been using it anyway, or perhaps to speculatively reserve it for future use):
  * https://github.com/matrix-org/matrix-spec-proposals/commit/9d7f2baf5
 
