@@ -77,7 +77,7 @@ will need to use). Any other requests / responses are defined in separate MSCs.
    This replaces `waitForIFrameLoaded`, hopefully being less confusing.
 
 #### Capability Negotiation
-Any other widget actions can be introduced via capabilities, defined in another MSC. Tehy're activated and deactivated by the Widget sending a
+Any other widget actions can be introduced via capabilities, defined in another MSC. They're activated and deactivated by the Widget sending a
 capabilities request. Can be at any time, before or after `content_loaded`. Capability negotiation was previously initiated by the Host so we will
 need to think about backwards compat here.
 
@@ -85,7 +85,7 @@ need to think about backwards compat here.
  * [https://github.com/matrix-org/matrix-spec-proposals/pull/3817](MSC3817: Allow widgets to create rooms)
 
 #### Other transports
-This just defines the PostMessage API and nothing else, but other transports could absolutely exist. Widgets will only ever need to speak PostMessage API though: any others would be bridged to PostMessage API as an adapter to the Widget, but these would likley be implementation specific to the Host.
+This just defines the PostMessage API and nothing else, but other transports could absolutely exist. Widgets will only ever need to speak PostMessage API though: any others would be bridged to PostMessage API as an adapter to the Widget, but these would likely be implementation specific to the Host.
 
 All other messages are within other capabilities and are defined in other MSCs.
 
