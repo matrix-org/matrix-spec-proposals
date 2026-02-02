@@ -782,12 +782,15 @@ checks, as not all servers are guaranteed to converge due to reliance on `/state
 
 ## Unstable prefix
 
-- Room version is `org.matrix.msc4242.11`.
+- Room version is `org.matrix.msc4242.12`, based on room version 12.
 - The `/get_missing_events` flag is `org.matrix.msc4242.state_dag`.
 - There is no need to prefix the `/send_join` response key for the state DAG as it's already namespaced via the room version supplied in `/make_join`.
 - There is no need to prefix `prev_state_events` as it's already namespaced via the room version.
 
 ## Dependencies
 
-This MSC has no dependencies.
+This MSC has no dependencies, but would benefit greatly from an MSC which makes events self-verifying,
+such as [MSC4014](https://github.com/matrix-org/matrix-spec-proposals/pull/4014),
+[MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243),
+[MSC4345](https://github.com/matrix-org/matrix-spec-proposals/pull/4345).
 
