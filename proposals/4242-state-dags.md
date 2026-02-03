@@ -303,7 +303,7 @@ State DAGs exist to ensure that all servers rapidly converge on the same set of 
 calculate the same current state in the room (room state convergence). Soft failure makes this harder and in certain cases can obstruct
 servers from agreeing on the same current state. Consider this scenario (green nodes are the current state at `$vsOy`):
 
-<img width="687" alt="Screenshot 2024-12-19 at 08 30 59" src="https://github.com/user-attachments/assets/43acb34c-497b-4081-aef6-113f5fcd7093" />
+<img width="687" height="300" alt="sf1" src="https://github.com/user-attachments/assets/d4135ffa-b5c8-431e-8314-4a58dd3372d9" />
 
  - there are 3 concurrent events:
    * A) PL100 bans PL75
@@ -321,7 +321,7 @@ servers from agreeing on the same current state. Consider this scenario (green n
    unimportant events never referenced it.
  - Thus, the long dead server does not know the join rules are "invite", _despite it being part of the current room state_.
 
-<img width="626" alt="Screenshot 2024-12-19 at 08 36 20" src="https://github.com/user-attachments/assets/23100dda-7c1c-4664-99de-9d42e8c48bc7" />
+<img width="626" height="279" alt="sf2" src="https://github.com/user-attachments/assets/7ff1effa-9797-46ba-bbe5-b4aa01a04fc0" />
 
 So it is worth considering what value soft-failure has _for state DAGs_. Soft-failure is very useful for filtering
 out messages which would otherwise be delivered to clients, because the stream (arrival) order doesn't care about
