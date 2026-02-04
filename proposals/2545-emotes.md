@@ -384,7 +384,8 @@ lead to unintended network requests.
 
 ##### `alt` attribute
 
-The `alt` attribute MUST be present. Its value SHOULD be the `body` of the emote, or if unavailable, its shortcode.
+Clients SHOULD include the `alt` attribute. Its value SHOULD be the `body` of
+the emote, or if unavailable, its shortcode.
 
 The `alt` attribute's meaning is inherited from the HTML specification:
 <https://html.spec.whatwg.org/multipage/images.html#alt>. It is primarily used
@@ -392,8 +393,8 @@ for accessibility purposes in describing an image for visually impaired users.
 
 ##### `title` attribute
 
-The `title` attribute MUST be present. Its value SHOULD be the shortcode of the
-emote.
+Clients SHOULD include the `title` attribute. Its value SHOULD be the shortcode
+of the emote.
 
 The `title` attribute's meaning is inherited from the HTML specification:
 <https://html.spec.whatwg.org/multipage/dom.html#attr-title>. It is primarily
