@@ -104,8 +104,8 @@ the request is made to the server's [`server_name`](https://spec.matrix.org/v1.1
 rather than the base URL of the client-server API. Also like other well-known endpoints, it
 [supports CORS](https://spec.matrix.org/v1.17/client-server-api/#web-browser-clients).
 
-The `GET /.well-known/matrix/policy_server` endpoint returns the following, ideally with a
-`Content-Type: application/json` header:
+The `GET /.well-known/matrix/policy_server` endpoint returns a response body as shown below. It SHOULD
+have a `Content-Type: application/json` response header.
 
 ```jsonc
 {
