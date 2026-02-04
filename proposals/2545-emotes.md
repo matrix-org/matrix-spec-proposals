@@ -316,39 +316,41 @@ based on user preferences.
 
 A shortcode's length MUST not exceed 100 bytes. This is to prevent a
 sufficiently long shortcode from being impossible to insert into subsequent events
-due to exceeding the event limit (e.g. emoji reactions). 
+due to exceeding the event limit (e.g. emoji reactions).
 
-The `:` character MUST NOT be included in the emote shortcode. The `:` character
-has become synonymous with emotes - oftentimes typing the `:` character in a
-message field will allow one to filter and choose and emote to send.
+A shortcode MUST match the following regular expression:
+`[a-zA-Z0-9-_]+`. Note that this disallows zero-length shortcodes - not least
+because searching for, and indexing, such shortcodes is complicated.
 
-To avoid client fragmentation, with some clients opting to trim `:` when
-displaying emote shortcodes and others leaving it in, the `:` character is
-barred from the shortcode grammar. This is in attempt to standardise `:` as the
-delimiter character for shortcodes.
+The `:` character is specifically not included, as it has become synonymous
+across messaging platforms with searching for emotes - oftentimes typing the `:`
+character in a message field will allow one to filter and choose an emote to
+send.
 
-Similarly, the `/` character MUST NOT be included in the emote shortcode. This
-character may be used by clients to deliminate between shortcode and image pack
-when designing auto-completion UI in the message field (i.e. `:some_emote/my_pack_slug:`)
+Similarly, the `/` character is specifically not included. This character may be
+used by clients to deliminate between shortcode and image pack when designing
+auto-completion UI in the message field (i.e. `:some_emote/my_pack_name:`).
 
-In addition, the space character is not allowed. This helps avoid common
-usability paper-cuts (multiple spaces between words, spaces at the beginning/end
-of a shortcode). Shortcodes containing multiple words are encouraged to use alternative
-separators like hyphens (`-`) or underscores (`_`).
+In addition, the space character is specifically not included. This helps avoid
+common usability paper-cuts (multiple spaces between words, spaces at the
+beginning/end of a shortcode). Shortcodes containing multiple words are
+encouraged to use the alternative separators provided; a hyphen (`-`) or
+an underscore (`_`).
 
-Specifically, the `U+0020` character (normal space) is disallowed. There are
-multiple other byte sequences associated with spaces in Unicode, but as this is
-only intended to eliminate a common foot gun, more esoteric space characters are
-not considered.
+The above character set does exclude characters from non-latin languages from
+being included (e.g. ブイチューバー). This is guard against various edge cases of
+including all of Unicode (control characters, zalgo, future unicode updates,
+etc.) leading to complicated implementations. It is assumed that users of other
+languages are able to type latin characters when necessary.
 
-Any other character is explicitly allowed. This allows shortcodes containing
-non-Latin characters for communities of those languages, and ensures
-forwards-compatibility with future Unicode updates.
+A future MSC could add the concept of "aliases" to images - secondary names,
+which would be any Unicode character, making searching for them with non-latin
+characters easier. 
 
 These restrictions MUST be enforced by servers on the Client-Server API, but MUST
 NOT be enforced over the Federation API (i.e. when validating events received
 over federation). This avoids a split-brain in the room. Servers MAY opt to
-locally redact events having too many bytes in the shortcode field.
+locally redact events that don't follow the shortcode grammar.
 
 ### Sending
 
