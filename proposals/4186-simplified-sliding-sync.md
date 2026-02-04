@@ -681,12 +681,6 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
    requests, rather than having to pre-flight each request.</del>
 1. How do we make it so that the clients don't have to send up the same body each time?
 
-## TODOs
-
-1. <del>If we're keeping the notification counts we should add `unread_thread_notifications`</del>
-    - This should exist in the thread extension
-1. We should add `knock_servers` as per MSC4233, if that lands.
-
 
 ## Changelog
 
