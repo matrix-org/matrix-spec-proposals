@@ -1,4 +1,4 @@
-# MSC1337: Make `/_matrix/client/v3/admin/whois/{userId}` only available to admins
+# MSC4415: Make `/_matrix/client/v3/admin/whois/{userId}` only available to admins
 
 Currently, the `/_matrix/client/v3/admin/whois/{userId}` is available to non-admins
 if the requesting user is also the target user. This makes it nonfunctional as an
