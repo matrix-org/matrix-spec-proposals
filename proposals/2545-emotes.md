@@ -316,11 +316,7 @@ based on user preferences.
 
 A shortcode's length MUST not exceed 100 bytes. This is to prevent a
 sufficiently long shortcode from being impossible to insert into subsequent events
-due to exceeding the event limit (e.g. emoji reactions). This restriction MUST be
-enforced by servers when sending reactions, but servers MUST NOT reject events
-coming across federation due to having too many bytes in the shortcode field.
-This avoids a split-brain in the room. Servers MAY opt to locally redact events
-having too many bytes in the shortcode field.
+due to exceeding the event limit (e.g. emoji reactions). 
 
 The `:` character MUST NOT be included in the emote shortcode. The `:` character
 has become synonymous with emotes - oftentimes typing the `:` character in a
@@ -348,6 +344,11 @@ not considered.
 Any other character is explicitly allowed. This allows shortcodes containing
 non-Latin characters for communities of those languages, and ensures
 forwards-compatibility with future Unicode updates.
+
+These restrictions MUST be enforced by servers on the Client-Server API, but MUST
+NOT be enforced over the Federation API (i.e. when validating events received
+over federation). This avoids a split-brain in the room. Servers MAY opt to
+locally redact events having too many bytes in the shortcode field.
 
 ### Sending
 
