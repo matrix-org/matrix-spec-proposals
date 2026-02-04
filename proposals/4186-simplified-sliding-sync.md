@@ -646,6 +646,12 @@ Servers MAY decide to expire the sync connection if the generated response on an
 large or expensive to compute.
 
 
+# Other notes
+
+1. This proposal does not support timeline filtering, which is heavily used by e.g. bots in `/v3/sync`. However, this is
+   easy to add at a later date if necessary.
+
+
 # Unstable prefix
 
 The unstable URL for simplified sliding sync is `/_matrix/client/unstable/org.matrix.simplified_msc3575/sync`. The flag
