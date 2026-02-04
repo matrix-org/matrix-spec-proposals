@@ -73,6 +73,8 @@ A server may decide to "expire" connections, either to free resources or because
 for the client to start from scratch (e.g. because there are many updates to send down). This is done by responding with
 a 400 HTTP status and an error code of `M_UNKNOWN_POS`.
 
+A `pos` token can be used in `/messages` and `/relations` APIs.
+
 
 ## Lists and subscriptions
 
@@ -694,3 +696,4 @@ Changes from the initial implementation of simplified sliding sync.
 9. Convert `ranges` to `range` in `SyncListConfig` in the request.
 10. <del>Make the `lists` request field "sticky".</del>
 11. Rename `is_invite` to `is_invited`.
+12. `pos` can be used in `/messages` and `/relations` APIs.
