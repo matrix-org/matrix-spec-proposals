@@ -486,10 +486,6 @@ rely on the information in the invite/knock/etc event.
 > [!Note]
 > Synapse currently may inadvertently return extra fields from the previous section.
 
-> [!Note]
-> Knock support hasn't been implemented in Synapse.
-
-
 ### `StrippedHero` type
 
 The `StrippedHero` has the following fields:
