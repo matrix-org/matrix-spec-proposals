@@ -510,6 +510,7 @@ left in.
 | **Stable identifier** | **Unstable identifier** |
 |---|---|
 | `m.image_pack` state event type | `im.ponies.room_emotes` |
+| `m.image_pack.rooms` state event type | `im.ponies.emote_rooms` |
 | `m.image_pack.rooms` account data event type | `im.ponies.emote_rooms` |
 
 ## Potential Issues
