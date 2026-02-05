@@ -190,7 +190,7 @@ The following errors are returned per normal specification requirements:
 * `429 M_LIMIT_EXCEEDED` - The server is rate limiting the caller.
 
 Upon receipt of an event in a room with a policy server, the homeserver SHOULD verify that the policy
-server's signature is present on the event *and* uses the key from the current `m.room.policy` state event.
+server's signature is present on the event *and* is valid when using the key from the current `m.room.policy` state event.
 If the signature is invalid or for the wrong key, the homeserver SHOULD [soft fail](https://spec.matrix.org/v1.15/server-server-api/#soft-failure)
 the event. If the signature is plainly missing, the homeserver SHOULD call `/sign` on the policy
 server and use that result to determine whether to pass the event through unimpeded or soft fail it.
