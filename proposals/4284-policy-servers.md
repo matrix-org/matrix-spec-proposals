@@ -503,6 +503,14 @@ This proposal's security considerations are:
   events, however. To limit this case, servers MAY request a new signature from the policy server to
   doubly confirm that the event is in fact meant to be spammy.
 
+  **Note**: Policy servers might rotate their key without the room's knowledge. This will cause events
+  to fail signature checks because the key in the room is different from the key used by the policy
+  server - this is intentional, and can be an indication that the `m.room.policy` state event needs
+  updating.
+
+  **Note**: Keys in `m.room.policy` are rotated/updated in-place, always. The key version of `policy_server`
+  is hardcoded for simplicity in checking signatures, and is not used to identify the key itself.
+
 ## Alternatives
 
 Some alternatives are implied through the above sections and are excluded for brevity. For example,
