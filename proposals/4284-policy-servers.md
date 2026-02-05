@@ -130,6 +130,10 @@ event before sending it to other servers in the room. The endpoint may also refu
 effectively marking it spammy. When this happens, the homeserver SHOULD cease trying to send the event
 to other servers and reject/fail any applicable Client-Server API requests that were creating the event.
 
+**Note**: The above applies to Federation API requests as well as Client-Server API requests. For
+example, during `/send_[join|leave|knock]`, the policy server might decline to sign the membership
+event, which leads to the federation request failing.
+
 "Current state" is the same state used to evaluate an event for [soft failure](https://spec.matrix.org/v1.17/server-server-api/#soft-failure).
 That state might be different on different servers, though the `m.room.policy` state event is not
 expected to change frequently enough for this to be a major concern: at the time of trying to send
