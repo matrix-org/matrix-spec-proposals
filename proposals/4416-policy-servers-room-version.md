@@ -1,4 +1,4 @@
-# MSC4415: Optionally requiring policy server signatures in a room
+# MSC4416: Optionally requiring policy server signatures in a room
 
 [MSC4284 (proposed-FCP)](https://github.com/matrix-org/matrix-spec-proposals/pull/4284) introduces a
 concept of Policy Servers to Matrix. These servers produce recommendations on events attempting to be
@@ -153,7 +153,7 @@ This proposal's functionality will exist in an unstable room version until anoth
 to a stable room version. This is normal process for the specification. See [MSC4304 (merged)](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4304-room-version-12.md)
 for an example of this process.
 
-Implementations should use `org.matrix.msc4415.v1` as an unstable room version using v12 as a base
+Implementations should use `org.matrix.msc4416.v1` as an unstable room version using v12 as a base
 until this MSC can be adopted into a stable room version.
 
 
