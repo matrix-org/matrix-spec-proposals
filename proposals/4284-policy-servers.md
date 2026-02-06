@@ -129,6 +129,8 @@ API defined below. If that endpoint returns a signature, the homeserver appends 
 event before sending it to other servers in the room. The endpoint may also refuse to sign the event,
 effectively marking it spammy. When this happens, the homeserver SHOULD cease trying to send the event
 to other servers and reject/fail any applicable Client-Server API requests that were creating the event.
+Those Client-Server API request failures SHOULD use the same error returned by the policy server on
+the `/sign` request, if any.
 
 **Note**: The above applies to Federation API requests as well as Client-Server API requests. For
 example, during `/send_[join|leave|knock]`, the policy server might decline to sign the membership
