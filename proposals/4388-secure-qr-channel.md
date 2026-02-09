@@ -2,8 +2,8 @@
 
 This proposal forms part of [MSC4108] to make it easy to sign in on a new device with the help of an existing device.
 
-It proposes a mechanism for a new an existing device to establish a secure out-of-band channel through which they can
-communicate to facilitate the sign in on the new device.
+It proposes a mechanism for a new and an existing device to establish a secure out-of-band channel through which they can
+communicate to facilitate the sign in of the new device.
 
 Table of contents:
 
@@ -138,7 +138,7 @@ Response body for `200 OK` is `application/json` with contents:
 |Field|Type||
 |-|-|-|
 |`id`|required `string`|Opaque identifier for the rendezvous session|
-|`sequence_token`|required `string`|The token opaque token to identify if the payload has changed|
+|`sequence_token`|required `string`|The opaque token to identify if the payload has changed|
 |`expires_in_ms`|required `integer`|The number of milliseconds remaining until the rendezvous session expires|
 
 Example response:
@@ -201,7 +201,7 @@ The response body for `200 OK` is `application/json` with contents:
 
 |Field|Type||
 |-|-|-|
-|`sequence_token`|required `string`|The token opaque token to identify if the payload has changed|
+|`sequence_token`|required `string`|The opaque token to identify if the payload has changed|
 
 For example:
 
