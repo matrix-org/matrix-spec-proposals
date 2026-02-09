@@ -44,10 +44,10 @@ the FHIR event from [MSC4302] on a device `ABCDEFG`.
       {
         "type": "de.gematik.msc4302.fhir",
         "content": [{
-          "key": "m\.fhir\.structure_definition.url",
+          "key": "m\.fhir.structure_definition.url",
           "value": "http://hl7.org/fhir/StructureDefinition/MedicationStatement"
         }, {
-          "key": "m\.fhir\.structure_definition.version",
+          "key": "m\.fhir.structure_definition.version",
           "value": "4.0.1"
         }]
       }
