@@ -114,6 +114,8 @@ Many libraries only implement [I-D.ietf-webpush-encryption-04](https://datatrack
 Content-Encoding header is a good way to check for the correct version. If the value is `aes128gcm`, then it uses
 the right specifications, in case of  `aesgcm` it uses the draft version.
 
+The legacy version of web push (draft RFC8291 and draft RFC8292) MUST NOT be implemented.
+
 ## Alternatives
 
 `pushkey` could be a random ID, and we can add `p256dh` in the `PusherData`. But it would require client to store it,
