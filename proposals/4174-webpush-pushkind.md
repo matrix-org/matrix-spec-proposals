@@ -31,14 +31,14 @@ The MSC introduces a new push kind: webpush.
 `PusherData` is extended as follows:
 - `format`: is updated to be required if `kind` is `http` or `webpush`
 - `url`: is updated to be required if `kind` is `http`, or if `kind` is `webpush`. If `kind` is `webpush`, this is the URL defined as a `push resource` by RFC8030. MUST be an HTTPS URL.
-- `auth`: is introduced, required if `kind` is `webpush`, not used else. This holds the authentication secret as
-specified by RFC8291 - 16 random bytes encoded in URL-sage Base64 without padding.
+- `auth`: is introduced, required if `kind` is `webpush`, not used otherwise. This holds the authentication secret as
+specified by RFC8291 - 16 random bytes encoded in URL-safe Base64 without padding.
 
 The POST request to the endpoint dedicated to the creation, modification and deletion of pushers,
 `POST /_matrix/client/v3/pushers/set` now supports a new `kind`: `webpush`.
 - `kind`: is updated to introduce `webpush` which makes a
 pusher that sends Web Push encrypted messages.
-- `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key in the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf), section 2.3.3, replicated from X9.62), encoded in base64 url. The public key comes from a ECDH
+- `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key in the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf), section 2.3.3, replicated from X9.62), encoded in URL-safe Base64. The public key comes from a ECDH
 keypair using the P-256 (prime256v1, cf. FIPS186) curve.
 
 If the request creates a new pusher or modifies values under `pushkey` , `PusherData.url`, or `PusherData.auth`, then
@@ -56,7 +56,7 @@ url, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPI
 A new endpoint is introduced, dedicated to pusher validation. This is called by the matrix client to validate the pusher once it has received the `ack_token` from the validation push message:
 - POST `/_matrix/client/v3/pushers/ack`
 - Rate limited: No, Requires authentication: Yes
-- The request contains the `app_id` and `ack_token` parameters, received with the push notification.
+- The request body contains the `app_id` and `ack_token` parameters, received with the push notification.
 - The response, with status code 200, contains the `app_id` and `status`, which can be one of the following values:
 		- "unknown_app_id" if no pusher with this app_id exists
 		- "expired" if this token for this app_id is expired
