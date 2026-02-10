@@ -87,6 +87,10 @@ not register another `http` pusher to avoid duplicate pushes.
 
 ## Overview with webpush
 
+The current overview is here: <https://spec.matrix.org/v1.17/push-gateway-api/#overview>
+
+It becomes:
+
 ```
                                                 +-------------------+
                   Matrix HTTP                   |                   |
