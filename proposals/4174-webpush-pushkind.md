@@ -57,11 +57,11 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
 - POST `/_matrix/client/v3/pushers/ack`
 - Rate limited: No, Requires authentication: Yes
 - The request body contains the `app_id` and `ack_token` parameters, received with the push notification.
-- The response, with status code 200, contains the `app_id` and `status`, which can be one of the following values:
-		- "unknown_app_id" if no pusher with this app_id exists
-		- "expired" if this token for this app_id is expired
-		- "unknown_token" if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
-		- "ok" if the pusher has been activated
+- The response, contains the following HTTP code:
+		- 404: if no pusher with this app_id exists
+		- 410: if this token for this app_id is expired
+		- 400: if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
+		- 200: if the pusher has been activated
 
 The Pusher Data get a new field, `activated`, a boolean which the client must not include and the server must add. It is set to false until the pusher is activated with the request to
 `/_matrix/client/v3/pushers/ack`. Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.url` and `PusherData.auth` doesn't change its value.
