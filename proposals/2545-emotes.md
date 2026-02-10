@@ -312,6 +312,10 @@ NOT be enforced over the Federation API (i.e. when validating events received
 over federation). This avoids a split-brain in the room. Servers MAY opt to
 locally redact events that don't follow the shortcode grammar.
 
+Clients SHOULD enforce this grammar as well when creating or editing image
+packs. Clients SHOULD ignore/hide image packs that contain an image with an
+invalid shortcode.
+
 ### Sending
 
 #### Custom emotes
