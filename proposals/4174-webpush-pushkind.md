@@ -30,9 +30,7 @@ The MSC introduces a new push kind: webpush.
 
 `PusherData` is extended as follows:
 - `format`: is updated to be required if `kind` is `http` or `webpush`
-- `url`: is updated to be required if `kind` is `http`, not used otherwise (to clarify this isn't used with webpush).
-- `endpoint`: is introduced, required if `kind` is `webpush`, not used otherwise. The URL to send the notification to, as defined as a
-`push resource` by RFC8030. MUST be an HTTPS URL.
+- `url`: is updated to be required if `kind` is `http`, or if `kind` is `webpush`. If `kind` is `webpush`, this is the URL defined as a `push resource` by RFC8030. MUST be an HTTPS URL.
 - `auth`: is introduced, required if `kind` is `webpush`, not used else. This holds the authentication secret as
 specified by RFC8291 - 16 random bytes encoded in URL-sage Base64 without padding.
 
@@ -43,9 +41,9 @@ pusher that sends Web Push encrypted messages.
 - `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key in the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf), section 2.3.3, replicated from X9.62), encoded in base64 url. The public key comes from a ECDH
 keypair using the P-256 (prime256v1, cf. FIPS186) curve.
 
-If the request creates a new pusher or modifies values under `pushkey` , `PusherData.endpoint`, or `PusherData.auth`, then
+If the request creates a new pusher or modifies values under `pushkey` , `PusherData.url`, or `PusherData.auth`, then
 the server MUST respond with 201, "The pusher is set but needs to be activated". The server MUST send a push notification to the
-endpoint, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key with a message containing
+url, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key with a message containing
 `app_id` and `ack_token`, a UUIDv4 token in the hyphen form, valid for 5 minutes:
 
 ```
@@ -66,7 +64,7 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
 		- "ok" if the pusher has been activated
 
 The Pusher Data get a new field, `activated`, a boolean which the client must not include and the server must add. It is set to false until the pusher is activated with the request to
-`/_matrix/client/v3/pushers/ack`. Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.endpoint` and `PusherData.auth` doesn't change its value.
+`/_matrix/client/v3/pushers/ack`. Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.url` and `PusherData.auth` doesn't change its value.
 
 A VAPID (Voluntary Application Server Identification, cf RFC8292) is often needed to be able to register with a push
 server.
