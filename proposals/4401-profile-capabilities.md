@@ -25,9 +25,8 @@ for events via profiles.
 A new set of profile keys `m.client_capability.{DEVICE_ID}` is introduced. The value of these keys
 is an object with the following properties:
 
-- `events` (array, required): A list of objects containing details about the events this device
-  supports.
-  - `type` (string, required): The type of the event.
+- `events` (array): A list of objects containing details about the events this device supports.
+  - `type` (string): The type of the event.
   - `content` (array): An optional list of objects describing additional requirements for properties
     inside the `content` of the event.
     - `key` (string, required): The dot-separated path of the property (analogous to `key` in
