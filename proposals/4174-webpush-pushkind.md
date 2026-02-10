@@ -66,6 +66,8 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
 The Pusher Data get a new field, `activated`, a boolean which the client must not include and the server must add. It is set to false until the pusher is activated with the request to
 `/_matrix/client/v3/pushers/ack`. Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.url` and `PusherData.auth` doesn't change its value.
 
+Note: The homeserver deletes the registration if it receives a 404, 410 or 403 from the push server on push.
+
 A VAPID (Voluntary Application Server Identification, cf RFC8292) is often needed to be able to register with a push
 server.
 It is proposed to add a `m.webpush` capability to the `/capabilities` endpoint with this format:
