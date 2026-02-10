@@ -226,44 +226,6 @@ translates to *all image packs that a room defines*, rather than *no image
 packs*. This is intended as an optimisation to reduce event size versus
 listing the (potentially many) packs a room may have.
 
-"All image packs that a room defines" does not include second-order packs listed
-in `m.image_pack.rooms` state events (defined below) in the room. This is to
-prevent loops when sourcing image packs.
-
-Clients should be aware that users may not be in the room referenced by this
-event, and MAY wish to show appropriate UX around this.
-
-#### `m.image_pack.rooms` state event
-
-This state event can be added to a room in order to reference an existing image
-pack from another room. This allows room administrators to make an image pack
-available to their local community without copying (and continuously updating)
-said packs.
-
-This state event has a similar structure to the equivalent account data event,
-and must have an empty state key:
-
-```json
-{
-  "type": "m.image_pack.rooms",
-  "state_key": "",
-  "content": {
-    "rooms": {
-      "!someroom:example.org": {
-        "": {},
-        "de.sorunome.mx-puppet-bridge.discord": {}
-      },
-      "!someotherroom:example.org": {
-        "": {}
-      }
-    }
-  }
-}
-```
-
-The definition of an empty object under a room ID from the `m.image_pack.rooms`
-account data event holds for this state event as well.
-
 Clients should be aware that users may not be in the room referenced by this
 event, and MAY wish to show appropriate UX around this.
 
@@ -289,9 +251,7 @@ A suggestion for clients of image pack ordering is as follows:
 2. Image pack rooms (defined in the `m.image_pack.rooms` user account data
     object)
 3. Room image packs (defined in the currently open room's state)
-4. Referenced room image packs (defined in the `m.image_pack.rooms` room
-    state event)
-5. Space image packs (defined in the hierarchy of canonical spaces for the
+4. Space image packs (defined in the hierarchy of canonical spaces for the
     current room)
 
 Note: this MSC does not define an ordering for images within packs. That is left
@@ -490,22 +450,12 @@ visible to homeservers.
 There is the potential for the administrator of an image pack, after getting
 users and rooms to add the pack, to add abusive imagery to the pack that
 users will then be exposed to. This is enabled by the `m.image_pack.rooms`
-state and account data events, which allow referencing external image packs.
+account data event, which allows referencing external image packs.
 
-This can be mitigated after the fact depending on how the user's client has
-sourced the offensive images:
+In this case, the user should remove the pack from their global configuration.
 
-1. The user has enabled a pack globally that's defined by a room
-2. The user is suggested a pack by their client as the current room they're
-    typing in references a pack (space, the new `m.image_pack.rooms` state
-    event, etc.)
-
-For 1., the user should remove the pack from their global configuration. For 2.,
-the user should inform the room admin. If the room admin should disappear, then
-this is fairly similar to an attacker spamming a room which has no moderation.
-
-Given the benefits of the features, and the assumption that such an attack has
-limited impact and rarely affects other messaging services, the features are
+Given the benefits of the feature, and the assumption that such an attack has
+limited impact and rarely affects other messaging services, the feature is
 left in.
 
 ## Unstable prefix
@@ -513,7 +463,6 @@ left in.
 | **Stable identifier** | **Unstable identifier** |
 |---|---|
 | `m.image_pack` state event type | `im.ponies.room_emotes` |
-| `m.image_pack.rooms` state event type | `im.ponies.emote_rooms` |
 | `m.image_pack.rooms` account data event type | `im.ponies.emote_rooms` |
 
 ## Potential Issues
