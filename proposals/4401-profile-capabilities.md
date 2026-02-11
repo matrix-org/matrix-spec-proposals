@@ -28,9 +28,12 @@ is an object with the following properties:
 - `events` (array): A list of objects containing details about the events this device supports.
   - `type` (string): The type of the event.
   - `content` (array): An optional list of objects describing additional requirements for properties
-    inside the `content` of the event.
+    inside the `content` of the event. This is helpful for "container events" where a secondary
+    type-like property beneath `content` determines the full schema of the event content. An example
+    for this is `msgtype` in `m.room.message` or the properties beneath
+    `m.fhir.structure_definition` in the `m.fhir` event from [MSC4302].
     - `key` (string, required): The dot-separated path of the property (analogous to `key` in
-      `event_match` [push rule conditions]).
+      `event_match` [push rule conditions] but starting at `content` rather than the event root).
     - `value` (string, required): The exact value of the property.
 
 As an example, here is a profile that advertises support for processing medication statements using
@@ -88,6 +91,6 @@ While this MSC is not considered stable, `m.client_capability.*` should be refer
 None.
 
   [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
-  [push rule conditions]: https://spec.matrix.org/v1.16/client-server-api/#conditions-1
   [MSC4302]: https://github.com/matrix-org/matrix-spec-proposals/pull/4302
+  [push rule conditions]: https://spec.matrix.org/v1.16/client-server-api/#conditions-1
   [MSC4301]: https://github.com/matrix-org/matrix-spec-proposals/pull/4301
