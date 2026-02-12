@@ -35,6 +35,7 @@ namespaces:
     ...
   preview_urls:
     - regex: "https:\/\/github.com.*"
+      exclusive: false
 ```
 
 When a homeserver receives a request to preview a URL via `GET /_matrix/client/v1/media/preview_url`, it MUST
@@ -43,8 +44,8 @@ appservice, the homeserver should make a request to `/_matrix/app/preview_url`.
 
 The appservice should handle the request appropriately by sending a HTTP 200 response with
 the required data. If the AS response with another status code, the homeserver should try the next
-matching application service. If no service can handle the request, then the homeserver MAY perform
-a lookup itself.
+matching application service **UNLESS** the namespace is marked as exclusive. If no service can handle the request,
+then the homeserver MAY perform a lookup itself.
 
 The homeserver MAY choose to respect any caching headers returned by the application service, but it MUST
 also ensure caches are keyed by the user who requested it. It's also acceptable for the homeserver to avoid
