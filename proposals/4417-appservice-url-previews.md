@@ -104,7 +104,7 @@ pattern matching is a reasonable defence to limit the amount of information apps
 
 While this proposal is unstable:
  - `GET /_matrix/app/preview_url` becomes `GET GET /_matrix/app/unstable/uk.half-shot.msc4417/preview_url`
- - `namespaces.preview_urls` becomes `namespaces.uk_half-shot_msc4417_preview_urls`
+ - `namespaces` -> `preview_urls` becomes `namespaces` -> `uk.half-shot.msc4417.preview_urls`
 
 ## Dependencies
 
