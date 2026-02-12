@@ -10,7 +10,7 @@ useless in environments where a lot of resources are blocked behind things such 
 it's neither plausible to augment the client to do these lookups nor modify the homeserver to support
 specific services.
 
-This proposal suggests using the a new Appservice API to offload URL lookups to services that already
+This proposal suggests using a new Appservice API to offload URL lookups to services that already
 have authenticated access on behalf of a user, are homeserver agnostic by design, and can even generate
 previews without making any HTTP hits for better privacy (e.g. by using local caches).
 
