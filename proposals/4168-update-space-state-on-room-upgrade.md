@@ -43,7 +43,7 @@ Given the following initial rooms:
 ```mermaid
 flowchart TB
     !project_space -->|child| !feedback_space
-    !project_space -->|child, order: "1"| !support
+    !project_space -->|child, order: '1'| !support
     !project_space -->|child, suggested| !development
 
     !feedback_space -->|parent| !project_space
