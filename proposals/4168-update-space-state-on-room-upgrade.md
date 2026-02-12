@@ -40,7 +40,7 @@ join through them.
 
 ### Examples
 Given the following initial rooms:
-```mirmaid
+```mermaid
 flowchart TB
     !project_space -->|child| !feedback_space
     !project_space -->|child, order: "1"| !support
