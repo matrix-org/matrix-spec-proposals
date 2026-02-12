@@ -38,6 +38,217 @@ the upgrade, regardless of its previous content. This is because the server's li
 previous `via` field may not have joined the upgraded room yet, and thus servers may not be able to
 join through them.
 
+### Examples
+Given the following initial rooms:
+```mirmaid
+flowchart TB
+    !project_space -->|child| !feedback_space
+    !project_space -->|child, order: "1"| !support
+    !project_space -->|child, suggested| !development
+
+    !feedback_space -->|parent| !project_space
+    !support -->|parent| !project_space
+
+    !feedback_space -->|child| !beta_users
+    !feedback_space -->|child| !suggestions
+
+    !beta_users -->|parent, canonical| !feedback_space
+    !suggestions -->|parent| !feedback_space
+```
+
+Here is the changed & new state after (assuming a user on `example.org` is upgrading the following rooms):
+### Upgrading `!project_space` to `!upgraded_project_space`
+
+#### `!upgraded_project_space`:
+```diff
++{
++    "type": "m.space.child",
++    "state_key": "!feedback_space",
++    "content": {
++        "via": ["example.org"]
++    }
++}
++{
++    "type": "m.space.child",
++    "state_key": "!support",
++    "order": "1",
++    "content": {
++        "via": ["example.org"]
++    }
++}
++{
++    "type": "m.space.child",
++    "state_key": "!development",
++    "suggested": true,
++    "content": {
++        "via": ["example.org"]
++    }
++}
+```
+
+#### `!feedback_space` & `!support`:
+```diff
++{
++    "type": "m.space.parent",
++    "state_key": "!upgraded_project_space",
++    "content": {
++        "via": ["example.org"]
++    }
++}
+```
+
+Additionally, if the server implementation decides to remove the previous space's `via`:
+
+```diff
+ {
+     "type": "m.space.parent",
+     "state_key": "!project_space",
+-    "content": {
+-        "via": ["example.org", "another.domain", "yet-another.domain"]
+-    }
++    "content": {}
+ }
+```
+
+### Upgrading `!support` to `!upgraded_support`
+
+#### `!upgraded_support`:
+```diff
++{
++    "type": "m.space.parent",
++    "state_key": "!project_space",
++    "content": {
++        "via": ["example.org"]
++    }
++}
+```
+
+#### `!project_space`:
+```diff
++{
++    "type": "m.space.child",
++    "state_key": "!upgraded_support",
++    "order": "1",
++    "content": {
++        "via": ["example.org"]
++    }
++}
+```
+
+Additionally, if the server implementation decides to remove the previous room's `via`:
+
+```diff
+ {
+     "type": "m.space.child",
+     "state_key": "!upgraded_support",
+     "order": "1",
+-    "content": {
+-        "via": ["example.org", "another.domain", "yet-another.domain"]
+-    }
++    "content": {}
+ }
+```
+
+### Upgrading `!feedback_space` to `!upgraded_feedback_space`
+
+#### `!project_space`:
+```diff
++{
++    "type": "m.space.child",
++    "state_key": "!upgraded_feedback_space",
++    "content": {
++        "via": ["example.org"]
++    }
++}
+```
+
+Additionally, if the server implementation decides to remove the previous space's `via`:
+
+```diff
+ {
+     "type": "m.space.child",
+     "state_key": "!feedback_space",
+-    "content": {
+-        "via": ["example.org", "another.domain", "yet-another.domain"]
+-    }
++    "content": {}
+ }
+```
+
+#### `!upgraded_feedback_space`:
+```diff
++{
++    "type": "m.space.child",
++    "state_key": "!beta_users",
++    "content": {
++        "via": ["example.org"]
++    }
++}
++{
++    "type": "m.space.child",
++    "state_key": "!suggestions",
++    "content": {
++        "via": ["example.org"]
++    }
++}
+```
+
+#### `!beta_users`:
+```diff
++{
++    "type": "m.space.parent",
++    "state_key": "!upgraded_feedback_space",
++    "canonical": true,
++    "content": {
++        "via": ["example.org"]
++    }
++}
+ {
+     "type": "m.space.parent",
+     "state_key": "!feedback_space",
+-    "canonical": true,
+     "content": {
+         "via": ["example.org", "another.domain", "yet-another.domain"]
+     }
+ }
+```
+
+Additionally, if the server implementation decides to remove the previous space's `via`:
+
+```diff
+ {
+     "type": "m.space.parent",
+     "state_key": "!feedback_space",
+-    "content": {
+-        "via": ["example.org", "another.domain", "yet-another.domain"]
+-    }
++    "content": {}
+ }
+```
+
+#### `!suggestions`:
+```diff
++{
++    "type": "m.space.parent",
++    "state_key": "!upgraded_feedback_space",
++    "content": {
++        "via": ["example.org"]
++    }
++}
+```
+
+Additionally, if the server implementation decides to remove the previous space's `via`:
+
+```diff
+ {
+     "type": "m.space.parent",
+     "state_key": "!feedback_space",
+-    "content": {
+-        "via": ["example.org", "another.domain", "yet-another.domain"]
+-    }
++    "content": {}
+ }
+```
 
 ## Potential issues
 
