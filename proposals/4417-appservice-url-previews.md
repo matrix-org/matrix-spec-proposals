@@ -81,9 +81,16 @@ as no backend service other than the URL host itself will see the request, howev
 
 ### [MSC4095 Bundled URL previews](https://github.com/matrix-org/matrix-spec-proposals/pull/4095)
 
-Another proposal exists which suggests that Matrix events instead bundle the URL preview data, which again is useful
-from privacy perspective because it reduces the leakage of event information, but would not be suitable for authenticated
-services as it would also expose this information to everyone in the room.
+MSC4095 suggests that receving users can instead read the previews from the Matrix event contents rather
+than generating their own preview, which reduces the amount of metadata that leaks. It does however not
+solve the problem of fetching data behind an authentication gate, or clients which obey CORS, or sites
+which do not provide standard OpenGraph data.
+
+This MSC is entirely compatible with that concept, as only the sender would need to request the information
+from the application service which could then be forwarded onto other users. However, users would need to
+keep in mind that it would be possible to foward sensitive data too and would need to be given the choice
+about what they would like to have forwarded.
+
 
 ## Security considerations
 
