@@ -16,7 +16,7 @@ previews without making any HTTP hits for better privacy (e.g. by using local ca
 
 ## Proposal
 
-A new endpoint is introduced on the Application Service API `GET /_matrix/app/preview_url`, which takes:
+A new endpoint is introduced on the Application Service API `GET /_matrix/app/v1/media/preview_url`, which takes:
 
  - (**required**) `url`  which must be a URI that conforms to [RFC3986](https://datatracker.ietf.org/doc/html/rfc3986), matching the C-S API endpoint.
  - (optional) `user_id` which must be the user who requested the preview. For future proofing this may be omitted if the HS doesn't know which user requested (e.g. anonymous access or federated request)
@@ -40,7 +40,7 @@ namespaces:
 
 When a homeserver receives a request to preview a URL via `GET /_matrix/client/v1/media/preview_url`, it MUST
 first check all appservices to see if any contain a matching entry in `namespaces.preview_urls`. For each matching
-appservice, the homeserver should make a request to `/_matrix/app/preview_url`.
+appservice, the homeserver should make a request to `/_matrix/app/v1/media/preview_url`.
 
 The appservice should handle the request appropriately by sending a HTTP 200 response with
 the required data. If the AS response with another status code, the homeserver should try the next
