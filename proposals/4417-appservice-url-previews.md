@@ -51,6 +51,12 @@ The homeserver MAY choose to respect any caching headers returned by the applica
 also ensure caches are keyed by the user who requested it. It's also acceptable for the homeserver to avoid
 caching the request in favour of the application service handling the caching.
 
+### Media
+
+[URL Previews require](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv1mediapreview_url) that
+the `og:image` specified in OpenGraph data be in MXC format. The appservice MUST do this upload step and respond
+to the homeserver with a MXC URI.
+
 ## Potential issues
 
 ### Performance
