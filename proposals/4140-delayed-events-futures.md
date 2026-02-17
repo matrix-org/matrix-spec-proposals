@@ -815,26 +815,8 @@ Whilst the MSC is in the proposal stage, the following should be used:
   the `POST /_matrix/client/v1/delayed_events/{delay_id}` endpoint.
 - `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used instead of
   the `GET /_matrix/client/v1/delayed_events` endpoint.
-- The `M_UNKNOWN` `errcode` should be used instead of `M_MAX_DELAY_EXCEEDED` as follows:
-
-```json
-{
-  "errcode": "M_UNKNOWN",
-  "error": "The requested delay exceeds the allowed maximum.",
-  "org.matrix.msc4140.errcode": "M_MAX_DELAY_EXCEEDED",
-  "org.matrix.msc4140.max_delay": 86400000
-}
-```
-
-instead of:
-
-```json
-{
-  "errcode": "M_MAX_DELAY_EXCEEDED",
-  "error": "The requested delay exceeds the allowed maximum.",
-  "max_delay": 86400000
-}
-```
+- `ORG.MATRIX.MSC4140_MAX_DELAY_EXCEEDED` should be used instead of `M_MAX_DELAY_EXCEEDED`.
+- `org.matrix.msc4140.max_delay` should be used instead of `max_delay`.
 
 Additionally, the feature is to be advertised as an unstable feature in the `GET /_matrix/client/versions` response, with
 the key `org.matrix.msc4140` set to `true`. So, the response could then look as follows:
