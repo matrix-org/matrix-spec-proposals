@@ -290,6 +290,10 @@ This can be used by clients to display events that have been scheduled to be sen
 For use cases where the existence of a delayed event is also of interest for other room members
 (e.g. self-destructing messages), it is recommended to include this information in the original/affected event itself.
 
+#### `delay_id` in `unsigned` sync field
+The `delay_id` also is part of the `unsigned` object of the finalized `event`.
+The homeserver MUST only include the `delay_id` unsigned key in the `/sync` response to the event `sender`.
+
 ### Homeserver implementation details
 
 #### Power levels are evaluated at the point of sending
