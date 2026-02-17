@@ -28,7 +28,7 @@ but *must* be provided (to align with `/report/:eventId`).
 **Note**: `score` is not carried over from `/report/:eventId` because it has not proven useful. A
 future MSC may introduce it. The same was done in MSC4151 for `/rooms/:roomId/report`.
 
-There are no restictions on who can report a user: knowing the user ID is sufficient. This is to
+There are no restrictions on who can report a user: knowing the user ID is sufficient. This is to
 ensure that results from the user directory, invites, links, etc can all be reported. If the user
 does not exist on the server, the endpoint returns `404 M_NOT_FOUND`. Otherwise, `200` with `{}` as
 a response body. If a user doesn't exist and the server wishes to hide that detail, it MAY return a

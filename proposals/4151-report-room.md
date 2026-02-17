@@ -37,7 +37,7 @@ but *must* be provided (to align with `/report/:eventId`).
 **Note**: `score` is not carried over from `/report/:eventId` because it has not proven useful. A
 future MSC may introduce it.
 
-There are no restictions on who can report a room: knowing the room ID is sufficient. This is to
+There are no restrictions on who can report a room: knowing the room ID is sufficient. This is to
 ensure that results from the room directory, invites, links, etc can all be reported. If the room
 does not exist on the server, the endpoint returns `404 M_NOT_FOUND`. Otherwise, `200` with `{}` as
 a response body.
