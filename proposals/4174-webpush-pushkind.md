@@ -44,7 +44,10 @@ keypair using the P-256 (prime256v1, cf. FIPS186) curve.
 If the request creates a new pusher or modifies values under `pushkey` , `PusherData.url`, or `PusherData.auth`, then
 the server MUST respond with 201, "The pusher is set but needs to be activated". The server MUST send a push notification to the
 url, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key with a message containing
-`app_id` and `ack_token`, a UUIDv4 token in the hyphen form, valid for 5 minutes:
+`app_id` and `ack_token`. `ack_token` MUST be a unique identifier conforming to [the opaque identifier grammar](https://spec.matrix.org/v1.17/appendices/#opaque-identifiers).
+To ensure sufficient entropy is used, it is recommended to use a UUIDv4 token in hyphen form.
+
+`ack_token` valid for 5 minutes:
 
 ```
 {
