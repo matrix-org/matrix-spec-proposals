@@ -30,7 +30,7 @@ A new HTTP 400 error response with an error code of `M_DUPLICATE_ONE_TIME_KEY` i
 ```
 
 Servers MUST reject requests to [`/_matrix/client/v3/keys/upload`] with the above error if any
-one-time key IDs in the request already exist on the server.
+one-time key IDs in the request already exist with a different public key on the server.
 
 ## Potential issues
 
