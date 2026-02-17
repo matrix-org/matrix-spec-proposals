@@ -109,16 +109,15 @@ The homeserver **should** apply rate limiting to the scheduling of delayed event
 [High Volume of Messages](https://spec.matrix.org/v1.17/appendices/#threat-high-volume-of-messages) threat.
 
 If the user has too many outstanding delayed events, the server will respond with HTTP 403 and the
-`M_RESOURCE_LIMIT_EXCEEDED` error code:
+`M_LIMIT_EXCEEDED` error code:
 
 ```http
 403 Forbidden
 Content-Type: application/json
 
 {
-  "errcode": "M_RESOURCE_LIMIT_EXCEEDED",
+  "errcode": "M_LIMIT_EXCEEDED",
   "error": "The maximum number of delayed events has been reached.",
-  "admin_contact": "mailto:admin@server.com",
 }
 ```
 
@@ -666,9 +665,9 @@ Will if the MatrixRTC app fails.
 
 The existing `M_INVALID_PARAM` error code could be used instead of introducing a new error code `M_MAX_DELAY_EXCEEDED`.
 
-### `M_MAX_DELAYED_EVENTS_EXCEEDED` instead of `M_RESOURCE_LIMIT_EXCEEDED`
+### `M_MAX_DELAYED_EVENTS_EXCEEDED` instead of `M_LIMIT_EXCEEDED`
 
-A new error code `M_MAX_DELAYED_EVENTS_EXCEEDED` could be used instead of reusing the existing `M_RESOURCE_LIMIT_EXCEEDED` error code.
+A new error code `M_MAX_DELAYED_EVENTS_EXCEEDED` could be used instead of reusing the existing `M_LIMIT_EXCEEDED` error code.
 The purpose of using a new error code would be to better distinguish delayed event scheduling limits from other resource limits.
 
 ### Naming
