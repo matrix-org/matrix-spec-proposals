@@ -109,14 +109,14 @@ The homeserver **should** apply rate limiting to the scheduling of delayed event
 [High Volume of Messages](https://spec.matrix.org/v1.17/appendices/#threat-high-volume-of-messages) threat.
 
 If the user has too many outstanding delayed events, the server will respond with HTTP 403 and the
-`M_LIMIT_EXCEEDED` error code:
+`M_USER_LIMIT_EXCEEDED` error code:
 
 ```http
 403 Forbidden
 Content-Type: application/json
 
 {
-  "errcode": "M_LIMIT_EXCEEDED",
+  "errcode": "M_USER_LIMIT_EXCEEDED",
   "error": "The maximum number of delayed events has been reached.",
 }
 ```
@@ -665,9 +665,9 @@ Will if the MatrixRTC app fails.
 
 The existing `M_INVALID_PARAM` error code could be used instead of introducing a new error code `M_MAX_DELAY_EXCEEDED`.
 
-### `M_MAX_DELAYED_EVENTS_EXCEEDED` instead of `M_LIMIT_EXCEEDED`
+### `M_MAX_DELAYED_EVENTS_EXCEEDED` instead of `M_USER_LIMIT_EXCEEDED`
 
-A new error code `M_MAX_DELAYED_EVENTS_EXCEEDED` could be used instead of reusing the existing `M_LIMIT_EXCEEDED` error code.
+A new error code `M_MAX_DELAYED_EVENTS_EXCEEDED` could be used instead of reusing the existing `M_USER_LIMIT_EXCEEDED` error code.
 The purpose of using a new error code would be to better distinguish delayed event scheduling limits from other resource limits.
 
 ### Naming
@@ -807,7 +807,7 @@ mitigate this risk, as well as limiting the number of scheduled events a user ca
 
 ## Unstable prefix
 
-Whilst the MSC is in the proposal stage, the following should be used:
+Whilst the MSC is unstable:
 
 - `PUT /_matrix/client/unstable/org.matrix.msc4140/rooms/{roomId}/delayed_event/{eventType}/{txnId}` should be used instead of
   the `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` endpoint.
@@ -818,6 +818,10 @@ Whilst the MSC is in the proposal stage, the following should be used:
 - `ORG.MATRIX.MSC4140_MAX_DELAY_EXCEEDED` should be used instead of `M_MAX_DELAY_EXCEEDED`.
 - `org.matrix.msc4140.max_delay` should be used instead of `max_delay`.
 
+Whilst [MSC4335](https://github.com/matrix-org/matrix-spec-proposals/pull/4335) is unstable:
+ 
+ - `M_USER_LIMIT_EXCEEDED` should be used instead of `ORG.MATRIX.MSC4335_USER_LIMIT_EXCEEDED`
+ 
 Additionally, the feature is to be advertised as an unstable feature in the `GET /_matrix/client/versions` response, with
 the key `org.matrix.msc4140` set to `true`. So, the response could then look as follows:
 
