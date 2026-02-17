@@ -199,7 +199,7 @@ has been accepted, as the underlying design may change at any time; the design i
 Instead, an MSC can define a namespace such as `org.matrix.msc1234` (using the real
 MSC number once known) which is added to the stable identifier, allowing for
 breaking changes between edits of the MSC itself, and preventing clashes with other
-MSCs that might attempt to add the same stable identifiers. 
+MSCs that might attempt to add the same stable identifiers.
 
 For the above examples, this would mean using `org.matrix.msc1234.space` and
 `/_matrix/client/unstable/org.matrix.msc1234/account/whoami`. It is also fine to
@@ -251,7 +251,7 @@ your changes. Homeservers that support the changes will eventually advertise
 that spec version under `/versions`, and your client can check for that.
 
 But if you really can't wait, then there is another option: the homeserver can
-tell clients that it supports *stable* indentifiers for your MSC before it
+tell clients that it supports *stable* identifiers for your MSC before it
 enters a spec version, using yet another `unstable_features` flag:
 
 ```json5

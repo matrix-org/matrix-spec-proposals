@@ -214,7 +214,7 @@ dark or light themes.
 
 ## Potential issues
 
- * New Identity Providers added by server administators will be unbranded until
+ * New Identity Providers added by server administrators will be unbranded until
    clients adopt support for the new brand.
 
 ## Security considerations
