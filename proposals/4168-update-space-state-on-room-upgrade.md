@@ -11,15 +11,6 @@ In the following sentences, "relevant space state events" refer to `m.space.pare
 room types, in addition to `m.space.child` events for rooms with a type of
 [`m.space`](https://spec.matrix.org/v1.16/client-server-api/#types).
 
-In addition, "updating relevant space state events" refers to the following:
-- For `m.space.child` events, a new `m.space.child` event with `state_key` set to the new room's ID
-  should be sent, copying the `order` and `suggested` field from the `content` of the
-  `m.space.child` with `state_key` of the previous room ID.
-- For `m.space.parent` events, a new `m.space.parent` event with `state_key` set to the new room's
-  ID should be sent. If the
-  space event pointing to the room to be upgraded has `canonical` set to `true` in `content`,
-  homeservers SHOULD update that space event to set `canonical` to `false`, while setting it to
-  `true` in the space event pointing to the new room.
 Additionally, for both event types, homeserver implementations MAY remove the `via` field of the
 event pointing to the previous room, to signal to clients that they shouldn't join the upgraded
 room.
@@ -28,8 +19,17 @@ When a room upgrade is performed, servers SHOULD copy relevant space state event
 to the new room. The sender field in the new event should be set to the user who performed the
 upgrade.
 
-In addition, servers SHOULD update relevant space state events in rooms that reference the old room
-(in their `state_key` field). Note that this will only be possible in rooms where the upgrading
+In addition, servers SHOULD create new relevant space state events pointing to the upgraded room in
+rooms that reference the old room (in their `state_key` field). In practice, this means:
+- For `m.space.child` events, a new `m.space.child` event with `state_key` set to the new room's ID
+  should be sent, copying the `order` and `suggested` field from the `content` of the
+  `m.space.child` with `state_key` of the previous room ID.
+- For `m.space.parent` events, a new `m.space.parent` event with `state_key` set to the new room's
+  ID should be sent. If the space event pointing to the room to be upgraded has `canonical` set to
+  `true` in `content`, homeservers SHOULD update that space event to set `canonical` to `false`,
+  while setting it to   `true` in the space event pointing to the new room.
+
+Note that this will only be possible in rooms where the upgrading
 user (or any other user on the same homeserver, if the implementation decides to use any user it
 can) has the power to do so.
 
@@ -140,7 +140,7 @@ Additionally, if the server implementation decides to remove the previous room's
 ```diff
  {
      "type": "m.space.child",
-     "state_key": "!upgraded_support",
+     "state_key": "!support",
      "order": "1",
 -    "content": {
 -        "via": ["example.org", "another.domain", "yet-another.domain"]
@@ -187,6 +187,13 @@ Additionally, if the server implementation decides to remove the previous space'
 +{
 +    "type": "m.space.child",
 +    "state_key": "!suggestions",
++    "content": {
++        "via": ["example.org", "another.domain", "yet-another.domain"]
++    }
++}
++{
++    "type": "m.space.parent",
++    "state_key": "!project_space",
 +    "content": {
 +        "via": ["example.org", "another.domain", "yet-another.domain"]
 +    }
