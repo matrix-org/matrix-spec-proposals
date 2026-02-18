@@ -71,9 +71,7 @@ The Pusher Data get a new field, `activated`, a boolean which the client must no
 
 Note: The homeserver deletes the registration if it receives a 404, 410 or 403 from the push server on push.
 
-A VAPID (Voluntary Application Server Identification, cf RFC8292) is often needed to be able to register with a push
-server.
-It is proposed to add a `m.webpush` capability to the `/capabilities` endpoint with this format:
+As many popular push servers require VAPID (Voluntary Application Server Identification, cf RFC8292), a server supporting this MSC MUST add a `m.webpush` capability to the `/capabilities` endpoint with this format:
 
 The VAPID public key is in the uncompressed form, in URL-safe Base64 without padding.
 
