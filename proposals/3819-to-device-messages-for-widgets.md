@@ -187,6 +187,14 @@ with an empty response object:
 }
 ```
 
+### Passing the current device id to widgets
+
+For the matrixRTC usecase, the widget needs to advocate which device is joining a session.
+So other devices can target it for toDevice messages.
+A new template variable is added to the available options for a widget URL:
+
+- `$matrix_device_id` - The device id of the client instance which is rendering the widget.
+
 ## Potential issues
 
 Due to lack of documentation/spec, conventions for the widget API and its security principles could
@@ -241,7 +249,7 @@ While this MSC is not present in the spec, clients and widgets should:
 
 * Use `org.matrix.msc3819.` in place of `m.` in all new identifiers of this MSC.
 * Only call/support the `action`s if a widget API version of `org.matrix.msc3819` is advertised.
-
+* `$org.matrix.msc3819.matrix_device_id` in place of `$matrix_device_id`.
 ## Dependencies
 
 None applicable - this MSC's dependencies have either been approved or are used simply as reference
