@@ -15,8 +15,20 @@ going over the specifications, because they use `endpoint`, and `auth` in the `P
 while [the current specifications let understand that only `url` and `format` are allowed](https://spec.matrix.org/v1.9/client-server-api/#_matrixclientv3pushers_pusherdata).
 The specifications already need to be adapted to follow what the web clients do.
 
-Web Push is a standard for (E2EE) push notifications, defined with [RFC8030](https://www.rfc-editor.org/rfc/rfc8030)+[RFC8291](https://www.rfc-editor.org/rfc/rfc8291)+[RFC8292](https://www.rfc-editor.org/rfc/rfc8292): many libraries
-are already available and robust: they are reviewed, and acknowledge by experts.
+Web Push is a standard for (E2EE) push notifications, defined with 3 RFC:
+- [RFC8030](https://www.rfc-editor.org/rfc/rfc8030) defines the application server to push server communications
+- [RFC8291](https://www.rfc-editor.org/rfc/rfc8291) defines the encryption:
+    - the subscribing client (user agent in RFC8030) generates a P-256 key pair the *auth* secret, and sends the P-256 public key and the *auth* secret to the home server during registration
+		- the home server encrypts outgoing push notifications with the client keys
+		- the notifications are then decrypted by the subscribing client
+- [RFC8292](https://www.rfc-editor.org/rfc/rfc8292): defines the authorization:
+    - it is supposed to be *Voluntary* (optional) but many big push servers require it
+		- the home server generates a single P-256 key pair, and any client get request the public key
+		- the client passes the VAPID public key while requesting a new registration to their push server
+		- the push server is then able to allow only requests, with an authorization header signed with the VAPID key
+		- the home server adds the authorization header to all push notifications
+
+Many libraries are already available and robust: they are reviewed, and acknowledge by experts.
 
 Extending the push kind to [`POST /_matrix/client/v3/pushers/set`](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3pushersset) to a `*webpush*` would provide encrypted push notifications without the need for an external gateway to
 - Web app and desktop app
