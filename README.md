@@ -53,7 +53,7 @@ The MSC process consists of three basic steps:
 2. **Submit it as a Pull Request** to this repo, marking it as a draft until
    it's ready for wider review.
 3. **Seek review** from the community. Once people are generally happy with it,
-   ask the [Spec Core Team](https://matrix.org/foundation) to look at it in
+   ask the [Spec Core Team](https://matrix.org/foundation/about/#the-spec-core-team) to look at it in
    [the Office of the SCT Matrix
    room](https://matrix.to/#/#sct-office:matrix.org). When the SCT are happy
    with the proposal, and after a successful voting process, your pull request
