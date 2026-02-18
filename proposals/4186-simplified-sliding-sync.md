@@ -52,7 +52,7 @@ requests.
 
 A "connection" (aka "sync loop") is a long-running set of sync requests where each new request uses the `pos` from the
 previous request. Clients can have multiple connections with the server, so long as each connection has a different
-`conn_id` set in the request.
+`conn_id` set in the request. The `conn_id` is scoped to that user and device.
 
 Clients must only have a single active request in-flight at any time per connection. If a client needs to send another
 request before receiving a response to an in-flight request (e.g. for retries or to change parameters) the client *must*
