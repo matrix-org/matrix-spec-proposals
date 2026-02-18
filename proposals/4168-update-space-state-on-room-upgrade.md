@@ -33,10 +33,10 @@ In addition, servers SHOULD update relevant space state events in rooms that ref
 user (or any other user on the same homeserver, if the implementation decides to use any user it
 can) has the power to do so.
 
-The `via` field of each new state event SHOULD only contain the server name of the server doing
-the upgrade, regardless of its previous content. This is because the server's listed in the
-previous `via` field may not have joined the upgraded room yet, and thus servers may not be able to
-join through them.
+The `via` field of each new relevant space state event pointing to the upgraded room SHOULD only
+contain the server name of the server doing the upgrade, regardless of its previous content. This is
+because the server's listed in the previous `via` field may not have joined the upgraded room yet,
+and thus servers may not be able to join through them.
 
 ### Examples
 Given the following initial rooms:
@@ -65,7 +65,7 @@ Here is the changed & new state after (assuming a user on `example.org` is upgra
 +    "type": "m.space.child",
 +    "state_key": "!feedback_space",
 +    "content": {
-+        "via": ["example.org"]
++        "via": ["example.org", "another.domain", "yet-another.domain"]
 +    }
 +}
 +{
@@ -73,7 +73,7 @@ Here is the changed & new state after (assuming a user on `example.org` is upgra
 +    "state_key": "!support",
 +    "order": "1",
 +    "content": {
-+        "via": ["example.org"]
++        "via": ["example.org", "another.domain", "yet-another.domain"]
 +    }
 +}
 +{
@@ -81,7 +81,7 @@ Here is the changed & new state after (assuming a user on `example.org` is upgra
 +    "state_key": "!development",
 +    "suggested": true,
 +    "content": {
-+        "via": ["example.org"]
++        "via": ["example.org", "another.domain", "yet-another.domain"]
 +    }
 +}
 ```
@@ -118,7 +118,7 @@ Additionally, if the server implementation decides to remove the previous space'
 +    "type": "m.space.parent",
 +    "state_key": "!project_space",
 +    "content": {
-+        "via": ["example.org"]
++        "via": ["example.org", "another.domain", "yet-another.domain"]
 +    }
 +}
 ```
@@ -181,14 +181,14 @@ Additionally, if the server implementation decides to remove the previous space'
 +    "type": "m.space.child",
 +    "state_key": "!beta_users",
 +    "content": {
-+        "via": ["example.org"]
++        "via": ["example.org", "another.domain", "yet-another.domain"]
 +    }
 +}
 +{
 +    "type": "m.space.child",
 +    "state_key": "!suggestions",
 +    "content": {
-+        "via": ["example.org"]
++        "via": ["example.org", "another.domain", "yet-another.domain"]
 +    }
 +}
 ```
