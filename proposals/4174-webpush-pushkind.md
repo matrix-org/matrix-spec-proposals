@@ -38,7 +38,7 @@ The POST request to the endpoint dedicated to the creation, modification and del
 `POST /_matrix/client/v3/pushers/set` now supports a new `kind`: `webpush`.
 - `kind`: is updated to introduce `webpush` which makes a
 pusher that sends Web Push encrypted messages.
-- `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key in the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf), section 2.3.3, replicated from X9.62), encoded in URL-safe Base64. The public key comes from a ECDH
+- `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key in the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf), section 2.3.3, replicated from X9.62), encoded in URL-safe Base64 without padding. The public key comes from a ECDH
 keypair using the P-256 (prime256v1, cf. FIPS186) curve.
 
 If the request creates a new pusher or modifies values under `pushkey` , `PusherData.url`, or `PusherData.auth`, then
@@ -75,7 +75,7 @@ A VAPID (Voluntary Application Server Identification, cf RFC8292) is often neede
 server.
 It is proposed to add a `m.webpush` capability to the `/capabilities` endpoint with this format:
 
-The VAPID public key is in the uncompressed form, base64url encoded.
+The VAPID public key is in the uncompressed form, in URL-safe Base64 without padding.
 
 ```
 "m.webpush": {
