@@ -46,6 +46,11 @@ The MSC introduces a new push kind: webpush.
 - `auth`: is introduced, required if `kind` is `webpush`, not used otherwise. This holds the authentication secret as
 specified by RFC8291 - 16 random bytes encoded in URL-safe Base64 without padding.
 
+`PusherData` also get new field, `activated`, a boolean, that must not be set by the client and the server must add to the responses that include the data. During a first registration, or during a re-registration where the Pusher `pushkey`, `PusherData.url` or `PusherData.auth` is updated, `activated` is set to false until the pusher is activated with the request to
+`/_matrix/client/v3/pushers/ack`i (cf. bellow). Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.url` and `PusherData.auth` doesn't change its value.
+
+The home server doesn't send any notification - except the one to validate the pusher - to the pusher, until the Pusher is activated.
+
 The POST request to the endpoint dedicated to the creation, modification and deletion of pushers,
 `POST /_matrix/client/v3/pushers/set` now supports a new `kind`: `webpush`.
 - `kind`: is updated to introduce `webpush` which makes a
@@ -77,9 +82,6 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
   - 410, M_EXPIRED: if this token for this app_id is expired
   - 400, M_UNKOWN_TOKEN: if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
   - 200: if the pusher has been activated
-
-The Pusher Data get a new field, `activated`, a boolean which the client must not include and the server must add. It is set to false until the pusher is activated with the request to
-`/_matrix/client/v3/pushers/ack`. Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.url` and `PusherData.auth` doesn't change its value.
 
 Note: The homeserver deletes the registration if it receives a 404, 410 or 403 from the push server on push.
 
