@@ -253,9 +253,9 @@ allowed to do this. Such examples include MSC3381 Polls and MSC3245 Voice Messag
 
 ### State events
 
-Unknown state event types generally should not be parsed by clients. This is to prevent situations
-where the sender masks a state change as some other, non-state, event. For example, even
-if a state event has an `m.text` content block, it should not be treated as a room message.
+Clients should handle unknown state event types with care, aiming to avoid confusing the user. For
+example, if a state event has an `m.text` content block, it should be rendered either differently to
+normal message events or with a decoration to indicate that other users may be seeing something else.
 
 Note that state events MUST still make use of content blocks in applicable room versions, and that
 any top-level key in `content` is defined as a content block under this proposal. As such, this
