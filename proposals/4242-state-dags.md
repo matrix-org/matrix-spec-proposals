@@ -180,7 +180,7 @@ ensures that the event never makes it into the room state because bans are appli
   formed by `prev_state_events` is used to calculate `auth_events` for state resolution.
   This targets the historic authorisation property.
 - Room state is derived from the DAG induced by `prev_state_events`, NOT `prev_events`.
-  Events which specify faulty `prev_state_events` are rejected.
+  Events which specify faulty `prev_state_events` (e.g. referencing non-state events or events in different rooms) are rejected.
 - `prev_state_events` are populated with the current forward extremities of the set of state events in the room.
 - Servers **MUST** have all paths from any state event to the `m.room.create` event. For any
   event received over federation via `/send`, the sending server **MUST** be able to provide the
@@ -296,8 +296,7 @@ The "current state" of the room is given by the resolved state of the state DAG'
 
 https://spec.matrix.org/v1.12/server-server-api/#soft-failure
 
-This proposal removes the clause about not adding the soft-failed event to the server's list of forward extremities
-**for the state DAG only**.
+Events in the state DAG **should be part of the forward extremities of a room** otherwise we run into the problems described below.
 
 State DAGs exist to ensure that all servers rapidly converge on the same set of state events (eventual state event delivery) so they can
 calculate the same current state in the room (room state convergence). Soft failure makes this harder and in certain cases can obstruct
@@ -346,7 +345,7 @@ eventually converge. This will be addressed in a future MSC.
 
 ##### `/get_missing_events`
 
-An additional top-level key `state_dag` is added. If `true`, the server walks back via
+An additional top-level key `state_dag` is added. If `true`, the receiving server walks back via
 `prev_state_events` and not `prev_events`. Default: `false`.
 
 Example:
@@ -363,7 +362,7 @@ Example:
 }
 ```
 
-If the `limit` is reached, the server should continue to walk back until it has discovered *all*
+If the `limit` is reached, the sending server should continue to walk back until it has discovered *all*
 `prev_state_events`. Care must be taken to ensure *all* paths to the `m.room.create` event are walked. Consider:
 
 ```mermaid
@@ -376,7 +375,7 @@ flowchart BT
     F(Latest event) --> E
 ```
 If this endpoint only returns E, then there is a link between the latest event and the last known
-event, but server implementations MUST NOT stop walking the graph as it is not a complete graph since
+event, but sending server implementations MUST NOT stop walking the graph as it is not a complete graph since
 C is still missing. This may result in additional `/get_missing_events` calls. This MSC recommends
 that servers exponentially increase their `limit` until they have seen all events, e.g. `?limit=10`
 then 20, 40, 80... This is a simple approach and there are better alternatives which can be explored
@@ -414,6 +413,8 @@ Walking with `latest_events={D,E}` returns `[B,C]`. Algorithmically, the server 
  - the result list must not be reversed at the end, unlike non-state DAG `/get_missing_events` responses.
 
 ##### `/send_join`
+
+For room versions which implement state DAGs:
 - Do not return `auth_chain`, `state`, `servers_in_room` by default. Instead return `state_dag` which contains the entire state DAG.
 - Verify that you have ALL paths from the `prev_state_events` of the join event to the create event for the room. If you don't, then you did not join the room successfully and the server is faulty. Join via a different server.
 - Faster room joins: if `?omit_members=` is set, include `partial_state_event_ids`. See "Faster remote room joins" for more information.
@@ -436,10 +437,11 @@ The intended server behaviour would be:
 
 1. If type is `m.room.create`:
     1. If it has any `prev_events`, reject.
-    2. **[Changed in this version]** If it has any `prev_state_events`, reject.
-    3. If the domain of the `room_id` does not match the domain of the `sender`, reject.
+    2. If the event has a `room_id`, reject.
+    3. **[Added in this version]** If it has any `prev_state_events`, reject.=
     4. If `content.room_version` is present and is not a recognised version, reject.
-    5. Otherwise, allow.
+    5. If `additional_creators` is present in `content` and is not an array of strings where each string passes the same user ID validation applied to `sender`, reject.
+    6. Otherwise, allow.
 2. **[Added in this version]** Considering the event's `prev_state_events`:
     1. If there are entries which do not belong in the same room, reject.
     2. If there are entries which do not have a `state_key`, reject.
@@ -448,7 +450,7 @@ The intended server behaviour would be:
     1. **[Removed in this version]** If there are duplicate entries for a given `type` and `state_key` pair, reject.
     2. **[Removed in this version]** If there are entries whose `type` and `state_key` don’t match those specified by the auth events selection algorithm described in the server specification, reject.
     3. If there are entries which were themselves rejected under the checks performed on receipt of a PDU, reject.
-    4. **[Removed in this version]** If there is no `m.room.create event` among the entries, reject.
+    4. **[Removed in this version]** If any event in `auth_events` has a `room_id` which does not match that of the event being authorised, reject.
   
  ##### Rationale
 
@@ -472,6 +474,7 @@ but provides very very weak guarantees that at the time the join was issued, tho
 in the room.
 
 State DAG rooms use a different approach. If `?omit_members=true`:
+ - The `/send_join` response still includes _the entire state DAG._ The same amount of data is transferred with and without faster room joins.
  - The `/send_join` response includes a new array: `timeline` which represents the most recent events in the room,
    suitable for presenting in the timeline. How many events is configurable via a new query param `?timeline_limit=` which
    is a non-zero integer, with a hard cap of 64. This is subject to history visibility rules.
@@ -533,7 +536,7 @@ The joining server should then perform the following:
 
 This technique makes several tradeoffs:
  - It sends more response data than faster remote room joins does today, because it is including the entire state DAG in the response. However, the cost of this
-   is reasonably small compared to the cost of verifying the resulting events. By doing this, we guarantee that rooms will transition from being partially joined
+   is reasonably small compared to the cost of verifying the resulting events and storing state snapshots. By doing this, we guarantee that rooms will transition from being partially joined
    to "joined" or "failure" in finite time. If fetching the state DAG was deferred to another round trip, the partially joined room may _never_ transition in the
    case where an attacker has control over the network. This is stronger than what [MSC3902](https://github.com/matrix-org/matrix-spec-proposals/pull/3902) currently
    proposes.
@@ -648,7 +651,8 @@ Non-auth events:
  uk.half-shot.bridge       |      4
  ```
 
-The reason for this surprising result is because the size of the state DAG does NOT scale with the number of members
+The reason for this surprising result is because the amount of _extra events_ included by including
+non-auth state does NOT scale with the number of members
 in the room. This makes intuitive sense, as the rate of topic changes shouldn't change depending on
 if there are 100 or 100,000 members in the room.
 
