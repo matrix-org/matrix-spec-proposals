@@ -12,7 +12,7 @@ room types, in addition to `m.space.child` events for rooms with a type of
 [`m.space`](https://spec.matrix.org/v1.16/client-server-api/#types).
 
 Additionally, for both event types, homeserver implementations MAY remove the `via` field of the
-event pointing to the previous room, to signal to clients that they shouldn't join the upgraded
+event pointing to the previous room, to signal to clients that they shouldn't join the previous
 room.
 
 When a room upgrade is performed, servers SHOULD copy relevant space state events from the old room
