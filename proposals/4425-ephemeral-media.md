@@ -98,7 +98,7 @@ If the cache value is too low, both remote and origin servers may experience abn
 usage. Rate limits can help mitigate this.
 
 If the cache value is too high, a later delete might get missed. Capping the server's value at 1 day
-is a relatively arbitrary choice, but balances the liklihood of needing to make a second download
+is a relatively arbitrary choice, but balances the likelihood of needing to make a second download
 request with the ability for the media to disappear.
 
 Clients might decide to flag all media, whether in events or otherwise, as ephemeral. If undesirable,
