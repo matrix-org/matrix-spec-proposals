@@ -5,37 +5,51 @@ many state events are copied over to the new room, to minimize the amount of wor
 after the upgrade. However, the spec doesn't currently recommend that `m.space.child` or `m.space.parent`
 be copied over, as well as these events being updated in other rooms.
 
+This leads to spaces only showing the old versions of rooms, meaning that users joining the space
+would be met with a screen telling them that the conversation has moved somewhere else. On top of
+that, clients which organize rooms by the space they're in wouldn't organize upgraded space
+members, as they would not be part of the space. While the space members can be updated manually,
+this can be very tedious and prone to error (i.e. missing specific rooms from the manual process),
+especially for spaces with many rooms and sub-spaces.
+
 ## Proposal
 
 In the following sentences, "relevant space state events" refer to `m.space.parent` events for all
 room types, in addition to `m.space.child` events for rooms with a type of
 [`m.space`](https://spec.matrix.org/v1.16/client-server-api/#types).
 
-Additionally, for both event types, homeserver implementations MAY remove the `via` field of the
-event pointing to the previous room, to signal to clients that they shouldn't join the previous
-room.
-
 When a room upgrade is performed, servers SHOULD copy relevant space state events from the old room
-to the new room. The sender field in the new event should be set to the user who performed the
+to the new room. The `sender` field in the new event SHOULD be set to the user who performed the
 upgrade.
 
-In addition, servers SHOULD create new relevant space state events pointing to the upgraded room in
-rooms that reference the old room (in their `state_key` field). In practice, this means:
-- For `m.space.child` events, a new `m.space.child` event with `state_key` set to the new room's ID
-  should be sent, copying the `order` and `suggested` field from the `content` of the
+In addition, servers SHOULD send new relevant space state events pointing to the upgraded room in
+rooms that reference the old room via `m.space.parent` or `m.space.child` events. In practice, this
+means:
+- In rooms that reference the old room via `m.space.child` events (roughly speaking:
+  spaces which are parents of the upgraded room), the upgrading server
+  SHOULD send a new `m.space.child` event with `state_key` set to the new room's ID,
+  copying the `order` and `suggested` fields from the `content` of the
   `m.space.child` with `state_key` of the previous room ID.
-- For `m.space.parent` events, a new `m.space.parent` event with `state_key` set to the new room's
-  ID should be sent. If the space event pointing to the room to be upgraded has `canonical` set to
-  `true` in `content`, homeservers SHOULD update that space event to set `canonical` to `false`,
-  while setting it to   `true` in the space event pointing to the new room.
+- In rooms that reference the old room via `m.space.parent` events (roughly speaking: child rooms
+  of an upgraded space), the upgrading server SHOULD send a new `m.space.parent` event with
+  `state_key` set to the new room's ID. If the previous `m.space.parent` event has `canonical` set
+  to `true` in `content`, homeservers SHOULD update the old state event to set `canonical` to
+  `false`, while setting it to `true` in the newly-sent `m.space.parent` event.
+
+Like the events sent in the new room, these events sent in existing rooms SHOULD be set to the user
+who performed the upgrade.
 
 Note that this will only be possible in rooms where the upgrading
 user (or any other user on the same homeserver, if the implementation decides to use any user it
 can) has the power to do so.
 
+Additionally, for both event types, homeserver implementations MAY remove the `via` field of
+relevant space events referencing the previous room, to signal to clients that they shouldn't join
+the previous room. Otherwise, said events SHOULD remain unchanged. 
+
 The `via` field of each new relevant space state event pointing to the upgraded room SHOULD only
 contain the server name of the server doing the upgrade, regardless of its previous content. This is
-because the server's listed in the previous `via` field may not have joined the upgraded room yet,
+because the servers listed in the previous `via` field may not have joined the upgraded room yet,
 and thus servers may not be able to join through them.
 
 ### Examples
