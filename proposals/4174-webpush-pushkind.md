@@ -79,9 +79,11 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
 - The request body contains the `app_id` and `ack_token` parameters, received with the push notification.
 - The response, contains the following HTTP code and error code:
   - 404, M_NOT_FOUND: if no pusher with this app_id exists
-  - 410, M_EXPIRED: if this token for this app_id is expired
-  - 400, M_UNKNOWN_TOKEN: if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
+  - 410, M_EXPIRED_ACTIVATION_TOKEN: if this token for this app_id is expired
+  - 400, M_UNKNOWN_ACTIVATION_TOKEN: if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
   - 200: if the pusher has been activated
+
+M_EXPIRED_ACTIVATION_TOKEN and M_UNKNOWN_ACTIVATION_TOKEN are new error codes.
 
 Note: The homeserver deletes the registration if it receives a 404, 410 or 403 from the push server on push.
 
