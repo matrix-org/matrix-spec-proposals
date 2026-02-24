@@ -29,8 +29,14 @@ matched against.
 This endpoint can be rate limited and requires authentication.
 Guests are not allowed to use the endpoint, as guests will usually not join multiple rooms.
 
-The response format will be an array containing the room ID of all rooms where both the authenticated user and
-`user_id` have a membership of type `join`.
+The response contains three fields:
+
+* `joined` (required), an array of room IDs. It contains the rooms where both the authenticated user
+  and `user_id` have a membership of type `join`.
+* `count` (required), the number of such rooms. This is the total count even if the response is
+  batched and `joined` doesn't include all rooms. This MAY be inaccurate if the server is unable to
+  calculate the exact number of rooms.
+* `next_batch` (optional), an opaque string identifier used for pagination.
 
 If the `user_id` does not exist, or does not share any rooms with the authenticated user,
 an empty array should be returned.
@@ -48,7 +54,8 @@ GET /_matrix/client/v1/user/mutual_rooms?user_id=%40bob%3Aexample.com
     "!OGEhHVWSdvArJzumhm:matrix.org",
     "!HYlSnuBHTxUPgyZPKC:half-shot.uk",
     "!DueayyFpVTeVOQiYjR:example.com"
-  ]
+  ],
+  "count": 3
 }
 ```
 
@@ -66,6 +73,7 @@ results. For example:
   "joined": [
     // ...
   ],
+  "count": 9001,
   "next_batch": "<an opaque identifier, containing only the characters [0-9a-zA-Z._~-], non-empty if not omitted, and at most 255 characters>"
 }
 ```
