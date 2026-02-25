@@ -250,6 +250,8 @@ To help mitigate the threat of [unsafe content](#unsafe-content), the server SHO
 [Fetch Metadata Request Headers](https://www.w3.org/TR/fetch-metadata/) (or other suitable headers) to identify
 top-level navigation requests and return a `403` HTTP response with error code `M_FORBIDDEN` instead.
 
+The exact header values to use are an implementation detail for the server implementation.
+
 A future optimisation could be allow the client to "long-poll" by sending the previous `sequence_token` as a query parameter
 and then the server returns when the is new data or some timeout has passed.
 
@@ -956,6 +958,14 @@ This has the following properties:
 Erik [said](https://github.com/matrix-org/matrix-spec-proposals/pull/4108#discussion_r2336295451):
 > I think this sort of flow would reduce potential abuse vectors, but equally makes things more complicated and may not
 > be worth it.
+
+#### Define the Sec-Fetch unsafe content logic
+
+We could explicitly define exactly which `Sec-Fetch-*` headers are to be checked and which values disallowed.
+
+However, it has been deliberately left as an implementation detail such that alternative protections can be used if
+appropriate for a particular deployment scenario, or if a better mechanism becomes available.
+
 
 ### Alternative QR code formats
 
