@@ -963,9 +963,10 @@ Erik [said](https://github.com/matrix-org/matrix-spec-proposals/pull/4108#discus
 
 We could explicitly define exactly which `Sec-Fetch-*` headers are to be checked and which values disallowed.
 
+It could also be made a MUST rather than SHOULD.
+
 However, it has been deliberately left as an implementation detail such that alternative protections can be used if
 appropriate for a particular deployment scenario, or if a better mechanism becomes available.
-
 
 ### Alternative QR code formats
 
