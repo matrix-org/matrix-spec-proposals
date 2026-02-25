@@ -518,6 +518,9 @@ HTTP](https://www.rfc-editor.org/rfc/rfc9458) RFC under the [Encapsulation of
 Responses](https://www.rfc-editor.org/rfc/rfc9458#name-encapsulation-of-responses) section to enable
 bidirectional encryption.
 
+We bind the secure channel to the specific rendezvous session by including the homeserver base URL, rendezvous session
+ID and sequence token as additional authentication data in calls to the HPKE `Seal()` and `Open()` functions.
+
 The existing security analyses of HPKE are applicable to our usage. We also discuss some potential pitfalls and attacks.
 
 ### Establishment
@@ -540,7 +543,7 @@ other device is then the new device (one seeking to be signed in).
 2. **Create rendezvous session**
 
 Device G creates a rendezvous session by making a `POST` request (as described previously) to the nominated homeserver
-with an empty payload. It parses the **ID** received.
+with an empty payload. It parses the **ID** received and **sequence token**.
 
 3. **Initial key exchange**
 
@@ -584,15 +587,20 @@ With this, Device S has established its sending side of the secure channel. Devi
 that Device G can use to confirm that the channel is secure. It contains:
 
 - The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305 using
-  the `ContextS.Seal()` function of context **Context_DeviceS_Send**.
+  the `ContextS.Seal()` function of context **Context_DeviceS_Send** with additional authentication data:
+  - the homeserver **base URL** from the QR code
+  - the rendezvous session **ID** from the QR code
+  - the **sequence token** returned by the homeserver when calling `GET` on the rendezvous session
 - Its public ephemeral key **Sp**.
 
 ```
-TaggedCiphertext := Context_DeviceS_Send.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", "")
+Aad := BaseUrl || RendezvousId || SequenceToken
+TaggedCiphertext := Context_DeviceS_Send.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", Aad)
 LoginInitiateMessage := UnpaddedBase64(Sp || TaggedCiphertext)
 ```
 
-Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request.
+Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request
+and noting the new **sequence token**.
 
 5. **Device G confirms**
 
@@ -612,11 +620,17 @@ SharedSecret := ECDH(Gs, Sp)
 Context_DeviceG_Receive := KeySchedule<R>(mode=0x00, shared_secret=SharedSecret, info="MATRIX_QR_CODE_LOGIN")
 ```
 
-It then decrypts (and authenticates) the message using the `ContextR.Open()` function of **Context_DeviceG_Receive**.
+It then decrypts (and authenticates) the message using the `ContextR.Open()` function of **Context_DeviceG_Receive**
+with the additional authentication data:
+- the homeserver **base URL** as before
+- the rendezvous session **ID** as before
+- the **sequence token** returned by the homeserver when the original `POST` request was made to the rendezvous session
+
 It checks that the plaintext matches the string `MATRIX_QR_CODE_LOGIN_INITIATE`, failing and aborting if not.
 
 ```
-Plaintext := Context_DeviceG_Receive.Open(TaggedCiphertext, "")
+Aad := BaseUrl || RendezvousId || SequenceToken
+Plaintext := Context_DeviceG_Receive.Open(TaggedCiphertext, Aad)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_INITIATE":
      FAIL
@@ -646,10 +660,12 @@ with a dummy exporter secret. Aside from this limitation, the response context s
 same manner as the primary context, enabling bidirectional use of HPKE.
 
 Following the creation of the response context **Context_DeviceG_Send**, it responds with a dummy payload containing the
-string `MATRIX_QR_CODE_LOGIN_OK`:
+string `MATRIX_QR_CODE_LOGIN_OK` that is sealed with the additional authentication data similar to before, but the
+**sequence token** is the one that was received with the `GET` request that returned **LoginInitiateMessage**:
 
 ```
-TaggedCiphertext := Context_DeviceG_Send.Seal("MATRIX_QR_CODE_LOGIN_OK", "")
+Aad := BaseUrl || RendezvousId || SequenceToken
+TaggedCiphertext := Context_DeviceG_Send.Seal("MATRIX_QR_CODE_LOGIN_OK", Aad)
 LoginOkMessage := UnpaddedBase64Encode(ResponseNonce || TaggedCiphertext)
 ```
 
@@ -679,11 +695,14 @@ Context_DeviceS_Receive := Context<R>(AeadKey, AeadNonce, 0, ExporterSecret)
 ```
 
 It decrypts (and authenticates) the response using the **Context_DeviceS_Receive** context, which will succeed provided
-the payload was indeed sent by Device G. It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing
+the payload was indeed sent by Device G. The additional authentication data is as before with the **sequence token**
+being the one that was received when the `PUT` was made for **LoginInitiateMessage**.
+It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing
 otherwise.
 
 ```
-Plaintext := Context_DeviceS_Receive.Open(TaggedCiphertext, "")
+Aad := BaseUrl || RendezvousId || SequenceToken
+Plaintext := Context_DeviceS_Receive.Open(TaggedCiphertext, Aad)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
      FAIL
@@ -725,10 +744,20 @@ CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 If the code that the user enters matches then the secure channel is established.
 
 Subsequent payloads sent from G should be encrypted using the context **Context_DeviceG_Send**, while payloads
-sent from S should be encrypted with **Context_DeviceS_Send**.
+sent from S should be encrypted with **Context_DeviceS_Send**. Each call to the `Seal()` function should use the
+additional authentication data of the form where the **sequence token** is from the last `GET` that the device received:
+
+```
+Aad := BaseUrl || RendezvousId || SequenceToken
+```
 
 Similarly, payloads received by G should be decrypted using the context **Context_DeviceG_Receive**, while payloads received by S
-should be decrypted using the context **Context_DeviceG_Receive**.
+should be decrypted using the context **Context_DeviceG_Receive**. Each call to the `Open()` function should use the
+additional authentication data of the form where the **sequence token** is from the last `PUT` that the device made:
+
+```
+Aad := BaseUrl || RendezvousId || SequenceToken
+```
 
 ### Sequence diagram
 
@@ -756,33 +785,33 @@ sequenceDiagram
     note over S: Device S validates QR scanned and the rendezvous session ID
 
     S->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
-    Z->>-S: 200 OK<br>{"sequence_token": "1", "expires_in_ms": 300000, "data": ""}
+    Z->>-S: 200 OK<br>{"sequence_token": "SEQ1", "expires_in_ms": 300000, "data": ""}
 
-    note over S: 4) Device S creates context Context_DeviceS_Send and LoginInitiateMessage.<br>It sends LoginInitiateMessage via the rendezvous session
-    S->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "1", "data": "<LoginInitiateMessage>"}
-    Z->>-S: 200 OK<br>{"sequence_token": "2"}
+    note over S: 4) Device S creates context Context_DeviceS_Send and LoginInitiateMessage (sealed using sequence token SEQ1).<br>It sends LoginInitiateMessage via the rendezvous session
+    S->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "SEQ1", "data": "<LoginInitiateMessage>"}
+    Z->>-S: 200 OK<br>{"sequence_token": "SEQ2"}
     deactivate S
 
     G->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
     activate G
-    Z->>-G: 200 OK<br>{"sequence_token": "2", "expires_in_ms": 300000, "data": "<LoginInitiateMessage>"}
+    Z->>-G: 200 OK<br>{"sequence_token": "SEQ2", "expires_in_ms": 300000, "data": "<LoginInitiateMessage>"}
     note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after creating Context_DeviceG_Receive
-    note over G: Device G checks that the plaintext matches MATRIX_QR_CODE_LOGIN_INITIATE
+    note over G: Device G checks that the plaintext (unsealed using sequence token SEQ1) matches MATRIX_QR_CODE_LOGIN_INITIATE
 
     note over G: Device G creates Context_DeviceG_Send
-    note over G: Device G computes LoginOkMessage and sends to the rendezvous session
+    note over G: Device G computes LoginOkMessage (sealed using sequence token SEQ2) and sends to the rendezvous session
 
-    G->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "2", "data": "<LoginOkMessage>"}
-    Z->>-G: 200 OK<br>{"sequence_token": "3"}
+    G->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "SEQ2", "data": "<LoginOkMessage>"}
+    Z->>-G: 200 OK<br>{"sequence_token": "SEQ3"}
     deactivate G
 
     activate S
     S->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
-    Z->>-S: 200 OK<br>{"sequence_token": "3", "expires_in_ms": 300000, "data": "<LoginOkMessage>"}
+    Z->>-S: 200 OK<br>{"sequence_token": "SEQ3", "expires_in_ms": 300000, "data": "<LoginOkMessage>"}
 
     note over S: 6) Device S attempts to parse Data as LoginOkMessage
     note over S: 6) Device S creates Context_DeviceS_Receive
-    note over S: Device S checks that the plaintext matches MATRIX_QR_CODE_LOGIN_OK
+    note over S: Device S checks that the plaintext (unsealed using sequence token SEQ2) matches MATRIX_QR_CODE_LOGIN_OK
 
     note over S: If okay, Device S calculates the CheckCode to be displayed
     note over S: Device S displays a green checkmark, "secure connection established" and the CheckCode
