@@ -714,7 +714,7 @@ interface](https://www.rfc-editor.org/rfc/rfc9180.html#hpke-export) of context *
 
 ```
 CheckBytes := Context_DeviceS_Send.Export("MATRIX_QR_CODE_LOGIN_CHECKCODE" || Gp || Sp , size=2)
-CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
+CheckCode := NumToString((CheckBytes[0] % 9) + 1) || NumToString(CheckBytes[1] % 10)
 ```
 
 Device S then displays an indicator to the user that the secure channel has been established and that the **CheckCode**
@@ -731,6 +731,10 @@ Device G asks the user to enter the **CheckCode** that is being displayed on Dev
 The purpose of the code being entered is to ensure that the user has actually checked their other device rather than
 just pressing "continue", and that the Device S has been able to determine that the channel is secure.
 
+Because the actual value of the code is not significant from a cryptographic point of view it is acceptable that the
+digits 6, 7, 8 and 9 are slightly less likely to appear. Furthermore we also ensure that the first digit of the code is
+not `0` to avoid confusion the user might have about whether to enter a leading zero.
+
 The exact points in the flow that the user is prompted for the **CheckCode** is described in [MSC4108].
 
 Device G compares the code that the user has entered with the **CheckCode** that it calculates using the same mechanism
@@ -738,7 +742,7 @@ as before:
 
 ```
 CheckBytes := Context_DeviceG_Receive.Export("MATRIX_QR_CODE_LOGIN_CHECKCODE" || Gp || Sp , size=2)
-CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
+CheckCode := NumToString((CheckBytes[0] % 9) + 1) || NumToString(CheckBytes[1] % 10)
 ```
 
 If the code that the user enters matches then the secure channel is established.
