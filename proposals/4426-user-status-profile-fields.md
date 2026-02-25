@@ -1,4 +1,4 @@
-# MSC: User Status Profile Fields
+# MSC4426: User Status Profile Fields
 
 A helpful feature in today’s messengers is the ability to communicate whether a
 user is currently available to talk. This can take the form of communicating
@@ -238,5 +238,5 @@ The following unstable prefixes should be used in place of the identifiers used 
 
 | Stable identifier | Unstable identifier |
 | :---- | :---- |
-| `m.status` | `org.mscxxxx.status` |
-| `m.call` | `org.mscxxxx.call` |
+| `m.status` | `org.msc4426.status` |
+| `m.call` | `org.msc4426.call` |
