@@ -41,7 +41,7 @@ emoji can be useful as a compact summary, or just for fun.
 
 | Field | Type | Required | Description | Example |
 | :---- | :---- | :---- | :---- | :---- |
-| `text` | `string` | Yes | The user’s chosen status text. Does not support HTML. Clients MAY choose to linkify links. | “On holiday in …” |
+| `text` | `string` | Yes | The user’s chosen status text. Does not support HTML. Clients SHOULD NOT linkify links to deter users from accidentally visiting malicious content. | “On holiday in …” |
 | `emoji` | `string` | Yes | The user’s chosen status emoji. | 🌴 |
 
 *Note: A future MSC may add an additional field to support custom emotes, ala.
