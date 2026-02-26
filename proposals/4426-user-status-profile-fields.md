@@ -193,6 +193,35 @@ If the homeserver was trying to limit `emoji` to a single grapheme, its emoji
 parser - which hadn’t been updated to the latest unicode - may reject this
 emoji, even if it’s valid to the client and other clients.
 
+### Performance
+
+While this MSC is intended to just add a couple new profile fields, the question
+of performance came up almost immediately. Especially with the performance of
+[Presence](https://spec.matrix.org/v1.17/client-server-api/#presence)
+implementation being so poor today. Below are *implementation recommendations*.
+
+While presence was mostly updated automatically, these profile fields will have
+significantly different traffic patterns, and homeservers should design their
+rate-limiting and debouncing mechanisms around this. It is also recommended to
+allow sysadmins to configure these values based on their own deployments.
+
+Homeservers should consider implementing limits on both a per-field and entire
+profile basis for each user.
+
+`m.status` may be be updated 1-5 times in a short burst very occasionally (as
+someone updates their status, and then edits it to fix typos). Whereas `m.call`
+may be updated 10 or more times (in pairs of joining/leaving) over the course of
+a work day, as well as in rapid succession if someone is having issues joining a
+call (debouncing would help here).
+
+Neither of these fields need to be particularly *real-time* either, so waiting a
+bit for updates before publishing them to other users can also be effective.
+
+Much of the slow performance of presence stems from needing to inform hundreds
+or thousands of other homeservers over federation after an update. Performance
+over federation has been expanded upon further in MSC4259, see [this
+thread](https://github.com/matrix-org/matrix-spec-proposals/pull/4259/files#r2858835260).
+It's intended for federation-related performance discussion to continue there.
 
 ## Alternatives
 
@@ -225,6 +254,29 @@ MSC has laid the groundwork.
 
 Such a field is less pressing as `m.status` already allows a user to communicate
 holiday status manually.
+
+### Using presence as a transport
+
+Using [Presence](https://spec.matrix.org/v1.17/client-server-api/#presence) was
+initially considered for this use case. It has existed for a long time, already
+features a `status_msg` field, and could easily have a `status_msg_emoji` field
+added. It is already sent proactively to clients and over federation to other
+homeservers.
+
+But profile fields have a few advantages:
+
+- They have simple semantics for multiple, distinct fields. This proposal
+  introduces `m.status` and `m.call`. But if you eventually add `m.music`,
+  `m.application/game`, `m.holiday` etc. you'd end up with quite a fat presence
+  object with no way for clients to selectively query (or opt-in to selective
+  updates via /sync) parts of it. You'd need to build out those semantics as well.
+- Presence currently exists, but is disabled *everywhere*. Part of using
+  presence is a political problem: you need to convince everyone to turn it back
+  on. Many homeserver implementations and distributions disable it by default,
+  which would significantly slow the roll-out of any feature built on top of it.
+
+By decoupling ourselves from online/offline data, we're able to remove many
+constraints that the presence feature has.
 
 ## Security Considerations
 
