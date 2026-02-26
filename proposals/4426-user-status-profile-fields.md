@@ -68,7 +68,8 @@ being continuous added over time.
 
 `m.call`
 
-An indicator that the user is currently in a call, and optionally how long they’ve been in the call.
+An indicator that the user is currently in a call, and optionally how long
+they’ve been in the call.
 
 | Field | Type | Required | Description | Example |
 | :---- | :---- | :---- | :---- | :---- |
@@ -76,7 +77,9 @@ An indicator that the user is currently in a call, and optionally how long they�
 
 ### Setting a status
 
-A user can set their status by using the existing [`PUT /_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.17/client-server-api/#put_matrixclientv3profileuseridkeyname) endpoint.
+A user can set their status by using the existing [`PUT
+/_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.17/client-server-api/#put_matrixclientv3profileuseridkeyname)
+endpoint.
 
 **Example**
 
@@ -116,7 +119,9 @@ both.
 
 ### Clearing a status
 
-A user or application may remove a status field by using the existing [`DELETE /_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.17/client-server-api/#delete_matrixclientv3profileuseridkeyname) endpoint.
+A user or application may remove a status field by using the existing [`DELETE
+/_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.17/client-server-api/#delete_matrixclientv3profileuseridkeyname)
+endpoint.
 
 **Example**
 
@@ -142,7 +147,8 @@ include:
   * Linking to malware/phishing content
   * With custom emoji support, displaying explicit/illegal imagery by their display name across the app
 
-As user status is tied to a user - rather than a room - simply kicking a user from a room may not immediately solve the issue.  
+As user status is tied to a user - rather than a room - simply kicking a user
+from a room may not immediately solve the issue.  
 
 * Clients should take care not to display associated status emoji/text in
   membership change messages (i.e. “User 🌴 was kicked from the room).  
@@ -156,7 +162,9 @@ As user status is tied to a user - rather than a room - simply kicking a user fr
 
 ### Internationalisation
 
-Often a user may set their status in one language, and it will be viewed by a user who primarily uses another language. This MSC explicitly does not include a method for setting multiple statuses in multiple languages:
+Often a user may set their status in one language, and it will be viewed by a
+user who primarily uses another language. This MSC explicitly does not include a
+method for setting multiple statuses in multiple languages:
 
 1. This would expand the scope of implementation noticeably.
 2. A UI where a user could set multiple statuses in different languages is not
@@ -234,7 +242,8 @@ None.
 
 ## Unstable Prefix
 
-The following unstable prefixes should be used in place of the identifiers used in this proposal.
+The following unstable prefixes should be used in place of the identifiers used
+in this proposal.
 
 | Stable identifier | Unstable identifier |
 | :---- | :---- |
