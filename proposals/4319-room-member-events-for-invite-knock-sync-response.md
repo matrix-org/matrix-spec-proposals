@@ -26,7 +26,8 @@ contain information about the invite/knock event itself.
 The following information can be useful for clients:
 
 - The sender of the invite, including their display name and avatar, to present to the user.
-- The time of the invite or knock, to present to the user.
+- The time of the invite or knock, to present to the user or to sort the invite/knock list by
+  recency.
 - Whether an invite event was preceded by a knock, if the client wants to auto-accept invites that
   come from knocking.
 
@@ -60,6 +61,10 @@ format.
 > or `knock` in the first place. Providing the full event format allows clients to access details
 > like the `origin_server_ts`, the `event_id` or the `unsigned` object.
 
+> [!IMPORTANT]
+> This MSC doesn't change the format of this event over the Server-Server API. This only proposes to
+> forward more information to clients that has always been available to homeservers.
+
 For compatibility with the current client implementations, homeservers SHOULD also continue to
 include this event in the `events` array of the `invite_state` or `knock_state` in the same format
 as in `State` for a time limited to 1 spec release after this proposal is released in a new spec
@@ -73,9 +78,11 @@ event in `invite_state` or `knock_state` as a fallback if it is not found under 
 > it is not specified.
 
 Finally, the [list of events that should be included in the stripped state][stripped-state] over the
-Client-Server and Server-Server APIs is extended with the stripped `m.room.member` event of the
-`sender` of the invite. This allows clients to be able to display information about the sender of an
-invite, like their display name or avatar.
+Client-Server and Server-Server APIs is extended with the `m.room.member` event of the `sender` of
+the invite. This event has the same format as other events in the stripped state, i.e. the full
+event format according to the room version in the Server-Server API endpoints, and the `Stripped
+state event` format in the Client-Server API's `/sync` endpoint. This event allows clients to be
+able to display information about the sender of an invite, like their display name or avatar.
 
 Example of an `InvitedState` object:
 
@@ -139,6 +146,12 @@ Example of an `InvitedState` object:
   }
 }
 ```
+
+Although it is not considered a dependency of this MSC, if this is accepted the new `/sync`
+endpoint introduced in [MSC4286: Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186)
+should also be updated for invited and knocked rooms to include the full invite/knock
+`m.room.member` event in `required_state` and the inviter's `m.room.member` event in
+`stripped_state`.
 
 
 ## Potential issues
