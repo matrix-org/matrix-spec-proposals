@@ -87,7 +87,9 @@ The `delay_id` is an [opaque identifier](https://spec.matrix.org/v1.17/appendice
 It MUST be globally unique and SHOULD be as difficult to guess/craft as an access token, so that knowledge of a `delay_id` may
 securely grant control of it via [the management endpoint](#managing-delayed-events).
 
-The server MAY round the delay up to a maximum of 30 seconds away from the request.
+The server MUST NOT send the event before the scheduled time.
+To support batch sending, servers MAY add up to 30 seconds to the scheduled send time. 
+Note: clients might find that their events are delayed further due to server load and similar conditions. 
 
 If the requested delay exceeds the maximum delay defined by the homeserver, the server will respond with HTTP 400,
 a new `M_MAX_DELAY_EXCEEDED` error code, and the maximum allowed delay in milliseconds in a new `max_delay` field.
