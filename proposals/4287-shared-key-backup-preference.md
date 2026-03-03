@@ -37,11 +37,11 @@ update the value to reflect it.
 
 ### Behaviour on sign-in
 
-When a user signs in:
+When a user signs in to a client which supports encryption and key backup:
 
 * If this event type exists in account data and contains the specified property
   in the correct format, clients which support key backup MUST use it to determine whether key backups
-  should be enabled.
+  are enabled.
 
 * If this event type does not exist in account data, or if it does not contain
   the `enabled` property, or if the value of `enabled` is not a boolean value,
