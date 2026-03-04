@@ -274,7 +274,7 @@ based on user preferences.
 
 ### Shortcode grammar
 
-A shortcode's length MUST not exceed 100 bytes. This is to prevent a
+A shortcode's length MUST NOT exceed 100 bytes. This is to prevent a
 sufficiently long shortcode from being impossible to insert into subsequent events
 due to exceeding the event limit (e.g. emoji reactions).
 
@@ -298,7 +298,7 @@ encouraged to use the alternative separators provided; a hyphen (`-`) or
 an underscore (`_`).
 
 The above character set does exclude characters from non-latin languages from
-being included (e.g. ブイチューバー). This is guard against various edge cases of
+being included (e.g. ブイチューバー). This is to guard against various edge cases of
 including all of Unicode (control characters, zalgo, future unicode updates,
 etc.) leading to complicated implementations. It is assumed that users of other
 languages are able to type latin characters when necessary.
