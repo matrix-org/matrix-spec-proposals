@@ -67,21 +67,21 @@ Part of the joy of custom emotes (and stickers) is to be able to organise them
 into packs and share these packs with others. This proposal defines a mechanism
 for doing so.
 
-#### `m.image_pack` state event
+#### `m.room.image_pack` state event
 
-Image packs are defined by a new state event with type `m.image_pack`. The
+Image packs are defined by a new state event with type `m.room.image_pack`. The
 `state_key` is simply a unique identifier for the pack itself. It is not
 intended to be surfaced to users. This proposal does not associate any special
 property with an empty string for an image pack's `state_key`.
 
-`m.image_pack` state events contain the following keys within their `content`:
+`m.room.image_pack` state events contain the following keys within their `content`:
 
 * `images`: **Required, Map[String, Object]**. A map from a shortcode ([grammar](#shortcode-grammar)) to an [Image Object](#image-object).
 * `pack` **Optional, Object**. A [Pack Object](#pack-object).
 
 ```jsonc
 {
-  "type": "m.image_pack",
+  "type": "m.room.image_pack",
   "state_key": "Blobcats",
   "content": {
     "images": {
@@ -93,6 +93,10 @@ property with an empty string for an image pack's `state_key`.
   // ...
 }
 ```
+
+The event type "m.room.image_pack" was chosen to match other room-level state
+event types, such as `m.room.topic`, `m.room.name`, `m.room.canonical_alias`,
+etc.
 
 #### Pack object
 
@@ -171,7 +175,7 @@ Taking all of this into account, a full image pack event may look like:
 #### User and room image packs
 
 A room itself can have an unlimited amount of image packs by specifying the
-`m.image_pack` state event with different state keys. By default, the user
+`m.room.image_pack` state event with different state keys. By default, the user
 SHOULD be presented with these images only when interacting in the room that
 the packs are defined in.
 
@@ -486,7 +490,7 @@ left in.
 
 | **Stable identifier** | **Unstable identifier** |
 |---|---|
-| `m.image_pack` state event type | `im.ponies.room_emotes` |
+| `m.room.image_pack` state event type | `im.ponies.room_emotes` |
 | `m.image_pack.rooms` account data event type | `im.ponies.emote_rooms` |
 
 ## Potential Issues
