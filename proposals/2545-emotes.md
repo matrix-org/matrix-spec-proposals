@@ -313,13 +313,15 @@ grammar](https://spec.matrix.org/v1.17/appendices/#opaque-identifiers) was
 considered, however it is explicitly for "non-user-visible identifier", which
 this is not.
 
-The above character set does exclude characters from non-latin languages from
-being included (e.g. ブイチューバー). This is to guard against various edge cases of
+The above character set does exclude characters from non-English languages (e.g. ブイチューバー). This is to guard against various edge cases of
 including all of Unicode (control characters, zalgo, future unicode updates,
 etc.) leading to complicated implementations. It is assumed that users of other
-languages are able to type latin characters when necessary.
+languages are able to type ascii characters when necessary.
 
 A future MSC could add the concept of "aliases" to images - secondary names,
+which would be any Unicode character, making searching for them with characters
+from other languages easier.
+
 These restrictions MAY be enforced by homeservers when `m.room.image_pack` events
 are sent by clients into a room (through [`PUT
 /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.17/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)).
