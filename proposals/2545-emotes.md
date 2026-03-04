@@ -320,17 +320,21 @@ etc.) leading to complicated implementations. It is assumed that users of other
 languages are able to type latin characters when necessary.
 
 A future MSC could add the concept of "aliases" to images - secondary names,
-which would be any Unicode character, making searching for them with non-latin
-characters easier. 
+These restrictions MAY be enforced by homeservers when `m.room.image_pack` events
+are sent by clients into a room (through [`PUT
+/_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.17/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)).
 
-These restrictions MUST be enforced by servers on the Client-Server API, but MUST
-NOT be enforced over the Federation API (i.e. when validating events received
-over federation). This avoids a split-brain in the room. Servers MAY opt to
-locally redact events that don't follow the shortcode grammar.
+`m.room.image_pack` events MUST NOT be rejected or dropped by homeservers for
+failing the shortcode grammar when they are received over federation (via
+`/send`, `/backfill` or any other mechanism). Servers MAY opt to locally
+redact/soft-fail events that don't follow the shortcode grammar if they wish.
 
-Clients SHOULD enforce this grammar as well when creating or editing image
-packs. Clients SHOULD ignore/hide image packs that contain an image with an
-invalid shortcode.
+Clients should note that events with malformed shortcode grammar can be
+delivered to them by the homeserver. Clients SHOULD to try and show emotes and
+stickers in the timeline, as well as image packs that contain them, even if they
+have incorrect shortcode grammar. This allows users to see them and fix them. On
+the flip side, clients SHOULD enforce this grammar when creating or editing
+image packs.
 
 ### Sending
 
