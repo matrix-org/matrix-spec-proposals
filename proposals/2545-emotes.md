@@ -280,7 +280,8 @@ due to exceeding the event limit (e.g. emoji reactions).
 
 A shortcode MUST match the following regular expression:
 `[a-zA-Z0-9-_]+`. Note that this disallows zero-length shortcodes - not least
-because searching for, and indexing, such shortcodes is complicated.
+because searching for, and indexing, such shortcodes is complicated. Shortcodes
+are considered case-sensitive.
 
 The `:` character is specifically not included, as it has become synonymous
 across messaging platforms with searching for emotes - oftentimes typing the `:`
@@ -296,6 +297,17 @@ common usability paper-cuts (multiple spaces between words, spaces at the
 beginning/end of a shortcode). Shortcodes containing multiple words are
 encouraged to use the alternative separators provided; a hyphen (`-`) or
 an underscore (`_`).
+
+This is the same character set that is used by
+[Discord](https://support.discord.com/hc/en-us/articles/360036479811-How-to-Add-Custom-Emojis-on-Discord#:~:text=Keep%20in%20mind:-,Emoji%20names%20must%20be%20at%20least%202%20characters%20long%20and%20can%20only%20contain%20alphanumeric%20characters%20and%20underscores,-Emojis%20must%20be)
+and
+[Slack](https://docs.slack.dev/reference/methods/admin.emoji.add/#:~:text=The%20name%20of%20the%20emoji%20to%20be%20added%20%28using%20lower%2Dcase%20letters%20only%29),
+simplifying bridging.
+
+Using the [Opaque identifier
+grammar](https://spec.matrix.org/v1.17/appendices/#opaque-identifiers) was
+considered, however it is explicitly for "non-user-visible identifier", which
+this is not.
 
 The above character set does exclude characters from non-latin languages from
 being included (e.g. ブイチューバー). This is to guard against various edge cases of
