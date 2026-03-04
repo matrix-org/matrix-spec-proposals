@@ -429,7 +429,7 @@ the image, or if absent, an empty object.
 
 ### Room upgrades
 
-Upon upgrading a room, homeservers SHOULD transfer `m.image_pack` state events
+Upon upgrading a room, homeservers SHOULD transfer `m.room.image_pack` state events
 to the new room. Homeservers SHOULD also update user's account data so that any
 `m.image_pack.rooms` account data events are re-pointed from the old room ID to
 the newly upgraded room ID; otherwise a user's global packs will quietly grow
