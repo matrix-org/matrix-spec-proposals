@@ -291,9 +291,14 @@ This can be used by clients to display events that have been scheduled to be sen
 For use cases where the existence of a delayed event is also of interest for other room members
 (e.g. self-destructing messages), it is recommended to include this information in the original/affected event itself.
 
-#### `delay_id` in `unsigned` sync field
-The `delay_id` also is part of the `unsigned` object of the finalized `event`.
-The homeserver MUST only include the `delay_id` unsigned key in the `/sync` response to the event `sender`.
+#### `delay_id` in `unsigned` event data
+The `delay_id` of a sent delayed event MUST be included in the resulting room event's `unsigned` data
+when it arrives through the event stream of its sender,
+and MAY be included when the event is in the response to any other CS API request from its sender.
+
+A `delay_id` field MUST NOT be included in an event's `unsigned` data
+when it arrives through the event stream of any user other than its sender,
+or when the event is in the response to any CS API request from a user other than its sender.
 
 ### Homeserver implementation details
 
