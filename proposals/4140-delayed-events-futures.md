@@ -819,6 +819,7 @@ Whilst the MSC is unstable:
   the `GET /_matrix/client/v1/delayed_events` endpoint.
 - `ORG.MATRIX.MSC4140_MAX_DELAY_EXCEEDED` should be used instead of `M_MAX_DELAY_EXCEEDED`.
 - `org.matrix.msc4140.max_delay` should be used instead of `max_delay`.
+- `org.matrix.msc4140.delay_id` should be used instead of `delay_id` as the key in `unsigned` event data.
 
 Whilst [MSC4335](https://github.com/matrix-org/matrix-spec-proposals/pull/4335) is unstable:
  
