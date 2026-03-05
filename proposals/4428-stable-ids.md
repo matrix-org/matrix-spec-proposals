@@ -27,7 +27,7 @@ which provides *current* information on that room member. It looks like this:
 
 ```javascript
 "member_info": {
-    "$stable_id": {
+    "<stable_id>": {
         "user_id": "@alice:example.com" // string | null if erased
     }
 }
@@ -77,7 +77,7 @@ The following endpoints which track room member information are affected:
 // GET /_matrix/client/v3/rooms/{roomId}/joined_members
 {
   "joined": {
-    "$stable_id": { // <-- CHANGED, was user_id
+    "<stable_id>": { // <-- CHANGED, was user_id
       "avatar_url": "mxc://riot.ovh/printErCATzZijQsSDWorRaK",
       "display_name": "Bar",
       "user_id": "@bar:example.com" // <-- NEW
@@ -86,10 +86,10 @@ The following endpoints which track room member information are affected:
 }
 ```
 
-The `$stable_id` can be obtained from events via a new `stable_id` field in `unsigned`.
+The `<stable_id>` can be obtained from events via a new `stable_id` field in `unsigned`.
 
-Today, the `$stable_id` will always be the user ID of the room member.
-However, clients MUST treat the `$stable_id` as an opaque identifier which uniquely identifies that *room member*,
+Today, the `<stable_id>` will always be the user ID of the room member.
+However, clients MUST treat the `<stable_id>` as an opaque identifier which uniquely identifies that *room member*,
 and so map the stable ID to a user ID, **which may not exist or may change**.
 
 If the stable ID matches the user ID of the room member, the mapping information MAY be omitted.
@@ -104,8 +104,9 @@ as the stable ID will not equal the user ID (`null`).
 
 Clients MUST use the new `unsigned.stable_id` field as the stable ID.  
 Clients MUST NOT use the `sender` field of events as the stable ID.  
-A later room version may remove the `sender` field entirely on events,
+A later room version **may remove the `sender` field entirely** on events,
 which would break any client relying on the `sender` field for the stable ID.
+For this reason, clients MUST handle the case where the `sender` is missing (it is Optional).
 
 ## Potential issues
 
