@@ -40,8 +40,11 @@ update the value to reflect it.
 When a user signs in to a client which supports encryption and key backup:
 
 * If this event type exists in account data and contains the specified property
-  in the correct format, clients which support key backup MUST use it to determine whether key backups
-  are enabled.
+  in the correct format, clients which support key backup MUST take account of
+  its contents in their behaviour. For example, clients may automatically turn
+  on/off key backup based on the property, or prompt the user, using the
+  property value as a default. (Because this property is server-controlled,
+  clients may wish to confirm the user's intention.)
 
 * If this event type does not exist in account data, or if it does not contain
   the `enabled` property, or if the value of `enabled` is not a boolean value,
