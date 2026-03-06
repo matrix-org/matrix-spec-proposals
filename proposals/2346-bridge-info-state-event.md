@@ -56,14 +56,13 @@ bridged network and nothing more.
 }
 ```
 
-The `state_key` must be comprised of the bridge's prefix, followed by the `protocol.id`, followed by the `network.id`, 
-followed by the `channel.id`. Any `/`s must be escaped into `%2F`. The bridge prefix can be anything, but should uniquely 
-identify the bridge software. E.g. The matrix.org IRC bridge `matrix-org/matrix-appservice-irc` 
-becomes `org.matrix.appservice-irc`. This is to help distinguish two bridges on different softwares which may conflict.
+The `state_key` is an arbitrary string, which bridges should generate in a way that ensures uniqueness. For example, by
+forming a URI-like string out of a unique software prefix and the protocol, network and channel IDs. The state key MAY
+also be empty if the room is controlled by the bridge and is not expected to have any other bridges.
 
 The `bridgebot` should be the MXID of the bridge bot. It is important to note that `sender` should not be presumed to be 
 the bridge bot. This is because room upgrades, other bridges or admins could also set the state in the room on behalf of
-the bridge bot.
+the bridge bot. This field may be omitted if the bridge does not use a bridge bot.
 
 The `creator` field is the name of the *user* which provisioned the bridge. In the case of alias based bridges, where the
 creator is not known -- it should be omitted.
@@ -74,7 +73,8 @@ name.
 
 The `network` field should be information about the specific network the bridge is connected to. 
 It's important to make the distinction here that this does *NOT* describe the protocol name, but the specific network
-the user is on. For protocols that do not have the concept of a network, this field may be omitted.
+the user is on. This can be used for any sort of group of channels, like IRC networks, Slack workspaces and Discord guilds.
+For protocols that do not have the concept of a network, this field may be omitted.
 
 The `channel` field should be information about the specific channel the room is connected to.
 
@@ -82,9 +82,9 @@ The `id` field is case-insensitive and should be lowercase. Uppercase characters
 or similar).The purpose of the id field is not to be human readable but just for comparing within the same bridge type, 
 hence no encoding standard will be enforced in this proposal.
 
-The `network`, `channel` and `protocol` fields can contain `displayname` and `avatar` keys. The `displayname` is meant to 
+The `network`, `channel` and `protocol` fields can contain `displayname` and `avatar_url` keys. The `displayname` is meant to 
 be a human readable identifier for the item in question, whereas the ID should be a unique identifer relevant to the protocol. 
-The `id` should be used in place of a `displayname`, if not given. The `avatar` key is a MXC URI which refers to an image 
+The `id` should be used in place of a `displayname`, if not given. The `avatar_url` key is a MXC URI which refers to an image 
 file, similar to a user or room avatar.
 
 The `external_url` key is a optional link to a connected channel, network or protocol that works in much the same way as
@@ -234,8 +234,6 @@ you let people modify your room state, you need to trust them not to mess around
 users to "trust" some mxids as bridges, rather than relying on just PLs to convey trustworthiness.
 
 
-## Implementation notes
+## Unstable prefix
 
-This proposal is partially implemented by [Riot](https://github.com/vector-im/riot-web) and the
-[IRC Bridge](https://github.com/matrix-org/matrix-appservice-irc) using the `uk.half-shot.*` namespace
-until this becomes stable. Therefore `m.bridge` becomes `uk.half-shot.bridge`.
+`uk.half-shot.bridge` can be used in place of `m.bridge`
