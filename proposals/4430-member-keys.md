@@ -285,7 +285,6 @@ Servers MUST have a global backoff timer per-domain to ensure that attackers can
 
 Servers may intentionally lie about their server signing key to some servers but not others.
 This will cause room members on the lying server to appear as verified to some servers and unverified to others.
-This can be weaponised to spam some servers whilst leaving admin servers alone (due to soft-failure), as a way of bypassing moderation.
 Servers are free to [implement custom mechanisms](https://github.com/element-hq/synapse/pull/18238) to
 enable specific clients to see these soft-failed events in order to process spam effectively.
 
