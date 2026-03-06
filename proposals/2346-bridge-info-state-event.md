@@ -239,6 +239,8 @@ event into a room, even if the bridge is not present or does not exist. It goes 
 you let people modify your room state, you need to trust them not to mess around. A future MSC may allow
 users to "trust" some mxids as bridges, rather than relying on just PLs to convey trustworthiness.
 
+Particular care should be taken when interpreting the `creator` and `bridgebot` fields: a malicious room
+admin can specify any user ID in those fields, there's no guarantee they're actually related to the bridge.
 
 ## Unstable prefix
 
