@@ -26,11 +26,6 @@ similar to what the `/preview_url` endpoint currently returns:
 URL previews are allowed for all message types, as media messages can have
 captions nowadays.
 
-### Extensible events
-The definition of `matrix:matched_url` changes from "present in `body`" to
-"present in `m.text`", but otherwise the proposal is directly compatible with
-extensible events.
-
 ### Client behavior
 #### Sending preview data
 When sending previews to encrypted rooms, clients SHOULD encrypt preview images
@@ -69,6 +64,11 @@ the old behavior of searching `body`.
 
 The above points effectively make this an alternative for
 [MSC2385](https://github.com/matrix-org/matrix-spec-proposals/pull/2385).
+
+### Extensible events
+The check for `matrix:matched_url` change would from "present in `body`" to
+"present in `m.text`", but otherwise the proposal is directly compatible with
+extensible events.
 
 ### Examples
 <details>
