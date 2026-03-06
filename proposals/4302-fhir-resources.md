@@ -83,6 +83,17 @@ new event type `m.fhir` is introduced. This type mandates the following properti
     [`StructureDefinition.type`].
   - `fhir_version` (string, required): The version of the FHIR specification on which the
     `StructureDefinition` is based. This is equivalent to [`StructureDefinition.fhirVersion`].
+  - `content` (array): If the resource is a collection type such as `Bundle`, an array of objects
+    providing information about the `StructureDefinition`s of contained resources. The array has set
+    semantics meaning that it MUST NOT contain duplicates and the order of elements is irrelevant.
+    - `url` (string, required): The [canonical URL] of the most specific `StructureDefinition`
+      describing the resource. This is equivalent to [`StructureDefinition.url`].
+    - `version` (string, required): The version of the `StructureDefinition`. This is equivalent to
+      [`StructureDefinition.version`].
+    - `type` (string, required): The `StructureDefinition`'s base type. This is equivalent to
+      [`StructureDefinition.type`].
+    - `fhir_version` (string, required): The version of the FHIR specification on which the
+      `StructureDefinition` is based. This is equivalent to [`StructureDefinition.fhirVersion`].
 - `m.fhir.resource` (object, required if `m.fhir.file` is missing): The serialised JSON if it fits
   within the [64 KiB event size limit].
 - `m.fhir.file` (object, required if `m.fhir.resource` is missing): An [MSC3551] content block
@@ -137,8 +148,8 @@ properties, on the other hand, enable implementations *without* support for the 
 offer fallback behaviour if they have generic support for the resource's base type.
 
 For the case that recipients don't support the contained FHIR resource or don't recognise `m.fhir`
-events at all, two fallback representations `m.text` and `m.file` MAY be included in the event.
-This allows conveying the contained information in other forms such as plain text or a PDF file.
+events at all, two fallback representations `m.text` and `m.file` MAY be included in the event. This
+allows conveying the contained information in other forms such as plain text or a PDF file.
 
 ## Potential issues
 
