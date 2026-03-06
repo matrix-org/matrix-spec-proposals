@@ -7,6 +7,8 @@ bridged into a given room.
 There exists a way to do this in a local setting, by using the
 [/thirdparty/location](https://matrix.org/docs/spec/application_service/r0.1.2#get-matrix-app-v1-thirdparty-protocol-protocol)
 API but this creates a splitbrain view across the federation and is an unnacceptable situation.
+The third party location API is also primarily meant for listing rooms and only allows querying
+individual rooms using an alias.
 
 Many users have taken to peeking at the list of aliases for a giveaway alias like `#freenode_` or
 looking for bridge bots or users with a `@_discord_` prefix. This is an unacceptable situation,
