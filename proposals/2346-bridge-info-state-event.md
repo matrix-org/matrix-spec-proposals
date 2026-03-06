@@ -221,6 +221,9 @@ by calling a specalised endpoint. There are many issues with this, such as the r
 over federation, as well as requring the bridge to be online. Using a state event ensures the data is scoped
 per room, and can be synchronised and updated over federation.
 
+The `network` and `channel` fields could have more Matrix-specific terms like `space` and `room`.
+However, using "foreign" terms also makes sense, given the entire point of this event is bridging.
+
 ## Future MSCs
 
 (This section is for the beneift of readers to understand why this MSC doesn't contain X feature)
