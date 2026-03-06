@@ -126,7 +126,8 @@ The following `m.federate` auth rule is no longer enforceable because the `sende
 
 Instead, `m.federate` will now function the same as server ACLs. When `m.federate` is `false` then the server MUST reject _all_ inbound federation traffic for that room).
 This is preferable to the alternative of only accepting member events signed with the creator's server signing key because it allows the server signing key to be rotated/lost.
-TODO: how does this work when a local user invites a federated user? We presumably send that over federation but they can never accept it?
+
+*TODO: how does this work when a local user invites a federated user? We presumably send that over federation but they can never accept it?*
 
 #### Server signing key loss & compromise
 
@@ -171,7 +172,7 @@ If the server signing key was also lost along with the database, then linkage in
 #### Member key loss & compromise
 
 There is no mechanism to revoke or rotate a lost or compromised Member Key.
-This mechanism will be added in a future MSC, see the Appendix for more information.
+This mechanism will be added in a future MSC, see _Appendix -> Account Portability_ for more information .
 
 The primary safeguard in place is to _rotate the server signing key_ on Member Key loss or compromise.
 This ensures that those room members eventually end up with unverified links, and thus messages sent with the compromised key are
@@ -373,11 +374,15 @@ In order to securely migrate from one server to another, it must be possible to 
 This proposal does not enable this because the key _identifying_ the room member is the same as the key _signing_ events: the Member Key.
 Instead, private Member Keys would only reside on the client, and would serve as the identity of that room member in that room.
 A Member Key would _delegate_ signing responsibility to the _server signing key_ of the server they are currently on.
-This forms an attestation, which can be ordered (e.g. by also signing a generation number).
+This delegation can be represented by the Member Key signing a JSON object which contains the public server signing key that they are delegating to.
+This JSON object represents an attestation.
+The attestation must be able to be ordered with other attestations created by the same Member Key.
+This can be done by also including a generation number in the JSON object.
 The attestation would be inserted as a state event into the room, perhaps as part of the `m.room.member` event (though membership and attestation are orthogonal concepts).
-State resolution and auth rules would be modified to ensure higher generation numbers replace lower ones.
+State resolution and auth rules would be modified to ensure higher generation numbers always replace lower ones.
 This would allow the Member Key to sign a higher attestation to move signing responsibility to a new server signing key, without exposing the private Member Key to any server.
-Note that this no longer makes events self-verifying as the server signing key is signing the event, not the Member Key. This technique preserves deniability as the server is free to sign any event it likes with the attestation it has.
+Note that this no longer makes events self-verifying as the server signing key is signing the event, not the Member Key.
+This technique preserves deniability as the server is free to sign any event it likes with the attestation it has.
 Events would only be self-verifying in the context of the room state at that point in the DAG, much like how membership is handled (we'd need this anyway for PQ keys).
 Alternatively, we could bundle the server signing key with every event, but this has its own problems (PQ sizes, what if it doesn't match the room state at that point in the DAG?, etc).
 
