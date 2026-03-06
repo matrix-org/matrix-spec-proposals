@@ -814,7 +814,7 @@ mitigate this risk, as well as limiting the number of scheduled events a user ca
 
 ## Unstable prefix
 
-Whilst the MSC is in the proposal stage, the following should be used:
+Whilst the MSC is unstable:
 
 - `PUT /_matrix/client/unstable/org.matrix.msc4140/rooms/{roomId}/delayed_event/{eventType}/{txnId}` should be used instead of
   the `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` endpoint.
