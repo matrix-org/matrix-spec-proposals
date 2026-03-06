@@ -101,7 +101,7 @@ new event type `m.fhir` is introduced. This type mandates the following properti
 - `m.text` (object, optional): Alternative textual information that can be displayed in case the
   client is not able to render the FHIR content.
 - `m.file` (object, optional): A downloadable alternative for the content of the FHIR structure for
-  example an editable PDF file represanting the same information
+  example an editable PDF file representing the same information.
 
 ``` json5
 {
