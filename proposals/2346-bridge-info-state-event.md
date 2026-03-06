@@ -208,6 +208,12 @@ This kinda goes for *any* event in Matrix, there is no way to determine a bridge
 is that we at least require the user for the ability to send state events into the room. If you are allowed to send
 arbitrary state events into the room, it's assumed you are somewhat trusted.
 
+### Bridges may not be able to send this event into the room
+
+If the bridge doesn't require any power level and the user who sets up the bridge doesn't promote it, then it's possible
+that the bridge won't be able to send the state event to announce itself. There's no way to avoid this issue entirely,
+but bridges SHOULD ask for power when being plumbed into an existing room.
+
 ## Alternatives
 
 Some thoughts have been thought on using the third party bridge routes in the AS api to get bridge info,
