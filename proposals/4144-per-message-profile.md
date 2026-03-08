@@ -108,6 +108,9 @@ clients SHOULD include a fallback containing the per-message displayname.
 When a fallback is used, the per-message profile object MUST include
 `"has_fallback": true`.
 
+Fallbacks are intentionally optional. Clients MUST NOT assume the message has
+a fallback unless `has_fallback` is set to `true`,
+
 #### Plaintext fallback
 The fallback MUST be at the beginning of the plaintext `body` and consist of
 the exact value of the `displayname` property, followed by a colon (`:`) and
