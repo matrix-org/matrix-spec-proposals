@@ -57,23 +57,20 @@ with the corresponding room id in the `room_id` field and a list `servers` conta
 
 ### Resolving steps
 
-To resolve an room alias `#hq:example.com` with the first example above, a server would first send a
-`GET` request to alias domain `example.com`, `https://example.com/.well-known/matrix/rooms` and
-decode the served JSON.
+To resolve an room alias `#hq:example.com` with the first example above,
 
-In case the request fails or the JSON doesn't decode, the server should fall back to the federation api's
+1. first a server MUST now send an https `GET` request to alias domain's `.well-known/matrix/roms` path (given `example.com` that is `https://example.com/.well-known/matrix/rooms`) and decode the served JSON.
+
+2. In case the request fails or the JSON doesn't decode, the server MUST fall back to the federation api's
 room alias lookup.
 
-If the decoded JSON is not an object, the server should or fall back to the federation api's room alias
-lookup. Servers must not fail processing the JSON object if keys unrelated to the room alias to be resolved
+3. If the decoded JSON is not an object, the server MUST fall back to the federation api's room alias
+lookup. Servers MUST NOT fail processing the JSON object if keys unrelated to the room alias to be resolved
 have values that aren't valid room alias records.
 
-Otherwise, the server checks if the JSON object contains the room alias to be resolved `#hq:example.com` as
-a key. The value corresponding to this key should be handled the same as a response to the federation api's
-room alias lookup.
+   - Otherwise, the server MUST check if the JSON object contains the room alias to be resolved `#hq:example.com` as a key. The value corresponding to this key MUST be handled the same as a response to the federation api's room alias lookup.
 
-Otherwise, if the JSON object does not contain the room alias, the server falls back to the federation api's
-room alias lookup (see the second example above).
+   - Otherwise, if the JSON object does not contain the room alias, the server MUST fall back to the federation api's room alias lookup.
 
 ### Canonical room aliases
 
