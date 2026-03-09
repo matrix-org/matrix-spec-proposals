@@ -1,6 +1,6 @@
 # MSC4131: Handling `m.room.encryption` events
 
-The `m.room.encryption` event type indications whether encryption is enabled in
+The `m.room.encryption` event type indicates whether encryption is enabled in
 a room, and if so, what encryption algorithm to use and what parameters to use
 for the encryption algorithm.  However, the spec does not specify how to handle
 various situations that clients may encounter, such as unknown algorithms, or
