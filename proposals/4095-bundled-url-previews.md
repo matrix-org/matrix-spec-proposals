@@ -4,6 +4,8 @@ a client using the [`/_matrix/media/v3/preview_url`](https://spec.matrix.org/v1.
 endpoint. This is a relatively good approach, but a major downside is that the
 user's homeserver gets all links the user's client wants to show a preview for,
 which means using it in encrypted rooms will effectively leak parts of messages.
+Homeserver-generated previews also mean different users could see different
+previews for the same URL, e.g. due to regional differences.
 
 ## Proposal
 The proposed solution is allowing clients to bundle URL preview metadata inside
@@ -49,7 +51,9 @@ recommendation to allow URL previews without a corresponding link in the body.
 
 Clients MAY choose to ignore bundled data and ask the homeserver for a preview
 even if bundled data is present, as a security measure against faking preview
-data.
+data. For example, a client could choose to only use bundled data in encrypted
+rooms, where participants are likely to be more trusted than in unencrypted
+public rooms.
 
 Note: Ignoring bundled data does not mean ignoring the `m.url_previews` field:
 even when ignoring bundled data and/or verifying that matched_url is present in
@@ -254,13 +258,10 @@ are using old clients.
 
 ### Generating previews will leak IPs
 The sender's client will leak its IP when it fetches previews for URLs typed by
-the user. This is generally an acceptable tradeoff, as long as clients take
-care never to generate previews for links the user did not type.
-
-For example, if a client generates reply fallbacks, it MUST NOT generate
-previews for links in the fallback. Clients SHOULD also be careful with links
-when starting to edit a message, possibly by not generating new previews at
-all.
+the user. This is generally an acceptable tradeoff, as the user has likely
+opened the URL in a browser before sending anyway. Clients SHOULD be careful in
+cases where previews could be triggered by something the user did not input
+manually, such as when starting to edit a message.
 
 Clients MAY also provide extra safeguards, such as only offering a button to
 generate previews, rather than generating them immediately after the user types
