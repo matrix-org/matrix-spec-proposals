@@ -40,8 +40,9 @@ transferring state events during [room upgrades].
 In rooms shared by a large number of different organisations, the targeted room name events may
 pollute the room state.
 
-Power levels need to be configured appropriately in a room to allow users to send `m.room.name`
-state events.
+Outside of DMs, regular room members usually don't have the power level needed to send state events.
+As a result, rooms will have to be configured appropriately to let all members send server-targeted
+`m.room.name` events.
 
 ## Alternatives
 
