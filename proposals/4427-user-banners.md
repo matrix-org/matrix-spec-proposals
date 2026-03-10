@@ -28,6 +28,9 @@ We add a new field to represent banners:
 
 Clients can then use this field to load user banners.
 
+It is recommended that clients stick to a horizontal aspect ratio, 
+like 3:1 or 2.8:1.
+
 ## Potential issues
 
 Some clients, like [extera](https://matrix.org/ecosystem/clients/extera-next/)
