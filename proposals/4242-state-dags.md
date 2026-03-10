@@ -409,7 +409,7 @@ Walking with `latest_events={D,E}` returns `[B,C]`. Algorithmically, the server 
  - while the queue is not empty and the limit has not been reached:
    * dequeue an event ID and find its `prev_state_events` PSE.
    * Remove IDs from PSE if they are in 'seen'.
-   * add the remaining event IDs from PSE to the result list and the end of the queue.
+   * add the remaining event IDs from PSE to the result list and the end of the queue, sorting them first lexicographically.
  - the result list must not be reversed at the end, unlike non-state DAG `/get_missing_events` responses.
 
 ##### `/send_join`
