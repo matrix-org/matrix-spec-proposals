@@ -79,7 +79,9 @@ The properties in the object are defined as:
    [below](#new-withheld-code)) to indicate that the recipient isn't allowed to
    receive the key.
 
-A single session MUST NOT appear in both the `room_keys` and `withheld` sections.
+A single session MUST NOT appear in both the `room_keys` and `withheld`
+sections. Handling such malformed bundles as a receiving client is
+implementation-defined.
 
 The JSON object is then encrypted using the same algorithm as [encrypted
 attachments](https://spec.matrix.org/v1.17/client-server-api/#sending-encrypted-attachments)
@@ -273,7 +275,11 @@ When Bob's client receives an `m.room_key_bundle` event from Alice, there are tw
    however, that this process must be resilient to Bob's client being restarted
    before the download/import completes.
 
-   TODO: what does "recently" mean?
+   The definition of "recently" is left up to clients. (They should consider
+   balancing the needs of (a) a user that closes their client just after
+   joining a room but before the bundle is imported, against (b) the
+   overhead of attempting to download a key bundle on every
+   startup. Element-Web and `matrix-rust-sdk` use a value of 24 hours.)
 
  * Otherwise, Bob's client should store the details of the key bundle but not
    download it immediately.  If he later accepts an invite to the room from
@@ -294,8 +300,9 @@ be when importing a key export; however:
 ### Out-of-scope (for now, at least)
 
 * Ideally, the bundle would be deleted once the recipient has successfully
-  downloaded it. An implementation is left for a future MSC. This is tracked at
-  https://github.com/matrix-org/matrix-rust-sdk/issues/5113.
+  downloaded it. An implementation is left for a future MSC, such as
+  [MSC4425](https://github.com/matrix-org/matrix-spec-proposals/pull/4425). This
+  is tracked at https://github.com/matrix-org/matrix-rust-sdk/issues/5113.
 
 * In future, we will need to extend the
   [`BackedUpSessionData`](https://spec.matrix.org/v1.17/client-server-api/#definition-backedupsessiondata)
@@ -311,6 +318,21 @@ be when importing a key export; however:
 * As noted in the "Security considerations" section below, current
   implementations make assumptions about when it is necessary to rotate
   outgoing megolm sessions that are no longer sufficient.
+
+* It might be relatively easy to be tricked by a malicious user into downloading
+  a (potentially very large) key bundle. It's possible that we will need to add
+  a mechanism for warning the user about this in the future. In the meantime,
+  the risk is mitigated by the fact that the key bundle size is limited by the
+  homeserver's media size limit.
+
+* Users may experience unexpected failures when sending invites because they
+  have reached a limit in their media quota, or may be surprised to discover
+  that they have used their entire media quota by inviting people to encrypted
+  rooms.
+
+  [MSC4425](https://github.com/matrix-org/matrix-spec-proposals/pull/4425)
+  may help with this in the future, for example by force-expiring ephemeral
+  media.
 
 ## Alternatives
 
@@ -385,6 +407,15 @@ These alternatives are also discussed in a presentation made at Matrix Conferenc
   records of cross-signing keys seen for each user, and if a change is
   observed, consider this a red flag suggesting that the account may be
   compromised and confirm with the user.
+
+* Similarly, users need to be particularly careful when sending room invites
+  that the recipient of an invite is in fact the intended user: leaking
+  encryption keys to a typo-squatter could be catastrophic, for example.
+
+  Clients might consider warning users before they send an invite to a user
+  that they haven't previously interacted with. (This is tracked for the
+  Element clients at
+  [element-meta#3163](https://github.com/element-hq/element-meta/issues/3163).)
 
 * Recipients must be mindful that there is no authoritative evidence of the
   sender of messages decrypted using a room key bundle: a malicious (or buggy)
