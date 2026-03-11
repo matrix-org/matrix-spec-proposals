@@ -436,10 +436,39 @@ the image, or if absent, an empty object.
 ### Room upgrades
 
 Upon upgrading a room, homeservers SHOULD transfer `m.room.image_pack` state events
-to the new room. Homeservers SHOULD also update user's account data so that any
+to the new room.
+
+Homeservers SHOULD also update user's account data so that any
 `m.image_pack.rooms` account data events are re-pointed from the old room ID to
 the newly upgraded room ID; otherwise a user's global packs will quietly grow
 stale.
+
+One possible implementation strategy is laid out below.
+
+Upon a user joining a room;
+
+1. Determine whether the room is the result of a room upgrade from a previous room.
+2. If so, retrieve the previous room's room ID.
+3. Check whether the user has an `m.image_pack.rooms` entry in their account data.
+4. If so, check whether the previous room ID is one of the entries in that data
+  structure.
+5. If it's present, check whether `m.room.image_pack` state events with the
+  referenced `state_key`s exist in the new room.
+6. If so, replace that room ID with the upgraded room IDs. Implementations should
+  handle the case of only *some* `m.room.image_pack` state keys being migrated to
+  the upgraded room.
+
+This leaves the edge case of:
+
+1. The upgraded room is created.
+2. A user joins the upgraded room.
+3. Image packs are then transferred over.
+
+Leaving the user's list of `m.image_pack.rooms` stale.
+
+Thus, when performing a room upgrade, homeserver implementations should take
+care to *first* transfer `m.room.image_pack` state events to a new room, *then*
+invite users to the new room.
 
 ## Security Considerations
 
