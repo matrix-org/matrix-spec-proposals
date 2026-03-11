@@ -700,14 +700,14 @@ Response format:
 }
 ```
 
-Concrete example for a `livekit_multi_sfu` transport:
+Concrete example for a `livekit` transport:
 
 ```json5
 {
   "rtc_transports": [
     {
-      "type":"livekit_multi_sfu",
-      "livekit_service_url":"https://matrix-rtc.example.com/livekit/jwt"
+      "type": "livekit",
+      "livekit_service_url": "https://matrix-rtc.example.com/livekit/jwt"
     }
   ]
 }
@@ -718,7 +718,7 @@ Concrete example for a `livekit_multi_sfu` transport:
 * `rtc_transports` — array of transport-description representing the available RTC transports
   offered by the homeserver.  
 * Each object in the array MUST conform to the JSON schema defined for its `type` (e.g.
-  `livekit_multi_sfu` in MSC4195).
+  `livekit` in MSC4195).
 
 Clients SHOULD use this list to determine which RTC transports to connect to and may advertise their
 selected transports according to the respective MSC in the `rtc_transports` field of their
