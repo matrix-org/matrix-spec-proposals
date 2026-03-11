@@ -64,18 +64,18 @@ to limit the number of active LiveKit SFU connections.
 The `livekit_alias` is shared with clients as part of their JWT token issued by the authorisation
 service.
 
-### Focus type: `livekit_multi_sfu`
+### Transport type: `livekit`
 
 This section defines the JSON format for the LiveKit SFU Transport, covering both homeserver-side
 advertisement and client-side consumption.
 
-### Transport Advertisement (homeserver)
+#### Transport Advertisement (homeserver)
 
 The mechanism for advertising available RTC transports by homeservers is already defined in
 [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
 
 The homeserver announces available LiveKit Transport as a JSON object with the following fields:
-* `type` — required `string`: this MUST be `livekit_multi_sfu`  
+* `type` — required `string`: this MUST be `livekit`  
 * `livekit_service_url` — required `string`: The URL of the service that issues JWT tokens for
   connecting this LiveKit SFU.
 
@@ -84,14 +84,14 @@ An example for  `GET /_matrix/client/v1/rtc/transports`
 {
   "rtc_transports": [
     {
-      "type": "livekit_multi_sfu",
+      "type": "livekit",
       "livekit_service_url": "https://matrix-rtc.example.com/livekit/jwt"
     }
   ]
 }
 ```
 
-### Transport Usage (client)
+#### Transport Usage (client)
 
 The mechanism for discovering available RTC transports by clients is already defined in
 [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
@@ -104,7 +104,7 @@ Other clients in the same MatrixRTC slot discover and subscribe to each other’
 to the published media.
 
 Field Descriptions:
-* `type` — required `string`: this MUST be `"livekit_multi_sfu"`  
+* `type` — required `string`: this MUST be `"livekit"`  
 * `livekit_service_url` — required `string`: The URL of the service that issues JWT tokens for
   connecting this LiveKit SFU.
 
@@ -113,7 +113,7 @@ Field Descriptions:
   // rest of the m.rtc.member event
   "rtc_transports": [
     {
-      "type": "livekit_multi_sfu",
+      "type": "livekit",
       "livekit_service_url": "https://matrix-rtc.example.com/livekit/jwt",
     }
   ]
