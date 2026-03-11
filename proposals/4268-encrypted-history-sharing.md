@@ -389,9 +389,14 @@ These alternatives are also discussed in a presentation made at Matrix Conferenc
   the user does not have a copy of the session decryption key and it is safe to
   continue using the same session.
 
-  The latter is no longer a valid assumption.
+  The latter is no longer a valid assumption. Instead, clients MUST observe
+  changes in state in the room, and whenever they see a user leaving the room,
+  assume that the departed user may have access to any existing Megol session,
+  and create a new session before sending further encrypted messages.
 
-  TODO: how to solve this? https://github.com/element-hq/element-meta/issues/3078.
+  Note that, in a `limited` sync, clients must treat any membership event with a
+  membership other than `join` as an indication that the affected user may have
+  joined and left the room.
 
 * The proposed mechanism allows clients to share the decryption keys for
   significant amounts of encrypted content. Sharing historical keys in this way
