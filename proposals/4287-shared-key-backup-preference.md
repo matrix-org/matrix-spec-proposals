@@ -119,9 +119,9 @@ server could:
 * cause data loss by tricking clients into not performing key backups. (But
   servers can delete data from key backups at will, so this seems unimportant.)
 
-This can be mitigated if clients make a mismatch in the setting visible at
-the time when it affects behaviour (on sign-in). In the future it may be possible
-to monitor the setting and inform users of any change to the setting.
+This can be mitigated if clients make it visible to users when the
+server-provided setting is going to affect their behaviour e.g. by prompting the
+user for confirmation.
 
 ## Unstable prefix
 
