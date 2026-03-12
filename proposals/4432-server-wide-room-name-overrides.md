@@ -32,7 +32,7 @@ The [recommendations] for computing room display names in clients are changed ac
 Clients MAY additionally display the room name as computed without the server-targeted state event
 to provide an indication of how the room might show up for other users.
 
-Servers MUST include both state events in [stripped state], [server-side search categories] and when
+Servers MUST include `m.room.name` state events for all `state_key`s in [stripped state], [server-side search categories] and when
 transferring state events during [room upgrades].
 
 ## Potential issues
