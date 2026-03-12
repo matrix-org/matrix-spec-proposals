@@ -26,7 +26,7 @@ scope the name to users of that server.
 The [recommendations] for computing room display names in clients are changed accordingly:
 
 - A new first step is inserted: If the room has an `m.room.name` state event with a `state_key`
-  matching the users homeserver and a non-empty `name` field, use the name given by that field.
+  matching the user's homeserver and a non-empty `name` field, use the name given by that field.
 - The previous first step is limited to `m.room.name` state events with an empty `state_key`.
 
 Clients MAY additionally display the room name as computed without the server-targeted state event
