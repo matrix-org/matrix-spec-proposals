@@ -58,6 +58,11 @@ To prevent abuse, servers MUST reject `m.room.name` events with a non-empty stat
 match the sender's server name. This requires a new step in the event authorization rules and
 thereby a new room version.
 
+There is currently no way to give a user permissions to send a server-targetted
+`m.room.name` event without also giving them permission to send a non-targetted
+`m.room.name` event.  Therefore, only trusted users should have permissions to
+send server-targetted `m.room.name` events.
+
 ## Unstable prefix
 
 None.
