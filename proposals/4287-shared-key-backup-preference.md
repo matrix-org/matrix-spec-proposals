@@ -138,7 +138,7 @@ so we propose to use this form as an unstable prefix, and reverse the sense of
 the boolean when this feature is stabilised.
 
 NOTE: the use of the `m.` prefix for this property name was a mistake since
-[identifiers starting with the characters m. are reserved for use by the official Matrix specification](https://spec.matrix.org/latest/appendices/#common-namespaced-identifier-grammar).
+[identifiers starting with the characters m. are reserved for use by the official Matrix specification](https://spec.matrix.org/v1.17/appendices/#common-namespaced-identifier-grammar).
 
 ## Dependencies
 
