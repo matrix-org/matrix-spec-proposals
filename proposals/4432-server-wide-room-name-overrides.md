@@ -54,6 +54,10 @@ not sufficient in cases where multiple local users need to share the same room n
 Since state events are currently not encrypted, the server-targeted `m.room.name` event may leak
 metadata. This problem already exists with the current state event though.
 
+To prevent abuse, servers MUST reject `m.room.name` events with a non-empty state key that doesn't
+match the sender's server name. This requires a new step in the event authorization rules and
+thereby a new room version.
+
 ## Unstable prefix
 
 None.
