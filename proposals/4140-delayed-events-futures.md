@@ -788,7 +788,12 @@ instead of state events for this, and thus no longer needs this rule.
 
 ## Security considerations
 
-All new endpoints are authenticated.
+### Authentication
+
+All new endpoints are either authenticated or require knowledge of a server-generated `delay_id`.
+As such, generated `delay_id`s MUST be cryptographically random such that they are difficult to guess.
+
+### Limits
 
 To mitigate the risk of users flooding the delayed events database, servers MUST impose limits on the number and
 timeout duration of scheduled delayed events. The exact limits are left as an implementation detail.
