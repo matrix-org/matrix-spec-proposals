@@ -32,8 +32,8 @@ The [recommendations] for computing room display names in clients are changed ac
 Clients MAY additionally display the room name as computed without the server-targeted state event
 to provide an indication of how the room might show up for other users.
 
-Servers MUST include `m.room.name` state events for all `state_key`s in [stripped state], [server-side search categories] and when
-transferring state events during [room upgrades].
+Servers MUST include `m.room.name` state events for all `state_key`s in [stripped state],
+[server-side search categories] and when transferring state events during [room upgrades].
 
 ## Potential issues
 
@@ -58,10 +58,9 @@ To prevent abuse, servers MUST reject `m.room.name` events with a non-empty stat
 match the sender's server name. This requires a new step in the event authorization rules and
 thereby a new room version.
 
-There is currently no way to give a user permissions to send a server-targetted
-`m.room.name` event without also giving them permission to send a non-targetted
-`m.room.name` event.  Therefore, only trusted users should have permissions to
-send server-targetted `m.room.name` events.
+There is currently no way to give a user permissions to send a server-targeted `m.room.name` event
+without also giving them permission to send a non-targeted `m.room.name` event. Therefore, only
+trusted users should have permissions to send server-targeted `m.room.name` events.
 
 ## Unstable prefix
 
