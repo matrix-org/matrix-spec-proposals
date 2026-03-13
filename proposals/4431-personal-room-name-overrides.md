@@ -38,8 +38,6 @@ Since account data cannot be deleted, clients MAY set the value to the empty obj
 the override. Contrarily, to force an empty room name, clients MAY use a value of `""` for `name` in
 the override.
 
-Finally, clients MAY encrypt `m.room.name.override` using the [Secrets module].
-
 ## Potential issues
 
 Confusion may arise when people refer to the same room under different names due to their personal
@@ -59,8 +57,9 @@ to send state events in all rooms.
 
 ## Security considerations
 
-Personalised room name overrides may leak metadata to the home server. Clients MAY use the [Secrets
-module] to prevent this.
+Just like the `m.room.name` state event, personalised room name overrides may leak metadata to the
+home server. A future MSC may introduce a practical encryption mechanism for account data events,
+for instance, by building upon the [Secrets module] to prevent this.
 
 ## Unstable prefix
 
@@ -75,5 +74,5 @@ None.
   [recommendations]: https://spec.matrix.org/v1.17/client-server-api/#calculating-the-display-name-for-a-room
   [`m.room.name`]: https://spec.matrix.org/v1.17/client-server-api/#mroomname
   [`m.room.canonical_alias`]: https://spec.matrix.org/v1.17/client-server-api/#mroomcanonical_alias
-  [Secrets module]: https://spec.matrix.org/v1.17/client-server-api/#secrets
   [MSC3015]: https://github.com/matrix-org/matrix-spec-proposals/pull/3015
+  [Secrets module]: https://spec.matrix.org/v1.17/client-server-api/#secrets
