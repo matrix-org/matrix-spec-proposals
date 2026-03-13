@@ -45,7 +45,7 @@ If the user ID is [non-compliant](https://spec.matrix.org/v1.17/appendices/#hist
 the server returns HTTP 400 with the `M_INVALID_PARAM` error code.
 
 ```http
-GET /_matrix/client/v1/user/mutual_rooms?user_id=%40bob%3Aexample.com
+GET /_matrix/client/v1/mutual_rooms?user_id=%40bob%3Aexample.com
 ```
 
 ```json
@@ -81,7 +81,7 @@ results. For example:
 The client can make another request to get the next batch of results:
 
 ```http
-GET /_matrix/client/v1/user/mutual_rooms?user_id=%40bob%3Aexample.com&from=<opaque_identifier>
+GET /_matrix/client/v1/mutual_rooms?user_id=%40bob%3Aexample.com&from=<opaque_identifier>
 ```
 
 The batch tokens this endpoint generates are only valid for this endpoint.
@@ -154,3 +154,5 @@ If the value is `false` or the key is not present, clients MUST assume the featu
 Once the MSC has been merged, but before the homeserver advertises support for the Matrix spec
 version that includes this endpoint, servers SHOULD set the `uk.half-shot.msc2666.query_mutual_rooms.stable`
 unstable feature flag to `true` to indicate they support the stable `/_matrix/client/v1/mutual_rooms` endpoint.
+
+**Note**: The stable endpoint does *not* have a `/user` component.
