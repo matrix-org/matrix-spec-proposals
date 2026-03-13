@@ -110,12 +110,15 @@ Content-Type: application/json
 The homeserver **should** apply rate limiting to the scheduling of delayed events to provide mitigation against the
 [High Volume of Messages](https://spec.matrix.org/v1.17/appendices/#threat-high-volume-of-messages) threat.
 
-If the user has too many outstanding delayed events, the server will respond with HTTP 403 and the
-`M_LIMIT_EXCEEDED` error code:
+If the user has too many outstanding delayed events, the server will respond with HTTP 429, the
+`M_LIMIT_EXCEEDED` error code, and a `Retry-After` header whose value is set to the time of/until
+the scheduled send time of the next of the user's delayed events to be sent,
+rounded up to the nearest second.
 
 ```http
-403 Forbidden
+429 Too Many Requests
 Content-Type: application/json
+Retry-After: 1200
 
 {
   "errcode": "M_LIMIT_EXCEEDED",
