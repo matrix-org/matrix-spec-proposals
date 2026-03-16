@@ -101,7 +101,9 @@ server-managed anyway.
 
 ## Unstable prefix
 
-None.
+| Stable identifier         | Purpose           | Unstable identifier                        |
+|---------------------------|-------------------|--------------------------------------------|
+| `m.room.name.server_wide` | Account data type | `de.gematik.msc4432.room.name.server_wide` |
 
 ## Dependencies
 
