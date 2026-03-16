@@ -103,6 +103,39 @@ The rendezvous session (i.e. the payload) SHOULD expire after a period of time c
 `expires_in_ms` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
 the payload MUST fail. The rendezvous session can be manually expired with a `DELETE` call to the rendezvous session.
 
+### `GET /_matrix/client/v1/rendezvous` - Discover if the rendezvous API is available
+
+Rate-limited: Yes
+Requires authentication: Optional - depending on server policy
+
+Clients can use this endpoint to determine if the rendezvous API is available to them. Because the server policy may
+require authentication, clients should make this request with their access token if they have one.
+
+HTTP response codes, and Matrix error codes:
+
+- `200 OK` - rendezvous API is available to the requester
+- `403 Forbidden` (`M_FORBIDDEN`) - the requester is not authorized to create the rendezvous session
+- `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
+- `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
+
+The response body for `200 OK` is `application/json` with an empty body. It means that the requester is able to create
+a rendezvous session using `POST /_matrix/client/v1/rendezvous`.
+
+Example response:
+
+```http
+HTTP 200 OK
+Content-Type: application/json
+
+{}
+```
+
+The body could be extended in future to provide any other information that the requester might require to use the
+rendezvous API.
+
+The server can chose what level of authentication is required to create a rendezvous session. Please see the description
+of `POST /_matrix/client/v1/rendezvous` for a description of this.
+
 ### `POST /_matrix/client/v1/rendezvous` - Create a rendezvous session and send initial payload
 
 Rate-limited: Yes
@@ -1000,18 +1033,6 @@ A threat analysis has been done within each of the key layers in the proposal ab
 While this feature is in development the new API endpoints should be exposed using the following unstable prefix:
 
 - `/_matrix/client/unstable/io.element.msc4388/rendezvous` instead of `/_matrix/client/v1/rendezvous`
-
-Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions` response, with the
-key `io.element.msc4388` set to true. So, the response could look then as following:
-
-```json
-{
-    "versions": ["..."],
-    "unstable_features": {
-        "io.element.msc4388": true
-    }
-}
-```
 
 ### Unstable QR code format
 
