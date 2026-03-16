@@ -57,7 +57,7 @@ This proposal largely follows [MSC3015] which appears to have been abandoned. On
 the usage of `private` rather than `override` in the account data type. The fact that
 `m.room.name.private` in account data overrides `m.room.name` in the room state seems sufficiently
 clear even without an explicit `override` suffix. This is because the room state is shared by all
-room members whereas room account data is storage specifially meant for a single user. In contrast,
+room members whereas room account data is storage specifically meant for a single user. In contrast,
 the semantics of an `m.room.name` account data type would not be clear if another kind of override
 is introduced in an `m.room.name.whatever` account data type in future.
 
