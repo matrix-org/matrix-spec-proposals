@@ -19,19 +19,24 @@ for room names via account data.
 
 ## Proposal
 
-A new room account data type `m.room.name.override` is introduced. The schema is identical to the
-schema of `content` in [`m.room.name`].
+A new room account data type `m.room.name.private` is introduced. The schema is identical to the
+schema of `content` in the [`m.room.name`] state event.
 
-    GET /_matrix/client/v3/user/@john:example.com/account_data/m.room.name.override
+    GET /_matrix/client/v3/user/@john:example.com/account_data/m.room.name.private
     {
       "name": "Charlie Meyers (the Hotspurs guy)"
     }
 
-A new first step is inserted at the very beginning of the [room name computation
-RECOMMENDATIONs][recommendations]: If `m.room.name.override` exists in the room's account data and
-is not the empty object (`{}`), use the name given by that item.
+The suffix `.private` enables future extensibility and helps distinguish personalised overrides from
+other kinds of overrides such as the server-wide overrides introduced in [MSC4432]. The naming
+matches the [`m.read.private`] read receipt type which is used for personal receipts that are not
+shared with other users.
 
-Clients MAY additionally display the room name implied by [`m.room.name`] and
+To apply the override, a new first step is inserted at the very beginning of the [room name
+computation RECOMMENDATIONs][recommendations]: If `m.room.name.private` exists in the room's account
+data and is not the empty object (`{}`), use the name given by that item.
+
+Clients MAY additionally display the room name implied by the state events [`m.room.name`] and
 [`m.room.canonical_alias`] as an indicator for how the room may be displayed for other users.
 
 Since account data cannot be deleted, clients MAY set the value to the empty object (`{}`) to remove
@@ -48,7 +53,13 @@ display both names to help alleviate this issue.
 
 ## Alternatives
 
-This proposal largely follows [MSC3015] which appears to have been abandoned.
+This proposal largely follows [MSC3015] which appears to have been abandoned. One key difference is
+the usage of `private` rather than `override` in the account data type. The fact that
+`m.room.name.private` in account data overrides `m.room.name` in the room state seems sufficiently
+clear even without an explicit `override` suffix. This is because the room state is shared by all
+room members whereas room account data is storage specifially meant for a single user. In contrast,
+the semantics of an `m.room.name` account data type would not be clear if another kind of override
+is introduced in an `m.room.name.whatever` account data type in future.
 
 An actual alternative would be to store personal overrides in `m.room.name` state events by using
 the MXID as `state_key`. This doesn't provide confidentiality for overrides and may pollute the room
@@ -63,9 +74,9 @@ for instance, by building upon the [Secrets module] to prevent this.
 
 ## Unstable prefix
 
-| Stable identifier      | Purpose           | Unstable identifier                     |
-|------------------------|-------------------|-----------------------------------------|
-| `m.room.name.override` | Account data type | `de.gematik.msc4431.room.name.override` |
+| Stable identifier     | Purpose           | Unstable identifier                    |
+|-----------------------|-------------------|----------------------------------------|
+| `m.room.name.private` | Account data type | `de.gematik.msc4431.room.name.private` |
 
 ## Dependencies
 
@@ -74,5 +85,7 @@ None.
   [recommendations]: https://spec.matrix.org/v1.17/client-server-api/#calculating-the-display-name-for-a-room
   [`m.room.name`]: https://spec.matrix.org/v1.17/client-server-api/#mroomname
   [`m.room.canonical_alias`]: https://spec.matrix.org/v1.17/client-server-api/#mroomcanonical_alias
+  [MSC4432]: https://github.com/matrix-org/matrix-spec-proposals/pull/4432
+  [`m.read.private`]: https://spec.matrix.org/v1.17/client-server-api/#private-read-receipts
   [MSC3015]: https://github.com/matrix-org/matrix-spec-proposals/pull/3015
   [Secrets module]: https://spec.matrix.org/v1.17/client-server-api/#secrets
