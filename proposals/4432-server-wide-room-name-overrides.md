@@ -39,7 +39,7 @@ Clients MAY set the override value using the [standard endpoint for writing acco
     }
 
 When a value is written, servers MUST propagate it into the corresponding room account data of all
-local room members. Similarily, if a new local user joins a room where a server-wide room name
+local room members. Similarly, if a new local user joins a room where a server-wide room name
 exists, servers MUST replicate the value into the user's room account data.
 
 Servers MAY restrict which users are allowed to write the `m.room.name.server_wide` account data
