@@ -52,7 +52,7 @@ ahead of sending the request, a new capability `m.room.name.server_wide` is intr
 capability contains one of two properties `allowed` or `disallowed` both of which are lists of room
 IDs. When `allowed` is present, clients can only write the account data type in the contained rooms
 but not in others. Contrarily, when `disallowed` is present, clients can write the account data type
-in all rooms execpt for the contained rooms. This is similar to the `allowed` and `disallowed`
+in all rooms except for the contained rooms. This is similar to the `allowed` and `disallowed`
 properties in the [`m.profile_fields` capability].
 
 ``` json5
