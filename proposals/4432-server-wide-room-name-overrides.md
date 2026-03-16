@@ -16,51 +16,82 @@ these cases. Instead, organizations require the name to be shared across all use
 homeserver without impacting the displayed room name for users on other servers.
 
 This proposal addresses this problem by introducing a way to set server-wide overrides of the room
-name via state events.
+name via a (semi-)managed account data type.
 
 ## Proposal
 
-When sending [`m.room.name`] state events, Clients MAY set the `state_key` to a [server name] to
-scope the name to users of that server.
+A new room account data type `m.room.name.server_wide` is introduced. The schema is identical to the
+schema of `content` in the [`m.room.name`] state event.
 
-The [recommendations] for computing room display names in clients are changed accordingly:
+    GET /_matrix/client/v3/user/${userId}/rooms/${roomId}/account_data/m.room.name.server_wide
+    {
+      "name": "Project Phoenix"
+    }
 
-- A new first step is inserted: If the room has an `m.room.name` state event with a `state_key`
-  matching the user's homeserver and a non-empty `name` field, use the name given by that field.
-- The previous first step is limited to `m.room.name` state events with an empty `state_key`.
+The `.server_wide` suffix helps clarify the semantics of the data and distinguishes it from other
+types of overrides such as the personal overrides proposed by [MSC4431].
 
-Clients MAY additionally display the room name as computed without the server-targeted state event
-to provide an indication of how the room might show up for other users.
+Clients MAY set the override value using the [standard endpoint for writing account data].
 
-Servers MUST include `m.room.name` state events for all `state_key`s in [stripped state],
-[server-side search categories] and when transferring state events during [room upgrades].
+    PUT /_matrix/client/v3/user/${userId}/rooms/${roomId}/account_data/m.room.name.server_wide
+    {
+      "name": "[External] Fancy Inc."
+    }
+
+When a value is written, servers MUST propagate it into the corresponding room account data of all
+local room members. Similarily, if a new local user joins a room where a server-wide room name
+exists, servers MUST replicate the value into the user's room account data.
+
+Servers MAY restrict which users are allowed to write the `m.room.name.server_wide` account data
+type. They MAY also make the account data type fully managed and deny write-access to users
+entirely. The existing 405 error response type can be used to communicate a lack of privileges back
+to the client.
+
+To apply an existing override, a new first step is inserted at the very beginning of the [room name
+computation RECOMMENDATIONs][]: If `m.room.name.server_wide` exists in the room's account data and
+is not the empty object (`{}`), use the name given by that item.
+
+Clients MAY additionally display the room name implied by the state events [`m.room.name`] and
+[`m.room.canonical_alias`] as an indicator for how the room may be displayed for other users.
+
+Since account data cannot be deleted, clients MAY set the value to the empty object (`{}`) to remove
+the override. Contrarily, to force an empty room name, clients MAY use a value of `""` for `name` in
+the override.
 
 ## Potential issues
 
-In rooms shared by a large number of different organisations, the targeted room name events may
-pollute the room state.
+Confusion may arise when people refer to the same room under different names due to their local
+server's overrides. Clients can display both the server-wide and the official name to mitigate this
+problem.
 
-Outside of DMs, regular room members usually don't have the power level needed to send state events.
-As a result, rooms will have to be configured appropriately to let appropriate members send
-`m.room.name` events.
+Users may miss changes of a room's purpose due to their personal name override. Again, clients can
+display both names to help alleviate this issue.
 
 ## Alternatives
 
 [MSC4431] enables personalised and confidential room name overrides via room account data. This is
 not sufficient in cases where multiple local users need to share the same room name, however.
 
+A different, functionally equivalent alternative is using the local [server name] in `state_key`
+when sending [`m.room.name`] state events. This has a number of downsides, however.
+
+- In rooms shared by a large number of different organisations, the server-targeted room name events
+  may pollute the room state.
+- Outside of DMs, regular room members usually don't have the power level needed to send state
+  events. As a result, rooms will have to be configured to let appropriate members send
+  `m.room.name` events. There is currently no way to configure power levels on the `state_key` level
+  though.
+- Since state events are shared among all members of a room, server-wide room name overrides are
+  exposed to users on other servers.
+- To prevent abuse, servers would have to reject `m.room.name` events with a non-empty state key
+  that doesn't match the sender's server name. This requires a new step in the event authorization
+  rules and thereby a new room version which drastically complicates adoption of the feature.
+
 ## Security considerations
 
-Since state events are currently not encrypted, the server-targeted `m.room.name` event may leak
-metadata. This problem already exists with the current state event though.
-
-To prevent abuse, servers MUST reject `m.room.name` events with a non-empty state key that doesn't
-match the sender's server name. This requires a new step in the event authorization rules and
-thereby a new room version.
-
-There is currently no way to give a user permissions to send a server-targeted `m.room.name` event
-without also giving them permission to send a non-targeted `m.room.name` event. Therefore, only
-trusted users should have permissions to send server-targeted `m.room.name` events.
+Just like the `m.room.name` state event, server-wide room name overrides may leak metadata to the
+home server. This seems like a minor concern, however, given that the feature is partly or fully
+server-managed anyway.
 
 ## Unstable prefix
 
@@ -72,8 +103,7 @@ None.
 
   [`m.room.name`]: https://spec.matrix.org/v1.17/client-server-api/#mroomname
   [MSC4431]: https://github.com/matrix-org/matrix-spec-proposals/pull/4431
+  [standard endpoint for writing account data]: https://spec.matrix.org/v1.17/client-server-api/#put_matrixclientv3useruseridroomsroomidaccount_datatype
+  [room name computation RECOMMENDATIONs]: https://spec.matrix.org/v1.17/client-server-api/#calculating-the-display-name-for-a-room
+  [`m.room.canonical_alias`]: https://spec.matrix.org/v1.17/client-server-api/#mroomcanonical_alias
   [server name]: https://spec.matrix.org/v1.17/appendices/#server-name
-  [recommendations]: https://spec.matrix.org/v1.17/client-server-api/#calculating-the-display-name-for-a-room
-  [stripped state]: https://spec.matrix.org/v1.17/client-server-api/#stripped-state
-  [server-side search categories]: https://spec.matrix.org/v1.17/client-server-api/#search-categories
-  [room upgrades]: https://spec.matrix.org/v1.17/client-server-api/#server-behaviour-19
