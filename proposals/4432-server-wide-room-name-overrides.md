@@ -47,6 +47,39 @@ type. They MAY also make the account data type fully managed and deny write-acce
 entirely. The existing 405 error response type can be used to communicate a lack of privileges back
 to the client.
 
+To let clients determine whether or not they can write the new account data type in a specific room
+ahead of sending the request, a new capability `m.room.name.server_wide` is introduced. The
+capability contains one of two properties `allowed` or `disallowed` both of which are lists of room
+IDs. When `allowed` is present, clients can only write the account data type in the contained rooms
+but not in others. Contrarily, when `disallowed` is present, clients can write the account data type
+in all rooms execpt for the contained rooms. This is similar to the `allowed` and `disallowed`
+properties in the [`m.profile_fields` capability].
+
+``` json5
+{
+  "capabilities": {
+    "m.room.name.server_wide": {
+      // Can only write m.room.name.server_wide account data in these two rooms
+      "allowed": ["!nD4Jy1hp0We0VmIM9ubjqWLBX_uV8YlTBBPa3a_v2uk", "!0KNSXYXB_2xtEUkQ9MGBRy5oNIOfAKoq2uIqPZCJbI8"]
+    }
+  }
+}
+```
+
+``` json5
+{
+  "capabilities": {
+    "m.room.name.server_wide": {
+      // Can write m.room.name.server_wide account data in all rooms except for these two
+      "disallowed": ["!nD4Jy1hp0We0VmIM9ubjqWLBX_uV8YlTBBPa3a_v2uk", "!0KNSXYXB_2xtEUkQ9MGBRy5oNIOfAKoq2uIqPZCJbI8"]
+    }
+  }
+}
+```
+
+When the capability is missing, clients SHOULD assume that they are not allowed to write the account
+data type in any rooms.
+
 To apply an existing override, a new first step is inserted at the very beginning of the [room name
 computation RECOMMENDATIONs][]: If `m.room.name.server_wide` exists in the room's account data and
 is not the empty object (`{}`), use the name given by that item.
@@ -104,6 +137,7 @@ server-managed anyway.
 | Stable identifier         | Purpose           | Unstable identifier                        |
 |---------------------------|-------------------|--------------------------------------------|
 | `m.room.name.server_wide` | Account data type | `de.gematik.msc4432.room.name.server_wide` |
+| `m.room.name.server_wide` | Capability        | `de.gematik.msc4432.room.name.server_wide` |
 
 ## Dependencies
 
@@ -112,6 +146,7 @@ None.
   [`m.room.name`]: https://spec.matrix.org/v1.17/client-server-api/#mroomname
   [MSC4431]: https://github.com/matrix-org/matrix-spec-proposals/pull/4431
   [standard endpoint for writing account data]: https://spec.matrix.org/v1.17/client-server-api/#put_matrixclientv3useruseridroomsroomidaccount_datatype
+  [`m.profile_fields` capability]: https://spec.matrix.org/v1.17/client-server-api/#mprofile_fields-capability
   [room name computation RECOMMENDATIONs]: https://spec.matrix.org/v1.17/client-server-api/#calculating-the-display-name-for-a-room
   [`m.room.canonical_alias`]: https://spec.matrix.org/v1.17/client-server-api/#mroomcanonical_alias
   [server name]: https://spec.matrix.org/v1.17/appendices/#server-name
