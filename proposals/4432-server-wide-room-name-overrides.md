@@ -67,6 +67,12 @@ problem.
 Users may miss changes of a room's purpose due to their personal name override. Again, clients can
 display both names to help alleviate this issue.
 
+In some cases, users may want to use name overrides from remote servers. For instance, a user may be
+joined to work rooms with both a work and a personal account and might want to see the name
+overrides from work even when using their personal account. This is not possible under the current
+proposal since there is no way to exchange account data between servers. A future proposal may
+devise a way to enable this.
+
 ## Alternatives
 
 [MSC4431] enables personalised and confidential room name overrides via room account data. This is
