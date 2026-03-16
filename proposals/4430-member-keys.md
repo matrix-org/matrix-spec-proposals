@@ -303,6 +303,10 @@ The alternative option to eventually expire server signing keys for unreachable 
 
 None.
 
+### Acknowledgements
+
+Thanks to @Gnuxie for their work on MSC4345 and MSC4348 which inspired keeping server keys for moderation concerns.
+
 ### Appendix
 
 #### Comparison with other proposals
