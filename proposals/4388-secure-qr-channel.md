@@ -1001,6 +1001,17 @@ It could also be made a MUST rather than SHOULD.
 However, it has been deliberately left as an implementation detail such that alternative protections can be used if
 appropriate for a particular deployment scenario, or if a better mechanism becomes available.
 
+#### Initialise `Context_DeviceG_Send` with a real exporter secret
+
+It has been suggested that the "warning" about not using the exporter interface of `Context_DeviceG_Send` could be
+removed.
+
+To do so we could instead initialize `Context_DeviceG_Send`` with some real exporter secret, but that would be more
+expensive and we wouldn't use the exporter interface of the response context.
+
+Another alternative would be to not use the HPKE context for the other direction, but then we would need to reimplement
+the nonce handling.
+
 ### Alternative QR code formats
 
 An earlier version of this proposal kept the "version" byte at `0x02` and added additional "mode"
