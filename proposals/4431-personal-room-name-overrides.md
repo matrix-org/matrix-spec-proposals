@@ -22,7 +22,7 @@ for room names via account data.
 A new room account data type `m.room.name.private` is introduced. The schema is identical to the
 schema of `content` in the [`m.room.name`] state event.
 
-    GET /_matrix/client/v3/user/@john:example.com/account_data/m.room.name.private
+    GET /_matrix/client/v3/user/${userId}/rooms/${roomId}/account_data/m.room.name.private
     {
       "name": "Charlie Meyers (the Hotspurs guy)"
     }
