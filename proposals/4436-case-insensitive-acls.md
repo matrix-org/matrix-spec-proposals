@@ -2,7 +2,7 @@
 
 [MSC1383](https://github.com/matrix-org/matrix-spec-proposals/issues/1383) originally introduced
 [server ACLs](https://spec.matrix.org/v1.17/server-server-api/#server-access-control-lists-acls). At
-the time, the MSC failed to clarify whether ACLs are case sensitive or insenstive. The
+the time, the MSC failed to clarify whether ACLs are case sensitive or insensitive. The
 [Synapse implementation](https://github.com/matrix-org/synapse/commit/3cf3e08a97f4617763ce10da4f127c0e21d7ff1d#diff-996dafa2cabdf043e51a444e5d3c5ba8389d48e6cdab0d469677974bd470d58fR726)
 used `re.IGNORECASE` to match entries, indicating preference that the ACLs should be case insensitive.
 Implementations based on Ruma will also [check case insensitively](https://github.com/ruma/ruma/blob/c242467a8ac13e691af10d69f76ca8c293e165db/crates/ruma-events/src/room/server_acl.rs#L64-L65).
