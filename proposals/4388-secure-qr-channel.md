@@ -221,6 +221,10 @@ Content-Type: application/json
 }
 ```
 
+The server MUST perform a compare-and-swap operation by checking that the `sequence_token` matches
+the current sequence token for the session. If it does not match then the `data` MUST not be
+accepted and the `M_CONCURRENT_WRITE` error is returned.
+
 HTTP response codes, and Matrix error codes:
 
 - `200 OK` - payload updated
