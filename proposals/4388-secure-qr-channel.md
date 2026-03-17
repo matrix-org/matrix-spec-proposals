@@ -163,7 +163,7 @@ HTTP response codes, and Matrix error codes:
 - `200 OK` - rendezvous session created
 - `403 Forbidden` (`M_FORBIDDEN`) - the requester is not authorized to create the rendezvous session
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
-- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied `data` value is larger than the 4096 UTF8 character limit
+- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied `data` value is larger than the 4096 byte limit
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
 Response body for `200 OK` is `application/json` with contents:
@@ -227,7 +227,7 @@ HTTP response codes, and Matrix error codes:
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `409 Conflict` (`M_CONCURRENT_WRITE`, a new error code) - when the `sequence_token` does not match
-- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied `data` value is larger than the 4096 UTF8 character limit
+- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied `data` value is larger than the 4096 byte limit
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
 The response body for `200 OK` is `application/json` with contents:
@@ -366,7 +366,7 @@ sequenceDiagram
 
 #### Maximum payload size
 
-The server MUST enforce a maximum payload size of 4096 UTF8 characters.
+The server MUST enforce a maximum `data` field size of 4096 bytes.
 
 #### `sequence_token` values
 
