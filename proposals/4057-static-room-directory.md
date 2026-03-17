@@ -59,7 +59,7 @@ with the corresponding room id in the `room_id` field and a list `servers` conta
 
 To resolve an room alias `#hq:example.com` with the first example above,
 
-1. first a server MUST now send an https `GET` request to alias domain's `.well-known/matrix/roms` path (given `example.com` that is `https://example.com/.well-known/matrix/rooms`) and decode the served JSON.
+1. first a server MUST now send an https `GET` request to alias domain's `.well-known/matrix/rooms` path (given `example.com` that is `https://example.com/.well-known/matrix/rooms`) and decode the served JSON.
 
 2. In case the request fails or the JSON doesn't decode, the server MUST fall back to the federation api's
 room alias lookup.
