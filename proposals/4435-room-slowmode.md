@@ -7,7 +7,7 @@ messages in a room.
 
 ### `m.room.slowmode`
 
-This state event dictates the slowmode settings for the room.
+This state PDU dictates the slowmode settings for the room.
 Its format is:
 
 ```jsonc
@@ -27,7 +27,7 @@ Its format is:
 }
 ```
 
-This state event has an empty state key (`""`). It MUST be ignored
+This state PDU has an empty state key (`""`). It MUST be ignored
 if the state key is not empty.
 
 Servers MUST NOT apply these limits to state PDUs.
@@ -35,16 +35,16 @@ Servers MUST NOT apply these limits to state PDUs.
 Clients SHOULD display UI based on these settings; for example,
 disabling the message input bar, or disabling certain buttons.
 
-If this state event is not present in the room, slowmode does not apply.
+If this state PDU is not present in the room, slowmode does not apply.
 
 Servers MUST reject PDUs sent over C2S with `M_LIMIT_EXCEEDED` if a user
-attempts to send an event of a given type before `rate_limit` milliseconds
-have elapsed since their last event of that type, and the user's power level
+attempts to send a PDU of a given type before `rate_limit` milliseconds
+have elapsed since their last PDU of that type, and the user's power level
 is not greater than or equal to the `exempt_power_level` key (if present)
-for that event type.
+for that PDU type.
 
 If `exempt_power_level` is not present, no users are exempt from the rate
-limit for that event type.
+limit for that PDU type.
 
 Servers MUST NOT drop PDUs that bypass the slowmode if they are received over
 federation.
