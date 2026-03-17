@@ -386,8 +386,7 @@ The existing device then sends an acknowledgement message to let the other devic
 }
 ```
 
-If the URI could not be opened (e.g. unsupported URI scheme, no browser available, or the user refused permission to
-open) then instead the existing device sends an `m.login.failure` with reason `unable_to_open_verification_uri`:
+If the URI could not be opened (e.g. unsupported URI scheme, no browser available) then instead the existing device sends an `m.login.failure` with reason `unable_to_open_verification_uri`:
 
 *Existing device => New device via secure channel*
 
@@ -395,6 +394,18 @@ open) then instead the existing device sends an `m.login.failure` with reason `u
 {
     "type": "m.login.failure",
     "reason": "unable_to_open_verification_uri"
+}
+```
+
+If the user denied permission to open the browser then instead the existing device sends an `m.login.failure` with
+reason `user_cancelled`:
+
+*Existing device => New device via secure channel*
+
+```json
+{
+    "type": "m.login.failure",
+    "reason": "user_cancelled"
 }
 ```
 
@@ -458,6 +469,8 @@ sequenceDiagram
             Note over E: n.b. in the case of a Web Browser the user needs to have<br> clicked a button in order for the navigation to happen
             alt URI opened
                 E->>HS: SecureSend({"type":"m.login.protocol_accepted"})
+            else user cancelled
+                E->>N: SecureSendReceive({"type":"m.login.failure", "reason":"user_cancelled"})
             else
                 E->>N: SecureSendReceive({"type":"m.login.failure", "reason":"unable_to_open_verification_uri"})
             end
