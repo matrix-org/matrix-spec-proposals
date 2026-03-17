@@ -374,7 +374,7 @@ If no existing device was found then the existing device opens the `verification
 `verification_uri`, if `verification_uri_complete` isn't present - in a system browser.
 
 Ideally this is in a trusted/secure environment where the cookie jar and password manager features are available. e.g.
-on iOS this could be a `ASWebAuthenticationSession`
+on iOS this could be a `ASWebAuthenticationSession`.
 
 The existing device then sends an acknowledgement message to let the other device know that the consent process is in progress:
 
@@ -383,6 +383,18 @@ The existing device then sends an acknowledgement message to let the other devic
 ```json
 {
     "type": "m.login.protocol_accepted"
+}
+```
+
+If the URI could not be opened (e.g. unsupported URI scheme, no browser available, or the user refused permission to
+open) then instead the existing device sends an `m.login.failure` with reason `unable_to_open_verification_uri`:
+
+*Existing device => New device via secure channel*
+
+```json
+{
+    "type": "m.login.failure",
+    "reason": "unable_to_open_verification_uri"
 }
 ```
 
@@ -444,7 +456,11 @@ sequenceDiagram
             HS->>E: 404 Not Found
             E->>UA: Existing device opens <br>verification_uri_complete (with fallback to verification_uri)<br> in the system web browser/ASWebAuthenticationSession:
             Note over E: n.b. in the case of a Web Browser the user needs to have<br> clicked a button in order for the navigation to happen
-            E->>HS: SecureSend({"type":"m.login.protocol_accepted"})
+            alt URI opened
+                E->>HS: SecureSend({"type":"m.login.protocol_accepted"})
+            else
+                E->>N: SecureSendReceive({"type":"m.login.failure", "reason":"unable_to_open_verification_uri"})
+            end
         end
         par
             Note over UA: 5) User is asked by the homeserver to consent
@@ -692,7 +708,7 @@ Fields:
 |Field|Type||
 |--- |--- |--- |
 |`type`|required `string`|`m.login.failure`|
-|`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol requested is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr></table>|
+|`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol requested is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr><tr><td><code>unable_to_open_verification_uri</code></td><td>Sent by existing device to indicate that it was unable to open the `verification_uri_complete` (or `verification_uri`)</td></tr></table>|
 |`homeserver`|`string`| When the existing device is sending this it can include the [server name] of the Matrix homeserver so that the new device can at least save the user the hassle of typing it in|
 
 Example:
