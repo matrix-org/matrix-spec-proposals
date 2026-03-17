@@ -1,4 +1,4 @@
-# MSC0000: Room slowmode
+# MSC4435: Room slowmode
 
 Some room administrators may want to limit the rate of
 messages in a room.
@@ -68,7 +68,7 @@ None.
 
 | Stable            | Unstable                     |
 |:------------------|:-----------------------------|
-| `m.room.slowmode` | `com.nhjkl.msc0000.slowmode` |
+| `m.room.slowmode` | `com.nhjkl.msc4435.slowmode` |
 
 ## Dependencies
 
