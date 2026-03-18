@@ -82,7 +82,7 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
   - 404, M_NOT_FOUND: if no pusher with this app_id exists
   - 410, M_EXPIRED_ACTIVATION_TOKEN: if this token for this app_id is expired
   - 400, M_UNKNOWN_ACTIVATION_TOKEN: if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
-  - 200: if the pusher has been activated
+  - 200: if the pusher has been activated. The response body does not contain any parameters.
 
 M_EXPIRED_ACTIVATION_TOKEN and M_UNKNOWN_ACTIVATION_TOKEN are new error codes.
 
