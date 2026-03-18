@@ -15,40 +15,39 @@ going over the specifications, because they use `endpoint`, and `auth` in the `P
 while [the current specifications let understand that only `url` and `format` are allowed](https://spec.matrix.org/v1.9/client-server-api/#_matrixclientv3pushers_pusherdata).
 The specifications already need to be adapted to follow what the web clients do.
 
-Web Push is a standard for (E2EE) push notifications, defined with 3 RFC:
+Web Push is a standard for (E2EE) push notifications, defined by 3 RFCs:
 - [RFC8030](https://www.rfc-editor.org/rfc/rfc8030) defines the application server to push server communications
 - [RFC8291](https://www.rfc-editor.org/rfc/rfc8291) defines the encryption:
-    - the subscribing client (user agent in RFC8030) generates a P-256 key pair the *auth* secret, and sends the P-256 public key and the *auth* secret to the home server during registration
+    - the subscribing client (user agent in RFC8030) generates a P-256 key pair and the *auth* secret, and sends the P-256 public key and the *auth* secret to the home server during registration
 		- the home server encrypts outgoing push notifications with the client keys
 		- the notifications are then decrypted by the subscribing client
-- [RFC8292](https://www.rfc-editor.org/rfc/rfc8292): defines the authorization:
+- [RFC8292](https://www.rfc-editor.org/rfc/rfc8292), VAPID: defines the authorization:
     - it is supposed to be *Voluntary* (optional) but many big push servers require it
-		- the home server generates a single P-256 key pair, and any client get request the public key
+		- the home server generates a single P-256 key pair, and any client can request the public key
 		- the client passes the VAPID public key while requesting a new registration to their push server
-		- the push server is then able to allow only requests, with an authorization header signed with the VAPID key
+		- the push server is then able to allow only requests which have an authorization header signed with the VAPID key
 		- the home server adds the authorization header to all push notifications
 
-Many libraries are already available and robust: they are reviewed, and acknowledge by experts.
+Many libraries are already available and robust: they are reviewed, and acknowledged by experts.
 
-Extending the push kind to [`POST /_matrix/client/v3/pushers/set`](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3pushersset) to a `*webpush*` would provide encrypted push notifications without the need for an external gateway to
-- Web app and desktop app
+Adding a `kind` of `webpush` to [`POST /_matrix/client/v3/pushers/set`](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3pushersset) would allow the following types of client to to receive encrypted push notifications without the need for an external gateway:
+- Web apps and desktop apps
 - Android apps using [UnifiedPush](https://codeberg.org/UnifiedPush/specifications/src/branch/main/specifications/android.md#resources). This MSC would make [MSC2970](https://github.com/matrix-org/matrix-spec-proposals/pull/2970) redundant.
 - Android apps using FCM ([It is possible to push to FCM with webpush standard](https://unifiedpush.org/news/20250131_push_for_decentralized/))
-- Maybe other ? We have seen [apple moving a lot into web push support](https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers)
+- Maybe others? For example, Apple are starting to move starting to move towards web push [support](https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers).
 - iOS apps would still require some sort "gateway" (to transform WebPush push notifications to a format that the Apple Push Notification Service (APNS) will accept). But such a gateway is trivial compared to what matrix push gateways implement today. Mastodon's [webpush-apn-relay](https://github.com/mastodon/webpush-apn-relay) is one such example. Notification content remains encrypted between the homeserver all the way to the client.
 
 ## Proposal
 
-The MSC introduces a new push kind: webpush.
+The MSC introduces a new pusher `kind`, for use with [`/pushers/set`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3pushersset): `webpush`.
 
-`PusherData` is extended as follows:
-- `format`: is updated to be required if `kind` is `http` or `webpush`
-- `url`: is updated to be required if `kind` is `http`, or if `kind` is `webpush`. If `kind` is `webpush`, this is the URL defined as a `push resource` by RFC8030. MUST be an HTTPS URL.
+[`PusherData`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3pushersset_request_pusherdata) is extended as follows:
+- `url`: is updated to be required if `kind` is `http`, or if `kind` is `webpush`. If `kind` is `webpush`, this is the URL defined as a `push resource` by RFC8030, and MUST be an HTTPS URL.
 - `auth`: is introduced, required if `kind` is `webpush`, not used otherwise. This holds the authentication secret as
-specified by RFC8291 - 16 random bytes encoded in URL-safe Base64 without padding.
+specified by [RFC8291 section 3.2](https://www.rfc-editor.org/rfc/rfc8291#section-3.2) - 16 random bytes encoded in URL-safe Base64 without padding.
 
-`PusherData` also get new field, `activated`, a boolean, that must not be set by the client and the server must add to the responses that include the data. During a first registration, or during a re-registration where the Pusher `pushkey`, `PusherData.url` or `PusherData.auth` is updated, `activated` is set to false until the pusher is activated with the request to
-`/_matrix/client/v3/pushers/ack`i (cf. bellow). Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.url` and `PusherData.auth` doesn't change its value.
+`PusherData` also gets new field, `activated`, a boolean, that must not be set by the client, and the server must add to the responses that include the data. During a first registration, or during a re-registration where the Pusher `pushkey`, `PusherData.url` or `PusherData.auth` is updated, `activated` is set to false until the pusher is activated with the request to
+`/_matrix/client/v3/pushers/ack` (cf. below). Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.url` and `PusherData.auth` doesn't change its value.
 
 The home server doesn't send any notification - except the one to validate the pusher - to the pusher, until the Pusher is activated.
 
@@ -56,12 +55,14 @@ The POST request to the endpoint dedicated to the creation, modification and del
 `POST /_matrix/client/v3/pushers/set` now supports a new `kind`: `webpush`.
 - `kind`: is updated to introduce `webpush` which makes a
 pusher that sends Web Push encrypted messages.
-- `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key in the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf), section 2.3.3, replicated from X9.62), encoded in URL-safe Base64 without padding. The public key comes from a ECDH
-keypair using the P-256 (prime256v1, cf. FIPS186) curve.
+- `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key.
+  Per  [RFC8291 section 3.1](https://www.rfc-editor.org/rfc/rfc8291#section-3.1), this is the public part of a
+  P-256 keypair, converted to bytes using the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf),
+  section 2.3.3, replicated from X9.62),  and encoded in URL-safe Base64 without padding.
 
 If the request creates a new pusher or modifies values under `pushkey` , `PusherData.url`, or `PusherData.auth`, then
-the server MUST respond with 201, "The pusher is set but needs to be activated". The server MUST send a push notification to the
-url, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key with a message containing
+the server MUST respond with 201, "The pusher is set but needs to be activated". The server MUST then send a push notification to the
+url, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key, with a message containing
 `app_id` and `ack_token`. `ack_token` MUST be a unique identifier conforming to [the opaque identifier grammar](https://spec.matrix.org/v1.17/appendices/#opaque-identifiers).
 To ensure sufficient entropy is used, it is recommended to use a UUIDv4 token in hyphen form.
 
@@ -78,7 +79,7 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
 - POST `/_matrix/client/v3/pushers/ack`
 - Rate limited: No, Requires authentication: Yes
 - The request body contains the `app_id` and `ack_token` parameters, received with the push notification.
-- The response, contains the following HTTP code and error code:
+- The response contains the following HTTP code and error code:
   - 404, M_NOT_FOUND: if no pusher with this app_id exists
   - 410, M_EXPIRED_ACTIVATION_TOKEN: if this token for this app_id is expired
   - 400, M_UNKNOWN_ACTIVATION_TOKEN: if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
@@ -99,8 +100,7 @@ The VAPID public key is in the uncompressed form, in URL-safe Base64 without pad
 }
 ```
 
-It is also useful to decide if the client should register a pusher using `http` kind and and old style
-Sygnal WebPush semantic. A client that supports this kind of pusher should use it if the server supports it too, and
+A client that supports this kind of pusher should use it if the server supports it too, and
 not register another `http` pusher to avoid duplicate pushes.
 
 ## Overview with webpush
