@@ -14,15 +14,15 @@ Leaking the room and event id to third parties is problematic and can be avoided
 Web Push is a standard for (E2EE) push notifications, defined by 3 RFCs:
 - [RFC8030](https://www.rfc-editor.org/rfc/rfc8030) defines the application server to push server communications
 - [RFC8291](https://www.rfc-editor.org/rfc/rfc8291) defines the encryption:
-    - the subscribing client (user agent in RFC8030) generates a P-256 key pair and the *auth* secret, and sends the P-256 public key and the *auth* secret to the home server during registration
-		- the home server encrypts outgoing push notifications with the client keys
+    - the subscribing client (user agent in RFC8030) generates a P-256 key pair and the *auth* secret, and sends the P-256 public key and the *auth* secret to the homeserver during registration
+		- the homeserver encrypts outgoing push notifications with the client keys
 		- the notifications are then decrypted by the subscribing client
 - [RFC8292](https://www.rfc-editor.org/rfc/rfc8292), VAPID: defines the authorization:
     - it is supposed to be *Voluntary* (optional) but many big push servers require it
-		- the home server generates a single P-256 key pair, and any client can request the public key
+		- the homeserver generates a single P-256 key pair, and any client can request the public key
 		- the client passes the VAPID public key while requesting a new registration to their push server
 		- the push server is then able to allow only requests which have an authorization header signed with the VAPID key
-		- the home server adds the authorization header to all push notifications
+		- the homeserver adds the authorization header to all push notifications
 
 Many libraries are already available and robust: they are reviewed, and acknowledged by experts.
 
@@ -45,7 +45,7 @@ specified by [RFC8291 section 3.2](https://www.rfc-editor.org/rfc/rfc8291#sectio
 `PusherData` also gets new field, `activated`, a boolean, that must not be set by the client, and the server must add to the responses that include the data. During a first registration, or during a re-registration where the Pusher `pushkey`, `PusherData.url` or `PusherData.auth` is updated, `activated` is set to false until the pusher is activated with the request to
 `/_matrix/client/v3/pushers/ack` (cf. below). Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.url` and `PusherData.auth` doesn't change its value.
 
-The home server doesn't send any notification - except the one to validate the pusher - to the pusher, until the Pusher is activated.
+The homeserver doesn't send any notification - except the one to validate the pusher - to the pusher, until the Pusher is activated.
 
 The POST request to the endpoint dedicated to the creation, modification and deletion of pushers,
 `POST /_matrix/client/v3/pushers/set` now supports a new `kind`: `webpush`.
@@ -161,7 +161,7 @@ before sending the request but not for redirection.
 Like any other federation request, there is a risk of DOS amplification. One malicious actor can register many users
 to a valid endpoint, then change the DNS record and target another server, then notify all these users. This
 amplification is very limited since HTTPS is required and the TLS certificate of the target will be rejected. The
-request won't reach any functionality of the targeted application. The home server can reject pusher if the response
+request won't reach any functionality of the targeted application. The homeserver can reject pusher if the response
 code is not one intended.
 
 ## Unstable prefix
