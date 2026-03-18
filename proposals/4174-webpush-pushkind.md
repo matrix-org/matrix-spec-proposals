@@ -10,7 +10,7 @@ on that.
 
 Leaking the room and event id to third parties is problematic and can be avoided.
 
-Today, web clients supporting push notifications (eg. hydrogen) needs to use a matrix to webpush gateway. This requires
+Today, web clients supporting push notifications (eg. hydrogen) need to use a matrix to webpush gateway. This requires
 going over the specifications, because they use `endpoint`, and `auth` in the `PusherData` ([hydrogen](https://github.com/element-hq/hydrogen-web/blob/9b68f30aad329c003ead70ff43f289e293efb8e0/src/platform/web/dom/NotificationService.js#L32), [sygnal](https://github.com/matrix-org/sygnal/blob/main/sygnal/webpushpushkin.py#L152)),
 while [the current specifications let understand that only `url` and `format` are allowed](https://spec.matrix.org/v1.9/client-server-api/#_matrixclientv3pushers_pusherdata).
 The specifications already need to be adapted to follow what the web clients do.
