@@ -114,12 +114,15 @@ require authentication, clients should make this request with their access token
 HTTP response codes, and Matrix error codes:
 
 - `200 OK` - rendezvous API is available to the requester
-- `403 Forbidden` (`M_FORBIDDEN`) - the requester is not authorized to create the rendezvous session
+- `403 Forbidden` (`M_FORBIDDEN`) - the requester is not authorized to create a rendezvous session
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
-The response body for `200 OK` is `application/json` with an empty body. It means that the requester is able to create
-a rendezvous session using `POST /_matrix/client/v1/rendezvous`.
+The response body for `200 OK` is `application/json` with contents:
+
+|Field|Type||
+|-|-|-|
+|`create_available`|required `boolean`|`true` if the requester is able to create a rendezvous session using `POST /_matrix/client/v1/rendezvous` otherwise `false`|
 
 Example response:
 
@@ -127,7 +130,9 @@ Example response:
 HTTP 200 OK
 Content-Type: application/json
 
-{}
+{
+    "create_available": true
+}
 ```
 
 The body could be extended in future to provide any other information that the requester might require to use the
