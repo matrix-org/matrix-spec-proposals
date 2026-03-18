@@ -154,7 +154,7 @@ to avoid issues with those.
 Security considerations are listed by [RFC8030](https://www.rfc-editor.org/rfc/rfc8030#section-8), they are mainly resolved with [RFC8291](https://datatracker.ietf.org/doc/html/rfc8291) (Encryption) and
 [RFC8292](https://datatracker.ietf.org/doc/html/rfc8292) (VAPID).
 
-Like any other federation request, there is a risk of SSRF. This risk is limited since the post data isn't
+Like federation requests, there is a risk of SSRF. This risk is limited since the post data isn't
 arbitrary (the content is encrypted), and a potential malicious actor doesn't have access to the response.
 Nevertheless, it is recommended to not post to arbitrary private addresses but offer the option to
 safelist a private IP. (Synapse already implements [`ip_range_whitelist`](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#ip_range_whitelist))
