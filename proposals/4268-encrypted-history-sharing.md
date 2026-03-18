@@ -293,7 +293,7 @@ be when importing a key export; however:
 
   * Only keys for the relevant room should be imported.
 
-  * Bob's client should remember who sent the keys (Alice, in this case), and
+  * Bob's client should remember who he received the keys from (Alice, in this case), and
     MUST show that information to the user, since he has only that user's word
     for the authenticity of those sessions.
 
@@ -391,7 +391,7 @@ These alternatives are also discussed in a presentation made at Matrix Conferenc
 
   The latter is no longer a valid assumption. Instead, clients MUST observe
   changes in state in the room, and whenever they see a user leaving the room,
-  assume that the departed user may have access to any existing Megol session,
+  assume that the departed user may have access to any existing Megolm session,
   and create a new session before sending further encrypted messages.
 
   Note that, in a `limited` sync, clients must treat any membership event with a
