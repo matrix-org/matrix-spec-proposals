@@ -113,8 +113,8 @@ require authentication, clients should make this request with their access token
 
 HTTP response codes, and Matrix error codes:
 
-- `200 OK` - rendezvous API is available to the requester
-- `403 Forbidden` (`M_FORBIDDEN`) - the requester is not authorized to create a rendezvous session
+- `200 OK` - rendezvous API discovery supported
+- `403 Forbidden` (`M_FORBIDDEN`) - the requester is not authorized to use the rendezvous API
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
