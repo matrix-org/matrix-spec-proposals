@@ -10,10 +10,6 @@ on that.
 
 Leaking the room and event id to third parties is problematic and can be avoided.
 
-Today, web clients supporting push notifications (eg. hydrogen) need to use a matrix to webpush gateway. This requires
-going over the specifications, because they use `endpoint`, and `auth` in the `PusherData` ([hydrogen](https://github.com/element-hq/hydrogen-web/blob/9b68f30aad329c003ead70ff43f289e293efb8e0/src/platform/web/dom/NotificationService.js#L32), [sygnal](https://github.com/matrix-org/sygnal/blob/main/sygnal/webpushpushkin.py#L152)),
-while [the current specifications let understand that only `url` and `format` are allowed](https://spec.matrix.org/v1.9/client-server-api/#_matrixclientv3pushers_pusherdata).
-The specifications already need to be adapted to follow what the web clients do.
 
 Web Push is a standard for (E2EE) push notifications, defined by 3 RFCs:
 - [RFC8030](https://www.rfc-editor.org/rfc/rfc8030) defines the application server to push server communications
@@ -66,7 +62,8 @@ url, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPI
 `app_id` and `ack_token`. `ack_token` MUST be a unique identifier conforming to [the opaque identifier grammar](https://spec.matrix.org/v1.17/appendices/#opaque-identifiers).
 To ensure sufficient entropy is used, it is recommended to use a UUIDv4 token in hyphen form.
 
-`ack_token` valid for 5 minutes:
+The server must expire the `ack_token` after 5 minutes. In this case, the registration remains inactivated until the client tries to register again, then the homeserver sends a new `ack_token`.
+Example of a push notification containing a validation token:
 
 ```
 {
@@ -87,7 +84,7 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
 
 M_EXPIRED_ACTIVATION_TOKEN and M_UNKNOWN_ACTIVATION_TOKEN are new error codes.
 
-Note: The homeserver deletes the registration if it receives a 404, 410 or 403 from the push server on push.
+Note: As specified by RFC8030, the homeserver deletes the registration if it receives a 404, 410 or 403 from the push server on push.
 
 As many popular push servers require VAPID (Voluntary Application Server Identification, cf RFC8292), a server supporting this MSC MUST add a `m.webpush` capability to the `/capabilities` endpoint with this format:
 
