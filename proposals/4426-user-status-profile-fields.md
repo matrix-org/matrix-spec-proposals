@@ -214,8 +214,10 @@ may be updated 10 or more times (in pairs of joining/leaving) over the course of
 a work day, as well as in rapid succession if someone is having issues joining a
 call (debouncing would help here).
 
-Neither of these fields need to be particularly *real-time* either, so waiting a
-bit for updates before publishing them to other users can also be effective.
+Thus it may be worth coming up with some delivery heuristics for each field.
+The first update could be sent out immediately, but subsequent updates in a
+short period could be queued, with new updates to a field overwriting older ones
+before they're sent out.
 
 Much of the slow performance of presence stems from needing to inform hundreds
 or thousands of other homeservers over federation after an update. Performance
