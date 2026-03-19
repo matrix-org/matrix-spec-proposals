@@ -299,5 +299,5 @@ in this proposal.
 
 | Stable identifier | Unstable identifier |
 | :---- | :---- |
-| `m.status` | `org.msc4426.status` |
-| `m.call` | `org.msc4426.call` |
+| `m.status` | `org.matrix.msc4426.status` |
+| `m.call` | `org.matrix.msc4426.call` |
