@@ -2,63 +2,66 @@
 
 ## Introduction
 
-This simple MSC aims to make it easier for machines and people alike to be made instantly aware if a 
-room is a policy list. To facilitate this this MSC recommends using the already established `type` 
-attribute to flag rooms as policy rooms. This builds upon the precedent set by Spaces and their 
-`"type": "m.space"`. Adopting this for Policy rooms allows all stakeholders to instantly know if its 
-a Policy room or not for rooms covered by this proposal. 
+Matrix already has [Moderation Policy Lists](https://spec.matrix.org/v1.17/client-server-api/#moderation-policy-lists)
+which describe policy recommendations through state events. In typical usage,
+these policy recommendations tend to appear in dedicated rooms, though are not 
+required to. 
 
-For the purposes of this MSC policy lists can at times be called a policy room. This MSC does not intend 
-to change the name of the feature its just used to be very clear that we are talking about rooms with a 
-specific usecase. 
+Having the policy recommendations in dedicated rooms helps clients better understand
+the purpose of a room, and potentially hide it if the client knows it can't do
+much with that dedicated purpose. For example, a messaging client might want to
+hide policy list rooms by default to avoid showing "non-conversational" rooms to 
+the user.
+
+This proposal introduces a [room type](https://spec.matrix.org/v1.17/client-server-api/#types)
+to denote such dedicated rooms.
 
 ## Proposal
 
-This proposal is well quite simple. Allow for Policy rooms to be marked as such using the 
-`"type": "m.policy"`. The precedent for this comes from Spaces where they introduced this system in a
-limited capacity. This proposal expands this system to help all stakeholders quickly identify 
-policy rooms in a machine compatible way that is computationally cheap. It has additional benefits like
-allowing clients that are capable of editing policy to display editing tools for policy rooms when they
-detect that a room is a policy room using this mechanic. For machine interaction with policy rooms this
-proposal supplies a very fast way to tell if a room is definitively supposed to be a policy room or if 
-the user might have supplied a legacy room or typed in the wrong room ID / alias depending on how things
-are configured. 
+Rooms dedicated to containing policy list recommendations SHOULD use a newly
+defined `m.policy` room type. How clients choose to (not) handle the new type is
+left as an implementation detail. 
 
-Legacy rooms in this proposal are defined as all rooms that predate this proposal and they are free to upgrade
-if they desire to but they are also free to stay on their current room version and not upgrade their
-room to include a type event in the creation event. All stakeholders are expected to gracefully support 
-interacting with legacy rooms until a future proposal changes this recommendation. 
-
-The Author of this MSC believes that even with the problem of legacy rooms not being covered this MSC will
-be useful in the future with more use of policy rooms. 
+Consumers of policy lists SHOULD note that recommendations can still appear 
+outside of `m.policy` rooms. Existing rooms probably won't have the new room 
+type, and some communities might mix conversation and recommendations in the 
+same room (therefore not dedicating the room to recommendations).
 
 
 ## Potential issues
 
-As is covered in the proposal section this MSC has the potential issue relating to Legacy rooms.
-The Author of this MSC thinks its that its an acceptable trade-off. 
+Clients which have dedicated UX for policy rooms might not be able to apply that
+UX to rooms missing the `m.policy` room type. They can try to look for recommendation
+state events contained in the room, though if their dedicated UX is invasive then
+it may hide conversation being had in the room. This proposal does not attempt to
+make rooms without the `m.policy` room type, but still contain policy recommendations,
+invoke any dedicated UX a client might have - clients can choose how/if they handle
+this case.
 
 
 ## Alternatives
 
-The alternative of using Peeking over fed to try to figure out if a room is a policy list has been
-considered but considering that its currently considered at the time of writing to be a very in development
-technology its deemed wholly unsuited for this application. The system this proposal recommends is the same
-one that was used for spaces. Spaces have proven them self's in the real world and so has this system.
+Peeking over federation, like in [MSC2444](https://github.com/matrix-org/matrix-spec-proposals/pull/2444),
+can help clients identify rooms which contain policy list recommendation state
+events. However, as identified above, this may be insufficient to properly
+identify rooms *dedicated* to containing those state events.
 
 ## Security considerations
 
-None that the author is aware of at the time of writing due to the mostly informative nature of the data.
-Due to that no client should trust that just because it says m.policy it is indeed a policy room the security
-implications should be minimal.
+This change is largely informative and carries no direct security impact. Clients 
+which interpret the `m.policy` room type will need to consider security in their
+implementations. For example, if hiding the rooms then notifications in those 
+rooms will need some consideration.
 
 ## Unstable prefix
 
-If you want to implement this MSC before its merged your free to use the unstable type of 
+If you want to implement this MSC before its merged you're free to use the unstable type of 
 `support.feline.policy.lists.msc.v1`. 
 
 After this MSC gets merged if a stakeholder has elected to remove its support for the unstable prefix if any
-support existed or support never existed revert to Legacy room behavior for rooms that used the unstable prefix.
+Because the room type is immutable, rooms which use the unstable room type might
+find themselves "unsupported" when/if implementations drop support for the unstable
+type when this proposal becomes stable.
 
 ## Dependencies
 
