@@ -32,6 +32,12 @@ The field is allowed for all message events, which currently means
 `m.room.message` and `m.sticker`. A future MSC may expand the field to other
 events, such as reactions.
 
+Modifying per-message profiles using edits is allowed, i.e. clients SHOULD
+include the per-message profile object in `m.new_content` when sending edits
+and read it when receiving edits. Including the per-message profile object in
+the edit fallback at the top level is not necessary, as all clients that support
+per-message profiles can be assumed to support edits.
+
 ### Field limits
 After JSON decoding, `id` and `displayname` MUST be at most 255 bytes of UTF-8
 and every code point MUST be a Unicode scalar. Null bytes (`\u0000`) are not
