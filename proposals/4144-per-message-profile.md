@@ -209,6 +209,15 @@ However, that approach wouldn't enable encrypting per-message profiles without
 inventing encrypted state events. Additionally, even with encrypted state
 events, some kind of sender identifiers would be leaked via state keys.
 
+State events also have the downside that they have to be sent into the room
+separately, which means extra work for everyone. They would also pollute the
+room state if a profile is only used once or a few times.
+
+The main benefit of state events is that it makes it easy to retroactively
+modify the per-message profile of already sent messages. This MSC considers
+retroactive modifications to be sufficiently low-priority that state events
+are not worth it considering the other downsides.
+
 ### Appservices
 Appservices work perfectly fine for bridging already now, but they require
 admin access to a server, which is not available for everyone. Additionally,
