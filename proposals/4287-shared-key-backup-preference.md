@@ -48,12 +48,8 @@ When a user signs in to a client which supports encryption and key backup:
 
 * If this event type does not exist in account data, or if it does not contain
   the `enabled` property, or if the value of `enabled` is not a boolean value,
-  clients MUST ignore the existing value and:
-
-    * EITHER choose whether to perform key backup (possibly based on user input)
-      and update account data to reflect the choice,
-
-    * OR not perform key backup.
+  clients MUST ignore the existing value and MAY decide whether or not to
+  perform key backup, possibly based on user input.
 
 ### Behaviour on setting change
 
