@@ -53,10 +53,10 @@ When a user signs in to a client which supports encryption and key backup:
 
 ### Behaviour on setting change
 
-If the user turns on key backups, clients MUST set this event type in account
+If a client turns on key backups, it MUST set this event type in account
 data, to `"enabled": true`.
 
-If the user turns off key backups, clients MUST set this event type in account
+If a client turns off key backups, it MUST set this event type in account
 data, to `"enabled": false`.
 
 ### Not actively monitoring this setting
