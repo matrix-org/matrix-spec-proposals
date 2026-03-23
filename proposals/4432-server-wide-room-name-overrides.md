@@ -126,6 +126,10 @@ when sending [`m.room.name`] state events. This has a number of downsides, howev
   that doesn't match the sender's server name. This requires a new step in the event authorization
   rules and thereby a new room version which drastically complicates adoption of the feature.
 
+Some of these concerns could be mitigated by preventing `m.room.name` events with a non-empty
+`state_key` from being federated. This would require changes to the state resolution algorithm,
+however, which would significantly increase complexity.
+
 ## Security considerations
 
 Just like the `m.room.name` state event, server-wide room name overrides may leak metadata to the
