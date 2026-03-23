@@ -6,7 +6,8 @@ It additionally makes vHosting more difficult to implement and utilize.
 
 ## Proposal
 
-Require `destination` for authenticated federation requests.
+Require `destination` for
+[authenticated federation requests](https://spec.matrix.org/v1.17/server-server-api/#request-authentication).
 
 ## Potential issues
 
