@@ -70,4 +70,8 @@ Client-Server-API, seems negligible.
 
 ## Unstable prefix
 
+None applicable.
+
 ## Dependencies
+
+None.
