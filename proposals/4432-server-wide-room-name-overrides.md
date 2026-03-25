@@ -88,7 +88,9 @@ is not the empty object (`{}`), use the name given by that item.
 
 Clients should be aware that room account data changes are not communicated via `/sync` for invited
 rooms. As a result, clients will have to manually load room account data to check for a potential
-server-wide room name when displaying invites.
+server-wide room name when displaying invites. The same applies when clients display results from
+endpoints that only include the global room name such as [`/_matrix/client/v3/publicRooms`] or
+[`/_matrix/client/v1/room_summary/{roomIdOrAlias}`].
 
 Clients MAY additionally display the room name implied by the state events [`m.room.name`] and
 [`m.room.canonical_alias`] as an indicator for how the room may be displayed for other users.
@@ -158,5 +160,7 @@ None.
   [standard endpoint for writing account data]: https://spec.matrix.org/v1.17/client-server-api/#put_matrixclientv3useruseridroomsroomidaccount_datatype
   [`m.profile_fields` capability]: https://spec.matrix.org/v1.17/client-server-api/#mprofile_fields-capability
   [room name computation RECOMMENDATIONs]: https://spec.matrix.org/v1.17/client-server-api/#calculating-the-display-name-for-a-room
+  [`/_matrix/client/v3/publicRooms`]: https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3publicrooms
+  [`/_matrix/client/v1/room_summary/{roomIdOrAlias}`]: https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv1room_summaryroomidoralias
   [`m.room.canonical_alias`]: https://spec.matrix.org/v1.17/client-server-api/#mroomcanonical_alias
   [server name]: https://spec.matrix.org/v1.17/appendices/#server-name
