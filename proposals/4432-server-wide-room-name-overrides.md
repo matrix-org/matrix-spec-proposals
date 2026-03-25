@@ -39,8 +39,10 @@ Clients MAY set the override value using the [standard endpoint for writing acco
     }
 
 When a value is written, servers MUST propagate it into the corresponding room account data of all
-local room members. Similarly, if a new local user is invited into a room where a server-wide room
-name exists, servers MUST replicate the value into the user's room account data.
+local room members. If the room's join rule is set to `public`, the server MUST propagate the value
+into the corresponding room account data of all its users. Similarly, if a new local user is invited
+into a room where a server-wide room name exists, servers MUST replicate the value into the user's
+room account data.
 
 Servers MAY restrict which users are allowed to write the `m.room.name.server_wide` account data
 type. They MAY also make the account data type fully managed and deny write-access to users
