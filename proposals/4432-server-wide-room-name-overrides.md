@@ -39,8 +39,8 @@ Clients MAY set the override value using the [standard endpoint for writing acco
     }
 
 When a value is written, servers MUST propagate it into the corresponding room account data of all
-local room members. Similarly, if a new local user joins a room where a server-wide room name
-exists, servers MUST replicate the value into the user's room account data.
+local room members. Similarly, if a new local user is invited into a room where a server-wide room
+name exists, servers MUST replicate the value into the user's room account data.
 
 Servers MAY restrict which users are allowed to write the `m.room.name.server_wide` account data
 type. They MAY also make the account data type fully managed and deny write-access to users
@@ -83,6 +83,10 @@ data type in any rooms.
 To apply an existing override, a new first step is inserted at the very beginning of the [room name
 computation RECOMMENDATIONs][]: If `m.room.name.server_wide` exists in the room's account data and
 is not the empty object (`{}`), use the name given by that item.
+
+Clients should be aware that room account data changes are not communicated via `/sync` for invited
+rooms. As a result, clients will have to manually load room account data to check for a potential
+server-wide room name when displaying invites.
 
 Clients MAY additionally display the room name implied by the state events [`m.room.name`] and
 [`m.room.canonical_alias`] as an indicator for how the room may be displayed for other users.
