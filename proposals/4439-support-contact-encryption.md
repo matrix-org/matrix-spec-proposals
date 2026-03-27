@@ -12,9 +12,12 @@ other insecure channels.
 ## Proposal
 
 A new optional property `pgp_key` (unstable prefix: `dev.zirco.msc4439.pgp_key`) is added to the [`Contact`]
-response from [`/.well-known/matrix/support`]. This field indicates a PGP key that should be used for encrypted communication to that particular contact.
+response from [`/.well-known/matrix/support`]. This field indicates a PGP key that should be used for encrypted
+communication to that particular contact.
 
-The value of this field MUST be a URI pointing to a location where the key can be retrieved. Raw key material MUST NOT appear as the value of this field. As with [RFC9116], it is always the responsibility of the sender to ensure they trust the key provided.
+The value of this field MUST be a URI pointing to a location where the key can be retrieved. Raw key material MUST
+NOT appear as the value of this field. As with [RFC9116], it is always the responsibility of the sender to ensure they
+trust the key provided.
 
 Example of an OpenPGP key available from a web URI:
 
@@ -51,5 +54,4 @@ While this proposal is unstable, `pgp_key` should be referred to as `dev.zirco.m
   [`email_address`]: https://spec.matrix.org/unstable/client-server-api/#getwell-knownmatrixsupport_response-200_contact
   [`Contact`]: https://spec.matrix.org/unstable/client-server-api/#getwell-knownmatrixsupport_response-200_contact
   [RFC9116]: https://www.rfc-editor.org/info/rfc9116
-  [RFC7230]: https://www.rfc-editor.org/info/rfc7230
   [RFC7929]: https://www.rfc-editor.org/info/rfc7929
