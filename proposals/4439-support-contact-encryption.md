@@ -6,16 +6,16 @@ as `security.txt`\) serves a similar purpose and defines an `Encryption` field (
 advertise a key URI for encrypted communication with security researchers.
 
 This proposal adds a similar `pgp_key` field to the [`Contact`] entry on [`/.well-known/matrix/support`], enabling
-homeserver operators to indicate a key that senders should use when communicating sensitive information over email or
+homeserver operators to indicate a key that senders may use when communicating sensitive information over email or
 other insecure channels.
 
 ## Proposal
 
 A new optional property `pgp_key` (unstable prefix: `dev.zirco.msc4439.pgp_key`) is added to the [`Contact`]
-response from [`/.well-known/matrix/support`]. This field indicates a PGP key that should be used for encrypted
-communication to that particular contact.
+response from [`/.well-known/matrix/support`]. This field indicates a PGP key that may be used for encrypted
+communication to that particular contact. If the field is used, the `email_address` field SHOULD also be present.
 
-The value of this field MUST be a URI pointing to a location where the key can be retrieved. Raw key material MUST
+The value of this field MUST be a URI pointing to a location where the key may be retrieved. Raw key material MUST
 NOT appear as the value of this field. As with [RFC9116], it is always the responsibility of the sender to ensure they
 trust the key provided.
 
