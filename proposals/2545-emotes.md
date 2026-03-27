@@ -249,7 +249,7 @@ If a client gives image suggestions (emotes, stickers) to the user in some
 ordered fashion (e.g. an ordered list where you click an entry), the order of
 the image packs SHOULD be predictable between rooms.
 
-A suggestion for clients of image pack ordering is as follows:
+Clients SHOULD implement image pack ordering as follows:
 
 1. User image pack (defined in the user's account data)
 2. Image pack rooms (defined in the `m.image_pack.rooms` user account data
@@ -258,7 +258,7 @@ A suggestion for clients of image pack ordering is as follows:
 4. Space image packs (defined in the hierarchy of canonical spaces for the
     current room)
 
-Note: this MSC does not define an ordering for images within packs. That is left
+Note: this MSC does not define an ordering for images *within* packs. That is left
 to a future MSC.
 
 ### Image properties
