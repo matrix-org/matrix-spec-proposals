@@ -136,7 +136,7 @@ An image object consists of the following keys:
 - `body`: **Optional, String**. A textual representation or associated 
     description of the image.
 - `info`: **Optional, ImageInfo**. The already specified
-    [`ImageInfo`](https://spec.matrix.org/v1.14/client-server-api/#msticker_imageinfo) 
+    [`ImageInfo`](https://spec.matrix.org/v1.18/client-server-api/#msticker_imageinfo) 
     object (from `m.sticker`).
 
 An example of an image object:
@@ -332,7 +332,7 @@ failing the shortcode grammar when they are received over federation (via
 redact/soft-fail events that don't follow the shortcode grammar if they wish.
 
 Clients should note that events with malformed shortcode grammar can be
-delivered to them by the homeserver. Clients SHOULD to try and show emotes and
+delivered to them by the homeserver. Clients SHOULD try and show emotes and
 stickers in the timeline, as well as image packs that contain them, even if they
 have incorrect shortcode grammar. This allows users to see them and fix them. On
 the flip side, clients SHOULD enforce this grammar when creating or editing
