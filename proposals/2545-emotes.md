@@ -251,11 +251,10 @@ the image packs SHOULD be predictable between rooms.
 
 Clients SHOULD implement image pack ordering as follows:
 
-1. User image pack (defined in the user's account data)
-2. Image pack rooms (defined in the `m.image_pack.rooms` user account data
+1. Image pack rooms (defined in the `m.image_pack.rooms` user account data
     object)
-3. Room image packs (defined in the currently open room's state)
-4. Space image packs (defined in the hierarchy of canonical spaces for the
+2. Room image packs (defined in the currently open room's state)
+3. Space image packs (defined in the hierarchy of canonical spaces for the
     current room)
 
 Note: this MSC does not define an ordering for images *within* packs. That is left
