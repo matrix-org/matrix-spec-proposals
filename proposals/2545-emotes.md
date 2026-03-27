@@ -397,9 +397,9 @@ Clents SHOULD set `height` to "32px". This is a default intended to look good on
 most devices, and is for the benefit of legacy clients that do not treat custom
 emotes differently from other inline images.
 
-Clients implementing this MSC are expected to override the height when rendering
-emotes, based on their particular environment (the user's font size, etc.). Or
-they may choose to display messages containing only emoticons in a larger font.
+Clients implementing this MSC SHOULD override the height when rendering emotes
+based on their particular environment (the user's font size, etc.). They also
+MAY choose to display messages containing only emoticons in a larger font.
 
 A `width` attribute is not required, in order to maintain the aspect ratio of
 non-square emotes.
