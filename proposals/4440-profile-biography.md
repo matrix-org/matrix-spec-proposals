@@ -17,7 +17,9 @@ Plaintext only:
 ```json
 {
   "m.biography": {
-    "body": "hello world!\n\ninterests:\n-  programming\n-  matrix\n-  sleeping\n-  petting cats"
+    "m.text": [
+      { "body": "hello world!\n\ninterests:\n-  programming\n-  matrix\n-  sleeping\n-  petting cats" }
+    ]
   }
 }
 ```
@@ -26,19 +28,19 @@ with HTML formatting:
 ```json
 {
   "m.biography": {
-    "body": "hello world!\n\ninterests:\n-  programming\n-  matrix\n-  sleeping\n-  petting cats",
-    "format": "org.matrix.custom.html",
-    "formatted_body": "hello world!<br/><br/>interests:<br/><ul data-md=\"-\"><li><p>programming</p></li><li><p>matrix</p></li><li><p>sleeping</p></li><li><p>petting cats</p></li></ul><br/><img data-mx-emoticon src=\"mxc://fomx.gay/ICgRWFY6HWvMVVrHRqr7MYMLiTCgWxpl\" alt=\"bwaa\" title=\"bwaa\" height=\"32\" />"
+    "m.text": [
+      { "body": "hello world!<br/><br/>interests:<br/><ul data-md=\"-\"><li><p>programming</p></li><li><p>matrix</p></li><li><p>sleeping</p></li><li><p>petting cats</p></li></ul><br/><img data-mx-emoticon src=\"mxc://fomx.gay/ICgRWFY6HWvMVVrHRqr7MYMLiTCgWxpl\" alt=\"bwaa\" title=\"bwaa\" height=\"32\" />", "mimetype": "text/html" },
+      { "body": "hello world!\n\ninterests:\n-  programming\n-  matrix\n-  sleeping\n-  petting cats" }
+    ]
   }
 }
 ```
 
-The `body` field should hold a plaintext representation of the users' biography, similar to room messages.
-Clients can optionally set the `formatted_body` field to an HTML-formatted representation of the body in the
-same format as [formatted messages](https://spec.matrix.org/v1.17/client-server-api/#mroommessage-msgtypes),
-in which case the format field has to be set to `org.matrix.custom.html`.
-When rendering a user's biography, the `formatted_body` should be preferred if set, but clients are free to
-render the plaintext representation in `body` instead.
+The `m.biography` object should hold an ordered `m.text` array as defined by [MSC1767](https://github.com/matrix-org/matrix-spec-proposals/blob/matthew/msc1767/proposals/1767-extensible-events.md)
+/ extensible events.
+Clients may wish to add formatting to their biography in forms of an HTML-formatted representation of the
+body in the same format as [formatted messages](https://spec.matrix.org/v1.18/client-server-api/#mroommessage-msgtypes),
+in which case clients should prefer rendering that one instead.
 
 ## Potential issues
 
@@ -46,12 +48,17 @@ Unsure?
 
 ## Alternatives
 
-None, really. Maybe linking a pastebin URL in your username?
+Maybe linking a pastebin URL in your username?
+Potentially setting an m.presence status_msg could work too, though that is much more limited.
 
 ## Security considerations
 
-Malicious actors could set an unreasonably long bio, potentially lagging or even crashing clients, if length
+- Malicious actors could set an unreasonably long bio, potentially lagging or even crashing clients, if length
 stays unlimited.
+- Additional T&S concerns, e.g. moderation and when clients should (not) render a users biography.
+One possible consideration could be disallowing clients from rendering a biography once a users' membership
+event has been redacted or they've been banned from the current room, while not sharing further rooms with
+the viewer. This approach would be similar to Discord in terms of UX.
 
 ## Unstable prefix
 
@@ -59,4 +66,4 @@ Clients implementing this MSC early may use the profile key `gay.fomx.biography`
 
 ## Dependencies
 
-This MSC builds on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133).
+None.
