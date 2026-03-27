@@ -46,6 +46,10 @@ None identified.
 Sensitive communications may instead be conducted over Matrix, where E2EE is native. However, some researchers prefer
 or mandate out-of-band channels, which this MSC accommodates.
 
+Sensitive information may simply be encrypted to the key already listed in a site's security.txt file, however, at
+larger organizations this does not provide the same per-contact granularity (and may not even reference someone
+responsible for hosting the Matrix homeserver at all).
+
 ## Unstable prefix
 
 While this proposal is unstable, `pgp_key` should be referred to as `dev.zirco.msc4439.pgp_key`.
