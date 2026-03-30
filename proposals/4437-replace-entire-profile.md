@@ -31,7 +31,7 @@ The endpoint requires authentication and is ratelimited the same way as the
 update their displayname and therefore don't need a mass update endpoint.
 
 ## Potential issues
-If a server stores profile fields in separate database fields, it will need to
+If a server stores profile fields in separate database rows, it may need to
 run multiple queries to store all the fields.
 
 ## Alternatives
@@ -39,6 +39,9 @@ A `PATCH` variant could also be added. However, there are no patch endpoints in
 the spec yet, and the exact behavior of them is subject to debate (e.g. can
 fields be removed using patch?). Therefore, this MSC only defines a `PUT` method
 that replaces the entire profile.
+
+Clients can always make multiple requests, but that's less efficient than a
+single request, particularly when updating both displayname and avatar.
 
 ## Security considerations
 None. The existing size limits for profiles are still enforced, and are in fact
