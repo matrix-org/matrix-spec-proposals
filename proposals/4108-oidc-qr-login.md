@@ -824,7 +824,17 @@ Master Signing Key, Self Signing Key and User Signing Key stored locally so that
 
 ## Potential issues
 
-TODO
+This proposal adds new functionality it is not anticipated that it would conflict with other existing features.
+
+Although this is providing a new authentication mechanism to Matrix it builds on top of the well established OAuth
+Device Authorization Grant.
+
+Because the cryptograpgic identity that is used for end-to-end encryption is being shared it is particularly important
+to ensure that new attack vectors are not opened up.
+
+A possible source of issues is the size and complexity of the proposal.
+
+Please also see the potential issues from the dependent MSCs.
 
 ## Alternatives
 
