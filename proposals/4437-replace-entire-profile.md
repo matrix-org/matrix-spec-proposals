@@ -15,7 +15,8 @@ Servers MUST apply the same validation rules to this endpoint as they do for the
 individual field editing `PUT /_matrix/client/v3/profile/{userId}/{keyName}`. If
 any field in the request fails the validation, the entire request MUST be
 rejected with the same error code as setting that field in an individual request
-would.
+would. The endpoint does not have any unique error cases that aren't already
+returned by the existing profile update endpoint.
 
 In addition to validation, the same `m.room.member` updating rules apply, i.e.
 if `displayname` or `avatar_url` have different values than in the old profile,
@@ -24,6 +25,10 @@ servers SHOULD only send one member event to each room.
 
 Like the individual field editing endpoint, this endpoint returns an empty
 object on success.
+
+The endpoint requires authentication and is ratelimited the same way as the
+`PUT /{keyName}` endpoint. Guest access is not allowed, as guests can only
+update their displayname and therefore don't need a mass update endpoint.
 
 ## Potential issues
 If a server stores profile fields in separate database fields, it will need to
