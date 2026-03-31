@@ -256,7 +256,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/v4/sync`.
 | - | - | - | - |
 | `timeline_limit` | `int` | Yes | The maximum number of timeline events to return per response. The server may cap this number. |
 | `required_state` | `RequiredStateRequest` | Yes | Required state for each room returned. |
-| `range` | `[int, int]` | No | Sliding window range. If this field is missing, the room list is not limited by range. Integers are *inclusive*, and are 0-indexed. (This is a 2-tuple.) |
+| `range` | `[int, int]` | No | Sliding window range. If this field is missing, the room list is not limited by range (i.e. includes all rooms that match the filter). Integers are *inclusive*, and are 0-indexed. (This is a 2-tuple.) |
 | `filters` | `SlidingRoomFilter` | No | Filters to apply to the list. |
 
 ### `RoomSubscription`
@@ -425,7 +425,7 @@ An example that returns all the state except the create event:
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
-| `count` | `int` | Yes | The total number of entries in the list. |
+| `count` | `int` | Yes | The total number of entries in the list, i.e. the number of rooms that match the `filters` but ignoring the `range` |
 
 
 ### `RoomResult`
