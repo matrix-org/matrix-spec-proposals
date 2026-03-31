@@ -160,8 +160,7 @@ Taking all of this into account, a full image pack event may look like:
       "url": "mxc://example.org/blah"
     },
     "mysticker": {
-      "url": "mxc://example.org/sticker",
-      "usage": ["sticker"]
+      "url": "mxc://example.org/sticker"
     }
   },
   "pack": {
