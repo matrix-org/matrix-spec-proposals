@@ -330,7 +330,8 @@ decision as there aren't any known use cases for either filtering or not filteri
 
 When combining room configs with different `required_state` fields the result must be the superset of them all. There
 are two approaches server-side for handling this: a) keep the `required_state` separate and return any state that
-matches any of them, or b) merge the fields together, however care must be taken to correctly account for wildcards.
+matches any of them, or b) merge the fields together, however care must be taken to correctly account for configs that
+match against all types and/or all state keys (i.e. "wildcard matches").
 
 #### Examples
 
