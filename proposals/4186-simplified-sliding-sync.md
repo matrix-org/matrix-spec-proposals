@@ -167,7 +167,8 @@ before being applied.
 The fields are combined by taking the "superset", i.e.:
 - `timeline_limit` — take the maximum timeline limit across all room configs.
 - `required_state` — take the union of the required state fields, i.e. if a state event would be returned by any room
-  config it is returned by the combined room config.
+  config it is returned by the combined room config. The combined config has `lazy_members` set to true if and only if
+  any of the configs have `lazy_members` set to true.
 
 
 ### Changing room configs
