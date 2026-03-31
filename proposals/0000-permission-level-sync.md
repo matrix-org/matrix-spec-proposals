@@ -41,7 +41,8 @@ maintain some sense of consistency between proposals.
 
 ## Potential issues
 Homeserver might not be in both rooms, creating a mismatch between power levels. This can be
-solved by allowing another homeserver to update the permissions on the other rooms
+solved by allowing another homeserver to update the permissions on the other rooms provided
+that there is a user on that server with sufficient permissions.
 
 ## Alternatives
 
