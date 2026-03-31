@@ -10,7 +10,7 @@ and password resetting which ultimately results in frustration.
 ## Proposal
 
 This proposal asks to create a new error code, `M_USER_DEACTIVATED`, that may
-be returned whenever an action is attempted that requires an activited user,
+be returned whenever an action is attempted that requires an activated user,
 but the authenticating user is deactivated. The HTTP code to return alongside
 is `403`.
 

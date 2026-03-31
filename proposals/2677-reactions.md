@@ -223,7 +223,7 @@ reactions).
 
 One way to potentially support this is to include the events (or a subset of the
 event) when grouping, so that clients have enough information to render them.
-However this dramatically inceases the size of the parent event if we bundle the
+However this dramatically increases the size of the parent event if we bundle the
 full events inside, even if limit the number we bundle in. To reduce the
 overhead the annotation event could include a `m.result` field which gets
 included.
