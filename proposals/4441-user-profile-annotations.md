@@ -1,7 +1,10 @@
 # MSC4441: Encrypted User Profile Annotations via Account Data
 
 Many platforms, such as Discord, provide a capability for a user to leave personal "notes" on a user's profile. Matrix,
-however, has no similar functionality that can be shared between clients. This proposal builds User Profile Annotations,
+however, has no similar functionality that can be shared between different clients. This proposal builds User Profile
+Annotations, a method for storing encrypted, private metadata on user and room profiles.
+
+This proposal builds User Profile Annotations,
 a method of storing personal context on other users' profiles. This is made possible using a new `m.profile_annotations`
 Account Data event, allowing the storage of free text (and other annotations) for a user's reference.
 
@@ -11,11 +14,18 @@ annotations is also encrypted using an account secret scoped specifically for ac
 
 ## Proposal
 
+This proposal introduces a new `m.profile_annotations` Account Data event, allowing the storage of free text (and other
+future annotations) on users. The framework introduced within this MSC builds on [Extensible Events][MSC1767] and
+provides room for future extension into other forms of user context, such as contact labels, custom nickname overrides,
+or annotations on rooms.
+
 ### Plaintext `m.profile_annotations`
 
-A new event, `m.profile_annotations`, is stored in [`account_data`][account_data]. The `content` of this event is a JSON
-mapping between MXIDs (user or room IDs) and annotations stored on that user/room. Within a user, the `m.text`
+A new event, `m.profile_annotations`, is stored in [`account_data`][account_data]. The `content` of this event MUST be a
+mapping between valid user MXIDs or room IDs and annotations stored on that user/room. Within a user, the `m.text`
 property represents a text annotation ("note") on that user. It follows the text format as defined in [MSC1767][MSC1767].
+
+Unknown keys within user annotations MUST be ignored.
 
 ```json
 {
@@ -30,8 +40,9 @@ property represents a text annotation ("note") on that user. It follows the text
 
 ### Account Data Key (ADK)
 
-A new secret, `m.account_data.key` is stored in [SSSS][SSSS]. This secret is 256 bits of cryptographic random data used
-as the secret in HKDF when encrypting profile annotations (and potentially, in the future, other forms of account data).
+Clients MAY choose to store a new secret, `m.account_data.key` within [SSSS][SSSS]. The secret key is 256 bits of
+cryptographic random data used as the secret in HKDF when encrypting profile annotations (and potentially, in the
+future, other forms of account data).
 
 `m.account_data.key`:
 
@@ -50,10 +61,13 @@ as the secret in HKDF when encrypting profile annotations (and potentially, in t
 
 Using the ADK bytes introduced above, contents of `m.profile_annotations` can be encrypted using
 [`m.secret_storage.v1.aes-hmac-sha2`][SS_crypto]. The info property of the HKDF is the value `m.profile_annotations`,
-an ASCII `/`, concatenated with the MXID of the user it represents (e.g. `m.profile_annotations/@logn:zirco.dev`.
+an ASCII `/`, concatenated with the MXID of the user it represents (e.g. `m.profile_annotations/@logn:zirco.dev`).
 
-This encryption is applied individually to the Canonical JSON contents of each user's annotation. It MAY be mixed
-alongside plaintext data. An example of the event `content` follows:
+This encryption is applied individually to the Canonical JSON contents of each user's annotation. Not all user keys
+within the event must be encrypted: some may still contain plaintext data, however a user annotation MUST NOT contain
+both encrypted and plaintext data.
+
+An example of the event `content` follows:
 
 `m.profile_annotations`:
 ```json
@@ -64,15 +78,16 @@ alongside plaintext data. An example of the event `content` follows:
             "ciphertext": "...",
             "mac": "..."
         }
+    },
+    "@sky:codestorm.net": {
+        "m.text": [
+            { "body": "Hello, world" }
+        ]
     }
 }
 ```
 
 ## Potential issues
-
-#### SSSS availability
-Many users have not enabled SSSS. This would potentially require a client to either fall back to plain text or force a
-user to set up SSSS to use encrypted annotations (not desired). Alternatively the ADK could be stored on the client.
 
 #### Concurrent writes
 Account data is last-write-wins. The usage of one key representing all users may lead to a data race in rare scenarios
@@ -82,33 +97,31 @@ Account data is last-write-wins. The usage of one key representing all users may
 
 #### Store annotations as a new API endpoint
 Rather than using `account_data`, a new dedicated endpoint for annotations would be created. Rejected because it
-requires substantial serverside changes for a simple interop.
+requires substantial serverside changes, this MSC aims to be entirely clintside.
 
 #### Encrypt the entire event as one blob
-Rejected because encrypting each user's data individually allows for finer grained control, alongside providing
-compatibility to users with no SSSS.
+Rejected because encrypting each user's data individually allows for finer grained control, alongside preventing the
+need to decrypt large blobs of data when viewing only a singular user's profile.
 
 #### Eliminate the ADK and simply use the SSSS master
-Using the SSSS master would require re-encrypting notes and potentially change how users may interface with client
-access to this information. Introducing a new key, potentially usable in the future for more information, is far
-simpler.
+Using the SSSS master would require re-encrypting notes whenever recovery keys change. Using a separate ADK is
+extensible for further `account_data` events, alongside providing the ability to rotate the ADK independently of SSSS.
 
 ## Security considerations
 
 - The SSSS model does not provide forward secrecy in the case of key compromise.
-- Plaintext fallback may not be immediately obvious to clients.
+- Plaintext fallback may not be immediately obvious to users if their note contents are not encrypted.
 
 ## Trust and Safety considerations
 
 Profile annotations are the property of one singular user and are never shared with others by the server. Still, a
 server does not gain any moderation visibility into the content potentially being hosted and accessible to their users.
-
-Because these are never transmitted, there should be no method for an annotated user to be harmed.
+Because the content is scoped to only a singular user, this is acceptable.
 
 ## Future extensibility
 
 In the future, this MSC may be built on to implement nickname or avatar overrides, general user tagging functionalities,
-etc.
+annotations on rooms, etc.
 
 ## Unstable prefix
 
