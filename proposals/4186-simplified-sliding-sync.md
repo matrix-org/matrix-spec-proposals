@@ -256,7 +256,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/v4/sync`.
 | - | - | - | - |
 | `timeline_limit` | `int` | Yes | The maximum number of timeline events to return per response. The server may cap this number. |
 | `required_state` | `RequiredStateRequest` | Yes | Required state for each room returned. |
-| `range` | `[int, int]` | No | Sliding window range. If this field is missing, no sliding window is used and all rooms are returned in this list. Integers are *inclusive*, and are 0-indexed. (This is a 2-tuple.) |
+| `range` | `[int, int]` | No | Sliding window range. If this field is missing, the room list is not limited by range. Integers are *inclusive*, and are 0-indexed. (This is a 2-tuple.) |
 | `filters` | `SlidingRoomFilter` | No | Filters to apply to the list. |
 
 ### `RoomSubscription`
