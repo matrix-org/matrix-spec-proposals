@@ -99,10 +99,10 @@ joined, been invited, knocked on, left, or been kicked or banned from, sorted by
 ordering semantics).
 
 Rooms that the user has been in but left are only included if the room was previously sent to the client in that
-connection. Rooms the user has been kicked or banned from will always be included. We do not include rooms the user has
-left themselves to save bandwidth and general efficiency (as the user knows they've left), but we still include kicked
-and banned rooms as a) this should be uncommon, and b) the user may not have seen that they've been kicked/banned from
-the room otherwise.
+connection. Rooms the user has been kicked or banned from will always be included in the server list. We do not include
+rooms the user has left themselves to save bandwidth and general efficiency (as the user knows they've left), but we
+still include kicked and banned rooms as a) this should be uncommon, and b) the user may not have seen that they've been
+kicked/banned from the room otherwise.
 
 A "list" is then a set of filters (e.g. only match invites, or DM rooms, etc) plus a "range" that indexes into the
 *filtered* list of rooms. For example, a common list config would be no filters (i.e. all rooms) plus the range
