@@ -1,6 +1,6 @@
 # MSC4445: Clarify `/sync` timeline order
 
-Currently, the spec describes order of events in the `timeline` of `/sync` in this manner:
+Currently, the spec describes the order of events in the `timeline` of `/sync` in this manner:
 
 > Events are ordered in this API according to the arrival time of the event on the
 > homeserver. This can conflict with other APIs which order events based on their
