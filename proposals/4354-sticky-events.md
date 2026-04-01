@@ -146,12 +146,9 @@ The new `/sync` section looks like:
   }
 }
 ```
-Sticky messages MAY be sent in the timeline section of the `/sync` response, regardless of whether
-or not they exceed the timeline limit[^ordering]. If a sticky event is in the timeline, it MAY be
-omitted from the `sticky.events` section. This ensures we minimise duplication in the `/sync` response JSON.
-This proposal recommends always putting sticky events into the `sticky.events` section _except_ if
-the sticky event is going to be returned in the `timeline.events` section of the current sync response.
-In other words, filter out any event from `sticky.events` where the event ID appears in `timeline.events`.
+If a sticky event appears in the timeline section of the `/sync` response (`timeline.events`),
+it MUST NOT be included in the `sticky.events` section.
+This ensures we minimise duplication in the `/sync` response JSON.
 
 **Interaction with `RoomFilter`:** The `RoomFilter` does not apply to the `sticky.events` section, as it is neither `timeline` nor `state`.
 However, the `timeline` filter MUST be applied before applying the deduplication logic above.
