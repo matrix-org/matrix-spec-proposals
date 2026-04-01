@@ -197,6 +197,9 @@ and, when enabled, the following response extension shape:
 }
 ```
 
+As with regular `/sync`, if a sticky event appears in the `timeline_events` section
+of the sync response, it MUST NOT be included in the Sticky Events extension response.
+
 Sticky events are expected to be encrypted and so there is no [state filter](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3useruseridfilter_request_roomeventfilter)
 equivalent provided for sticky events e.g to filter sticky events by event type.
 As with normal events, sticky events sent by ignored users MUST NOT be delivered to clients.
