@@ -23,7 +23,7 @@ claims the following:
 ordering, e.g. when the user joined the room or on initial sync. When
 this happens we can reuse existing pagination storage functions.
 >
-> *-- [Synapse `e2accd7` commit message*](https://github.com/element-hq/synapse/commit/e2accd7f1d21e34181dd4543eca30ad1ea971b4c)
+> *-- [Synapse `e2accd7` commit message](https://github.com/element-hq/synapse/commit/e2accd7f1d21e34181dd4543eca30ad1ea971b4c)*
 
 Normally, this would just be a spec-compliance problem in Synapse but I think this may
 be the right way to think about it.
