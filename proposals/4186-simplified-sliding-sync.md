@@ -98,6 +98,8 @@ for the user that the server maintains. This server list is, for each user, the 
 joined, been invited, knocked on, left, or been kicked or banned from, sorted by recent activity (see below for exact
 ordering semantics).
 
+Note that for rooms the user has been banned from, but never joined, should not be part of the list.
+
 Rooms that the user has been in but left are only included if the room was previously sent to the client in that
 connection. Rooms the user has been kicked or banned from will always be included in the server list. We do not include
 rooms the user has left themselves to save bandwidth and general efficiency (as the user knows they've left), but we
