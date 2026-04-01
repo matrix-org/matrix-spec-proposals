@@ -165,6 +165,9 @@ When sending sticky events down `/sync`, the `unsigned` section SHOULD have a `s
 how many milliseconds until the sticky event expires. This provides a way to reduce clock skew between a local homeserver
 and their connected clients. Clients SHOULD use this value to determine when the sticky event expires.
 
+When the user joins a room, the server MUST include all unexpired sticky events for that room in their subsequent
+sync response.
+
 Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_events`, which has the following request extension
 shape:
 
@@ -200,6 +203,14 @@ and, when enabled, the following response extension shape:
 Sticky events are expected to be encrypted and so there is no [state filter](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3useruseridfilter_request_roomeventfilter)
 equivalent provided for sticky events e.g to filter sticky events by event type.
 As with normal events, sticky events sent by ignored users MUST NOT be delivered to clients.
+
+The server MUST include sticky events across all joined rooms in the Sticky Event extension response for Sliding Sync,
+regardless of what subscription lists are requested by the client.
+
+As with regular `/sync`, when a user joins a room, the server MUST include all unexpired sticky events for that room
+in their subsequent sync responses.
+The server MAY spread them across multiple sync responses or the server MAY ignore the `limit` specified
+in the request extension for this case, depending on implementation preference.
 
 #### Pagination
 
