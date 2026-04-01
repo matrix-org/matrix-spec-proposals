@@ -58,7 +58,5 @@ None that I can think of, though there are certainly going to be some
 
 ## Dependencies
 
-This MSC builds on [MSC1772](https://github.com/matrix-org/matrix-spec-proposals/pull/1772)
-
 Implementation is required on the homeserver, with client support for configuring the settings.
 Client support is not required once setup.
