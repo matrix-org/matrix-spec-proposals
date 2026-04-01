@@ -97,7 +97,9 @@ To implement these properties, servers MUST:
 
 When an event loses its stickiness, these properties disappear with the stickiness. Servers SHOULD NOT
 eagerly synchronise such events anymore, nor send them down `/sync`, nor re-evaluate their soft-failure status.
-Note: policy servers and other similar antispam techniques still apply to these events.
+
+Policy servers and similar homeserver-specific antispam techniques (e.g. custom spam checker modules) still apply to these events,
+in which case the stickiness of the event is prevented.
 
 These messages may be combined with [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
 to provide heartbeat semantics (e.g required for MatrixRTC). Note that the sticky duration in this proposal
