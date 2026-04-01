@@ -2,7 +2,7 @@
 
 Many platforms, such as Discord, provide a capability for a user to leave personal "notes" on a user's profile. Matrix,
 however, has no similar functionality that can be shared between different clients. This proposal builds User Profile
-Annotations, a method for storing encrypted, private metadata on user and room profiles.
+Annotations, a method for storing encrypted, private metadata on user profiles.
 
 This proposal builds User Profile Annotations,
 a method of storing personal context on other users' profiles. This is made possible using a new `m.profile_annotations`
@@ -16,13 +16,13 @@ annotations is also encrypted using an account secret scoped specifically for ac
 
 This proposal introduces a new `m.profile_annotations` Account Data event, allowing the storage of free text (and other
 future annotations) on users. The framework introduced within this MSC builds on [Extensible Events][MSC1767] and
-provides room for future extension into other forms of user context, such as contact labels, custom nickname overrides,
-or annotations on rooms.
+provides room for future extension into other forms of user context, such as contact labels and custom nickname
+overrides.
 
 ### Plaintext `m.profile_annotations`
 
 A new event, `m.profile_annotations`, is stored in [`account_data`][account_data]. The `content` of this event MUST be a
-mapping between valid user MXIDs or room IDs and annotations stored on that user/room. Within a user, the `m.text`
+mapping between valid user MXIDs and annotations stored on that user. Within a user, the `m.text`
 property represents a text annotation ("note") on that user. It follows the text format as defined in [MSC1767][MSC1767].
 
 Unknown keys within user annotations MUST be ignored.
@@ -121,7 +121,7 @@ Because the content is scoped to only a singular user, this is acceptable.
 ## Future extensibility
 
 In the future, this MSC may be built on to implement nickname or avatar overrides, general user tagging functionalities,
-annotations on rooms, etc.
+etc.
 
 ## Unstable prefix
 
