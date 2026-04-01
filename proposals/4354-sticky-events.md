@@ -282,16 +282,18 @@ can fall outside this range, which is what we define as "old". On the receiving 
 `prev_events`, which cannot be connected to any known part of the room DAG. Sending sticky events to newly joined servers can be seen
 as a form of sending old but unexpired sticky events, and so this proposal only considers this case.
 
-Servers MUST send old sticky events in the order they were created on the server (stream ordering / based on `origin_server_ts`).
-This ensures that sticky events appear in roughly the right place in the timeline as servers use the arrival ordering to determine
-an event's position in the timeline.
-
 Sending these old events will potentially increase the number of forward extremities in the room for the receiving server. This may impact state resolution
 performance if there are many forward extremities. Servers MAY send dummy events to remove forward extremities (Synapse has the
 option to do this since 2019). Alternatively, servers MAY choose not to add old sticky events to their forward extremities, but
 this A) reduces eventual delivery guarantees by reducing the frequency of transitive delivery of events, B) reduces the convergence
 rate when implementing ephemeral maps (see "Addendum: Implementing an ephemeral map"), as that relies on servers referencing sticky
 events from other servers.
+
+Servers SHOULD (best-effort) send sticky events to other homeservers in the order they were created on the server
+(stream ordering / based on `origin_server_ts`).
+However, this does not need to be guaranteed, particularly when catching up sending old sticky events
+(either after a network partition or to a newly-joined server) at the same time as new sticky events
+are being created in real-time.
 
 ## Potential issues
 
