@@ -51,7 +51,7 @@ None.
 | Stable               | Unstable                                      |
 |---------------------:|:----------------------------------------------|
 |    `M_SPEAK_NO_EVIL` | `COM.NHJKL.MSC4444.SPEAK_NO_EVIL`             |
-|        Room version: | `com.nhjkl.msc4444.opt1`, based on v2.        |
+|        Room version: | `com.nhjkl.msc4444.opt2`, based on v3.        |
 
 ## Dependencies
 
