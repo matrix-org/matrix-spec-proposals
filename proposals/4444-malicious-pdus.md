@@ -25,8 +25,8 @@ If `evil` is a non-boolean value, then it is assumed the PDU is
 malicious and should be handled as stated above.
 
 `/_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}` has a new query
-parameter to assist clients in sending malicious PDUs: `evil`. When set to `1`
-the PDU has the `evil` key set to `true`, otherwise it is `false`.
+parameter to assist clients in sending malicious PDUs: `evil`. When set to
+`true`, the PDU has the `evil` key set to `true`, otherwise it is `false`.
 
 A new error code is added if the server refuses to send malicious PDUs:
 `M_SPEAK_NO_EVIL`. Clients SHOULD NOT attempt to send malicious PDUs anymore
@@ -51,6 +51,7 @@ None.
 | Stable               | Unstable                                      |
 |---------------------:|:----------------------------------------------|
 |    `M_SPEAK_NO_EVIL` | `COM.NHJKL.MSC4444.SPEAK_NO_EVIL`             |
+|   `evil` query param | `com.nhjkl.msc4444.evil`                      |
 |        Room version: | `com.nhjkl.msc4444.opt2`, based on v3.        |
 
 ## Dependencies
