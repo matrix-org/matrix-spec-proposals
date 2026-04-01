@@ -1,4 +1,4 @@
-# MSC0000: Clarify `/sync` timeline order
+# MSC4445: Clarify `/sync` timeline order
 
 Currently, the spec describes order of events in the `timeline` of `/sync` in this manner:
 
@@ -114,8 +114,8 @@ sent down, just in a different order.
 ## Unstable prefix
 
 Clients can rely on the presence of the
-`org.matrix.msc0000.initial_sync_timeline_stream_ordering` and
-`org.matrix.msc0000.initial_sync_timeline_topological_ordering` flags in
+`org.matrix.msc4445.initial_sync_timeline_stream_ordering` and
+`org.matrix.msc4445.initial_sync_timeline_topological_ordering` flags in
 `unstable_features` as an explicit indicator to tell how a homeserver is behaving. If
 these flags are absent, the client has to assume the server is behaving as currently
 specc'ed but has no guarantee of this.
@@ -123,7 +123,7 @@ specc'ed but has no guarantee of this.
 Synapse already behaves in the way described in this proposal (since inception in 2015)
 and is unlikely to change it's behavior until a conclusion is made with this MSC.
 Synapse can be updated to advertise
-`org.matrix.msc0000.initial_sync_timeline_topological_ordering`.
+`org.matrix.msc4445.initial_sync_timeline_topological_ordering`.
 
 
 ## Dependencies
