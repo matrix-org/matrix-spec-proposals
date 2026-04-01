@@ -8,35 +8,7 @@ define a secondary room to sync permission level's with.
 
 ## Proposal
 
-*Here is where you'll reinforce your position from the introduction in more detail, as well as cover
-the technical points of your proposal. Including rationale for your proposed solution and detailing
-why parts are important helps reviewers understand the problem at hand. Not including enough detail
-can result in people guessing, leading to confusing arguments in the comments section. The example
-here covers why templates are important again, giving a stronger argument as to why we should have
-a template. Afterwards, it goes on to cover the specifics of what the template could look like.*
-
-Having a default template that everyone can use is important. Without a template, proposals would be
-all over the place and the minimum amount of detail may be left out. Introducing a template to the
-proposal process helps ensure that some amount of consistency is present across multiple proposals,
-even if each author decides to abandon the template.
-
-The default template should be a markdown document because the MSC process requires authors to write
-a proposal in markdown. Using other formats wouldn't make much sense because that would prevent authors
-from copy/pasting the template.
-
-The template should have the following sections:
-
-* **Introduction** - This should cover the primary problem and broad description of the solution.
-* **Proposal** - The gory details of the proposal.
-* **Potential issues** - This is where problems with the proposal would be listed, such as changes
-  that are not backwards compatible.
-* **Alternatives** - This section lists alternative solutions to the same
-  problem which have been considered and dismsissed.
-* **Security considerations** - Discussion of what steps were taken to avoid security issues in the
-  future and any potential risks in the proposal.
-
-Furthermore, the template should not be required to be followed. However it is strongly recommended to
-maintain some sense of consistency between proposals.
+This is the part of the MSC that DidiDidi129 doesn't know how to complete properly. I can give write access to this repo to anyone who would like it...
 
 
 ## Potential issues
