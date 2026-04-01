@@ -130,5 +130,7 @@ Synapse can be updated to advertise
 
 Other MSC's which add more sync API's (like
 *[MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186): Simplified
-Sliding Sync*) should use the same ordering heuristics as this proposal.
+Sliding Sync*, [event ordering
+discussion](https://github.com/matrix-org/matrix-spec-proposals/pull/4186#discussion_r2408805237))
+should use the same ordering heuristics as this proposal.
 
