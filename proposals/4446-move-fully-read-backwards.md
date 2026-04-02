@@ -1,4 +1,4 @@
-# MSC0000: Allow moving the fully read marker to older events
+# MSC4446: Allow moving the fully read marker to older events
 
 Today, many clients and servers assume that both read receipts and the fully read marker only ever
 move forward monotonically, from older events to newer ones. However, currently the spec does not
@@ -148,7 +148,7 @@ unread counts, I consider this out of scope for this proposal. A future MSC may 
 [MSC4033](https://github.com/matrix-org/matrix-spec-proposals/blob/andybalaam/event-thread-and-order/proposals/4033-event-thread-and-order.md)
 proposes an explicit specification of message order to use for read receipts, while intentionally not covering
 `m.fully_read`.
-As MSC0000 on the other hand does not further specify the actual order that servers should use, but
+As MSC4446 on the other hand does not further specify the actual order that servers should use, but
 leaves the message order as an implementation detail to the server, both MSCs are complementary to each
 other - if some variant of MSC4033 gets included into the spec, the same message order will likely be useful for
 `m.fully_read` as well, for the case the client hasn't opted out of monotonic handling.
@@ -167,5 +167,5 @@ new attack surface to other parties.
 
 Unstable implementations should use `com.beeper.allow_backward` in place of `allow_backward` in the request body.
 
-Servers can promote support for this MSC in `/_matrix/client/versions` by setting the flag `com.beeper.msc0000`.
+Servers can promote support for this MSC in `/_matrix/client/versions` by setting the flag `com.beeper.msc4446`.
 The feature flag should continue to be advertised after the MSC is accepted until the server advertises support for the stable spec release that includes this MSC.
