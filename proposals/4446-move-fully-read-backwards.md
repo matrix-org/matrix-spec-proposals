@@ -101,7 +101,7 @@ logic tied to it that would cause issues from breaking this assumption.
 
 ### Allow controlling `m.fully_read` via normal account data endpoints
 
-Currently the spec [prohibits](https://spec.matrix.org/v1.18/client-server-api/#put_matrixclientv3useruseridroomsroomidaccount_datatype)
+Currently the spec [prohibits](https://spec.matrix.org/v1.18/client-server-api/#client-behaviour-6)
 servers from accepting `m.fully_read` account data set from
 [`/account_data`](https://spec.matrix.org/v1.18/client-server-api/#put_matrixclientv3useruseridroomsroomidaccount_datatype).
 
