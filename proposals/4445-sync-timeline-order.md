@@ -121,7 +121,7 @@ these flags are absent, the client has to assume the server is behaving as curre
 specc'ed but has no guarantee of this.
 
 Synapse already behaves in the way described in this proposal (since inception in 2015)
-and is unlikely to change it's behavior until a conclusion is made with this MSC.
+and is unlikely to change its behavior until a conclusion is made with this MSC.
 Synapse can be updated to advertise
 `org.matrix.msc4445.initial_sync_timeline_topological_ordering`.
 
