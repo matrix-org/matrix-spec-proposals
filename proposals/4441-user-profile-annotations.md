@@ -127,10 +127,11 @@ etc.
 
 Before this MSC is accepted, implementations should use the unstable `account_data` events:
 
-| Stable identifier       | Purpose                                  | Unstable identifier                     |
-| ----------------------- | ---------------------------------------- | --------------------------------------- |
-| `m.profile_annotations` | Storage of User Profile Annotations      | `dev.zirco.msc4441.profile_annotations` |
-| `m.account_data.key`    | ADK secret storage for encrypted content | `dev.zirco.msc4441.account_data.key`    |
+| Stable identifier        | Purpose                                  | Unstable identifier                      |
+| ------------------------ | ---------------------------------------- | ---------------------------------------- |
+| `m.profile_annotations`  | Storage of User Profile Annotations      | `dev.zirco.msc4441.profile_annotations`  |
+| `m.profile_annotations/` | Prefix of HKDF `info`                    | `dev.zirco.msc4441.profile_annotations/` |
+| `m.account_data.key`     | ADK secret storage for encrypted content | `dev.zirco.msc4441.account_data.key`     |
 
 ## Dependencies
 
