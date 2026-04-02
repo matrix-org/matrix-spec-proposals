@@ -48,7 +48,11 @@ or mandate out-of-band channels, which this MSC accommodates.
 
 Sensitive information may simply be encrypted to the key already listed in a site's security.txt file, however, at
 larger organizations this does not provide the same per-contact granularity (and may not even reference someone
-responsible for hosting the Matrix homeserver at all).
+responsible for hosting the Matrix homeserver at all). A homeserver is unlikely to be the only service running on a
+domain. Especially for larger organizations, where the single key that security.txt provides may not actually represent
+anyone responsible for the Matrix homeserver itself. This is a tool to aid in discovery alongside WKD or key servers.
+
+Additionally, this helps obtain per-contact granularity in contrast to just one "this is our security team's key."
 
 ## Unstable prefix
 
