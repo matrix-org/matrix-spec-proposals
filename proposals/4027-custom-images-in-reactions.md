@@ -28,21 +28,22 @@ This proposal suggests two changes to events with the `m.annotation` relation.
 1. If the `key` of an `m.annotation` relation is an MXC URI of an image, clients
    should render the referenced image instead of the key text.
 
-2. When the annotation's key is an MXC URI, a new (optional) `shortcode` key can
-   be added to the content of the event with a textual name for the image. This
-   field must be a string and should start and end with the `:` (colon)
-   character.
+2. When the annotation's key is an MXC URI, a new (optional) `shortcode` key may
+   be added to the content of the event with a textual name for the image.
 
    This shortcode should be shown by clients in situations such as hovering over
    the annotation, as alt-text, or if the client does not support rendering
    images.
 
-   The `shortcode` must have a length of less than or equal to 100 bytes
-   (including the colons at the beginning and end of the string). This
-   restriction must be enforced by servers when sending reactions, but servers
-   should not reject events coming across federation due to having too many
-   bytes in the `shortcode` field. Servers may still opt to locally redact
-   events having too many bytes in the `shortcode` field.
+   The `shortcode` must have a length of less than or equal to 100 bytes. This
+   MSC does not specify any other requirements on this field. Future MSCs such
+   as [MSC2545](https://github.com/matrix-org/matrix-spec-proposals/pull/2545)
+   may provide conventions for the format of the field.
+
+   The length restriction SHOULD be enforced by servers when sending reactions,
+   but servers MUST NOT reject events coming across federation due to having
+   too many bytes in the `shortcode` field. Servers may still opt to locally
+   redact events having too many bytes in the `shortcode` field.
 
 Example custom image reaction event content
 
