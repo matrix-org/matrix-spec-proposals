@@ -6,7 +6,7 @@ The Matrix specification includes [an endpoint](https://spec.matrix.org/v1.17/se
 
 [`GET /_matrix/federation/v1/openid/userinfo`](https://spec.matrix.org/v1.17/server-server-api/#get_matrixfederationv1openiduserinfo) is moved to a new location, `GET /_matrix/openid/v1/userinfo`. No changes are made to the behavior of the endpoint itself. The old endpoint is marked for deprecation and removal in a future version of the Matrix specification.
 
-Servers SHOULD NOT return a HTTP 3xx response to the old endpoint which points to the new endpoint. If a server wishes to support both endpoints, it should handle them identically.
+Servers MUST NOT return a HTTP 3xx response to the old endpoint which points to the new endpoint. If a server wishes to support both endpoints, it MUST handle them identically.
 
 ## Potential issues
 
