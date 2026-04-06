@@ -1,4 +1,4 @@
-# MSC0000: Move OpenID userinfo endpoint out of `/_matrix/federation`
+# MSC4447: Move OpenID userinfo endpoint out of `/_matrix/federation`
 
 The Matrix specification includes [an endpoint](https://spec.matrix.org/v1.17/server-server-api/#get_matrixfederationv1openiduserinfo), `/_matrix/federation/v1/openid/userinfo`, which allows a client to prove its identity to an external service. This endpoint is used by the [lk-jwt-service](https://github.com/element-hq/lk-jwt-service), among others. However, its location in the server-to-server API is strange -- it requires no authentication, and, unlike every other endpoint under `/_matrix/federation`, it isn't intended for use by other homeservers. This proposal moves it to a new endpoint prefix, `/_matrix/openid`, to separate it from the federation endpoints which it is unrelated to.
 
@@ -18,7 +18,7 @@ None. This proposal makes no functional changes to the behavior of the endpoint.
 
 ## Unstable prefix
 
-No unstable name for the new endpoint is proposed, as introducing one would defeat the purpose of this proposal. Servers MAY indicate their support for this proposal by setting the `org.continuwuity.msc0000` field of `unstable_features` to `true` under [`/_matrix/client/versions`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientversions).
+No unstable name for the new endpoint is proposed, as introducing one would defeat the purpose of this proposal. Servers MAY indicate their support for this proposal by setting the `org.continuwuity.msc4447` field of `unstable_features` to `true` under [`/_matrix/client/versions`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientversions).
 
 ## Dependencies
 
