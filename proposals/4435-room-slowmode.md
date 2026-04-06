@@ -38,7 +38,7 @@ disabling the message input bar, or disabling certain buttons.
 If this state PDU is not present in the room, slowmode rate limits
 do not apply.
 
-Servers MUST reject PDUs sent over C2S with `M_LIMIT_EXCEEDED` if a user
+Servers MUST reject PDUs sent over client APIs with `M_LIMIT_EXCEEDED` if a user
 attempts to send a PDU of a given type before `rate_limit` milliseconds
 have elapsed since their last PDU of that type, and the user's power level
 is not greater than or equal to the `exempt_power_level` key (if present)
@@ -58,6 +58,7 @@ Some servers in a room may not enforce these limits. This was deemed
 acceptable as several other things in Matrix are also like this,
 for example
 [history visibility restrictions](https://spec.matrix.org/v1.17/client-server-api/#mroomhistory_visibility).
+A policy server could also be used to enforce slowmode rate limits.
 
 ## Alternatives
 
