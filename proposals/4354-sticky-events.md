@@ -108,6 +108,8 @@ whereas the purpose of delayed events is to affect the send time (and thus start
 
 ### Sync API changes
 
+#### Current `/sync`
+
 The new `/sync` section looks like:
 
 ```js
@@ -167,6 +169,8 @@ and their connected clients. Clients SHOULD use this value to determine when the
 When the user joins a room, the server MUST include all unexpired sticky events for that room in their subsequent
 sync response.
 
+#### MSC4186 (Simplified) Sliding Sync
+
 Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_events`, which has the following request extension
 shape:
 
@@ -206,8 +210,11 @@ Sticky events are expected to be encrypted and so there is no [state filter](htt
 equivalent provided for sticky events e.g to filter sticky events by event type.
 As with normal events, sticky events sent by ignored users MUST NOT be delivered to clients.
 
-The server MUST include sticky events across all joined rooms in the Sticky Event extension response for Sliding Sync,
-regardless of what subscription lists are requested by the client.
+The server MUST include sticky events across all rooms that would be matched by at least one subscription list
+(i.e. all rooms that the client is interested in), even if the room does not appear in top-N window for that
+subscription list at this time.
+Rooms that would not be matched by a list are not included, as this means the client is not interested
+in those rooms.
 
 As with regular `/sync`, when a user joins a room, the server MUST include all unexpired sticky events for that room
 in their subsequent sync responses.
