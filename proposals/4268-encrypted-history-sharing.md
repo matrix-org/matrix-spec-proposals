@@ -297,6 +297,12 @@ be when importing a key export; however:
     MUST show that information to the user, since he has only that user's word
     for the authenticity of those sessions.
 
+Client implementations should note that server implementations may delete or
+expire old media that appears unused. They must therefore gracefully handle
+download failures due to the key bundle having expired (typically by just giving up
+on the attempt to download the bundle, though they could also warn the
+user.)
+
 ### Out-of-scope (for now, at least)
 
 * Ideally, the bundle would be deleted once the recipient has successfully
@@ -333,6 +339,10 @@ be when importing a key export; however:
   [MSC4425](https://github.com/matrix-org/matrix-spec-proposals/pull/4425)
   may help with this in the future, for example by force-expiring ephemeral
   media.
+
+* In theory, the key bundle could exceed the maximum size of media item that is
+  permitted by either the inviting user's homeserver, or the joining user's
+  homeserver.
 
 ## Alternatives
 
