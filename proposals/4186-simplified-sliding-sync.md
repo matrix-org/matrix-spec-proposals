@@ -592,7 +592,7 @@ The client then increases the range (in the next request) to `[0, 99]`, which wi
 range here matches 100 rooms, however we only send the 80 rooms that we didn't send down in the previous request.
 
 The client can use room subscriptions, with a `timeline_limit` of 20, to preload history for the top rooms. This means
-that if the user clicks on one of the top rooms the app can immediately display a screens worth of history. (An
+that if the user clicks on one of the top rooms the app can immediately display a screen's worth of history. (An
 alternative would be to have a second list with a static range of `[0, 19]` and a `timeline_limit` of 20. The downside
 is that the clients may use a different order for the room list and so always fetching extra events for the top 20 rooms
 may return more data than required.)
@@ -600,7 +600,7 @@ may return more data than required.)
 The client can keep increasing the list range in increments to pull in the full list of rooms. The client uses the
 returned `count` for the list to know when to stop expanding the list.
 
-The client *may* decided to reduce the range back to `[0, 19]` (and then subsequently incrementally expand the range),
+The client *may* decide to reduce the range back to `[0, 19]` (and then subsequently incrementally expand the range):
 this can be done.
 
 When the client is expecting a fast response (e.g. while expanding the lists), it should set the `timeout` parameter to
