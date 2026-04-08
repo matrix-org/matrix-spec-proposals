@@ -78,19 +78,19 @@ New optional HTTP endpoints are to be added to the Client-Server API.
 
 Suppose that Device A wants to establish communications with Device B. Device A can do so by creating a
 _rendezvous session_ via a `POST /_matrix/client/v1/rendezvous` call to an appropriate homeserver. Its response includes
-an _rendezvous ID_ which, along with the server [base URL], should be shared out-of-band with Device B.
+a _rendezvous ID_ which, along with the server [base URL], should be shared out-of-band with Device B.
 
 The rendezvous ID points to an arbitrary data resource (the "payload") on the homeserver, which is initially populated
 using data from A's initial `POST` request. The payload is a string which the homeserver must enforce a maximum length on.
 
 Anyone who is able to reach the homeserver and has the rendezvous ID - including: Device A; Device B; or a third party; -
-can then "receive" the payload by polling via a `GET` request, and "send" a new a new payload by making a `PUT` request.
+can then "receive" the payload by polling via a `GET` request, and "send" a new payload by making a `PUT` request.
 
 In this way, Device A and Device B can communicate by repeatedly inspecting and updating the payload at the rendezvous session.
 
 ### The send mechanism
 
-Every send request MUST include an `sequence_token` value whose value is the `sequence_token` from the last `GET`
+Every send request MUST include a `sequence_token` value whose value is the `sequence_token` from the last `GET`
 response seen by the requester. (The initiating device may also use the `sequence_token` supplied in the initial `POST` response
 to immediately update the payload.) Sends will succeed only if the supplied `sequence_token` matches the server's current
 revision of the payload. This prevents concurrent writes to the payload.
@@ -295,7 +295,7 @@ top-level navigation requests and return a `403` HTTP response with error code `
 The exact header values to use are an implementation detail for the server implementation.
 
 A future optimisation could be allow the client to "long-poll" by sending the previous `sequence_token` as a query parameter
-and then the server returns when the is new data or some timeout has passed.
+and then the server returns when there is new data or some timeout has passed.
 
 ### `DELETE /_matrix/client/v1/rendezvous/{rendezvousId}` - cancel a rendezvous session
 
@@ -465,7 +465,7 @@ The QR codes to be displayed and scanned using this format will encode binary st
 - the ASCII string `MATRIX`
 - one byte indicating the QR code type: `0x03` which identifies that the QR is part of this proposal
 - one byte indicating the intent of the device generating the QR:
-  - `0x00` a new device wishing to login and self-verify
+  - `0x00` a new device wishing to log in and self-verify
   - `0x01` an existing device wishing to facilitate the login of a new device and self-verify that other device
 - the ephemeral Curve25519 public key that will be used for [secure channel establishment](#establishment), as 32 bytes
 - the rendezvous session ID encoded as:
@@ -911,7 +911,7 @@ user then must cancel the process on Device G, preventing it from sharing any se
 During the secure channel establishment the messages have been prefixed with `MATRIX_QR_CODE_LOGIN_` rather than
 something more generic. The purpose is to bind the protocol to this specific application.
 
-Whilst the could be other uses for the secure channel mechanism or we might establish communication between devices
+Whilst there could be other uses for the secure channel mechanism or we might establish communication between devices
 using another mechanism (e.g. NFC or sound), this proposal only considers the scenario where the communication is
 initiated via QR code and we make the prefix explicitly named to match.
 
@@ -973,7 +973,7 @@ One could try and do something with STUN or TURN or [COAP](https://datatracker.i
 
 Rather than requiring the devices to poll for updates, "long-polling" could be used instead similar to `/sync`. Or WebSockets.
 
-#### Unauthenticated device could crated "redirect channel" without payload
+#### Unauthenticated device could create a "redirect channel" without payload
 
 In the current proposal the server operator may choose to not allow unauthenticated devices to create a rendezvous
 session to reduce abuse/attack vectors.
