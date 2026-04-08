@@ -717,6 +717,23 @@ Device G sends **LoginOkMessage** as the `data` payload via a `PUT` request to t
 
 6. **Verification by Device S**
 
+> [!TIP]
+> _A helpful [note](https://github.com/matrix-org/matrix-spec-proposals/pull/4388/changes#r3025116401) from @uhoreg to
+> future readers:_
+>
+> The security of this scheme is established by Device S decrypting and verifying the **LoginOkMessage** message as
+> described in this step. The messages are encrypted by the result of the ECDH of G and S's ephemeral keys (plus extra
+> steps). S knows that it has G's public key because it was obtained from the QR scan (we assume that the attacker can't
+> modify the displayed QR code). So if it is able to decrypt and verify the message, then it knows:
+>
+> - that it was received directly from G, since nobody other than S and G could obtain the shared secret to encrypt
+>   the message. In other words, the message from G to S was not tampered with.
+> - that G has received the correct public key from S, otherwise the message from G would have been encrypted using
+>   the wrong key, and would be undecryptable/unverifiable.
+>
+> Since, at this point, S knows that both devices have the correct public key for the other device, it knows that the
+> encrypted channel is secure.
+
 Device S receives a response over the insecure rendezvous session by polling with `GET` requests, potentially from
 Device G.
 
