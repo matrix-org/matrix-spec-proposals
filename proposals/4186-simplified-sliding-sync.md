@@ -252,7 +252,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/v4/sync`.
 | `timeout` | int | No | How long to wait for new events in milliseconds. If omitted (or set to 0) the response is always returned immediately, even if there are no changes. Ignored when no `pos` is set. |
 | `set_presence` | string | No | Same as in `/v3/sync`, controls whether the client is automatically marked as online by polling this API. <br/><br/> If this parameter is omitted then the client is automatically marked as online when it uses this API. Otherwise if the parameter is set to “offline” then the client is not marked as being online when it uses this API. When set to “unavailable”, the client is marked as being idle. <br/><br/> An unknown value will result in a 400 error response with code `M_INVALID_PARAM`. |
 | `lists` | `{string: SyncListConfig}` | No | Sliding window API. A map of list key to list information (`SyncListConfig`). The list keys are used by the client to refer to the lists.  <br/><br/> Max lists: 100. <br/> The list keys must follow the grammar of "opaque identifiers". |
-| `room_subscriptions` | `{string: RoomSubscription}` | No | A map of room ID to room subscription information. Used to subscribe to a specific room. Sometimes clients know exactly which room they want to get information about e.g by following a permalink or by refreshing a webapp currently viewing a specific room. The sliding window API alone is insufficient for this use case because there's no way to say "please track this room explicitly". |
+| `room_subscriptions` | `{string: RoomSubscription}` | No | A map of room ID to room subscription information. Used to subscribe to a specific room. Sometimes clients know exactly which room they want to get information about e.g by following a permalink or by refreshing a webapp currently viewing a specific room. The sliding window API alone is insufficient for this use case because there's no way to say "please track this room explicitly". <br/><br/> Max subscriptions: 100. <br/> |
 | `extensions` | `{string: ExtensionConfig}` | No | A map of extension key to extension config. Different extensions have different configuration formats. |
 
 
@@ -708,3 +708,4 @@ Changes from the initial implementation of simplified sliding sync.
 11. Rename `is_invite` to `is_invited`.
 12. `pos` can be used in `/messages` and `/relations` APIs.
 13. `name` can be null if the room name is removed.
+14. Add a limit of 100 to the maximum number of subscriptions.
