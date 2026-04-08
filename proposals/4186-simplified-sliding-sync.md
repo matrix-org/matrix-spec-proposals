@@ -131,7 +131,8 @@ room should always be returned (if there are updates). This is useful if e.g. th
 client always wants to get the latest data for that room.
 
 The server MUST ensure that user has permission to see any information the server returns. Currently, the user must
-either be in the room, or be invited/knocked to the room. Otherwise, the room will not be returned in the response.
+either be in the room, be invited/knocked to the room, or have historically been in the room. Otherwise, the room will
+not be returned in the response.
 
 Rooms that a user subscribes to that they do not have permission to see, or that does not exist, should be ignored by
 the server.
