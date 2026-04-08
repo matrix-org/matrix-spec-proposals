@@ -19,9 +19,9 @@ This proposal's expected trajectory through the MSC process looks something like
 
 1. The MSC is opened with no specific direction chosen.
 2. The SCT and community review the MSC, shaping its direction. The intention is to avoid a simple
-   vote. Instead, review should aim to add details and nuance to the proposal text.                    **<-- YOU ARE HERE**
+   vote. Instead, review should aim to add details and nuance to the proposal text.
 3. The MSC is updated to head in the direction which looks to have rough consensus.
-4. Further review happens as needed.
+4. Further review happens as needed.                                                                   **<-- YOU ARE HERE**
 5. The MSC is put forward for FCP (merge) by the SCT. This indicates preference to choose the direction
    outlined by the MSC.
 6. A (hopefully) successful FCP happens. The proposal is incorporated into the spec as a preferred
@@ -77,28 +77,102 @@ translations. Servers may also be interested in being able to offer not just pla
 to create a richer experience in the client.
 
 
+## Tradeoffs
+
+Implied above, either clients or servers should be primarily responsible for *rendering* errors to
+users. There are (dis)advantages to using either option.
+
+If relying primarily on servers to render errors for users, servers will find themselves needing to
+get into translations to support a wider user base, and clients will be effectively asked to take on
+the product identity of the server rather than their own. Clients are generally uncomfortable with
+giving up the relationship they have with their users, especially as it relates to identity. For
+example, if a client typically takes a more casual "oops! it exploded haha" type of vibe when
+interacting with their users, the server returning a highly professional "There was an error. Please
+contact support with reference number 1234567890 if the issue persists, and try again later" is
+jarring to say the least.
+
+This mismatch of product identity can be managed in environments where there is limited choice of
+client, such as in private federations or company deployments. In the typical public federation
+deployment where servers are either publicly available or have no restrictions on which clients can
+be used, there is plenty of opportunity for product identities to conflict with each other.
+
+Ensuring the client software and user operating that client have a healthy, consistent, relationship
+is important for the protocol's success because it removes surprises from the user experience. With
+fewer surprises, platforms and software built on top of Matrix can be more successful in retaining
+their users.
+
+There is also a relationship between the homeserver and the user with an account on that homeserver.
+Some of that relationship is defined by the software the homeserver chooses to use, but a large part
+of it is decided by how the homeserver interacts with the user. For example, when a user creates an
+account on matrix.org, they receive a DM from the homeserver with information on how to support the
+project and server. This homeserver identity rarely conflicts with the relationship that clients
+have with their users, though it can be a little surprising to a user if a client intended for
+private servers is used on a public server.
+
+The server software's relationship with their users is through the clients which operate the
+Client-Server API. By providing significantly more detail to clients over that API, servers can
+communicate what went wrong in the client's chosen identity, limiting the surprise to the presence
+of an error message rather than the language used in that message.
+
+Providing that detail to clients requires expanding the protocol's error system to cover the widest
+possible variety of clients. There will be clients which present the error message unmodified from
+the server to the user, but there will also be clients which want to completely rewrite the error
+before showing it to the user. Both of those clients (and all the ones inbetween) will need to be
+supported by the protocol.
+
+*Editorial: Further discussion on client wants/needs is available on this very MSC
+[here](https://github.com/matrix-org/matrix-spec-proposals/pull/4414#discussion_r2774183263) and
+[here](https://github.com/matrix-org/matrix-spec-proposals/pull/4414#discussion_r2793378907).*
+
+
 ## Proposal
 
-*As per the process note above, this section is not yet completed. It will be populated once rough
-consensus is achieved.*
+In the [Standard Error Response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response),
+the `error` string retains its human-readable requirement, but is clarified to indicate that the
+audience for the error message is expected to be client and server developers. The `error` string is
+explicitly clarified to say that it might not be an end user-friendly error message.
+
+A [convention for Matrix APIs](https://spec.matrix.org/v1.18/appendices/#conventions-for-matrix-apis)
+is also established to clarify that `error` message strings are intended for a developer audience.
+The newly established convention will further state that proposals SHOULD ensure their error responses
+are detailed enough for a client to interpret it without using `error` message strings.
+
+It is expected that future MSCs will aim to solve the general case for proposals through a system
+like sub-error codes, making `errcode` an array, or similar. This proposal intends to have other
+proposals consider what information is required rather than define any specific system to use.
+
+There are no requirements placed on clients for how to handle or present errors to users. Clients
+can, for example, ignore errors by sending them to `/dev/null`, show a dialog with the `error` string
+copied verbatim, interpret the non-`error` fields of the error JSON to render a different message,
+show a "something went wrong" error always (hiding specific details), or use a combination of approaches
+to communicate to the user that an error happened.
+
+A future MSC or initiative may explore putting *some* requirements on clients for handling and presenting
+errors to users after the protocol has a chance to explore how it communicates errors.
 
 
 ## Potential issues
 
-*As per the process note above, this section is not yet completed. It will be populated once rough
-consensus is achieved.*
+* By not specifying a specific subsystem to prefer for communicating errors, the protocol might see
+  multiple different approaches to the general case of expressing that an error occurred to the client.
+  Much of this expansion is expected to be handled within the normal MSC process, though some will end
+  up in the released protocol. Over sufficient time, the protocol will eventually converge on a set of
+  communication mechanisms which work for most cases, removing the ones which are found to be less
+  effective. (*Editorial: that eventual consistency is expected to be measured in years/decades.*)
 
-
-## Alternatives
-
-*As per the process note above, this section is not yet completed. It will be populated once rough
-consensus is achieved.*
+* Some proposals and features in Matrix might need to use the homeserver's identity rather than the
+  client's identity to communicate a failure. For example, the [`M_USER_LIMIT_EXCEEDED`](https://spec.matrix.org/v1.18/client-server-api/#common-error-codes)
+  error code might want to present specific messaging to encourage conversions to a paid service.
+  In those cases, it's expected that the error JSON have enough detail where the client can either
+  construct that messaging or render it verbatim (acknowledging the security risks and human language
+  compatibility concerns that come with the server returning an end user-facing bit of text/markup).
 
 
 ## Security considerations
 
-*As per the process note above, this section is not yet completed. It will be populated once rough
-consensus is achieved.*
+The threat model for Matrix is unchanged by this proposal. If a different approach where the server
+was specifying HTML or similar for the client to render was used, then the security considerations
+would also be different.
 
 
 ## Unstable prefix
