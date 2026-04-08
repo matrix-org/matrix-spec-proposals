@@ -9,7 +9,8 @@ requests.
 ## Proposal
 This proposal introduces a `PUT` variant of the existing
 `/_matrix/client/v3/profile/{userId}` endpoint, which will replace the user's
-entire profile.
+entire profile. This includes deleting any existing fields in the profile which
+are not specified in the request content.
 
 Servers MUST apply the same validation rules to this endpoint as they do for the
 individual field editing `PUT /_matrix/client/v3/profile/{userId}/{keyName}`. If
