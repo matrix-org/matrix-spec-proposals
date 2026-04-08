@@ -28,6 +28,10 @@ similar to what the `/preview_url` endpoint currently returns:
 URL previews are allowed for all message types, as media messages can have
 captions nowadays.
 
+MSCs which add fields to the `/preview_url` endpoint can also be used in
+bundled previews. For example, [MSC2448](https://github.com/matrix-org/matrix-spec-proposals/pull/2448)
+adds blurhashes to URL preview media.
+
 ### Client behavior
 #### Sending preview data
 When sending previews to encrypted rooms, clients SHOULD encrypt preview images
@@ -250,6 +254,10 @@ encrypted rooms unless the receiver opts in).
 
 ## Security considerations
 Fake preview data as covered in potential issues.
+
+This introduces a new location for user-defined media. Clients that have
+controls for where media is displayed MUST take URL preview media into
+consideration.
 
 ### Visibility in old clients (T&S)
 Clients that don't support this MSC will not display any of the data in the
