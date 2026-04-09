@@ -9,7 +9,7 @@ being previewed. A `og:image` property is present, although that usually is rese
 images of the pages content. Implementations such as Synapse may choose to use a site's favicon in place
 of a missing `og:image`, but this leads to imperfect rendering on the client.
 
-![An example of a preview](./imaes/4448-example.png)
+![An example of a preview](./images/4448-example.png)
 
 Some clients would prefer to know explicitly if an image provided in the response is a larger image preview
 (such as a photo from an article), separate from the branding logo for the site itself. The example above
