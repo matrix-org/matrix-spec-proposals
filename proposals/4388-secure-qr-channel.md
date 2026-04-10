@@ -88,6 +88,8 @@ can then "receive" the payload by polling via a `GET` request, and "send" a new 
 
 In this way, Device A and Device B can communicate by repeatedly inspecting and updating the payload at the rendezvous session.
 
+The maximum length of a rendezvous ID is 65,535 bytes.
+
 ### The send mechanism
 
 Every send request MUST include a `sequence_token` value whose value is the `sequence_token` from the last `GET`
@@ -96,6 +98,8 @@ to immediately update the payload.) Sends will succeed only if the supplied `seq
 revision of the payload. This prevents concurrent writes to the payload.
 
 n.b. Once a new payload has been sent there is no mechanism to retrieve previous payloads.
+
+The maximum length of a `sequence_token` is 65,535 bytes.
 
 ### Expiry
 
@@ -175,8 +179,8 @@ Response body for `200 OK` is `application/json` with contents:
 
 |Field|Type||
 |-|-|-|
-|`id`|required `string`|Opaque identifier for the rendezvous session|
-|`sequence_token`|required `string`|The opaque token to identify if the payload has changed|
+|`id`|required `string`|Opaque identifier for the rendezvous session. Maximum length 65,535 bytes|
+|`sequence_token`|required `string`|The opaque token to identify if the payload has changed. Maximum length 65,535 bytes|
 |`expires_in_ms`|required `integer`|The number of milliseconds remaining until the rendezvous session expires|
 
 Example response:
@@ -243,7 +247,7 @@ The response body for `200 OK` is `application/json` with contents:
 
 |Field|Type||
 |-|-|-|
-|`sequence_token`|required `string`|The opaque token to identify if the payload has changed|
+|`sequence_token`|required `string`|The opaque token to identify if the payload has changed. Maximum length 65,535 bytes|
 
 For example:
 
@@ -474,6 +478,7 @@ The QR codes to be displayed and scanned using this format will encode binary st
   - the rendezvous session ID as a UTF-8 string
 - the [base URL] of the homeserver for client-server connections encoded as:
   - two bytes in network byte order (big-endian) indicating the length in bytes of the base URL as a UTF-8 string
+    (n.b. a base URL longer than 65,535 bytes cannot be encoded and should be rejected)
   - the base URL as a UTF-8 string
 
 If a new version of this QR sign in capability is needed in future (perhaps with updated secure channel protocol) then
@@ -638,10 +643,21 @@ that Device G can use to confirm that the channel is secure. It contains:
 - Its public ephemeral key **Sp**.
 
 ```
-Aad := BaseUrl || RendezvousId || SequenceToken
+Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
 TaggedCiphertext := Context_DeviceS_Send.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", Aad)
 LoginInitiateMessage := UnpaddedBase64(Sp || TaggedCiphertext)
 ```
+
+We define the result of `EncodeStringAsBytes(StringInput)` to be a sequence of bytes:
+
+- two bytes in network byte order (big-endian) indicating the length in bytes of the `StringInput` as a UTF-8 string
+- the `StringInput` as a UTF-8 string
+
+e.g. `EncodeStringAsBytes("abcdef")` returns `[0x00, 0x06, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66]`
+
+n.b. Because this proposal restricts the length of `RendezvousId` and `SequenceToken` to 65535 bytes, and that a
+`BaseUrl` longer than 65535 bytes will have failed at the point of encoding a QR, we don't specify a handling for
+`StringInput` of length greater than 65535 bytes.
 
 Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request
 and noting the new **sequence token**.
@@ -673,7 +689,7 @@ with the additional authentication data:
 It checks that the plaintext matches the string `MATRIX_QR_CODE_LOGIN_INITIATE`, failing and aborting if not.
 
 ```
-Aad := BaseUrl || RendezvousId || SequenceToken
+Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
 Plaintext := Context_DeviceG_Receive.Open(TaggedCiphertext, Aad)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_INITIATE":
@@ -708,7 +724,7 @@ string `MATRIX_QR_CODE_LOGIN_OK` that is sealed with the additional authenticati
 **sequence token** is the one that was received with the `GET` request that returned **LoginInitiateMessage**:
 
 ```
-Aad := BaseUrl || RendezvousId || SequenceToken
+Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
 TaggedCiphertext := Context_DeviceG_Send.Seal("MATRIX_QR_CODE_LOGIN_OK", Aad)
 LoginOkMessage := UnpaddedBase64Encode(ResponseNonce || TaggedCiphertext)
 ```
@@ -762,7 +778,7 @@ It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing
 otherwise.
 
 ```
-Aad := BaseUrl || RendezvousId || SequenceToken
+Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
 Plaintext := Context_DeviceS_Receive.Open(TaggedCiphertext, Aad)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
@@ -813,7 +829,7 @@ sent from S should be encrypted with **Context_DeviceS_Send**. Each call to the 
 additional authentication data of the form where the **sequence token** is from the last `GET` that the device received:
 
 ```
-Aad := BaseUrl || RendezvousId || SequenceToken
+Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
 ```
 
 Similarly, payloads received by G should be decrypted using the context **Context_DeviceG_Receive**, while payloads received by S
@@ -821,7 +837,7 @@ should be decrypted using the context **Context_DeviceG_Receive**. Each call to 
 additional authentication data of the form where the **sequence token** is from the last `PUT` that the device made:
 
 ```
-Aad := BaseUrl || RendezvousId || SequenceToken
+Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
 ```
 
 ### Sequence diagram
