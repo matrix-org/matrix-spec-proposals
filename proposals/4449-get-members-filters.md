@@ -11,7 +11,7 @@ the filters to match against multiple memberships.
 ## Proposal
 
 Building on the art of [MSC2895](https://github.com/matrix-org/matrix-spec-proposals/pull/2895),
-this proposal will move spearhead one of the options proposed.
+this proposal will spearhead one of the options proposed.
 
 As it appears to be the least complex change, the `membership` and `not_membership` query parameters
 are updated to allow being provided multiple times, to specify multiple matches. For example,
