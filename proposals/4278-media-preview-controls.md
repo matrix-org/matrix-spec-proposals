@@ -99,6 +99,10 @@ Users may individually hide media, and this preference MUST be respected over an
 
 This value is the **default** setting for both properties when no value is set, to keep with the previous defaults.
 
+### Other values
+
+Clients MUST treat any unknown property value in either defined property as `off`, for safety reasons.
+
 ### Levels
 
 The account data may exist at both the global and room level. The global setting defines the preference for
