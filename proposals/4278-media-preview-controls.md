@@ -218,7 +218,7 @@ could be achieved, but each have downsides.
 
 1. Use [MSC2448](https://github.com/matrix-org/matrix-spec-proposals/pull/2448) client-side blurhashes. Would prevent
    downloading blocked media but the blurhash is attacker controlled, and can't be trusted for accuracy.
-2. Above, but reciever-side calculation. Would require downloading potentially offensive media to the client and is
+2. Above, but receiver-side calculation. Would require downloading potentially offensive media to the client and is
    a non-starter for potentially dangerous content.
 3. Server-side generated previews. Does not work for encrypted rooms, and [were ripped out of MSC2448 anyway](https://github.com/matrix-org/matrix-spec-proposals/pull/2448#discussion_r1089753289)
 
