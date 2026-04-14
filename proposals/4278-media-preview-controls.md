@@ -44,9 +44,9 @@ Clients should show show or hide media depending upon this setting, on at least 
 The above list is not exhaustive. Other MSCs should take this setting into account when rendering content that could
 be considered a media preview, such as [MSC4027](https://github.com/matrix-org/matrix-spec-proposals/pull/4027). 
 
-The one exception to the rule for now is user avatars in rooms the user has joined. For the purposes of this MSC, by joining
-a room the user *has* consented to seeing the user avatars contained within. See the potential issues section for
-a deeper explanation.
+The one exception to the rule for now is user avatars in rooms the user has joined. For the purposes of this MSC,
+by joining a room the user *has* consented to seeing the user avatars contained within. See the potential issues
+section for a deeper explanation.
 
 ### `invite_avatars`
 
@@ -65,19 +65,21 @@ In *all* cases where an avatar may be rendered for a room invite, the preview sh
 
 #### `off`
 
-The client MUST NOT show any previews for any media in affected rooms. Clients SHOULD hide the media entirely,
+The client MUST NOT show any previews for any media in affected rooms. Clients will hide the media entirely,
 behind a click-to-view prompt, or some other mechanism where a user is either prevented entirely or must consent
 to see the media.
 
-Users may individually consent to seeing media, for example by clicking on a prompt to show a preview.
-
+Users MAY individually consent to seeing media, for example by clicking on a prompt to show a preview.
 If consent is given, the client SHOULD then track that consent and show the media again in the future. The
 mechanism for tracking opt-in/opt-out of media is left as an implemnentation detail.
 
 #### `private`
 
-Previews for media MAY be shown in "private" rooms without a prompt. A private room is any room where 
-the `m.room.join_rules` state exists AND `join_rule` key of this state is `invite`, `knock`, `restricted`, or `knock_restricted`.
+Previews for media MAY be shown in "private" rooms without a prompt.
+A private room is any room where:
+
+ - The `m.room.join_rules` state exists
+ - The `join_rule` key of this state is `invite`, `knock`, `restricted`, or `knock_restricted`.
 
 If any other `join_rule` is set, or cannot be determined by the client then the assumption MUST be that the
 room is public and previews MUST not be shown. Future join rules may be added to this list, but it's critical
