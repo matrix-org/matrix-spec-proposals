@@ -241,7 +241,8 @@ Common error responses:
 |--------------|------------|--------------------------------|
 | `400 Bad Request` | `M_BAD_JSON` | The request body was malformed, missing required fields, or contained invalid values (e.g. missing `room_id`, `slot_id`, or `openid_token`). |
 | `401 Unauthorized` | `M_UNAUTHORIZED` | The request could not be authorised. This response is used for all cases where the OpenID token is invalid, expired, could not be verified, or where the requested room or slot is unknown or inaccessible. Clients may attempt to refresh their OpenID token and retry. |
-| `429 Too Many Requests` | `M_LIMIT_EXCEEDED` | The client or homeserver has exceeded rate limits for LiveKit token requests. A `retry_after_ms` field SHOULD be included to indicate when retry is allowed. |
+| `429 Too Many Requests` | `M_LIMIT_EXCEEDED` | The client or homeserver has exceeded rate limits for LiveKit token requests. Please refer to the existing [spec](https://spec.matrix.org/v1.18/client-server-api/#common-error-codes) for further details.|
+| `403 Forbidden` | `M_USER_LIMIT_EXCEEDED` | The user has exceeded a configured quota or usage limit. Please refer to the existing [spec](https://spec.matrix.org/v1.18/client-server-api/#common-error-codes) for further details.|
 | `500 Internal Server Error` | `M_UNKNOWN` | An unexpected internal error occurred while generating the token. The client may retry after a short delay. |
 
 Example Error Response:
@@ -259,7 +260,7 @@ unknown resources, or insufficient permissions. All such conditions result in a 
 response with `M_UNAUTHORIZED`. This prevents clients from inferring the existence of specific
 rooms, users, or slots based on error responses.
 
-The LiveKit authorisation service MAY include additional fields (such as `retry_after_ms` or
+The LiveKit authorisation service MAY include additional fields (such as
 `reason`) for diagnostic purposes, but clients MUST be prepared to ignore unknown fields.
 Implementations SHOULD NOT disclose sensitive information in the `"error"` field.
 
