@@ -71,7 +71,8 @@ to see the media.
 
 Users may individually consent to seeing media, for example by clicking on a prompt to show a preview.
 
-If consent is given, the client SHOULD then track that consent and show the media again in the future.
+If consent is given, the client SHOULD then track that consent and show the media again in the future. The
+mechanism for tracking opt-in/opt-out of media is left as an implemnentation detail.
 
 #### `private`
 
@@ -108,9 +109,6 @@ considered a safety feature.
 Not all clients will respect this configuration initially, and many clients will continue to support
 their own variant of this setting in the short term. In time this MSC should be adopted, so that
 a user's safety settings is carried over to new sessions.
-
-Clients MAY allow users to override the account level setting on a per-event or per-media level if they
-give explicit consent. This is left as an implementation detail.
 
 ## Potential issues
 
