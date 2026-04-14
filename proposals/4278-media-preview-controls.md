@@ -71,7 +71,7 @@ to see the media.
 
 Users MAY individually consent to seeing media, for example by clicking on a prompt to show a preview.
 If consent is given, the client SHOULD then track that consent and show the media again in the future. The
-mechanism for tracking opt-in/opt-out of media is left as an implemnentation detail.
+mechanism for tracking opt-in/opt-out of media is left as an implementation detail.
 
 #### `private`
 
@@ -93,9 +93,9 @@ content.
 
 #### `on`
 
-Media MAY be shown in any room without a prompt. 
+Media SHOULD be shown in any room without a prompt.
 
-Users may individually hide media, and this preference MUST be respected over any defaults defined in `m.media_preview_config`.
+Users SHOULD be able to individually hide media, and this preference MUST be respected over any defaults defined in `m.media_preview_config`.
 
 This value is the **default** setting for both properties when no value is set, to keep with the previous defaults.
 
