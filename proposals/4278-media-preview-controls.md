@@ -30,8 +30,8 @@ This key contains the following content.
 
 ### `media_previews`
 
-`media_previews` refers to any media that may be automatically rendered in the context of a room without user
-interaction, like a thumbnail.
+A "media preview" is defined as any media in a room that may be rendered automatically without explicit
+user consent.
 
 Clients should show show or hide media depending upon this setting, on at least the following content types:
 
@@ -41,11 +41,12 @@ Clients should show show or hide media depending upon this setting, on at least 
  - Inline media via `img`.
  - Any event which includes thumbnail information or may be thumbnailed by the home server.
 
-The above list is not exhaustive as future event types may increase the scope of media in the context of a room,
-but offers a reference point for clients. 
+The above list is not exhaustive. Other MSCs should take this setting into account when rendering content that could
+be considered a media preview, such as [MSC4027](https://github.com/matrix-org/matrix-spec-proposals/pull/4027). 
 
-Avatars of users in rooms are considered outside the scope of a room for the purposes of this MSC, and are not
-required to be filtered by the same logic. A future MSC may explore how to handle user avatars.
+The one exception to the rule for now is user avatars in rooms the user has joined. For the purposes of this MSC, by joining
+a room the user *has* consented to seeing the user avatars contained within. See the potential issues section for
+a deeper explanation.
 
 ### `invite_avatars`
 
@@ -98,7 +99,6 @@ This value is the **default** setting for both properties when no value is set, 
 The account data may exist at both the global and room level. The global setting defines the preference for
 all rooms, unless a per-room setting overrides it.
 
-
 ### Notes
 
 Homeservers MAY specify a default value ahead of time for the user, by setting a default
@@ -108,6 +108,9 @@ considered a safety feature.
 Not all clients will respect this configuration initially, and many clients will continue to support
 their own variant of this setting in the short term. In time this MSC should be adopted, so that
 a user's safety settings is carried over to new sessions.
+
+Clients MAY allow users to override the account level setting on a per-event or per-media level if they
+give explicit consent. This is left as an implementation detail.
 
 ## Potential issues
 
@@ -126,6 +129,14 @@ A future MSC may explore the possibility of this applying to spaces, but this in
 globally and per-room.
 
 However, not having this feature means many room may need apply their own rules.
+
+#### User Avatars
+
+This MSC explicitly rules out controlling room avatars in joined rooms. Conveying to users why avatars are not
+rendering, and giving the ability to explicitly opt-in/opt-out of user avatars felt beyond the scope of this MSCs
+room focus.
+
+A future MSC should be considered to give greater protection for user avatars.
 
 ## Alternatives
 
