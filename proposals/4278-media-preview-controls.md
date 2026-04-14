@@ -108,6 +108,32 @@ Clients MUST treat any unknown property value in either defined property as `off
 The account data may exist at both the global and room level. The global setting defines the preference for
 all rooms, unless a per-room setting overrides it.
 
+If `m.media_preview_config` is set at both global and room levels, the client MUST prefer using a defined value
+over a default value. E.g. account data of:
+
+```jsonc
+{ // Room-level account data
+  "media_previews": "on"
+}
+```
+
+```jsonc
+{ // Global account data
+  "media_previews": "off",
+  "invite_avatars": "off"
+}
+```
+
+would resolve to:
+
+```jsonc
+{
+  "media_previews": "on"
+  "invite_avatars": "off"
+}
+```
+
+
 ### Notes
 
 Homeservers MAY specify a default value ahead of time for the user, by setting a default
