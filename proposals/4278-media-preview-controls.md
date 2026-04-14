@@ -83,6 +83,8 @@ If any other `join_rule` is set, or cannot be determined by the client then the 
 room is public and previews MUST not be shown. Future join rules may be added to this list, but it's critical
 that clients adopt a safety first approach here.
 
+The user MAY still opt-in to media if the room is "public", and opt-out if the room is "private".
+
 Note that this setting has no effect for `invite_avatars`. Avatars can only be `off` or `on` for all invites. 
 Bad actors can easily send a DM to a user (which would pass the `private` check) containing unwanted
 content.
