@@ -33,15 +33,15 @@ This key contains the following content.
 A "media preview" is defined as any media in a room that may be rendered automatically without explicit
 user consent.
 
-Clients should show show or hide media depending upon this setting, on at least the following content types:
+Clients SHOULD show show or hide media depending upon this setting, on at least the following content types:
 
  - Media message types `m.image`, `m.video`, `m.file` which all can include thumbnail information or be thumbnailed
- by the home server.
+ by the homeserver.
  - The `m.sticker` event type.
  - Inline media via `img`.
- - Any event which includes thumbnail information or may be thumbnailed by the home server.
+ - Any event which includes thumbnail information or may be thumbnailed by the homeserver.
 
-The above list is not exhaustive. Other MSCs should take this setting into account when rendering content that could
+The above list is not exhaustive. Other MSCs SHOULD take this setting into account when rendering content that could
 be considered a media preview, such as [MSC4027](https://github.com/matrix-org/matrix-spec-proposals/pull/4027). 
 
 The one exception to the rule for now is user avatars in rooms the user has joined. For the purposes of this MSC,
@@ -59,7 +59,7 @@ The avatar may refer to:
  - The `m.room.avatar` state event.
  - The inviting user's `avatar_url` from their profile (in the case of a DM).
 
-In *all* cases where an avatar may be rendered for a room invite, the preview should be controlled by the setting.
+In *all* cases where an avatar may be rendered for a room invite, the preview MUST be controlled by this setting.
 
 ### Property value
 
@@ -115,8 +115,7 @@ value internally for the account data. The user *must* be able to mutate this va
 considered a safety feature.
 
 Not all clients will respect this configuration initially, and many clients will continue to support
-their own variant of this setting in the short term. In time this MSC should be adopted, so that
-a user's safety settings is carried over to new sessions.
+their own variant of this setting in the short term.
 
 ## Potential issues
 
@@ -142,7 +141,7 @@ This MSC explicitly rules out controlling room avatars in joined rooms. Conveyin
 rendering, and giving the ability to explicitly opt-in/opt-out of user avatars felt beyond the scope of this MSCs
 room focus.
 
-A future MSC should be considered to give greater protection for user avatars.
+A future MSC may be considered to give greater protection for user avatars.
 
 ## Alternatives
 
@@ -203,11 +202,11 @@ For the moment, hiding media entirely is a simpler and safer solution.
 This property is ultimately held by the homeserver, and a malicious homeserver may expose you to unwanted content. This is
 true today, and users should take caution with who they choose to host their account with.
 
-As with all account data properties, the content should be validated.
+As with all account data properties, the content MUST be validated.
 
 ## Unstable prefix
 
-The property should use `io.element.msc4278.media_preview_config` while the property is unstable.
+The property MUST use `io.element.msc4278.media_preview_config` while the property is unstable.
 
 ## Dependencies
 
