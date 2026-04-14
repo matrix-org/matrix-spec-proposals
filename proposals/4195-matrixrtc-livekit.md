@@ -42,19 +42,38 @@ Example for two participants from different homeservers A and B
 This MSC defines the **LiveKit RTC Transport**, which can appear as one of the **RTC Transports**
 offered by a homeserver and being used as transport by clients.
 
+### Canonical JSON Serialization
+
+All uses of `JSON.serialize(...)` in this specification MUST use the canonical JSON encoding as 
+defined by the [Matrix specification](https://spec.matrix.org/v1.18/appendices/#canonical-json).
+
+Since this MSC exclusively serializes arrays for hashing inputs, implementations MUST ensure:
+* The array elements appear in the exact specified order
+* Each element is encoded as a JSON string
+* The resulting byte sequence used for hashing is the UTF-8 encoding of the canonical JSON output
+
+For example:
+```json5
+["@user:matrix.example.com","DEVICEID","abcd12345"]
+```
+
+Any deviation (e.g. additional whitespace or different encoding) will result in a different hash 
+and is therefore non-compliant.
+
 ### LiveKit room alias
 
 The name of a LiveKit room is referred to as the **LiveKit alias** (`livekit_alias`). The alias MUST
 be globally unique and dependent on a given MatrixRTC slot in a Matrix room. A minimal
 implementation that ensures a baseline of pseudonymity is given by the
 [unpadded base64 encoding](https://spec.matrix.org/v1.17/appendices/#unpadded-base64) of the SHA-256
-hash of the concatenation of the Matrix `room_id`, a pipe character (`|`), and the `slot_id`, i.e.
-`base64(SHA256(room_id|slot_id))`.
+hash of the JSON serialization of an array containing the Matrix `room_id` and the `slot_id`, i.e.  
+`base64(SHA256(JSON.serialize([room_id, slot_id])))`, where `JSON.serialize` is the canonical JSON
+serialization defined [above](#canonical-json-serialization).
 
 For improved metadata protection, the `livekit_alias` SHOULD be derived as
-`base64(SHA256(room_id|slot_id|truly random bits))`, where the `truly random bits` are maintained by
-the LiveKit SFU authorisation service. This approach enhances pseudonymity but requires the service
-to be **stateful** in order to manage and persist the random bits.
+`base64(SHA256(JSON.serialize([room_id, slot_id, truly_random_bits])))`, where the `truly random bits`
+are maintained by the LiveKit SFU authorisation service. This approach enhances pseudonymity but
+requires the service to be **stateful** in order to manage and persist the random bits.
 
 The resulting value is opaque to the MatrixRTC application. Within the LiveKit namespace, the
 `livekit_alias` uniquely represents a MatrixRTC slot. Participants from the same Matrix deployment
@@ -266,8 +285,9 @@ request.
 
 Upon successful issuance of a JWT token and once the LiveKit SFU Authorisation Service observes the
 client's SFU connection, identified by the LiveKit room `livekit_alias` and the LiveKit identity
-as specified in the next section (`base64(SHA256(user_id|claimed_device_id|member.id))`), it SHOULD issue 
-a `reset` of the delayed event by sending the following POST request to the homeserver of that client:
+as specified in the next section (`base64(SHA256(JSON.serialize([user_id, claimed_device_id, member.id])))`),
+it SHOULD issue a `reset` of the delayed event by sending the following POST request to the 
+homeserver of that client:
 ```http
 POST /_matrix/client/v1/delayed_events/{delay_id}/restart HTTP/1.1
 Host: matrix-rtc.example.com
@@ -305,10 +325,12 @@ event has been reached, whichever occurs first.
 ### Pseudonymous LiveKit Participant Identity
 
 To protect user privacy, a pseudonymous LiveKit participant identity is used, so the Matrix user ID
-is not exposed to the LiveKit SFU backend. This pseudonymous identity is equal to the unpadded
-base64 encoding of the SHA-256 hash  of the concatenation of the Matrix `user_id`, a pipe character
-(`|`), the `claimed_device_id`,  a pipe character (`|`) and the `member.id` field, i.e.
-`base64(SHA256(user_id|claimed_device_id|member.id))`.
+is not exposed to the LiveKit SFU backend. 
+
+This pseudonymous identity is equal to the unpadded base64 encoding of the SHA-256 hash of the JSON
+serialization of an array containing the Matrix `user_id`, the `claimed_device_id`, and the
+`member.id` field, i.e. `base64(SHA256(JSON.serialize([user_id, claimed_device_id, member.id])))`,
+using canonical JSON serialization as defined [above](#canonical-json-serialization).
 
 ### LiveKit JWT Permission Grants
 
@@ -338,7 +360,7 @@ Example for publishing RTC data using a full-access grant:
   "video": {
     "canPublish": true,
     "canSubscribe": true,
-    "room": "base64(SHA256(!gIpOlaUSrXBmgtveWK:call.ems.host|m.call#ROOM))",
+    "room": "base64(SHA256(JSON.serialize([\"!gIpOlaUSrXBmgtveWK:call.ems.host\", \"m.call#ROOM\"])))",
     "roomCreate": true,
     "roomJoin": true
   }
@@ -356,7 +378,7 @@ Example for subscribing RTC data with restricted-access grant
   "video": {
     "canPublish": false,
     "canSubscribe": true,
-    "room": "base64(SHA256(!gIpOlaUSrXBmgtveWK:call.ems.host|m.call#ROOM))",
+    "room": "base64(SHA256(JSON.serialize([\"!gIpOlaUSrXBmgtveWK:call.ems.host\", \"m.call#ROOM\"])))",
     "roomCreate": false,
     "roomJoin": true
   }
@@ -389,7 +411,7 @@ Matrix room are considered to share the same LiveKit room (`livekit_alias`), whi
 number of active LiveKit SFU connections.
 
 The derivation of the LiveKit room alias is defined as:
-`livekit_alias = base64(SHA256(room_id | slot_id | truly_random_bits))`.
+`livekit_alias = base64(SHA256(JSON.serialize([room_id, slot_id, truly_random_bits])))`.
 
 This construction is part of the proposal and ensures that aliases remain pseudonymous while still
 being deterministically derived for a given Matrix room and MatrixRTC slot. The open consideration
@@ -519,3 +541,27 @@ required as these fields  will only be accessed via some other unstable prefix.
 
 This MSC builds on [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) (which
 at the time of writing has not yet been accepted into the spec).
+
+## Appendix: Hash Derivation Test Vectors
+
+This appendix provides **verified test vectors** for:
+
+* `livekit_alias`
+* pseudonymous LiveKit participant identity
+
+All hashes are computed as:
+
+`base64(SHA256(JSON.serialize([...]))`
+
+Where `JSON.serialize` uses **Matrix canonical JSON** as defined in:  
+https://spec.matrix.org/v1.18/appendices/#canonical-json
+
+---
+
+### Test Vectors
+
+| Case | Input (logical) | Canonical JSON | SHA-256 (hex) | Base64 (unpadded) |
+|------|------------------|----------------|---------------|-------------------|
+| LiveKit alias (no random bits) | `["!roomid:example.com", "slot123"]` | `["!roomid:example.com","slot123"]` | `0140e634342254799661113eaca06f89e597f00512cdea5e9ee8fabbe77f9fd7` | `AUDmNDQiVHmWYRE+rKBvieWX8AUSzepenuj6u+d/n9c` |
+| LiveKit alias (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
+| Participant identity | `["@alice:example.com", "DEVICE123", "memberABC"]` | `["@alice:example.com","DEVICE123","memberABC"]` | `27e4f8e6d1abbb173e1eb50ea89265c90495df79bbdbc0a67b8fafb7cfd25ab5` | `J+T45tGruxc+HrUOqJJlyQSV33m728Cme4+vt8/SWrU` |
