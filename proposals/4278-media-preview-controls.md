@@ -160,7 +160,7 @@ a large amount of state locally to determine the rules) as well as challenges in
 A future MSC may explore the possibility of this applying to spaces, but this initial version will operate only
 globally and per-room.
 
-However, not having this feature means many room may need apply their own rules.
+However, not having this feature means many rooms may need to apply their own rules.
 
 #### User Avatars
 
