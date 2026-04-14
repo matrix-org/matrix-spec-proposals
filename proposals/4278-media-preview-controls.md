@@ -185,6 +185,19 @@ room state would override their personal safety settings to deliver undesirable 
 We could seek to trust media if we share a room with a user (e.g. the `m.direct`), which might be a cheap way to
 establish a basis of trust for users.
 
+### Blurring previews
+
+One suggestion would be to blur untrusted previews rather than keeping them as off. There are a few ways that this
+could be achieved, but each have downsides.
+
+1. Use [MSC2448](https://github.com/matrix-org/matrix-spec-proposals/pull/2448) client-side blurhashes. Would prevent
+   downloading blocked media but the blurhash is attacker controlled, and can't be trusted for accuracy.
+2. Above, but reciever-side calculation. Would require downloading potentially offensive media to the client and is
+   a non-starter for potentially dangerous content.
+3. Server-side generated previews. Does not work for encrypted rooms, and [were ripped out of MSC2448 anyway](https://github.com/matrix-org/matrix-spec-proposals/pull/2448#discussion_r1089753289)
+
+For the moment, hiding media entirely is a simpler and safer solution.
+
 ## Security considerations
 
 This property is ultimately held by the homeserver, and a malicious homeserver may expose you to unwanted content. This is
