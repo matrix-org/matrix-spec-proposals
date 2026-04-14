@@ -40,6 +40,7 @@ Clients SHOULD show show or hide media depending upon this setting, on at least 
  - The `m.sticker` event type.
  - Inline media via `img`.
  - Any event which includes thumbnail information or may be thumbnailed by the homeserver.
+ - URL Preview thumbnails
 
 The above list is not exhaustive. Other MSCs SHOULD take this setting into account when rendering content that could
 be considered a media preview, such as [MSC4027](https://github.com/matrix-org/matrix-spec-proposals/pull/4027). 
