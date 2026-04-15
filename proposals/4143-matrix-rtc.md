@@ -672,9 +672,11 @@ MSCs for each transport type.
 #### Discovery of RTC Transports
 
 MatrixRTC requires a mechanism for clients to discover which RTC transports — such as an SFU or TURN
-server — are available in their Matrix deployment. To support this, homeservers expose an endpoint
-that returns a list of JSON objects. Each transport-description object represents an RTC transport
-as defined by the corresponding MSC.
+server — are available in their Matrix deployment. To support this, homeservers expose an 
+authenticated endpoint that returns a list of JSON objects. The endpoint is authenticated as the RTC
+transport information is only useful to local clients; remote clients obtain transport information 
+via `m.rtc.member` events. Each transport-description object represents an RTC transport as defined
+by the corresponding MSC.
 
 > [!NOTE]
 > RTC Transports in this context can be anything that can serve as the backend for a MatrixRTC
