@@ -26,9 +26,6 @@ however all major implementations have caught up by now:
 - Conduit:
   [read](https://gitlab.com/famedly/conduit/-/blob/8def22bfb8b9b23bbd47e17772f2bd80500eacf6/src/api/ruma_wrapper/axum.rs#L198),
   [write](https://gitlab.com/famedly/conduit/-/blob/8def22bfb8b9b23bbd47e17772f2bd80500eacf6/src/api/server_server.rs#L125)
-- Conduit:
-  [read](https://gitlab.com/famedly/conduit/-/blob/8def22bfb8b9b23bbd47e17772f2bd80500eacf6/src/api/ruma_wrapper/axum.rs#L198),
-  [write](https://gitlab.com/famedly/conduit/-/blob/8def22bfb8b9b23bbd47e17772f2bd80500eacf6/src/api/server_server.rs#L125)
 - gomatrixserverlib (Dendrite):
   [read](https://github.com/matrix-org/gomatrixserverlib/blob/6c4c6f7d0d301cef23e84d237b27d9e9ff4562d7/fclient/request.go#L216),
   [write](https://github.com/matrix-org/gomatrixserverlib/blob/6c4c6f7d0d301cef23e84d237b27d9e9ff4562d7/fclient/request.go#L158)
