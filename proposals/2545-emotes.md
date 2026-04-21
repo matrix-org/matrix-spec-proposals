@@ -94,6 +94,9 @@ property with an empty string for an image pack's `state_key`.
 }
 ```
 
+`images` contains information about each individual image in the pack, whereas
+`pack` contains metadata about the image pack as a whole.
+
 The event type "m.room.image_pack" was chosen to match other room-level state
 event types, such as `m.room.topic`, `m.room.name`, `m.room.canonical_alias`,
 etc.
