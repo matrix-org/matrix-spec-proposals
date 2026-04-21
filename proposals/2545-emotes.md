@@ -182,8 +182,8 @@ SHOULD be presented with these images only when interacting in the room that
 the packs are defined in.
 
 For a user to enable a room image pack to be presented in all rooms, the room ID
-and the image pack's specific `state_key` can be added to a `m.image_pack.rooms`
-account data event.
+(and optionally the image pack's specific `state_key`) can be added to a
+`m.image_pack.rooms` account data event.
 
 #### `m.image_pack.rooms` account data event
 
