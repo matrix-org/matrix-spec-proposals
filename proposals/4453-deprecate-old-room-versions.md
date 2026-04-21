@@ -43,10 +43,10 @@ The rationale for deprecating pre-v10 rooms can generally be summarised as:
 - Room version 1 uses a state resolution algorithm that has known exploits that make it unsafe to
   expose to federation.
 
-Due to all of the above, I proposa room version 10 as a sensible cutoff. Modern room
+Due to all of the above, I propose room version 10 as a sensible cutoff. Modern room
 versions also have problems (notably, v10 does not protect `m.room.create` from redaction,
 v11 is prone to state resets when federation is involved, v12 less so), but more importantly, are
-fairly consistent, and have significantly stronger interoperability guraantees than their
+fairly consistent, and have significantly stronger interoperability guarantees than their
 predecessors.
 
 There are also relatively few rooms using v9 or older, and those that are, are typically planning to
@@ -139,7 +139,7 @@ None considered at this time, for the same reasons as outlined above.
 
 ## Unstable prefix
 
-No unstable prefix applies to this proposl.
+No unstable prefix applies to this proposal.
 
 ## Dependencies
 
