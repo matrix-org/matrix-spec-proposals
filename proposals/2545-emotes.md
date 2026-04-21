@@ -182,20 +182,19 @@ SHOULD be presented with these images only when interacting in the room that
 the packs are defined in.
 
 For a user to enable a room image pack to be presented in all rooms, the room ID
-can be added to a `m.image_pack.rooms` account data event.
+and the image pack's specific `state_key` can be added to a `m.image_pack.rooms`
+account data event.
 
 #### `m.image_pack.rooms` account data event
 
-The `m.image_pack.rooms` account data event consists of the following:
+The `m.image_pack.rooms` account data event consists of the following fields:
 
 - `rooms` **Required, Map[String, Map[String, Object]]**. A map of room ID to
     another map: from `state_key` to an empty object.
 
 This data structure allows specifying a single room image pack given the pack's
-room ID and `state_key`.
-
-Clients should make the corresponding room image packs globally accessible in all
-rooms.
+room ID and `state_key`. Clients should make the corresponding room image packs
+globally accessible in all rooms.
 
 While this MSC does not define any keys for the bottom-level object, defining it
 as an object means greater flexibility in the case of future changes. For
