@@ -22,10 +22,9 @@ Rooms dedicated to containing policy list recommendations SHOULD use a newly
 defined `m.policy` room type. How clients choose to (not) handle the new type is
 left as an implementation detail.
 
-Consumers of policy lists SHOULD note that recommendations can still appear
-outside of `m.policy` rooms. Existing rooms probably won't have the new room
-type, and some communities might mix conversation and recommendations in the
-same room (therefore not dedicating the room to recommendations).
+Where the `m.policy` room type is used, conversation is not expected.
+Clients SHOULD note that moderation policies can appear in rooms without the `m.policy` type,
+where conversation could be present.
 
 ## Potential issues
 
