@@ -8,7 +8,7 @@ This proposal prioritizes preventing unintended disclosure of spoilered content 
 
 ## Proposal
 
-The spec now reads that a client should provide a plaintext (`body`) of
+The [spec now (10.2.2.6 in v1.18)](https://spec.matrix.org/v1.18/client-server-api/#spoiler-messages) reads that a client should provide a plaintext (`body`) of
 `Alice [Spoiler](mxc://example.org/abc123) in the movie.` when a message is spoilered.
 
 This behavior is not implemented by known clients and represents unnecessary specification complexity.
