@@ -100,7 +100,7 @@ The VAPID public key is in the uncompressed form, in URL-safe Base64 without pad
 A client that supports this kind of pusher should use it if the server supports it too, and
 not register another `http` pusher to avoid duplicate pushes.
 
-## Overview with webpush
+## Overview with Web Push
 
 The current overview is here: <https://spec.matrix.org/v1.17/push-gateway-api/#overview>
 
