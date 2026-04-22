@@ -1,4 +1,4 @@
-# MSC0000: Deprecating Spoiler Fallback In Media Repository
+# MSC4454: Deprecating Spoiler Fallback In Media Repository
 
 This MSC proposes removing specification language describing unused client behaviour for spoiler
 fallbacks, which is ambiguous and could be interpreted as encouraging plaintext storage of
