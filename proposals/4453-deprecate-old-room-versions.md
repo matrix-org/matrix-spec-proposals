@@ -85,8 +85,10 @@ to disambiguate between an actually unsupported room version vs a deprecated one
 choose to return a different error *message*, such as "this room version is too old". Servers
 MUST NOT allow a configuration that sets their default room version to one below version 10.
 
-In order to not impact rooms still of deprecated versions, servers MUST NOT refuse to join or
-participate in rooms of deprecated versions they still support.
+Servers that support older room versions MUST NOT refuse to join deprecated room versions as a
+result of this proposal. Doing so may be destructive, resulting in a loss of history for some
+communities. Of course, the implementation *MAY* entirely drop support for these room versions, but
+maintainers are encouraged to consider the impact of doing so on their users.
 
 Appservices MUST NOT be allowed to bypass this restriction, no matter how nicely they ask.
 
