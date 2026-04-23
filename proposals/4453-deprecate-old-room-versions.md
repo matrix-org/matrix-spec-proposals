@@ -85,6 +85,10 @@ to disambiguate between an actually unsupported room version vs a deprecated one
 choose to return a different error *message*, such as "this room version is too old". Servers
 MUST NOT allow a configuration that sets their default room version to one below version 10.
 
+This same restriction applies to upgrading rooms via the
+`POST /_matrix/client/v3/rooms/{roomId}/upgrade` endpoint: servers MUST refuse to upgrade a room to
+a deprecated version, with the above error clause. This includes "downgrades" and "sidegrades".
+
 Servers that support older room versions MUST NOT refuse to join deprecated room versions as a
 result of this proposal. Doing so may be destructive, resulting in a loss of history for some
 communities. Of course, the implementation *MAY* entirely drop support for these room versions, but
