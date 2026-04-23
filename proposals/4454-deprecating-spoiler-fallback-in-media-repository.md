@@ -44,9 +44,9 @@ we would send
 
 Clients generating messages with spoilers:
 
-- MUST NOT include spoilered content in the `body` field
-- MUST replace spoilered sections with a neutral placeholder (e.g. `[Spoiler]`)
-- MUST encode the full spoilered content only in `formatted_body`
+- SHOULD NOT include spoilered content in the `body` field
+- SHOULD replace spoilered sections with a neutral placeholder (e.g. `[Spoiler]`)
+- SHOULD encode the full spoilered content only in `formatted_body`
 
 Clients rendering messages:
 
