@@ -384,10 +384,11 @@ in a future MSC which do fewer round trips and exchange less information.
  - [Range-based set reconciliation](https://arxiv.org/abs/2212.13567) 
  - [Merkle search trees](https://ieeexplore.ieee.org/abstract/document/9049566).
 
-In addition to this, when `/get_missing_events` encounters an event with >1 `prev_state_event`, it
-MUST walk these events in lexicographical order: `$bar` before `$foo`. This enables database engines
-which use ASCII sorting (such as PostgreSQL's C collation) to sort correctly when using `ORDER BY`. This means
-A-Z comes before a-z. This change makes `/get_missing_events` responses deterministic so they can be
+In addition to this, `/get_missing_events` is modified to return events deterministically. This is
+done by first sorting events by the minimum number of hops away they are from `latest_events`, then tie-breaking
+by sorting lexicographically: `$bar` before `$foo`. This enables database engines
+which use ASCII sorting (such as PostgreSQL's C collation) to sort correctly using `ORDER BY hops, event_id`.
+This means A-Z comes before a-z. This change makes `/get_missing_events` responses deterministic so they can be
 cached, and so every compliant homeserver will return the exact same response when used with the same
 request parameters. For example, given these graphs:
 ```
@@ -403,14 +404,7 @@ request parameters. For example, given these graphs:
   \ / |
    D  E
 ```
-Walking with `latest_events={D,E}` returns `[B,C]`. Algorithmically, the server should:
- - map `earliest_events` to a set of 'seen' event IDs.
- - sort the provided `latest_events` and put them into a queue, removing any in 'seen'.
- - while the queue is not empty and the limit has not been reached:
-   * dequeue an event ID and find its `prev_state_events` PSE.
-   * Remove IDs from PSE if they are in 'seen'.
-   * add the remaining event IDs from PSE to the result list and the end of the queue, sorting them first lexicographically.
- - the result list must not be reversed at the end, unlike non-state DAG `/get_missing_events` responses.
+Walking with `latest_events={D,E}` returns `[B,C]`.
 
 ##### `/send_join`
 
