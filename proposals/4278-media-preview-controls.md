@@ -43,7 +43,7 @@ Clients SHOULD show show or hide media depending upon this setting, on at least 
  - URL Preview thumbnails
 
 The above list is not exhaustive. Other MSCs SHOULD take this setting into account when rendering content that could
-be considered a media preview, such as [MSC4027](https://github.com/matrix-org/matrix-spec-proposals/pull/4027). 
+be considered a media preview, such as [MSC4027](https://github.com/matrix-org/matrix-spec-proposals/pull/4027) (Custom Images in Reactions). 
 
 The one exception to the rule for now is user avatars in rooms the user has joined. For the purposes of this MSC,
 by joining a room the user *has* consented to seeing the user avatars contained within. See the potential issues
