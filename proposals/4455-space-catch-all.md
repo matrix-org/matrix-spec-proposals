@@ -10,8 +10,8 @@ of spaces that you use for day-to-day communication, ignoring a majority of othe
 joined. However, sometimes you may get invited to a new chat and not immediately remember
 to put it into your day-to-day spaces. A catch-all space property would allow you to upgrade
 your space to include any room that you haven't categorized into an appropriate space yet, and thus
-ensure you don't miss out. In this scenario, you would then remove rooms from the catch-all
-space by ensuring they are assigned to another space, e.g. a "verbose" space.
+ensure you don't miss out. In this scenario, in order to remove rooms from a catch-all space,
+users could then assign the respective rooms to another space, e.g. a "verbose" space.
 
 Accordingly, space rooms can include a `m.space.catch_all` state event to instruct clients to perform
 such catch-all functionality. For the time being, server implementations are not required to apply
@@ -19,10 +19,10 @@ matching logic on the space endpoints; in particular the
 [`/hierarchy`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
 endpoint should keep focusing on only `m.space.child` relations to keep implementation simple.
 
-The `m.space.catch_all` holds the following boolean flags:
+The `m.space.catch_all` event content holds the following boolean flags:
 - `include_orphans` (required): If `true`, clients should include any rooms that are not children of any
   space that the user is joined to when rendering this space, optionally subject to filters controlled
-  by the other flags.
+  by other flags contained in this state event.
 - `filter_is_dm` (optional): If `true`, only orphan rooms that are direct chats are considered. If `false`
   only orphan rooms that are *not* direct chats are considered. If omitted, both kinds of chats are
   considered. Whether a room is considered a direct chat depends solely on
