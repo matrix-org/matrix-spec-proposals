@@ -1,4 +1,4 @@
-# MSC0000: Space catch-all
+# MSC4455: Space catch-all
 
 This MSC introduces a new state event for `m.space` rooms that allows spaces to instruct clients to
 include "space orphans" (rooms not part of any space that the user knows of).
