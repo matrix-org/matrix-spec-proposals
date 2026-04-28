@@ -205,8 +205,8 @@ This is therefore not a recommended approach.
 ### Allow servers to canonicalise incoming JSON *before* parsing
 
 A variation on the previous approach is to canonicalise the JSON at the byte
-level, check the signatures/hashes, and only then deserialize the JSON for
-later operations.
+level, check the signatures/hashes, and then deserialize the canonicalised
+JSON for later operations.
 
 This is safer than retaining the original JSON, However, the canonicalisation
 process must be absolutely fail-safe to ensure that any possible ambiguities
