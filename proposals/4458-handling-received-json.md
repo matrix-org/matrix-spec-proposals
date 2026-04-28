@@ -271,9 +271,34 @@ Such an change remains under consideration, but is left for a future MSC.
 
 ## Security considerations
 
-Consistent JSON canonicalisation is central to the security of the Matrix
-protocol. It is therefore critical that the specification be clear about
-expected behaviour, and that implementations match those expectations.
+1. Consistent JSON canonicalisation is central to the security of the Matrix
+   protocol. It is therefore critical that the specification be clear about
+   expected behaviour, and that implementations match those expectations.
+
+2. A useful general insight is that it is generally much safer to reject than
+   to accept any "questionable" incoming JSON ­ for example, that containing
+   duplicate keys, out-of-range numbers, or unpaired surrogates. Such JSON
+   should only be encountered when the sending implementation is either buggy
+   or malicious, so it is clearly preferable to reject malformed incoming
+   federation requests.
+
+   The situation is less clear-cut in the case of Matrix room events, where
+   rejecting certain JSON forms could lead to a split-brain if other servers
+   have accepted it. However, even there, rejecting malformed JSON is generally
+   safe. Suppose we have a room containing three servers: server A is
+   buggy/malicions, whilst servers B and C are conformant but use different
+   implementations.
+
+   Now, server A generates a malformed event with duplicate keys in the JSON;
+   server B discards one of the duplicates and accept the event, whilst server
+   C rejects it. A split-brain still does not occur between the conformant
+   servers (B and C), because server C can request the event from server B,
+   which will return the now-sanitised version of the event without the
+   duplicate. A split-brain *can* occur between A and the rest of the room, but
+   that is acceptable because A is buggy/malicious. (There are plenty of ways
+   for a server to split-brain itself from the rest of the room via
+   non-conformant behaviour: poor JSON implentation is not special in this
+   regard).
 
 ## Unstable prefix
 
@@ -285,10 +310,6 @@ None
 
 ##
 
-- we assume that rejecting questionable JSON is much, much safer than accepting
-  it
-- there are no safe CanonicalJSON decoders
-- examples of attacks
 - examples of suitable implementations:
   - Go: unmarshal into `interface{}`
   - Python: json.load
