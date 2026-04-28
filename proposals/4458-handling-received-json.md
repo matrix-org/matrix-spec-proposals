@@ -43,9 +43,19 @@ clarifications.
      * arrays
      * `true`, `false`, `null`.
 
+   Example implementations of this step include:
+     * In Go, [`Decode`](https://pkg.go.dev/encoding/json#Decoder.Decode) into
+       an `interface{}`.
+     * In Python,
+       [`json.loads`](https://docs.python.org/3/library/json.html#json.loads).
+     * In Rust,
+       [`serde_json::from_str`](https://docs.rs/serde_json/latest/serde_json/fn.from_str.html)
+       with a target of
+       [`serde_json::Value`](https://docs.rs/serde_json/latest/serde_json/enum.Value.html).
+
    The original JSON MUST then be discarded, and all future operations must be
    based on the deserialized structures. This includes hashing and signature
-   checking, which must be done be encoding the deserialized structures as
+   checking, which must be done by encoding the deserialized structures as
    Canonical JSON.
 
    In particular: it is **not** sufficient to construct the Canonical JSON by
@@ -307,10 +317,3 @@ N/A
 ## Dependencies
 
 None
-
-##
-
-- examples of suitable implementations:
-  - Go: unmarshal into `interface{}`
-  - Python: json.load
-  - Rust: deserialize to serde_json::Value
