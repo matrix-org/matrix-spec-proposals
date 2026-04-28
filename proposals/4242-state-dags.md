@@ -297,6 +297,7 @@ The "current state" of the room is given by the resolved state of the state DAG'
 https://spec.matrix.org/v1.12/server-server-api/#soft-failure
 
 Events in the state DAG **should be part of the forward extremities of a room** otherwise we run into the problems described below.
+This means only non-state message events are subject to soft-failure.
 
 State DAGs exist to ensure that all servers rapidly converge on the same set of state events (eventual state event delivery) so they can
 calculate the same current state in the room (room state convergence). Soft failure makes this harder and in certain cases can obstruct
@@ -329,9 +330,7 @@ is to help reduce the amount of events other servers need to pull in, i.e if you
 useless, why bother sending it to other servers? This is precisely what "not referencing the event" ends up doing,
 and as this scenario shows it is a liability because the server was mistaken. Servers
 need to see the same events in order to come to the same conclusion (room state convergence), and anything which could prevent two honest
-servers from exchanging those events should be avoided, to ensure eventual delivery. If the server constantly re-evaluated the soft-failure
-status of events whenever the current state changed then this would help, but would be computationally infeasible
-to do.
+servers from exchanging those events should be avoided, to ensure eventual delivery.
 
 In current Matrix, eventual delivery of events is only ensured under the assumption that any server continuously sends new events.
 The additional assumption is needed because homeservers do not
@@ -378,7 +377,11 @@ If this endpoint only returns E, then there is a link between the latest event a
 event, but sending server implementations MUST NOT stop walking the graph as it is not a complete graph since
 C is still missing. This may result in additional `/get_missing_events` calls. This MSC recommends
 that servers exponentially increase their `limit` until they have seen all events, e.g. `?limit=10`
-then 20, 40, 80... This is a simple approach and there are better alternatives which can be explored
+then 20, 40, 80... Servers MAY cap the number of events they return in order to ensure that the HTTP response
+size remain within the maximum limits set by their reverse proxy. This requires no signalling 
+e.g. `limited: true` because
+the termination condition is filling in the state DAG, not based on the number of events returned in any
+one response. This is a simple approach and there are better alternatives which can be explored
 in a future MSC which do fewer round trips and exchange less information.
  - [Bloom filters](https://arxiv.org/abs/2012.00472)
  - [Range-based set reconciliation](https://arxiv.org/abs/2212.13567) 
@@ -730,6 +733,9 @@ they can no longer communicate with the target homeserver. This property _only_ 
 continues to have a full-mesh topology. The moment we introduce transitive delivery this incentive
 is reduced as the intermediary homeserver lacks any incentive to ensure other server's events are
 delivered.
+
+An attacker may maliciously fork the state DAG in order to inflate the size of `prev_state_events`.
+Servers MUST limit the number of `prev_state_events` to 20 elements (which matches `prev_events` behaviour today).
 
 ### Mismatched `prev_events` and `prev_state_events`
 
