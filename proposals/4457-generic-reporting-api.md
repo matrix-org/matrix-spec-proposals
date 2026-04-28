@@ -34,8 +34,8 @@ Authorization: <normal Client-Server API authentication>
 Content-Type: application/json
 
 {
-	"type": "complaint", // future scope: "appeal" and possibly other types
-	// ... other fields per `type`
+  "type": "complaint", // future scope: "appeal" and possibly other types
+  // ... other fields per `type`
 }
 ```
 
@@ -49,38 +49,38 @@ the top level:
 
 ```jsonc
 {
-	// The *primary* identifier (user ID, etc) the complaint is regarding. Currently can be one of the following:
-	// * A user ID
-	// * An event ID
-	// * A room ID
-	// * A room alias (noting that room ID reports are more reliable because aliases can drift between rooms)
-	// * A server name (prefixed with "server:" to distinguish it from a namespaced ID below)
-	// * An MXC URI (media URI)
-	// * The string "m.system" to denote a complaint regarding the reporting system itself
-	// * A common namespaced identifier (https://spec.matrix.org/v1.18/appendices/#common-namespaced-identifier-grammar)
-	//
-	// The above identifiers are structured so the server can identify each one individually. For example, the server
-	// knows it's dealing with a user report if `regarding` starts with `@`.
-	//
-	// REQUIRED.
-	"regarding": "<identifier>",
+  // The *primary* identifier (user ID, etc) the complaint is regarding. Currently can be one of the following:
+  // * A user ID
+  // * An event ID
+  // * A room ID
+  // * A room alias (noting that room ID reports are more reliable because aliases can drift between rooms)
+  // * A server name (prefixed with "server:" to distinguish it from a namespaced ID below)
+  // * An MXC URI (media URI)
+  // * The string "m.system" to denote a complaint regarding the reporting system itself
+  // * A common namespaced identifier (https://spec.matrix.org/v1.18/appendices/#common-namespaced-identifier-grammar)
+  //
+  // The above identifiers are structured so the server can identify each one individually. For example, the server
+  // knows it's dealing with a user report if `regarding` starts with `@`.
+  //
+  // REQUIRED.
+  "regarding": "<identifier>",
 
-	// The type of harm being reported in this complaint. Currently, the available harms are defined
-	// by MSC4456: https://github.com/matrix-org/matrix-spec-proposals/pull/4456
-	// A future MSC is expected to advertise which custom harms (if any) the server supports.
+  // The type of harm being reported in this complaint. Currently, the available harms are defined
+  // by MSC4456: https://github.com/matrix-org/matrix-spec-proposals/pull/4456
+  // A future MSC is expected to advertise which custom harms (if any) the server supports.
   //
   // Note: This is the reporter's opinion and is not necessarily fact.
-	//
-	// REQUIRED.
-	"harm": "<harm identifier>",
+  //
+  // REQUIRED.
+  "harm": "<harm identifier>",
 
-	// The text the user supplied to support this complaint. The input field presented to the user SHOULD ask them
-	// to *briefly* describe the content or harm caused.
+  // The text the user supplied to support this complaint. The input field presented to the user SHOULD ask them
+  // to *briefly* describe the content or harm caused.
   //
   // Cannot exceed 1024 bytes (before trimming whitespace).
-	//
-	// REQUIRED (cannot be an empty string, after trimming whitespace).
-	"description": "This user is spamming",
+  //
+  // REQUIRED (cannot be an empty string, after trimming whitespace).
+  "description": "This user is spamming",
 }
 ```
 
@@ -102,11 +102,11 @@ If the report was successful, the server responds with:
 
 ```jsonc
 {
-	// An opaque identifier (https://spec.matrix.org/v1.18/appendices/#opaque-identifiers) to uniquely
-	// represent this report in the homeserver's system. Currently has no use.
-	//
-	// REQUIRED.
-	"report_id": "<opaque>"
+  // An opaque identifier (https://spec.matrix.org/v1.18/appendices/#opaque-identifiers) to uniquely
+  // represent this report in the homeserver's system. Currently has no use.
+  //
+  // REQUIRED.
+  "report_id": "<opaque>"
 }
 ```
 
