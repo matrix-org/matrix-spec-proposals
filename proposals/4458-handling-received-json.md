@@ -51,7 +51,7 @@ clarifications.
    In particular: it is **not** sufficient to construct the Canonical JSON by
    modifying the unparsed JSON data, since this brings the risk of inconsistent
    parsing when the JSON is later parsed. Further discussion of the potential
-   problems can be found in the [Alternatives](#alternatives) below.
+   problems can be found in the [Alternatives](#allow-servers-to-canonicalise-incoming-json-separately-to-parsing) below.
 
 2. Implementations MUST guard against duplicate keys in the incoming JSON, and
    ensure that duplicates are dropped before encoding to Canonical JSON. (In
@@ -84,10 +84,12 @@ clarifications.
    To be explicit, then: Canonical JSON MUST NOT encode the UTF-16
    surrogates.
 
-   Valid surrogate pairs SHOULD be decoded to their Unicode code point on
-   parsing, and then encoded as a 4-byte UTF-8 sequence when encoding as
-   Canonical JSON. JSON containing unpaired surrogates MUST be rejected
-   (either on parsing, or when attempting to encode as Canonical JSON).
+   When parsing incoming JSON, valid surrogate pairs SHOULD be decoded to their
+   Unicode codedpoint. Such codepoints MUST then be encoded as a 4-byte UTF-8
+   sequence when encoding as Canonical JSON.
+
+   Incoming JSON containing unpaired surrogates MUST be rejected (either on
+   parsing, or when attempting to encode as Canonical JSON).
 
 ## Potential issues
 
@@ -236,7 +238,7 @@ follows:
    them. The non-characters are defined by [Unicode section
    3.4](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-3/#G21465)
    to be the codepoints U+nFFFE and U+nFFFF (where n is from 0 to 0x10) and the
-   codepoints U+FDD0..U+FDEF".
+   codepoints U+FDD0..U+FDEF.
 
  * JCS allows floating point numbers, in the full range supported by IEEE 754
    doubles (i.e., up to 1.8e+308), with associated complicated formatting
