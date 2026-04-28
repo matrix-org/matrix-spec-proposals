@@ -53,7 +53,7 @@ The Matrix versioning scheme takes heavy inspiration from semantic versioning, t
 not follow it for reasons described throughout this proposal. Primarily, the argument against semantic
 versioning is held in the alternatives section below.
 
-Given a version number `MAJOR.MINOR`, incremement the:
+Given a version number `MAJOR.MINOR`, increment the:
 
 * `MAJOR` version when a substantial change is made to the core of the protocol. This is reserved for
   interpretation by the Spec Core Team, though is intended to be for extremely invasive changes such
