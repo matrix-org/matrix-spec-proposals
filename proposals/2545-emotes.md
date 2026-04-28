@@ -217,6 +217,9 @@ An example of a `m.image_pack.rooms` account data event:
 }
 ```
 
+Clients should be aware that users may not be in a room referenced by this
+event, and MAY wish to show appropriate UX around this.
+
 An empty object under a room ID, for example:
 
 ```json
@@ -227,12 +230,9 @@ An empty object under a room ID, for example:
 }
 ```
 
-translates to *all image packs that a room defines*, rather than *no image
-packs*. This is intended as an optimisation to reduce event size versus
-listing the (potentially many) packs a room may have.
-
-Clients should be aware that users may not be in the room referenced by this
-event, and MAY wish to show appropriate UX around this.
+currently has no defined meaning. A future MSC may define one, such as "all
+packs in this room". (This MSC previously defined that exact meaning, but no
+client appeared to implement it, leading to the decision to remove it.)
 
 #### Space image packs
 
