@@ -22,8 +22,12 @@ will include a new capability key, `m.preview_url` containing a single `enabled`
 }
 ```
 
-If `enabled` is false, any attempt to use `GET /_matrix/client/v1/media/preview_url` MUST be rejected with
+If `enabled` is `false`, any attempt to use `GET /_matrix/client/v1/media/preview_url` MUST be rejected with
 a `403` `M_FORBIDDEN` error.
+
+If `enabled` is `true` or not defined, then the client can make queries as normal. This means that the existing
+behaviour is preserved so that servers who do not support this capability will not prevent clients from
+requesting previews.
 
 Servers MAY elect to allow some users access to this endpoint, so the response may be different
 depending on the authenticated user (e.g. disabled for guest users).
