@@ -51,7 +51,7 @@ clarifications.
    In particular: it is **not** sufficient to construct the Canonical JSON by
    modifying the unparsed JSON data, since this brings the risk of inconsistent
    parsing when the JSON is later parsed. Further discussion of the potential
-   problems can be found in the [Alternatives](#altenatives) below.
+   problems can be found in the [Alternatives](#alternatives) below.
 
 2. Implementations MUST guard against duplicate keys in the incoming JSON, and
    ensure that duplicates are dropped before encoding to Canonical JSON. (In
@@ -170,7 +170,7 @@ There are three significant problems with this approach:
   handled?
 
   Further, manipulating the raw JSON in this way is very unnatural in some
-  languages: it is much easer to parse the incoming JSON, manipulate the data,
+  languages: it is much easier to parse the incoming JSON, manipulate the data,
   and re-serialize.
 
 ### Allow servers to canonicalise incoming JSON separately to parsing
@@ -198,7 +198,7 @@ later operations.
 
 This is safer than retaining the original JSON, However, the canonicalisation
 process must be absolutely fail-safe to ensure that any possible ambiguities
-are removed, to avoid security vulnerablities.
+are removed, to avoid security vulnerabilities.
 
 For example: consider a bug where the canonicaliser failed to realise that the
 following object contains duplicate keys:
