@@ -307,7 +307,7 @@ Such an change remains under consideration, but is left for a future MSC.
    duplicate. A split-brain *can* occur between A and the rest of the room, but
    that is acceptable because A is buggy/malicious. (There are plenty of ways
    for a server to split-brain itself from the rest of the room via
-   non-conformant behaviour: poor JSON implentation is not special in this
+   non-conformant behaviour: poor JSON implementation is not special in this
    regard).
 
 ## Unstable prefix
