@@ -661,28 +661,6 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 
 # Appendix
 
-## Open questions
-
-1. <del>In the response should we specify which lists a room is part of?</del>
-1. <del>Should `knock_state` and  `invite_state` use the same name in the room response, e.g. `stripped_state`?</del>
-1. <del>In the room response how do we inform clients that a piece of state was deleted (rather than added/updated)?</del>
-1. <del>We need to decide what to do with `unstable_expanded_timeline`. We can either rename it to `expanded_timeline`, or
-   remove the functionality and replace it with a bulk `/messages` endpoint (for multiple rooms). See "Timeline event
-   trickling" section.</del>
-1. <del>The request `required_state` field is a bit confusing and uses special strings (like `"*"` and `"$LAZY"`).</del>
-1. Duplication between room response `heroes` and `required_state` when specifying `lazy_members`, e.g. should we drop
-   `heroes` if we are returning membership events?
-1. <del>Should the room response include the user's current membership? The client can always request it via
-   `required_state`, but that may be wasted if the client doesn't need any other information from the member event.</del>
-1. Should we remove the `highlight_count` and `notification_count` fields, given clients increasingly must calculate
-   this themselves, and Synapse currently doesn't implement it nor does Element X use it.
-1. Should we support subscribing to rooms the user is not a member of, i.e. peeking for world readable rooms.
-1. Should we support timeline filtering?
-1. <del>Should we move `pos`, and other URL params, into the request body? This would allow web clients to cache the CORS
-   requests, rather than having to pre-flight each request.</del>
-1. How do we make it so that the clients don't have to send up the same body each time?
-
-
 ## Changelog
 
 Differences from the experimental implementation of simplified sliding sync in Synapse v1.151.0.
