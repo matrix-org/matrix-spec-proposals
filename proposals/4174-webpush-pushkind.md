@@ -1,6 +1,5 @@
 # MSC4174: Web push
 
-This MSC supersedes and replaces [MSC3013](https://github.com/matrix-org/matrix-spec-proposals/pull/3013), which introduced push notification encryption first.
 
 Push notifications typically go through third-party push providers in order to be delivered: 1) a push gateway (sygnal) and
 2) e.g. FCM (Google) or APNs (Apple). In order to prevent these push providers and
@@ -72,6 +71,8 @@ Example of a push notification containing a validation token:
 }
 ```
 
+### New endpoint for pusher validation
+
 A new endpoint is introduced, dedicated to pusher validation. This is called by the matrix client to validate the pusher once it has received the `ack_token` from the validation push message:
 - POST `/_matrix/client/v3/pushers/ack`
 - Rate limited: No, Requires authentication: Yes
@@ -86,10 +87,13 @@ M_EXPIRED_ACTIVATION_TOKEN and M_UNKNOWN_ACTIVATION_TOKEN are new error codes.
 
 Note: As specified by RFC8030, the homeserver deletes the registration if it receives a 404, 410 or 403 from the push server on push.
 
+### New entry in capabilities list
+
 As many popular push servers require VAPID (Voluntary Application Server Identification, cf RFC8292), a server supporting this MSC MUST add a `m.webpush` capability to the `/capabilities` endpoint with this format:
 
 The VAPID public key is in the uncompressed form, in URL-safe Base64 without padding.
 
+The capability is available to the user if `"enabled"` is present and is `true`.
 ```
 "m.webpush": {
 	"enabled": true,
@@ -140,7 +144,8 @@ The legacy version of web push (draft RFC8291 and draft RFC8292) MUST NOT be imp
 ## Alternatives
 
 `pushkey` could be a random ID, and we can add `p256dh` in the `PusherData`. But it would require client to store it,
-while the public key already identifies that pusher. And the client already uses the PusherData that way.
+while the public key already identifies that pusher. And clients using the `http` pusher to get web push
+notifications - via a gateway - already put the public key in `pushkey`.
 
 `vapid` parameter could be made optional considering it is officially not a requirement, however it seems
 existing push servers from big players need it anyway to be able to subscribe, so it was decided to make it mandatory
