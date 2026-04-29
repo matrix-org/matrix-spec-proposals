@@ -475,12 +475,6 @@ When a user is or has been in the room, the following field are also returned:
 | `num_live` | `int` | No | The number of timeline events which have "just occurred" and are not historical, i.e. that have happened since the previous sync request. The last `N` events are 'live' and should be treated as such.<br/><br/> This is mostly useful to e.g. determine whether a given `@mention` event should make a noise or not. Clients cannot rely solely on the absence of `initial: true` to determine live events because if a room not in the sliding window bumps into the window because of an `@mention` it will have `initial: true` yet contain a single live event (with potentially other old events in the timeline). |
 | `joined_count` | `int` | No | The number of users with membership of join, including the client's own user ID. (same as `/v3/sync` `m.joined_member_count`) |
 | `invited_count` | `int` | No |  The number of users with membership of invite. (same as `/v3/sync` `m.invited_member_count`) |
-| `notification_count` | `int` | No | The total number of unread notifications for this room. (same as `/v3/sync`). <br/><br/> Does not included threaded notifications, which are returned in an extension. |
-| `highlight_count` | `int` | No | The number of unread notifications for this room with the highlight flag set. (same as `/v3/sync`) <br/><br/> Does not included threaded notifications, which are returned in an extension. |
-
-
-> [!Note]
-> Synapse always returns 0 for `notification_count` and `highlight_count`
 
 
 #### Invite/knock/rejections
@@ -552,8 +546,6 @@ The `StateStub` is used in `required_state` to indicate that a piece of state ha
           "prev_batch": "t111_222_333",
           "joined_count": 41,
           "invited_count": 1,
-          "notification_count": 1,
-          "highlight_count": 0,
           "num_live": 2,
           "membership": "join"
       },
@@ -710,3 +702,4 @@ Changes from the initial implementation of simplified sliding sync.
 12. `pos` can be used in `/messages` and `/relations` APIs.
 13. `name` can be null if the room name is removed.
 14. Add a limit of 100 to the maximum number of subscriptions.
+15. Remove `notification_count` and `highlight_count`.
