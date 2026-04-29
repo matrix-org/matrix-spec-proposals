@@ -30,7 +30,11 @@ Adding a `kind` of `webpush` to [`POST /_matrix/client/v3/pushers/set`](https://
 - Android apps using [UnifiedPush](https://codeberg.org/UnifiedPush/specifications/src/branch/main/specifications/android.md#resources). This MSC would make [MSC2970](https://github.com/matrix-org/matrix-spec-proposals/pull/2970) redundant.
 - Android apps using FCM ([It is possible to push to FCM with Web Push standard](https://unifiedpush.org/news/20250131_push_for_decentralized/))
 - Maybe others? For example, Apple are starting to move starting to move towards web push [support](https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers).
-- iOS apps would still require some sort "gateway" (to transform Web Push push notifications to a format that the Apple Push Notification Service (APNS) will accept). But such a gateway is trivial compared to what matrix push gateways implement today. Mastodon's [webpush-apn-relay](https://github.com/mastodon/webpush-apn-relay) is one such example. Notification content remains encrypted between the homeserver all the way to the client.
+- iOS apps would continue to need a gateway to APNS. They could either continue to use
+  Sygnal, as today, or they could use a WebPush-to-APNS gateway such as Mastodon's
+  [webpush-apn-relay](https://github.com/mastodon/webpush-apn-relay). With a
+  WebPush-to-APNS gateway, notification content remains encrypted from the homeserver all
+  the way to the client.
 
 ## Proposal
 
