@@ -198,7 +198,7 @@ the server SHOULD return `A`, `B`, `C` and `D`. If the client instead increased 
 would not need to return any events as it knows the client already saw `B`, `C` and `D`.
 
 If the server does return events that predate the last time the room was sent to the client, it MUST set the
-`expanded_timeline` to `true`.
+`expanded_timeline` to `true`. (Note that one could infer this from `num_live`, however it is better to be explicit).
 
 > [!IMPORTANT]
 > The server should return rooms that have expanded timelines immediately, rather than waiting for the next update to
