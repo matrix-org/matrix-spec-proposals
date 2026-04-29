@@ -41,10 +41,13 @@ The MSC introduces a new pusher `kind`, for use with [`/pushers/set`](https://sp
 - `auth`: is introduced, required if `kind` is `webpush`, not used otherwise. This holds the authentication secret as
 specified by [RFC8291 section 3.2](https://www.rfc-editor.org/rfc/rfc8291#section-3.2) - 16 random bytes encoded in URL-safe Base64 without padding.
 
-`PusherData` also gets new field, `activated`, a boolean, that must not be set by the client, and the server must add to the responses that include the data. During a first registration, or during a re-registration where the Pusher `PusherData.url` or `PusherData.auth` is updated, `activated` is set to false until the pusher is activated with the request to
-`/_matrix/client/v3/pushers/ack` (cf. below). Re-subscribing an existing pusher, with the same `pushkey`, `PusherData.url` and `PusherData.auth` doesn't change its value.
+In addition to the changes to `PusherData`, the response to
+[GET /pushers](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3pushers)
+is further extended to include a new boolean property, `activated`. This is present only for pushers with
+`kind: webpush`, and reflects whether the pusher has been activated via a request to
+`/_matrix/client/v3/pushers/ack`.
 
-The homeserver doesn't send any notification - except the one to validate the pusher - to the pusher, until the Pusher is activated.
+The homeserver doesn't send any notifications - except the one to validate the pusher - to the pusher, until the pusher is activated.
 
 The POST request to the endpoint dedicated to the creation, modification and deletion of pushers,
 `POST /_matrix/client/v3/pushers/set` now supports a new `kind`: `webpush`.
@@ -81,7 +84,7 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
   - 404, M_NOT_FOUND: if no pusher with this app_id exists
   - 410, M_EXPIRED_ACTIVATION_TOKEN: if this token for this app_id is expired
   - 400, M_UNKNOWN_ACTIVATION_TOKEN: if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
-  - 200: if the pusher has been activated. The response body does not contain any parameters.
+  - 200: if the pusher has been activated. The response body should be an empty object.
 
 M_EXPIRED_ACTIVATION_TOKEN and M_UNKNOWN_ACTIVATION_TOKEN are new error codes.
 
@@ -104,7 +107,7 @@ The capability is available to the user if `"enabled"` is present and is `true`.
 A client that supports this kind of pusher should use it if the server supports it too, and
 not register another `http` pusher to avoid duplicate pushes.
 
-## Overview with Web Push
+## Overview of push notification flow using Web Push
 
 The current overview is here: <https://spec.matrix.org/v1.17/push-gateway-api/#overview>
 
