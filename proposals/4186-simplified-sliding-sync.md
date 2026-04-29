@@ -685,7 +685,7 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 
 ## Changelog
 
-Changes from the initial implementation of simplified sliding sync.
+Differences from the experimental implementation of simplified sliding sync in Synapse v1.151.0.
 
 1. Add `set_presence` URL param.
 2. Rename `invite_state` to `stripped_state`
