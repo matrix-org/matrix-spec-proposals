@@ -25,7 +25,7 @@ however all major implementations have caught up by now:
   [write](https://github.com/matrix-construct/tuwunel/blob/da3e7539f4753e8c681c8f0ade447dfab201f408/src/service/federation/execute.rs#L280)
 - Conduit:
   [read](https://gitlab.com/famedly/conduit/-/blob/8def22bfb8b9b23bbd47e17772f2bd80500eacf6/src/api/ruma_wrapper/axum.rs#L198),
-  [write](https://gitlab.com/famedly/conduit/-/blob/8def22bfb8b9b23bbd47e17772f2bd80500eacf6/src/api/server_server.rs#L125)
+  [write](https://gitlab.com/famedly/conduit/-/blob/8def22bfb8b9b23bbd47e17772f2bd80500eacf6/src/api/server_server.rs#L282)
 - gomatrixserverlib (Dendrite):
   [read](https://github.com/matrix-org/gomatrixserverlib/blob/6c4c6f7d0d301cef23e84d237b27d9e9ff4562d7/fclient/request.go#L216),
   [write](https://github.com/matrix-org/gomatrixserverlib/blob/6c4c6f7d0d301cef23e84d237b27d9e9ff4562d7/fclient/request.go#L158)
