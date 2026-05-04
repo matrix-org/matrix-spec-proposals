@@ -277,7 +277,7 @@ a URL. However, this is a UX decision and is therefore ultimately up to the
 client to decide.
 
 Clients could also use a privacy-preserving TCP relay to proxy all URL preview
-requests [like Signal does](https://signal.org/blog/i-link-therefore-i-am/).
+requests like Signal [used to](https://community.signalusers.org/t/beta-feedback-for-the-upcoming-android-4-69-release/16219/4) [do](https://signal.org/blog/i-link-therefore-i-am/).
 That way the client wouldn't leak its IP, and the relay wouldn't see previewed
 URLs. However, running such a proxy has several potential security issues for
 the server administrators, so it is out of scope for this MSC.
