@@ -268,7 +268,7 @@ Rather than using a Canonical JSON format specific to Matrix, could we use a
 standardised format such as "JSON Canonicalization Scheme" (JCS, specified by
 [RFC8785](https://www.rfc-editor.org/rfc/rfc8785.html))?
 
-This is a somewhat orthogonal question, but worth discussing while we're in the
+This is a somewhat orthogonal question as it does not help solve the issues discussed above with verifying signatures and hashes, but it is worth discussing while we're in the
 area. Adopting a standardized canonical JSON format might mean that we could
 benefit from existing implementations.
 
