@@ -103,7 +103,38 @@ clarifications.
 
 ## Potential issues
 
-TODO
+Requiring that implementations parse and then re-serialize incoming JSON in
+this way runs the risk that differences in JSON parsers could prevent
+homeserver implemementations from interoperating. To take one example: in older
+room versions, Synapse would accept events which contained the invalid JSON
+`NaN`. Therefore, to successfully interoperate with Synapse in these room
+versions, other implementations must also accept `NaN`; failure to do so risks
+a split-brain in the room. In other words: Synapse's JSON-parsing quirks were
+forced onto the rest of the ecosystem.
+
+Whilst this should not be a problem in modern room versions, where the allowed
+JSON is much more rigidly specified and enforced, we still have the issue that
+different implementations could, potentially, have different parsing edge-cases.
+
+In theory, such problems could be avoided either by requiring that servers
+transmit Canonical JSON on the wire, or by having implementations sign and hash
+the uncanonicalised data on the wire rather than a canonicalised representation
+of it. Both approaches are discussed in more detail under
+[Alternatives](#alternatives).
+
+However, requiring servers to transmit Canonical JSON is currently believed to
+be technically infeasible, as discussed below.
+
+Having implementations sign and hash the data on the wire would mean that
+servers could at least get as far as agreeing on whether an event was correctly
+signed, even if their JSON parsers then treat the event differently. However,
+it is exactly this property — that events are accepted even if they are parsed
+differently — that we must avoid, since once again it allows attackers to
+create split-brains.
+
+In short: the proposal in this MSC isn't ideal, but has no known vulnerabilities
+in modern room versions. The only practical alternative has known attacks, and
+is therefore rejected.
 
 ## Alternatives
 
