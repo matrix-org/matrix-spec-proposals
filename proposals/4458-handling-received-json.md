@@ -71,6 +71,34 @@ clarifications.
    Implementations are free to implement this requirement by dropping one or
    other duplicate, or by rejecting the JSON as a whole.
 
+   > ### Justification
+   >
+   > The previous paragraph merits some explanation as to its safety.
+   >
+   > Duplicate keys can only arise when the sending server is buggy or
+   > malicious. There are two possibilities:
+   >
+   >  * Having dropped one or both of the duplicates, we find the signature
+   >    matches. We now have a regular event or request containing valid JSON; in
+   >    the case of an event, the deduplicated version becomes our
+   >    authoritative reference.
+   >
+   >  * Having dropped one or both of the duplicates, the signature does not
+   >    match. We reject the request or event. In the case of an event which
+   >    other servers accept via the previous possibility, we may end up later
+   >    requesting a copy of that event from an honest server — in which case,
+   >    we will receive a deduplicated copy that everyone in the room can agree
+   >    on.
+   >
+   > In either case, everyone in the room except the originating server ends up
+   > coming to the same eventual conclusion about the room DAG. The originating
+   > server may have a different idea of the room DAG, but that is the expected
+   > fate of a buggy server implementation.
+   >
+   > Note also that neither possibility allows the sending server to do
+   > anything that they wouldn't already be able to do by sending well-formed
+   > JSON without duplicates.
+
    Assuming that the internal data structures mentioned above only allow one
    value per key, no action will be needed by homeservers to comply with this
    requirement, as duplicate keys will be dropped automatically.
