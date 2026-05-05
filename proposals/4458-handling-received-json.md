@@ -95,7 +95,7 @@ clarifications.
    surrogates.
 
    When parsing incoming JSON, valid surrogate pairs SHOULD be decoded to their
-   Unicode codedpoint. Such codepoints MUST then be encoded as a 4-byte UTF-8
+   Unicode codepoint. Such codepoints MUST then be encoded as a 4-byte UTF-8
    sequence when encoding as Canonical JSON.
 
    Incoming JSON containing unpaired surrogates MUST be rejected (either on
