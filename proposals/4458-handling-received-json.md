@@ -131,7 +131,7 @@ clarifications.
 
 Requiring that implementations parse and then re-serialize incoming JSON in
 this way runs the risk that differences in JSON parsers could prevent
-homeserver implemementations from interoperating. To take one example: in older
+homeserver implementations from interoperating. To take one example: in older
 room versions, Synapse would accept events which contained the invalid JSON
 `NaN`. Therefore, to successfully interoperate with Synapse in these room
 versions, other implementations must also accept `NaN`; failure to do so risks
