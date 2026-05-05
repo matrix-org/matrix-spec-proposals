@@ -71,8 +71,6 @@ clarifications.
    Implementations are free to implement this requirement by dropping one or
    other duplicate, or by rejecting the JSON as a whole.
 
-   > ### Justification
-   >
    > The previous paragraph merits some explanation as to its safety.
    >
    > Duplicate keys can only arise when the sending server is buggy or
