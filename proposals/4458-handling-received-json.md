@@ -316,8 +316,8 @@ Such an change remains under consideration, but is left for a future MSC.
    protocol. It is therefore critical that the specification be clear about
    expected behaviour, and that implementations match those expectations.
 
-2. A useful general insight is that it is generally much safer to reject than
-   to accept any "questionable" incoming JSON ­ for example, that containing
+2. A useful general insight: it is generally much safer to reject than to
+   accept any "questionable" incoming JSON — for example, that containing
    duplicate keys, out-of-range numbers, or unpaired surrogates. Such JSON
    should only be encountered when the sending implementation is either buggy
    or malicious, so it is clearly preferable to reject malformed incoming
@@ -340,6 +340,33 @@ Such an change remains under consideration, but is left for a future MSC.
    for a server to split-brain itself from the rest of the room via
    non-conformant behaviour: poor JSON implementation is not special in this
    regard).
+
+3. As a server verifying a JSON object, we want to verify our interpretation of
+   the data. This is safely done by serializing the parsed data and checking
+   the signature of that, rather than checking the signature of untrusted input
+   and then parsing.
+
+   An example issue is duplicate keys: if a server receives JSON with duplicate
+   keys, then there are multiple ways of interpreting that data. Therefore
+   different servers could successfully validate the signature but parse in
+   different ways.
+
+   One could write a deserializer to hande/detect this, but it's harder to
+   write a "canonical" deserializer on untrusted input than a canonical
+   serializer on a parsed/valid structure.
+
+4. We should note that (non-evil) servers are responsible for serving up valid
+   JSON that all other servers can parse and validate. In particular, for a
+   room event that a server has accepted (from a potentially evil server), it
+   should ensure when it serializes the event to send to a third server the
+   bytes sent are a) unambiguous, and b) when serialized to canonical json
+   passes signature/hash checks.
+
+   This means that extreme care would need to be taken if storing events as raw
+   bytes received from third parties, and it is much easier to parse into an
+   internal representation and serialize from that. Evil servers can
+   potentially craft JSON that parses differently on different implementations
+   (and thus will pass checks on some impls and not others).
 
 ## Unstable prefix
 
