@@ -39,7 +39,8 @@ Future MSCs may add additional filters on which orphans to include.
 In case of shared spaces, this can cause spaces to be shown differently for different users.
 Clients may wish to only allow configuring this setting to private spaces, or render a
 visual indication for whether a room is an explicit child of a space (directly or indirectly),
-or pulled in via catch-all.
+or pulled in via catch-all. Additionally, clients may choose to ignore catch-all properties set
+on public spaces.
 
 
 ## Alternatives
@@ -51,6 +52,19 @@ requires (in this case hard-coded) server-side complexity.
 Proper server support may also be added using the same or similar state events, to reduce client
 implementation requirements. This may be beneficial for clients that do not wish to keep track of a
 complete list of spaces and space children on their own.
+
+Another alternative would be controlling catch-all properties via account data. This approach would solve
+concerns about unexpected user-facing behavior, since each user needs to enable it for themselves in each space.
+This would furthermore allow users to configure public spaces as catch-all, or any space in which they do not have
+permissions to send state events in the first place.  
+This alternative raises the question if catch-all should be a property of a space (as proposed), or just for your
+personal view on a space (controlled via account data). I don't think it makes sense to allow users to enable catch-all
+for public spaces where they don't have state event permission (they can still put the public space into any private
+space for organization anyway to achieve the same, provided a client that recurses spaces when filtering the room list).
+Furthermore, just because the feature is meant primarily for personal spaces, doesn't mean you may not want to share
+these settings across user accounts - imagine a multi-account Matrix client that merges all your accounts' space lists
+into one: then, if you put some of your accounts into the same personal space, you probably want it to behave the same,
+without having to configure it for each account separately.
 
 
 ## Security considerations
