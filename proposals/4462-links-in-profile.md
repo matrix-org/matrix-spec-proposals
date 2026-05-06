@@ -1,6 +1,6 @@
 # MSC4462: Links in Profile
 
-*This Proposal is related to future [MSCxxxx: Verifiable Links in Profile](https://github.com/matrix-org/matrix-spec-proposals/pull/xxxx) but not dependent on it*
+*This Proposal is related to future MSCxxxx: Verifiable Links in Profile but not dependent on it*
 
 A lot of other chat platforms (like Discord) or social media platforms (like the fediverse) allow you
 to put a list of links in your profile.
@@ -50,7 +50,7 @@ links invalid and either hide them or mark them as being invalid.
 This proposal doesn't introduce a way to verify link ownership (i.e. is that link really belonging
 to @alice:example.org).
 
-A followup MSC ([MSCxxxx: Verifiable Links in Profile](https://github.com/matrix-org/matrix-spec-proposals/pull/xxxx)) will tackle that.
+A followup MSC will tackle that.
 
 ### Trust & Safety
 
