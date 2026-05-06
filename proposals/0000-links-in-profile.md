@@ -1,4 +1,4 @@
-# MSC0000: Links in Profile
+# MSC4462: Links in Profile
 
 *This Proposal is related to future [MSCxxxx: Verifiable Links in Profile](https://github.com/matrix-org/matrix-spec-proposals/pull/xxxx) but not dependent on it*
 
