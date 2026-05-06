@@ -141,7 +141,7 @@ to `m.method.dns`)
 related to `m.method.matrix`)
 
 While the `scope` and `method` fields may appear redundant, the `scope` field makes the
-extent, it however does not say anything about the strength of verification, of a verification result explicit. This allows clients to interpret verification
+extent, not the strength, of a verification result explicit. This allows clients to interpret verification
 results without relying on method-specific behavior (e.g. determining whether a verification
 applies to a single URL or an entire domain).
 
