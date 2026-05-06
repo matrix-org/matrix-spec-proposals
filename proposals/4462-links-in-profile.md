@@ -24,7 +24,11 @@ Profiles MAY have a `m.links` field as an array of objects. These fields can be 
      {
         "description": "alt-account",
         "link": "matrix:u/alice:example.org"
-     }
+     },
+    {
+        "description": "email account",
+        "link": "mailto:alice@example.org"
+    }
    ]
 }
 ```
@@ -32,7 +36,7 @@ Profiles MAY have a `m.links` field as an array of objects. These fields can be 
 Content of a object in `m.links`:
 
 - `description`: human readable description of what a client should show next to the link as label (free-form)
-- `link`: the link to show and render as link (it SHOULD be a valid http/https/matrix url)
+- `link`: the link to show and render as link (it SHOULD be a valid http/https/matrix/mailto url)
 
 Clients can then display the links of a user in their respective user popup/profile view UI.
 
@@ -40,7 +44,7 @@ Clients SHOULD limit the length of `description` to 200 characters and the amoun
 If a profile does not conform to the length/amount of links limit a receiving client MAY truncate or ignore
 entries exceeding these limits.
 
-If a `link` is some scheme other than `http`, `https`, or `matrix` a receiving client SHOULD consider these
+If a `link` is some scheme other than `http`, `https`,`mailto`, or `matrix` a receiving client SHOULD consider these
 links invalid and either hide them or mark them as being invalid.
 
 ## Potential issues
@@ -50,7 +54,8 @@ links invalid and either hide them or mark them as being invalid.
 This proposal doesn't introduce a way to verify link ownership (i.e. is that link really belonging
 to @alice:example.org).
 
-A followup MSC will tackle that.
+A followup MSC will tackle verification using a dns based, http based, or matrix bidirectional link
+in profile method. Verifying other kind of links will be considered out-of-scope tho.
 
 ### Trust & Safety
 
