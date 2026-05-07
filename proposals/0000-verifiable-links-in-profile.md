@@ -13,12 +13,12 @@ Matrix Homeservers could do the same and mark a link upon request by a client as
 ### The role of the homeserver
 
 A homeserver SHOULD provide an a client-server API endpoint to verify link relationship against
-under `/_matrix/client/v1/verify_link_relationship`. The result of the link verification SHOULD
+under `/_matrix/client/v1/verify_profile_connection`. The result of the link verification SHOULD
 be cached for some amount of time (*implementation detail*). The homeserver SHOULD add a `expires`
 field to the response, to indicate after what point in time a verification should be considered outdated,
 after that time a client SHOULD reverify.
 
-A homeserver MAY choose to disable the `/_matrix/client/v1/verify_link_relationship` by it's respective
+A homeserver MAY choose to disable the `/_matrix/client/v1/verify_profile_connection` by it's respective
 configuration. Since there can be a lot of verification requests on a big homeserver, a ratelimit may be
 applied (in which case a HTTP 429 should be returned).
 
@@ -53,7 +53,7 @@ to link previews
 - SHOULD NOT regard links in `<iframe>`, even if they would pass the verification
 - MUST treat `rel` as ASCII case-insensitive
 
-A homeserver checks the verification by checking for elements of type `a` or `link` with the relationship me
+A homeserver checks the verification by checking for elements of type `a` or `uri` with the relationship me
 ([`rel="ME"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/me)).
 A simple link (without the relationship) MUST NOT result in verifying a link relationship.
 As a reference developers could see Mastodon's approach (see
@@ -92,11 +92,11 @@ verification with `error` as result below).
 #### Payload for the endpoint
 
 A client SHOULD, when wanting to check a link-user-relationship, send a payload like the following to
-the `/_matrix/client/v1/verify_link_relationship` endpoint.
+the `/_matrix/client/v1/verify_profile_connection` endpoint.
 
 ```json
 {
-    "link": "https://example.org",
+    "uri": "https://example.org",
     "method": "m.method.dns" | "m.method.relation" | "m.method.matrix",
     // the mxid to check against, not the mxid of the user initiating the request
     "mxid": "@alice:example.org",
@@ -183,27 +183,27 @@ Note that this is the same response a client would get for a rate-limited url pr
 #### Storage in the user profile
 
 This proposal builds on [MSC4462: Links in Profile](https://github.com/matrix-org/matrix-spec-proposals/pull/4462)
-and extends it's `m.links` field in the user profile, with `verification_method` as an attribute describing how
+and extends it's `m.connections` field in the user profile, with `verification_method` as an attribute describing how
 the link can be verified.
 
-Example of the extended `m.links` field:
+Example of the extended `m.connections` field:
 
 ```json
 {
-   "m.links": [
+   "m.connections": [
      {
         "description": "homepage",
-        "link": "https://example.org",
+        "uri": "https://example.org",
         "verification_method": "m.method.dns"
      },
      {
         "description": "mastodon",
-        "link": "https://mastodon.social/@example",
+        "uri": "https://mastodon.social/@example",
         "verification_method": "m.method.relation"
      },
      {
         "description": "alt-account",
-        "link": "matrix:u/alice:example.org",
+        "uri": "matrix:u/alice:example.org",
         "verification_method": "m.method.matrix"
      }
    ]
@@ -229,7 +229,7 @@ Clients
 
 ### Summary
 
-A link MUST only be marked as verified if a verifiable relationship exists between the MXID and the `link`,
+A link MUST only be marked as verified if a verifiable relationship exists between the MXID and the `uri`,
 established via one of the supported methods.
 
 Depending on the method:
@@ -271,10 +271,10 @@ does not prove that the MXID owner controls the domain.
 
 implementations should use
 
-- `fyi.cisnt.links` instead of `m.links`
+- `fyi.cisnt.connections` instead of `m.connections`
 - `fyi.cisnt.method.*` instead of `m.method.*`
 - `fyi.cisnt.scope.*` instead of `m.scope.*`
-- `/_matrix/client/unstable/fyi.cisnt.links/verify_link_relationship` instead of `/_matrix/client/v1/verify_link_relationship`
+- `/_matrix/client/unstable/fyi.cisnt.connections/verify_profile_connection` instead of `/_matrix/client/v1/verify_profile_connection`
 
 ## Dependencies
 
