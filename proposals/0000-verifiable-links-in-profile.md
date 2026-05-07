@@ -68,6 +68,15 @@ A simple link (without the relationship) MUST NOT result in verifying a link
 relationship. As a reference developers could see Mastodon's approach (see
 [mastodon docs](https://docs.joinmastodon.org/user/profile/#verification)).
 
+The homeserver SHOULD consider both the
+[`matrix.to` address](https://spec.matrix.org/v1.18/appendices/#matrixto-navigation)
+(e.g. `https://matrix.to/#/@alice:example.org`) and the
+[`matrix` URI](https://spec.matrix.org/v1.18/appendices/#matrix-uri-scheme)
+(e.g. `matrix:u/alice:example.org`) scheme for the backlink.
+
+A homeserver SHOULD consider when evaluating a `matrix.to` address, that it
+could also be encoded (e.g. `https://matrix.to/#/%40example%3Aexample.org`).
+
 ##### DNS
 
 A homeserver SHOULD also offer DNS based link verification, by checking the
@@ -117,15 +126,6 @@ endpoint.
     "mxid": "@alice:example.org",
 }
 ```
-
-The homeserver SHOULD consider both the
-[`matrix.to` address](https://spec.matrix.org/v1.18/appendices/#matrixto-navigation)
-(e.g. `https://matrix.to/#/@alice:example.org`) and the
-[`matrix` URI](https://spec.matrix.org/v1.18/appendices/#matrix-uri-scheme)
-(e.g. `matrix:u/alice:example.org`) scheme.
-
-A homeserver SHOULD consider when evaluating a `matrix.to` address could also be
-encoded (e.g. `https://matrix.to/#/%40example%3Aexample.org`).
 
 #### Response format
 
@@ -184,10 +184,12 @@ following:
 A failure occurs when either the number of redirects has been reached, a http
 error occurs (i.e. 4xx, 5xx errors), or a DNS resolution error occurs. In cases
 of http request failures a homeserver MAY progressively increase the time until
-the next try. In cases where the http request has been successful, the
-verification however wasn't the homeserver SHOULD respect the website's
-`cache-control` header and set the `verification` field to
-`verification_failed`.
+the next try, in these cases `result` field should be set to `not_found` or
+`error` respectively.
+
+In cases where the http request has been successful, the verification however
+wasn't the homeserver SHOULD respect the website's `cache-control` header and
+set the `result` field to `verification_failed`.
 
 For **rate-limited** request, homeservers SHOULD respond with a 429 response
 like the following
@@ -254,7 +256,6 @@ Clients
   reverify
 - SHOULD treat outdated verification as a link being unverified
 - MAY cache failures to not overwhelm the homeserver with requests
-- SHOULD cache failed verifications until `expires` has passed
 - MAY hide unverified links from the user
 
 ### Summary
