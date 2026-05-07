@@ -7,36 +7,36 @@ to put a list of links in your profile.
 
 ## Proposal
 
-Profiles MAY have a `m.links` field as an array of objects. These fields can be fetched through the
+Profiles MAY have a `m.connections` field as an array of objects. These fields can be fetched through the
 [profile API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles).
 
 ```json
 {
-   "m.links": [
+   "m.connections": [
      {
         "description": "homepage",
-        "link": "https://example.org"
+        "uri": "https://example.org"
      },
      {
         "description": "mastodon",
-        "link": "https://mastodon.social/@example"
+        "uri": "https://mastodon.social/@example"
      },
      {
         "description": "alt-account",
-        "link": "matrix:u/alice:example.org"
+        "uri": "matrix:u/alice:example.org"
      },
     {
         "description": "email account",
-        "link": "mailto:alice@example.org"
+        "uri": "mailto:alice@example.org"
     }
    ]
 }
 ```
 
-Content of a object in `m.links`:
+Content of a object in `m.connections`:
 
 - `description`: human readable description of what a client should show next to the link as label (free-form)
-- `link`: the link to show and render as link (it SHOULD be a valid http/https/matrix/mailto url)
+- `uri`: the link to show and render as link (it SHOULD be a valid http/https/matrix/mailto uri)
 
 Clients can then display the links of a user in their respective user popup/profile view UI.
 
@@ -44,7 +44,7 @@ Clients SHOULD limit the length of `description` to 200 characters and the amoun
 If a profile does not conform to the length/amount of links limit a receiving client MAY truncate or ignore
 entries exceeding these limits.
 
-If a `link` is some scheme other than `http`, `https`,`mailto`, or `matrix` a receiving client SHOULD consider these
+If a `uri` is some scheme other than `http`, `https`,`mailto`, or `matrix` a receiving client SHOULD consider these
 links invalid and either hide them or mark them as being invalid.
 
 ## Potential issues
@@ -93,7 +93,9 @@ the client SHOULD display the canonical Punycode representation to the user to r
 
 ## Unstable prefix
 
-implementations should use `fyi.cisnt.links` instead of `m.links` while this is unmerged
+implementations should use `fyi.cisnt.connections` instead of `m.connections` while this is unmerged
+
+**Note**: it was previously under the unstable prefix `fyi.cisnt.links`.
 
 ## Dependencies
 
