@@ -7,14 +7,19 @@ then get verified.
 In the fediverse (e.g. Mastodon) it is simply done by crawling the linked site
 and searching for links with the `rel="me"` attribute.
 
-Matrix Homeservers could do the same and mark a link upon request by a client as
-verified.
+This proposal introduces a way for Matrix homeservers to do a relationship based
+(`rel="me"`), as known from the fediverse, but beyond that also a dns and matrix
+backlink (useful for example for alt accounts) verification. This would go a
+long way in establishing more feature parity to other popular platforms.
+
+It would also go a long way in reducing the risk of impersonation and phishing
+for a set of MSC4462 connections in profile.
 
 ## Proposal
 
 ### The role of the homeserver
 
-A homeserver SHOULD provide an a client-server API endpoint to verify link
+A homeserver SHOULD provide a client-server API endpoint to verify link
 relationship against under `/_matrix/client/v1/verify_profile_connection`. The
 result of the link verification SHOULD be cached for some amount of time
 (*implementation detail*). The homeserver SHOULD add a `expires` field to the
@@ -22,14 +27,14 @@ response, to indicate after what point in time a verification should be
 considered outdated, after that time a client SHOULD reverify.
 
 A homeserver MAY choose to disable the
-`/_matrix/client/v1/verify_profile_connection` by it's respective configuration.
+`/_matrix/client/v1/verify_profile_connection` by its respective configuration.
 Since there can be a lot of verification requests on a big homeserver, a
 ratelimit may be applied (in which case a HTTP 429 should be returned).
 
 To prevent potentially infinite redirect loops, a restriction on the amount of
 redirects SHOULD be applied. A homeserver MAY use a blocklist/allowlist if it
-want's to filter what links they try to verify. However a homeserver MUST
-prevent verification requests pointing to restricted addresses
+wants to filter what links they try to verify. However a homeserver MUST prevent
+verification requests pointing to restricted addresses
 ([RFC1918](https://www.rfc-editor.org/info/rfc1918), localhost, ...).
 
 To verify a relationship it MUST match the full MXID (after normalization).
@@ -109,7 +114,7 @@ links to `@alice:example.com` the link MUST only be verified if
 A homeserver would check this by requesting the profiles of both
 `@alice:example.org` and `@alice:example.com`, and checks if they link to each
 other. If they don't link to each other it SHOULD be treated as a failed
-verification. If a error during lookup occurs it SHOULD be treated as an
+verification. If an error during lookup occurs it SHOULD be treated as an
 erroring verification (see verification with `error` as result below).
 
 #### Payload for the endpoint
@@ -168,8 +173,8 @@ Additionally, including `scope` allows for future extensibility, where new
 verification methods may be introduced without requiring clients to infer the
 scope from the method.
 
-For **failed verifications**, homeservers SHOULD respond to the client with the
-following:
+For **failed/erroring verifications**, homeservers SHOULD respond to the client
+with the following:
 
 ```json
 {
@@ -181,15 +186,13 @@ following:
 }
 ```
 
-A failure occurs when either the number of redirects has been reached, a http
-error occurs (i.e. 4xx, 5xx errors), or a DNS resolution error occurs. In cases
-of http request failures a homeserver MAY progressively increase the time until
-the next try, in these cases `result` field should be set to `not_found` or
-`error` respectively.
+The `result` should use the following logic:
 
-In cases where the http request has been successful, the verification however
-wasn't the homeserver SHOULD respect the website's `cache-control` header and
-set the `result` field to `verification_failed`.
+- `not_found` if a http request returns `404`, or a DNS lookup returns
+  `NXDOMAIN`
+- `error` for other errors
+- `verification_failed` if the request was successful the verification however
+  wasn't (i.e. the website loaded as expected but no matching `rel="me"` found)
 
 For **rate-limited** request, homeservers SHOULD respond with a 429 response
 like the following
@@ -211,7 +214,7 @@ preview request.
 
 This proposal builds on
 [MSC4462: Links in Profile](https://github.com/matrix-org/matrix-spec-proposals/pull/4462)
-and extends it's `m.connections` field in the user profile, with
+and extends its `m.connections` field in the user profile, with
 `verification_method` as an attribute describing how the link can be verified.
 
 Example of the extended `m.connections` field:
@@ -312,7 +315,7 @@ If a clear use case emerges, this could be added later through a new
 `verification_method` value. For example, a Discord integration could use
 `"verification_method": "m.method.discord"`. This proposal therefore leaves
 `verification_method` open for future methods. However this proposal doesn't in
-it self propose third party verification methods.
+itself propose third party verification methods.
 
 ### Cryptographic Proofs
 
@@ -328,6 +331,10 @@ such as Mastodon.
 - DNS-based verification proves that the operator of a domain asserts an
   association with a given MXID. It does not prove that the MXID owner controls
   the domain.
+- When a homeserver performs a verification (especially for relationship based
+  verification) it initiates a connection to an arbitrary website, which could
+  lead to leak some meta data to the website operator (similar to homeserver
+  based url previews)
 
 ## Unstable prefix
 
