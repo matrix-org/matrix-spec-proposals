@@ -301,6 +301,26 @@ However, this would have considerable security implications:
 - a lot of requests to a website, if a lot of users look at one's profile (a
   homeserver could cache the verification result)
 
+### Third Party Verification
+
+Another possible alternative would be to rely on a set of supported third-party
+verification services. However, this would require a shared trust model and
+service discovery mechanism across the federation, which would complicate
+deployment and interoperability.
+
+If a clear use case emerges, this could be added later through a new
+`verification_method` value. For example, a Discord integration could use
+`"verification_method": "m.method.discord"`. This proposal therefore leaves
+`verification_method` open for future methods. However this proposal doesn't in
+it self propose third party verification methods.
+
+### Cryptographic Proofs
+
+This is a plausible alternative. However, it would introduce additional protocol
+complexity and key-management requirements, while providing little benefit over
+the existing relationship-based approach already used by established platforms
+such as Mastodon.
+
 ## Security considerations
 
 - A website could trigger cyclic redirects, therefore a server MUST enforce a
