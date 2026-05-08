@@ -67,7 +67,7 @@ A homeserver
 - MUST treat `rel` as ASCII case-insensitive
 
 A homeserver checks the verification by checking for elements of type `a` or
-`uri` with the relationship me
+`link` with the relationship me
 ([`rel="ME"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/me)).
 A simple link (without the relationship) MUST NOT result in verifying a link
 relationship. As a reference developers could see Mastodon's approach (see
