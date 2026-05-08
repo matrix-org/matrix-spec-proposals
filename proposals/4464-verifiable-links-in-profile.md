@@ -1,4 +1,4 @@
-# MSC0000: Verifiable Links in Profile
+# MSC4464: Verifiable Links in Profile
 
 A lot of other chat platforms (like Discord) and social media platforms (like
 Mastodon, Sharkey, ...) allow you to put a list of links in your profile which
@@ -343,7 +343,7 @@ implementations should use
 - `fyi.cisnt.connections` instead of `m.connections`
 - `fyi.cisnt.method.*` instead of `m.method.*`
 - `fyi.cisnt.scope.*` instead of `m.scope.*`
-- `_mscXXXX-verification` instead of `_matrix-verification` for the DNS TXT
+- `_msc4464-verification` instead of `_matrix-verification` for the DNS TXT
   record
 - `/_matrix/client/unstable/fyi.cisnt.connections/verify_profile_connection`
   instead of `/_matrix/client/v1/verify_profile_connection`
