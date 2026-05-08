@@ -27,9 +27,10 @@ response, to indicate after what point in time a verification should be
 considered outdated, after that time a client SHOULD reverify.
 
 A homeserver MAY choose to disable the
-`/_matrix/client/v1/verify_profile_connection` by its respective configuration.
-Since there can be a lot of verification requests on a big homeserver, a
-ratelimit may be applied (in which case a HTTP 429 should be returned).
+`/_matrix/client/v1/verify_profile_connection` endpoint by its respective
+configuration. Since there can be a lot of verification requests on a big
+homeserver, a ratelimit may be applied (in which case a HTTP 429 should be
+returned).
 
 To prevent potentially infinite redirect loops, a restriction on the amount of
 redirects SHOULD be applied. A homeserver MAY use a blocklist/allowlist if it
@@ -117,20 +118,18 @@ other. If they don't link to each other it SHOULD be treated as a failed
 verification. If an error during lookup occurs it SHOULD be treated as an
 erroring verification (see verification with `error` as result below).
 
-#### Payload for the endpoint
+#### Request to the endpoint
 
-A client SHOULD, when wanting to check a link-user-relationship, send a payload
-like the following to the `/_matrix/client/v1/verify_profile_connection`
-endpoint.
+A client SHOULD, when wanting to check a link-user-relationship, send a `GET`
+Request to the `/_matrix/client/v1/verify_profile_connection` endpoint.
 
-```json
-{
-    "uri": "https://example.org",
-    "method": "m.method.dns" | "m.method.relation" | "m.method.matrix",
-    // the mxid to check against, not the mxid of the user initiating the request
-    "mxid": "@alice:example.org",
-}
-```
+The request should set the following query parameters:
+
+- `uri` the uri a client wants to verify (example: `https://example.org`)
+- `mxid` the mxid to check against, not the mxid of the user initiating the
+  request (example: `@alice:example.org`)
+- `method` the verification method to use (accepted values: `m.method.dns`,
+  `m.method.relation`, or `m.method.matrix`)
 
 #### Response format
 
