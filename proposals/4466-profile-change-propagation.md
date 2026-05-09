@@ -21,14 +21,16 @@ behavior when sending an updated `m.room.member` event:
 
 - `all`: The server MUST send a `m.room.member` event for `{userId}` to every room that `{userId}` has a `join`
 membership in, with `{keyName}` set to the newly provided value, or removed entirely, in accordance with the
-[key copying rules](#Key-copying-rules).  - `unchanged`: For each room that `{userId}` has a `join` membership
+[key copying rules](#key-copying-rules).
+- `unchanged`: For each room that `{userId}` has a `join` membership
 in, the server MUST check the value of `{keyName}` in the `m.room.member` event's content. If `PUT` was used and
 the content's current value of `{keyName}` is exactly equivalent to the value of `{keyName}` in the user's global
 profile data, or `DELETE` was used and the user's global profile data is already missing an entry for `{keyName}`,
 the server MUST send a `m.room.member` event to that room with `{keyName}` changed to the newly provided value or
-removed entirely, in accordance with the [key copying rules](#Key-copying-rules). For all other rooms, the server
+removed entirely, in accordance with the [key copying rules](#key-copying-rules). For all other rooms, the server
 MUST NOT send a `m.room.member` event to that room. This allows clients to easily offer a way to change a user's
-profile information while keeping per-room changes intact.  - `none`: The server MUST NOT send `m.room.member`
+profile information while keeping per-room changes intact.
+- `none`: The server MUST NOT send `m.room.member`
 events to any rooms.
 
 The server MUST additionally update the user's global profile data with the new value of
@@ -49,8 +51,11 @@ Example for the behavior of `unchanged`:
 ### Key copying rules
 
 When sending a new `m.room.member` event with the intent of updating `displayname` or
-`avatar_url`, the server: - MUST set `displayname` or `avatar_url`, whichever is applicable, to the newly provided
-value.  - MUST copy `third_party_invite` from the previous membership event, if it is present.  - MUST NOT copy
+`avatar_url`, the server:
+- MUST set `displayname` or `avatar_url`, whichever is applicable, to the newly provided
+value. 
+- MUST copy `third_party_invite` from the previous membership event, if it is present.
+- MUST NOT copy
 `join_authorised_via_users_server` from the previous membership event. The presence of this field requires the event
 to be signed by the authorizing server as well, which is of course not possible without that server's participation.
 - MUST NOT copy `reason` from the previous membership event. The profile change API does not currently specify
@@ -67,15 +72,17 @@ For servers which implement
 this proposal introduces a new `propagate_to` query parameter on `PUT /_matrix/client/v3/profile/{userId}`.
 
 This query parameter has the same acceptable values and same behavior as for the existing `PUT
-/_matrix/client/v3/profile/{userId}/{keyName}` endpoint, with the following caveats: - If the query parameter
+/_matrix/client/v3/profile/{userId}/{keyName}` endpoint, with the following caveats:
+- If the query parameter
 is set to `unchanged`, the server MUST consider both `displayname` and `avatar_url` when checking `{userId}`'s
 current membership. If only one field would need to be changed or deleted according to the `unchanged` logic,
 the server MUST send a membership event to that room which changes or deletes _only_ that field. If both fields
-need to be changed or deleted, the server MUST send events which update _both_ fields.  - If the query parameter
-is set to `all`, or the query parameter is set to`unchanged` and both `displayname` and `avatar_url` were updated,
+need to be changed or deleted, the server MUST send events which update _both_ fields.
+- If the query parameter
+is set to `all`, or the query parameter is set to `unchanged` and both `displayname` and `avatar_url` were updated,
 the server SHOULD only send a single `m.room.member` event that changes or deletes both fields.
 
-The [key copying rules](#Key-copying-rules) MUST also be followed when sending membership events in response to
+The [key copying rules](#key-copying-rules) MUST also be followed when sending membership events in response to
 a request to this endpoint.
 
 If the `propagate_to` query parameter is not provided, the server MUST behave as if it were set to `all`, in
