@@ -40,13 +40,10 @@ keeping with current behavior.
 
 Example for the behavior of `unchanged`:
 
-| `displayname` in global account data | `displayname` in room membership | `displayname` in PUT request | New
-`displayname` in room membership | | ------------------------------------ | -------------------------------- |
----------------------------- | ------------------------------------ | | Alice Margatroid                     |
-Alice "Nickname" Margatroid      | Alice                        | Unchanged from Alice "Nickname" Margatroid,
-because `displayname` in room membership is different from displayname in global account data | Alice Margatroid |
-Alice Margatroid | Alice | Changed to Alice, because `displayname` in room membership is identical to `displayname`
-in global account data
+| `displayname` in global account data | `displayname` in room membership | `displayname` in PUT request | New `displayname` in room membership |
+| ------------------------------------ | -------------------------------- | ---------------------------- | ------------------------------------ |
+| Alice Margatroid                     | Alice "Nickname" Margatroid      | Alice                        | Unchanged from Alice "Nickname" Margatroid, because `displayname` in room membership is different from displayname in global account data |
+| Alice Margatroid | Alice Margatroid | Alice | Changed to Alice, because `displayname` in room membership is identical to `displayname` in global account data |
 
 
 ### Key copying rules
