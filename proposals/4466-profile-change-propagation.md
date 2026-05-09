@@ -126,7 +126,7 @@ this proposal.
 
 Servers which implement MSC4437 as well as this proposal should strongly consider supporting this proposal's
 extensions to MSC4437. While this proposal is unstable, servers which support the extensions should use
-`computer.gingershaped.msc4466.propagate_to` instead of `m.propagate_to` as a query parameter for the `PUT
+`computer.gingershaped.msc4466.propagate_to` instead of `propagate_to` as a query parameter for the `PUT
 /_matrix/client/v3/profile/{userId}` endpoint and `PUT /_matrix/client/unstable/com.beeper.msc4437/profile/{userId}`
 unstable endpoint. Servers may use the `computer.gingershaped.msc4466.msc4437_extensions` unstable feature flag to indicate
 that they support the extensions.
