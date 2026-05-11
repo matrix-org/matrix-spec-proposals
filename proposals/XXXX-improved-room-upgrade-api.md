@@ -187,7 +187,8 @@ This is because upgrading a room to disable E2EE is a fully supported use case f
 common irreversible mistake beginners make.
 
 Room types are also not rendered immune as this proposal is intended to account for situations like upgrading
-a policy list. If upgrading a policy list to have a room type like the one proposed by MSC3784, you need to
+a policy list. If upgrading a policy list to have a room type like the one proposed by
+[MSC3784](https://github.com/matrix-org/matrix-spec-proposals/pull/3784), you need to
 have the ability to set your own room type. This capability is provided via the `create_room_override`.
 
 ### Ratelimited / Authenticated
@@ -256,3 +257,7 @@ And the following external attribute maps become.
 ## Dependencies
 
 This MSC does not have any dependencies not part of the latest spec release.
+
+The only reference to another MSC in this proposal is only there to illustrate an example situation.
+That example mentions [MSC3784](https://github.com/matrix-org/matrix-spec-proposals/pull/3784)
+due to illustrating an example where room types want to be substituted or introduced.
