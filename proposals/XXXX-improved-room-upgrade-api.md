@@ -208,7 +208,7 @@ as a necessary evil. The current API behavior is not compatible with serious wor
 in the ecosystem.
 
 There is also the very serious issue of that clients who use include migration schemas and not exclusions
-can fall out of date with critical new events. Like policy servers proposed by MSC_POLICY_SERVER. This is
+can fall out of date with critical new events. Like policy servers. This is
 addressed by the fact that its only advanced clients that are recomended to run inclusion migrations. These
 clients are expected to know the consequences of their actions or to give this complexity straight
 to the user.
