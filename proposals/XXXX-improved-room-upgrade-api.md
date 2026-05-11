@@ -9,7 +9,7 @@ in addition to what room version you desire.
 This proposal proposes a new set of capabilities that indicates room upgrade behavior and a way to control
 these behaviors.
 
-`m.room_upgrade_capabilities` will contain a list of room upgrade related capabilities the homeserver posesses
+`m.room_upgrade_capabilities` will contain a list of room upgrade related capabilities the homeserver possesses
 both lists of what events will have their content migrated or what keys of what events will be migrated if
 only partially migrated. But also what external attributes are moved like for example room directory listings
 or local aliases.
@@ -170,7 +170,7 @@ This version also consumes the new `migration_schema` key that has the following
   `POST /_matrix/client/v3/createRoom` API. During the upgrade process, the server will merge these parameters
   into the setup of the new room, with values from here strictly taking precedence over the server's default or
   derived migration logic. The create room schema in this API does exclude the ability to set the room id
-  of the predecessor room. This is because this is controlled via the invokation of the API it self.
+  of the predecessor room. This is because this is controlled via the invocation of the API it self.
   `additional_creators` is also ignored as its controlled via the root level request body key.
   The room version parameter is also ignored as its also controlled via the root level request body key.
 
@@ -183,12 +183,12 @@ As for the purpose of the `create_room_override`. That exists to give all the po
 room upgrade to this process. This MSC is intended to in spirit deprecate the need for manual room upgrades.
 
 It should be noted that its fully intentional that attributes like encryption are not protected under this schema.
-This is because upgrading a room to disable E2EE is a fully supported usecase for this proposal as its a
+This is because upgrading a room to disable E2EE is a fully supported use case for this proposal as its a
 common irreversible mistake beginners make.
 
 Room types are also not rendered immune as this proposal is intended to account for situations like upgrading
 a policy list. If upgrading a policy list to have a room type like is proposed by MSC3784 then you need to
-have the abilit to set your own room type. This capability is provided via the `create_room_override`
+have the ability to set your own room type. This capability is provided via the `create_room_override`
 
 ### Ratelimited / Authenticated
 
@@ -197,7 +197,7 @@ The capabilities response will inherit these attributes from the capabilities en
 The new `POST /_matrix/client/v4/rooms/{roomID}/upgrade` endpoint is rate limited and authenticated.
 
 Any other stance than rate limited and authenticated would not be defensible as a default. Unlimited room creation
-is not recomended especially as your allowed to issue invites via this endpoint due to creation content.
+is not recommended especially as your allowed to issue invites via this endpoint due to creation content.
 And invites may also be spawned via this endpoint for servers that migrate private rooms that way.
 
 ## Potential issues
@@ -209,7 +209,7 @@ in the ecosystem.
 
 There is also the very serious issue of that clients who use include migration schemas and not exclusions
 can fall out of date with critical new events. Like policy servers. This is
-addressed by the fact that its only advanced clients that are recomended to run inclusion migrations. These
+addressed by the fact that its only advanced clients that are recommended to run inclusion migrations. These
 clients are expected to know the consequences of their actions or to give this complexity straight
 to the user.
 
@@ -223,23 +223,23 @@ the upgrade endpoint but that was dismissed as not needed. This behavior fits in
 
 There is also the alternative of skipping the complexity via telling the server to disable all this behavior.
 This solution was rejected because most users of /upgrade have a short list of problems with the endpoint,
-that when addresed makes the endpoint totally usable and actually useful.
+that when addressed makes the endpoint totally usable and actually useful.
 
 It was considered to make a separate endpoint that can be described as a bare room creation endpoint that disables
-all server fancyness in setting up rooms except joining after creation but thats not an alternative.
+all server fanciness in setting up rooms except joining after creation but thats not an alternative.
 That is a separate feature that happens to help out room upgrades. That idea can be explored by another
 proposal in more detail.
 
 ## Security considerations
 
-The new capabilities data shouldnt be sensetive but servers are free to lock away the data behind authenticated
+The new capabilities data should not be sensitive but servers are free to lock away the data behind authenticated
 status as the capabilities endpoint allows authentication. And the new upgrade endpoint also requires auth
 and does instruct you to rate limit it.
 
 And the primary security risk i see for this endpoint is actually in the logic around the create event stuff.
-That can be a bit of a pita to parse. But since this proposal doesnt introduce any concept like that the server
+That can be a bit of a pita to parse. But since this proposal doesn't introduce any concept like that the server
 runs a migration script we reduce the attack surface there. The fact that the migration schema
-is designed as simple as it is has security perks. Simple boleans have much less attack surface after all.
+is designed as simple as it is has security perks. Simple booleans have much less attack surface after all.
 
 No further security considerations have been identified at this time.
 
