@@ -1,4 +1,4 @@
-# MSC0000: Improved Room Upgrade API
+# MSC4467: Improved Room Upgrade API
 
 ## Introduction
 
@@ -245,14 +245,14 @@ No further security considerations have been identified at this time.
 
 ## Unstable prefix
 
-`POST /_matrix/client/v4/rooms/{roomID}/upgrade` turns into `POST /_matrix/client/unstable/rooms/{roomID}/support.feline.mscXXXX.v1.upgrade`
+`POST /_matrix/client/v4/rooms/{roomID}/upgrade` turns into `POST /_matrix/client/unstable/rooms/{roomID}/support.feline.msc4467.v1.upgrade`
 
-And `m.room_upgrade_capabilities` in the capabilities response becomes `support.feline.mscXXXX.v1.room_upgrade_capabilities`
+And `m.room_upgrade_capabilities` in the capabilities response becomes `support.feline.msc4467.v1.room_upgrade_capabilities`
 
 And the following external attribute maps become.
 
-`m.local_room_directory` -> `support.feline.mscXXXX.v1.local_room_directory`
-`m.local_aliases` -> `support.feline.mscXXXX.v1.local_aliases`
+`m.local_room_directory` -> `support.feline.msc4467.v1.local_room_directory`
+`m.local_aliases` -> `support.feline.msc4467.v1.local_aliases`
 
 ## Dependencies
 
