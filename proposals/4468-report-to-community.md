@@ -8,7 +8,7 @@ to implementation. It may be closed or replaced by a different approach as neede
 
 [MSC4457](https://github.com/matrix-org/matrix-spec-proposals/pull/4457) introduces a generic reporting
 API which can be used to report a wide variety of content and material. Other MSCs are expected to
-add routing capabilties to that API to send reports to more places than just the local server admin.
+add routing capabilities to that API to send reports to more places than just the local server admin.
 Those proposals have not yet been written (at time of writing this proposal).
 
 This proposal does *not* define routing, but does define a mechanism that a future routing proposal
