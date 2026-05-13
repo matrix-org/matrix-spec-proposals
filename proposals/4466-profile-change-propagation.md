@@ -54,7 +54,6 @@ When sending a new `m.room.member` event with the intent of updating `displaynam
 `avatar_url`, the server:
 - MUST set `displayname` or `avatar_url`, whichever is applicable, to the newly provided
 value. 
-- MUST copy `third_party_invite` from the previous membership event, if it is present.
 - MUST NOT copy
 `join_authorised_via_users_server` from the previous membership event. The presence of this field requires the event
 to be signed by the authorizing server as well, which is of course not possible without that server's participation.
