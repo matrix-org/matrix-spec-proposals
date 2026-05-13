@@ -111,6 +111,9 @@ tooling to include another reference identifier for their system.
   SHOULD drop (ignore) reports for unknown or invalid community IDs. Receivers are encouraged to consider
   assigning their own case/report IDs to incoming reports which link to the sender-supplied value.
 
+  The `report_id` is intended to be the same that's returned by the `/report` endpoint in MSC4457, and
+  therefore unique only to the sender rather than globally unique.
+
   A future MSC which enables communication between receiver and (anonymized) sender can also be used
   to indicate that a value may be invalid or duplicated.
 
