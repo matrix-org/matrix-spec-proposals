@@ -1,4 +1,4 @@
-# MSC2938: Report Content to Moderators
+# MSC2938: Report Content to Moderators (via Server Notice rooms)
 
 Matrix currently offers [a mechanism](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-report-eventid)
 to report bad content content (e.g. trolling, spam, abuse, etc.) to homeserver admins.
@@ -46,7 +46,7 @@ We extend `POST /_matrix/client/r0/rooms/{room_id}/report/{event_id}` with a JSO
 
 | Parameter | Type   | Description |
 | --------- |------- | ----------- |
-| target    | string | One of "server-notice", "homeserver_admins". |
+| target    | string | One of "room_moderators", "homeserver_admins". |
 
 If `target` is `"homeserver_admins"` or unspecified, the behavior is unchanged.
 
