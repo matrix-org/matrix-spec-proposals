@@ -1,4 +1,4 @@
-# MSC3843: Reporting content over federation
+# MSC3843: Reporting content over federation (API approach)
 
 Clients can currently [report content](https://spec.matrix.org/v1.3/client-server-api/#reporting-content)
 to their homeserver, however these reports don't currently translate over federation to affected
