@@ -39,7 +39,7 @@ for all report types:
 ```
 
 `must_send_to` explicitly describes the destinations it can send to as subobjects to avoid confusion
-around "must send to `!room`" being interpretted as literally sending to `!room` rather than the
+around "must send to `!room`" being interpreted as literally sending to `!room` rather than the
 community safety team behind `!room` (if any). If `must_send_to`, `communities`, `servers`, or the
 values under `communities`/`servers` are not objects, a `400 M_BAD_JSON` error is returned.
 
@@ -76,7 +76,7 @@ taken (or lack thereof) to other, non-technical, systems.
 * This proposal is written with an assumption that an async mechanism will be used to forward reports,
   like [MSC4468](https://github.com/matrix-org/matrix-spec-proposals/pull/4468) or
   [MSC4469](https://github.com/matrix-org/matrix-spec-proposals/pull/4469). If a sync mechanism is
-  chosen instead, this proposal might need (hopefully trivial) changes to accomodate those proposals.
+  chosen instead, this proposal might need (hopefully trivial) changes to accommodate those proposals.
 
 * The local server *always* ends up opening a report, or at least generating a report ID, even if
   that report is not handled under the server's safety policies. This is extra work for the local
