@@ -1,4 +1,4 @@
-# MSCXXXX: Event streams
+# MSC4471: Event streams
 
 Matrix clients increasingly need to display rapidly changing, non-durable state which is associated
 with a room event. A common example is an AI assistant generating a response: users benefit from seeing
