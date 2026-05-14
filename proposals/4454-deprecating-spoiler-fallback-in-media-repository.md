@@ -18,7 +18,7 @@ The current spec text doesn't specify how to handle spoilers in E2EE rooms, and 
 suggesting uploading the spoilered text unencrypted to the media repository.
 
 So the proposal is removing that possibility in favor of just putting a
-`Alice [Spoiler] in the movie.` in the `body`.
+`Alice [Spoiler](lived happily ever after) in the movie.` in the `body`.
 
 So instead of
 
@@ -37,16 +37,40 @@ we would send
 {
   "msgtype": "m.text",
   "format": "org.matrix.custom.html",
-  "body": "Alice [Spoiler] in the movie.",
+  "body": "Alice [Spoiler](lived happily ever after) in the movie.",
   "formatted_body": "Alice <span data-mx-spoiler>lived happily ever after</span> in the movie."
 }
 ```
 
+If a reason is supplied we would send
+
+```json
+{
+  "msgtype": "m.text",
+  "format": "org.matrix.custom.html",
+  "body": "Alice [Spoiler for health of Alice](lived happily ever after) in the movie.",
+  "formatted_body": "Alice <span data-mx-spoiler='health of alice'>lived happily ever after</span> in the movie."
+}
+```
+
+instead of:
+
+```json
+{
+  "msgtype": "m.text",
+  "format": "org.matrix.custom.html",
+  "body": "Alice [Spoiler for health of Alice](mxc://example.org/abc123) in the movie.",
+  "formatted_body": "Alice <span data-mx-spoiler='health of alice'>lived happily ever after</span> in the movie."
+}
+```
+
+
 Clients generating messages with spoilers:
 
-- SHOULD NOT include spoilered content in the `body` field
-- SHOULD replace spoilered sections with a neutral placeholder (e.g. `[Spoiler]`)
-- SHOULD encode the full spoilered content only in `formatted_body`
+- MAY NOT include spoilered content in the `body` field
+- SHOULD wrap the spoilered text in `[Spoiler](spoilered text goes here)`
+- if a reason is supplied the spoilered text SHOULD be wrapped like `[Spoiler for REASON](spoilered text goes here)`
+- MAY encode the full spoilered content only in `formatted_body`
 
 Clients rendering messages:
 
@@ -57,34 +81,9 @@ The `formatted_body` field is the authoritative source for spoiler semantics.
 
 ## Potential issues
 
-### Reduced fidelity in plaintext contexts
+Clients which don't consider this and just display the plain text message in some contexts including the spoilered message in the plain `body` could cause undesired behavior, but as they most likely also don't support spoilers at all or are plain text clients increasing the reliance on rich text wouldn't do any good.
 
-Under this proposal, the `body` field no longer contains the spoilered content. As a result, clients
-which rely solely on `body` (including some plaintext-only clients, bots, and bridges) will not have access to the spoilered text.
-
-This represents a loss of information compared to approaches where the full message is included in plaintext.
-In these cases, the message may appear as `Alice [Spoiler] in the movie.` without any way to recover the hidden content.
-
-This tradeoff is intentional: the proposal prioritizes preventing unintended disclosure of spoilered content
-over preserving full fidelity in plaintext representations.
-
-### Plaintext-only clients will not receive spoilered content
-
-Because notifications and message previews are often derived from the `body` field, they will contain less information for spoilered
-messages under this proposal.
-
-For example, a notification may display `Alice [Spoiler] in the movie.` rather than including the spoilered text itself.
-
-While this reduces the usefulness of previews, it avoids leaking spoilered content in contexts where it may be displayed without
-explicit user interaction (such as push notifications or lockscreen previews).
-
-### Increased reliance on formatted_body
-
-This proposal makes `formatted_body` the authoritative source for spoiler semantics. Clients which do not support or process `formatted_body`
-will not be able to render spoilered content.
-
-In practice, this increases reliance on `formatted_body` for full message fidelity and may widen the behavioral gap between clients that
-support rich formatting and those that do not.
+Note this MSC has changed how spoilered text should be included in the plain text since the creation of the MSC
 
 ## Alternatives
 
