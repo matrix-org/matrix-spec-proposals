@@ -67,7 +67,9 @@ The path parameters of this endpoint are the same as for the existing
 [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](
 https://spec.matrix.org/v1.18/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
 endpoint. It also makes use of [transaction identifiers](
-https://spec.matrix.org/v1.18/client-server-api/#transaction-identifiers).
+https://spec.matrix.org/v1.18/client-server-api/#transaction-identifiers),
+and supports [timestamp massaging](https://spec.matrix.org/latest/application-service-api/#timestamp-massaging)
+when called by an application service.
 
 The body for requests to this endpoint is a JSON object containing the following fields:
 
@@ -264,6 +266,8 @@ These objects contain the following fields:
     to explain why this event failed to be sent.
   - `event_id` - Optional. The `event_id` this event got in case it was sent.
   - `origin_server_ts` - Required. The timestamp of when the event was finalised.
+    Using [timestamp massaging](https://spec.matrix.org/latest/application-service-api/#timestamp-massaging)
+    does not affect the value of this field.
 - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
 
 The batch size and the amount of terminated events that stay on the homeserver can be chosen, by the homeserver.
