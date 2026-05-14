@@ -397,25 +397,25 @@ https://core.telegram.org/bots/api#sendmessagedraft.
 
 ## Unstable prefix
 
-The current experimental implementation in `mautrix-go` uses `com.beeper.*` names. This MSC uses that
-unstable namespace until the proposal assigns an MSC namespace or stable names.
+While this proposal is not considered stable, implementations should use the following unstable
+identifiers:
 
 The unstable message content field is:
 
 ```
-com.beeper.stream
+org.matrix.msc4471.stream
 ```
 
 The unstable to-device event types are:
 
 ```
-com.beeper.stream.subscribe
-com.beeper.stream.cancel
-com.beeper.stream.update
+org.matrix.msc4471.stream.subscribe
+org.matrix.msc4471.stream.cancel
+org.matrix.msc4471.stream.update
 ```
 
 The unstable stream encryption algorithm is:
 
 ```
-com.beeper.stream.v1.aes-gcm
+org.matrix.msc4471.stream.v1.aes-gcm
 ```
