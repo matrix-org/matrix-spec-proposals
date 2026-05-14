@@ -49,9 +49,9 @@ The following operations are added to the Client-Server API:
 
 - Schedule an event to be sent at a later time
 - Get a list of delayed events
-- Restart the timer of a delayed event
-- Send the delayed event immediately
-- Cancel a delayed event so that it is never sent
+- Restart the timer of a scheduled delayed event
+- Send a scheduled delayed event immediately
+- Cancel a scheduled delayed event so that it is never sent
 
 At the point of an event being scheduled, the homeserver is
 [unable to allocate the event ID](#allocating-the-event-id-at-the-point-of-scheduling-the-send).
@@ -59,7 +59,7 @@ Instead, the homeserver allocates a `delay_id` to the scheduled event which is u
 
 ### Scheduling a delayed event
 
-A new endpoint is introduced for scheduling the sending of a message or state event:
+A new authenticated Client-Server API endpoint is introduced for scheduling the sending of a message or state event:
 
 `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}`
 
@@ -160,18 +160,25 @@ by sharing the target delayed event's `delay_id` with the service.
 Where the action is `send`, the homeserver SHOULD apply rate limiting to provide mitigation against the
 [High Volume of Messages](https://spec.matrix.org/v1.18/appendices/#threat-high-volume-of-messages) threat.
 
-The homeserver will respond with HTTP 404 and an `M_NOT_FOUND` error
-if the `delay_id` is not recognized or was already cancelled.
+For all actions, the homeserver SHOULD apply rate limiting to provide mitigation against the
+[Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threat.
 
-The success response body is always an empty object. A future MSC may define additional keys, such as returning
+If no delayed event with the specified `delay_id` can be found,
+the homeserver will respond with HTTP 404
+and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+with an `errcode` of `M_NOT_FOUND`.
+
+On success, the homeserver will respond with HTTP 200
+and a response body of an empty object. A future MSC may define additional keys, such as returning
 the event ID for `send` or the new expected send time for `restart`.
 
 To allow safely retrying requests, the `send` action should return HTTP 200 even if the event was already sent
 successfully by a previous request or by the delay timing out.
 
 If sending the event via a `send` call fails, or if the event already failed previously, the endpoint returns the error
-that happened while sending the event
-(e.g. HTTP 403 and `M_FORBIDDEN` if the user doesn't have permission to send the event).
+that happened while sending the event (e.g. HTTP 403
+and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+with an `errcode` of `M_FORBIDDEN` if the user doesn't have permission to send the event).
 
 The primary point of rate limiting is event sending when the delay times out or the event is sent using the `send`
 action. However, homeservers can choose to rate limit the management endpoints themselves as well if necessary.
@@ -335,7 +342,7 @@ https://spec.matrix.org/v1.18/appendices/#threat-high-volume-of-messages) threat
 could schedule a large volume of events ahead of time without exceeding a rate limit on the initial `PUT` request,
 but has specified a `delay` that corresponds to a common point of time in the future.
 
-A limit on the maximum number of delayed events that can be outstanding at one time could also provide some mitigation
+A limit on the maximum number of delayed events that can be scheduled at a time could also provide some mitigation
 against this attack.
 
 ### Guest accounts
