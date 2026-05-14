@@ -103,14 +103,12 @@ text since the creation of the MSC
 ### including the spoilered content in the body, without marker
 
 When the spoiler in the plaintext would just be something like
-`Alice lived happily ever after in the movie.` it could possibly *leak* the
-spoiler in notifications, message previews, or reply-rendering, which is
-generally not wanted.
+`Alice lived happily ever after in the movie.`.
 
 This reflects current client behavior.
- 
+
 A spoilered message sent in Element Web:
-    
+
 ```json
 {
     "msgtype": "m.text",
@@ -125,14 +123,6 @@ A spoilered message sent in Element Web:
 
 An alternative would be inserting `||` around the spoiler (this is how cinny
 does it).
-
-This has significant drawbacks, as it would disregard the possibility of clients
-not implementing the spoiler, and then just showing the spoilered text even when
-unwanted (aka in notifications, message previews and reply headings).
-
-On the other hand, this would allow plain text clients, bots, and bridges (which
-only relay the `body` and don't consider `formatted_body`) to still display the
-spoilered text which this proposal wouldn't.
 
 Example (as sent in cinny):
 
