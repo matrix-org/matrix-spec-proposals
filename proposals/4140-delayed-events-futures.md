@@ -310,11 +310,11 @@ This can be used by clients to display events that have been scheduled to be sen
 For use cases where the existence of a delayed event is also of interest for other room members
 (e.g. self-destructing messages), it is recommended to include this information in the original/affected event itself.
 
+### Homeserver implementation details
+
 #### `delay_id` in `unsigned` event data
 The `delay_id` of a sent delayed event MUST be included in the resulting room event's `unsigned` data
 if, and only if, the client being given the event is authenticated as the event's sender.
-
-### Homeserver implementation details
 
 #### Power levels are evaluated at the point of sending
 
