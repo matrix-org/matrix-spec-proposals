@@ -148,8 +148,8 @@ device should refresh the subscription lifetime without resending already-sent s
 ### Message stream updates
 
 The publisher device sends updates to active subscribers using to-device events of type
-`m.stream.update`. Each update either replaces the transient content being rendered for the
-streamable event or appends text to the current transient content.
+`m.stream.update`. Each update either replaces or appends to the transient `body` being rendered for the
+streamable event.
 
 For such message-like streams, each `m.stream.update` has the following fields:
 
@@ -158,35 +158,35 @@ For such message-like streams, each `m.stream.update` has the following fields:
 * `seq`: Required integer. A monotonically increasing sequence number for this subscriber device's view
   of the stream.
 * `op`: Required string. One of `replace` or `append`.
-* `content`: Required object. The operation payload.
+* `content`: Required object. The operation payload. It has a required string field, `body`.
 
 The `seq` values in `m.stream.update` content are scoped to the stream as delivered from the publisher
 device to a particular subscriber device. They are used for local ordering and deduplication by that
 subscriber device, and must not be treated as globally comparable across subscribers.
 
-For `op: "replace"`, `content` is a complete replacement for the streamable event's content for the
-purpose of rendering the transient draft. It should use the same shape as `m.room.message` content,
-including `msgtype`, `body`, `format`, and `formatted_body` where applicable. Clients should replace the
-entire transient content object with `content`; fields omitted from `content` are removed from the
-transient rendering.
+For `op: "replace"`, clients should replace the current transient `body` with `content.body`.
 
-For `op: "append"`, `content` is a partial update. This MSC only defines append semantics for
-`content.body`, which must be a string. Clients should append it to the current transient `body`.
-Append updates do not update `msgtype`, `format`, `formatted_body`, `m.relates_to`, mentions, or any
-other message content fields. After applying an append update, clients should render the transient
-`body` and ignore any current `formatted_body` until a later replace update supplies one.
-Publishers should send `op: "replace"` when non-`body` fields need to change.
+For `op: "append"`, clients should append `content.body` to the current transient `body`.
+
+Clients should initialize the current transient `body` from the `body` field of the room event
+containing the stream descriptor before applying any stream updates.
+
+Stream updates do not replace the containing event's content and cannot add, remove, or modify
+`m.stream`, `msgtype`, `format`, `formatted_body`, `m.relates_to`, mentions, or any other message
+content fields. After applying a stream update, clients should render the transient `body` and ignore any
+current `formatted_body`.
 
 Clients should ignore updates with a `seq` less than or equal to the latest sequence number already
 applied for that stream. An `op: "replace"` update is always a valid new baseline, even if there was a
-gap before it. If a client receives `op: "append"` without current transient content, or receives
-`op: "append"` after a gap in `seq`, it should stop applying append updates for that stream, discard the
-current transient content, and resubscribe with `resync: true` if the stream is still wanted.
+gap before it. If a client receives `op: "append"` after a gap in `seq`, it should stop applying append
+updates for that stream and resubscribe with `resync: true` if the stream is still wanted. The client may
+continue rendering the last successfully applied transient `body` while waiting for the replacement
+baseline.
 
 When a publisher device accepts a subscription, it should send an `op: "replace"` update containing the
-current complete transient content if the subscription is new or if `resync` is true. It should then
+current complete transient `body` if the subscription is new or if `resync` is true. It should then
 continue sending `op: "append"` updates to that subscriber device as text becomes available, or
-`op: "replace"` updates when a complete replacement is needed.
+`op: "replace"` updates when the transient `body` needs to be replaced.
 
 For each subscriber device, the publisher device should avoid sending another `m.stream.update` while the
 previous update for that subscriber device is still being sent to the publisher's homeserver. While a send
@@ -208,7 +208,6 @@ An `op: "replace"` `m.stream.update` content object is:
   "seq": 1,
   "op": "replace",
   "content": {
-    "msgtype": "m.text",
     "body": "The answer is still being generated."
   }
 }
@@ -229,7 +228,7 @@ An `op: "append"` `m.stream.update` content object is:
 ```
 
 After a `resync: true` subscription, or for a new subscriber, the publisher sends an `op: "replace"`
-update containing the generated content so far:
+update containing the generated `body` so far:
 
 ```json
 {
@@ -238,7 +237,6 @@ update containing the generated content so far:
   "seq": 8,
   "op": "replace",
   "content": {
-    "msgtype": "m.text",
     "body": "The answer is still being generated. Still working."
   }
 }
