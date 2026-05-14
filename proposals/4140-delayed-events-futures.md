@@ -96,8 +96,10 @@ The homeserver MUST NOT send the event before the scheduled time.
 To support batch sending, homeservers MAY add up to 30 seconds to the scheduled send time.
 Note: clients might find that their events are delayed further due to server load and similar conditions.
 
-If the requested delay exceeds the maximum delay defined by the homeserver, the homeserver will respond with HTTP 400,
-a new `M_MAX_DELAY_EXCEEDED` error code, and the maximum allowed delay in milliseconds in a new `max_delay` field.
+The homeserver MAY enforce a maximum allowed delay for delay events.
+If a requested delay exceeds this maximum, the homeserver will respond with HTTP 400
+and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+with an `errcode` of `M_MAX_DELAY_EXCEEDED` and the maximum allowed delay in milliseconds in a `max_delay` field.
 
 For example, the following specifies a maximum delay of 24 hours:
 
@@ -113,10 +115,15 @@ Content-Type: application/json
 ```
 
 The homeserver SHOULD apply rate limiting to the scheduling of delayed events to provide mitigation against the
-[High Volume of Messages](https://spec.matrix.org/v1.18/appendices/#threat-high-volume-of-messages) threat.
+[Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threat.
 
-If the user has too many outstanding delayed events, the homeserver will respond with HTTP 429, the
-`M_LIMIT_EXCEEDED` error code, and a `Retry-After` header whose value is set to the time of/until
+The homeserver SHOULD enforce a limit of how many delayed events a user may have scheduled at once
+to provide mitigation against both the
+[High Volume of Messages](https://spec.matrix.org/v1.18/appendices/#threat-high-volume-of-messages) and
+[Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threats.
+If a user's request to schedule a delayed event would exceed this limit, the homeserver will respond with HTTP 429,
+a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+with an `errcode` of `M_LIMIT_EXCEEDED`, and a `Retry-After` header whose value is set to the time of/until
 the scheduled send time of the next of the user's delayed events to be sent,
 rounded up to the nearest second.
 
@@ -131,19 +138,20 @@ Retry-After: 1200
 }
 ```
 
-### Managing delayed events
+### Managing scheduled delayed events
 
 A set of new unauthenticated Client-Server API endpoints at
 `POST /_matrix/client/v1/delayed_events/{delay_id}/[send|cancel|restart]` allows scheduled events
 to be managed.
 
-The final path component of these endpoints specifies the action to take on the delayed event:
+The final path component of these endpoints specifies the action to take on the scheduled delayed event
+with the specified `delay_id`:
 
-- `send` - Send the delayed event immediately instead of waiting for the delay time to be reached.
+- `send` - Send the delayed event immediately instead of waiting for its scheduled send time.
 - `cancel` - Cancel the delayed event so that it is never sent.
-- `restart` - Reset the send time to be `now + original_delay`.
+- `restart` - Reset the delayed event's scheduled send time to be the current time + its original `delay`.
 
-For example, the following would send the delayed event with delay ID `1234567890` immediately:
+For example, the following would send the delayed event with `delay_id` `1234567890` immediately:
 
 ```http
 POST /_matrix/client/v1/delayed_events/1234567890/send
@@ -153,7 +161,7 @@ Content-Type: application/json
 }
 ```
 
-These endpoints are unauthenticated so that control over a particular delayed event may be
+These endpoints are unauthenticated so that control over a particular scheduled delayed event may be
 [delegated to an external service](#delegating-delayed-events)
 by sharing the target delayed event's `delay_id` with the service.
 
@@ -719,7 +727,7 @@ The following alternative names for this concept are considered:
 ### Don't provide a `send` action
 
 Instead of providing a `send` action for delayed events,
-the client could cancel the outstanding delayed event and send a new non-delayed event instead.
+the client could cancel the scheduled delayed event and send a new non-delayed event instead.
 
 This would simplify the API, but it's less efficient since the client would have to send two requests instead of one.
 
