@@ -458,7 +458,7 @@ There are numerous approaches to solve such a situation. They split into two cat
   - Update the room state every x seconds.
     This allows clients to check how long an event has not been updated and ignore it if it's expired.
   - Use delayed events with a 10s timeout to send the disconnected from call
-    in less then 10s after the user is not anymore pinging the `/delayed_events` endpoint
+    in less then 10s after the user is no longer pinging the `/delayed_events` endpoint
     (or delegate the disconnect action to a service attached to the SFU).
   - Use the client sync loop as a special case timeout for call member events
     (see [Alternatives/MSC4018 (use client sync loop))](#msc4018-use-client-sync-loop)).
@@ -652,7 +652,7 @@ delay at the same time.
 
 For this use case, batch sending of multiple delayed events would be desired.
 
-Batch sending is not included in the proposal of this MSC however since batch sending should
+Batch sending is not included in the proposal of this MSC however, since batch sending should
 become a generic Matrix concept as proposed with `/send_pdus`.
 (see: [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080))
 
@@ -731,9 +731,9 @@ Downsides of this approach that have been considered are that:
 - individual "heartbeats"/restarts would need to distributed via federation, meaning more traffic and processing
   to be done.
 - if any homeservers missed the federated "heartbeat"/restart message, then they might decide that the event is visible
-  to clients whereas
-other homeservers might have received it and come to a different conclusion. If the event was later cancelled then
-resolving the inconsistency feels more complex than if the event was never sent in the first place.
+  to clients whereas other homeservers might have received it and come to a different conclusion.
+  If the event was later cancelled, then resolving the inconsistency feels more complex than if the event was never sent
+  in the first place.
 
 [MSC3277: Scheduled messages](https://github.com/matrix-org/matrix-spec-proposals/pull/3277) proposes a similar feature
 and there is an extensive analysis of the pros and cons of this MSC vs MSC3277
@@ -853,7 +853,7 @@ To avoid this disruption, a special rule for handling delayed state events could
 If a new state event is sent to the same room at the same entry (`event_type`, `state_key` pair) as a delayed event by a
 **different matrix user**, any delayed event for this entry (`event_type`, `state_key` pair) is cancelled.
 
-This only happens if its a state update from a different user. If it is from the same user, the delayed event will not
+This only happens for a state update from a different user. If it is from the same user, the delayed event will not
 get cancelled.
 If the same user is updating the state which has associated delayed events,
 this user is in control of those delayed events.
@@ -917,10 +917,10 @@ As such, generated `delay_id`s MUST be cryptographically random such that they a
 To mitigate the risk of users flooding the delayed events database, homeservers MUST impose limits on the number and
 timeout duration of scheduled delayed events. The exact limits are left as an implementation detail.
 
-It is the homeserver maintainers responsibility to evaluate the best trade-off between what use cases
+It is the homeserver maintainer's responsibility to evaluate the best trade-off between what use cases
 their users have for delayed events for and the resources they are able to provide.
 
-Its the homeserver implementers responsibility to communicate this and educate the homeserver hosters about
+Its the homeserver implementer's responsibility to communicate this and educate the homeserver hosters about
 the trade-offs and potentially give sane example values for those configurations.
 
 As described [above](#power-levels-are-evaluated-at-the-point-of-sending), the homeserver MUST evaluate and enforce the
