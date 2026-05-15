@@ -30,7 +30,7 @@ by the thing they're reporting. Similarly, a (policy) server might reject an eve
 harm.
 
 The identifiers chosen represent the similarities between various safety legislations (UK, Australia,
-Canada, EU, etc) and what other services offer to their users in reporting flows. The identifiers use
+Canada, EU, etc) and what other services offer to their users in reporting flows, especially Bluesky. The identifiers use
 the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.18/appendices/#common-namespaced-identifier-grammar),
 and therefore allow custom harms to be represented. When a proposal uses harm identifiers, it SHOULD
 ensure that custom identifiers are accompanied by a specified identifier for added clarity/compatibility.
