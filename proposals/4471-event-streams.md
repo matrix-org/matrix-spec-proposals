@@ -169,7 +169,8 @@ For `op: "replace"`, clients should replace the current transient `body` with `c
 For `op: "append"`, clients should append `content.body` to the current transient `body`.
 
 Clients should initialize the current transient `body` from the `body` field of the room event
-containing the stream descriptor before applying any stream updates.
+containing the stream descriptor before applying any stream updates. For example, an `op: "append"`
+update with `seq: 1` is valid and appends to the descriptor event's initial `body` value.
 
 Stream updates do not replace the containing event's content and cannot add, remove, or modify
 `m.stream`, `msgtype`, `format`, `formatted_body`, `m.relates_to`, mentions, or any other message
@@ -183,10 +184,12 @@ updates for that stream and resubscribe with `resync: true` if the stream is sti
 continue rendering the last successfully applied transient `body` while waiting for the replacement
 baseline.
 
-When a publisher device accepts a subscription, it should send an `op: "replace"` update containing the
-current complete transient `body` if the subscription is new or if `resync` is true. It should then
-continue sending `op: "append"` updates to that subscriber device as text becomes available, or
-`op: "replace"` updates when the transient `body` needs to be replaced.
+When a publisher device accepts a subscription and has pending transient `body` content beyond the
+descriptor event, it should send either an `op: "append"` update for text beyond the descriptor event's
+`body`, or an `op: "replace"` update containing the current complete transient `body`. If `resync` is
+true, the publisher should send an `op: "replace"` update. It should continue sending `op: "append"`
+updates to that subscriber device as text becomes available, or `op: "replace"` updates when the
+transient `body` needs to be replaced.
 
 For each subscriber device, the publisher device should avoid sending another `m.stream.update` while the
 previous update for that subscriber device is still being sent to the publisher's homeserver. While a send
@@ -227,8 +230,9 @@ An `op: "append"` `m.stream.update` content object is:
 }
 ```
 
-After a `resync: true` subscription, or for a new subscriber, the publisher sends an `op: "replace"`
-update containing the generated `body` so far:
+After a `resync: true` subscription, or when the publisher cannot express the pending transient content
+as an append to the descriptor event's `body`, the publisher sends an `op: "replace"` update containing
+the generated `body` so far:
 
 ```json
 {
@@ -242,7 +246,8 @@ update containing the generated `body` so far:
 }
 ```
 
-Subsequent append updates to that subscriber contain only text not already sent to that subscriber:
+Append updates to that subscriber contain only text not already available to that subscriber from the
+descriptor event or earlier stream updates:
 
 ```json
 {
