@@ -1,4 +1,4 @@
-# MSC4472: Deprecated Room Kind
+# MSC4472: Deprecated Room Version Kind
 
 Currently only `stable` and `unstable` are stability types that can be advertised by servers in the
 `m.room_versions` capability. This proposal introduces `deprecated` as a new kind, which can be used
