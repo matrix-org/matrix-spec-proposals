@@ -412,6 +412,11 @@ https://spec.matrix.org/v1.18/appendices/#threat-high-volume-of-messages) threat
 could schedule a large volume of events ahead of time without exceeding a rate limit on the initial `PUT` request,
 but has specified a `delay` that corresponds to a common point of time in the future.
 
+If a delayed event fails to be sent at its scheduled send time due to a rate limit failure,
+the homeserver SHOULD NOT retry sending the event. Instead, the event will be stored as a finalised delayed event
+with its `error` field set, available to be retrieved by a client for the user who requested the event.
+It then becomes the user's responsibility to fetch this error and retry sending the event as appropriate.
+
 A limit on the maximum number of delayed events that can be scheduled at a time could also provide some mitigation
 against this attack.
 
