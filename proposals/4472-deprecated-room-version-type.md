@@ -1,4 +1,4 @@
-# MSCXXXX: Deprecated Room Kind
+# MSC4472: Deprecated Room Kind
 
 Currently only `stable` and `unstable` are stability types that can be advertised by servers in the
 `m.room_versions` capability. This proposal introduces `deprecated` as a new kind, which can be used
@@ -58,7 +58,7 @@ None.
 
 ## Unstable prefix
 
-While this proposal is unstable, `uk.timedout.mscXXXX.deprecated` should be used in place of
+While this proposal is unstable, `uk.timedout.msc4472.deprecated` should be used in place of
 `deprecated`.
 
 ## Dependencies
