@@ -20,6 +20,11 @@ As for what "deprecation" means in this context, jump to the relevant section:
 - Client developers: [§ For client implementations](#for-client-implementations)
 - Server developers: [§ For server implementations](#for-server-implementations)
 
+NOTE: Unstable room versions based on room versions deprecated by this proposal are *also* subject
+to deprecation. Proposals that use unstable room versions can be updated to use a non-deprecated
+room version with a new unstable prefix, which will allow any rooms using these unstable+deprecated
+rooms to be upgraded to a non-deprecated variant.
+
 ### Justification
 
 The rationale for deprecating pre-v10 rooms can generally be summarised as:
@@ -29,7 +34,7 @@ The rationale for deprecating pre-v10 rooms can generally be summarised as:
   which causes problems for implementations not written in Python (example of a new issue caused by
   this in 2026: <https://github.com/matrix-org/matrix-spec/issues/2314>)
 - Rooms version 5 and below do not enforce
-  [canonical JSON](https://spec.matrix.org/unstable/rooms/v6/#canonical-json), which means
+  [canonical JSON](https://spec.matrix.org/v1.18/rooms/v6/#canonical-json), which means
   interoperability relies on the sender always using canonical JSON first. This also means really
   old rooms may have valid events that are not in canonical form, and new implementations may not
   be able to use these rooms safely.
@@ -75,15 +80,16 @@ point.
 
 ### For server implementations
 
-As part of the deprecations, servers MUST mark supported versions v1 through v9 as *unstable* in the
-`m.room_versions` capability. This will signal to clients that the room version is now deprecated,
-and may allow them to prompt administrators to upgrade the room to a new version.
+As part of the deprecations, servers MUST mark supported versions v1 through v9 as
+*[deprecated][MSC4472]* in the `m.room_versions` capability.
+This will signal to clients that the room version is now deprecated, allowing them to prompt
+administrators to upgrade the room to a new version.
 
 In order to prevent people creating *new* deprecated rooms, the server MUST refuse to create new
 rooms with deprecated room versions with the error code `400 / M_UNSUPPORTED_ROOM_VERSION`. In order
 to disambiguate between an actually unsupported room version vs a deprecated one, the server MAY
 choose to return a different error *message*, such as "this room version is too old". Servers
-MUST NOT allow a configuration that sets their default room version to one below version 10.
+MUST NOT allow a configuration that sets their default room version to a deprecated one.
 
 This same restriction applies to upgrading rooms via the
 `POST /_matrix/client/v3/rooms/{roomId}/upgrade` endpoint: servers MUST refuse to upgrade a room to
@@ -98,11 +104,11 @@ Appservices MUST NOT be allowed to bypass this restriction, no matter how nicely
 
 ### For client implementations
 
-Per the above, as servers will now advertise deprecated room versions as *unstable*, clients SHOULD
-present a prominent notice to users who have the `m.room.tombstone` power level that the room
-version is now unstable, and provide them with the option to upgrade. In order to alleviate some of
-the concerns in [potential issues](#potential-issues), clients SHOULD also provide links to
-resources that explain room upgrades, such as
+Per the above, as servers will now advertise deprecated room versions as *[deprecated][MSC4472]*, 
+clients SHOULD present a prominent notice to users who have the `m.room.tombstone` power level that
+the room version is now deprecated, and provide them with the option to upgrade.
+In order to alleviate some of the concerns in [potential issues](#potential-issues),clients SHOULD
+also provide links to resources that explain room upgrades, such as
 <https://matrix.org/docs/communities/administration/#room-upgrades>, in order to encourage the weary
 to take the leap.
 
@@ -149,4 +155,7 @@ No unstable prefix applies to this proposal.
 
 ## Dependencies
 
-This proposal has no dependencies.
+This proposal depends on [MSC4472: Deprecated room version kind][MSC4472] in order to make a
+distinction between deprecated and unstable rooms.
+
+[MSC4472]: https://github.com/matrix-org/matrix-spec-proposals/pull/4472
