@@ -99,11 +99,17 @@ The harms, their categories, and suggested names are:
 * `m.tos.prohibited` - Prohibited Items (Drugs, Weapons, etc)
 * `m.tos.ban_evasion` - Ban Evasion
 
+**Other**
+
+* `m.other` - Other Concern
 
 ## Implementation considerations
 
 * A reporting dialog using these harms might have a two-tier dropdown: one for the category (spam,
   harassment, etc) and another for the specific harm caused (defaulting to "General/Other").
+
+  * Because `m.other` is the only harm under the "Other" category, a two-tier dropdown might skip the
+    second dropdown for this category.
 
 * Clients should generally aim to keep definitions/titles of the harms brief to be as broadly applicable
   as possible.
