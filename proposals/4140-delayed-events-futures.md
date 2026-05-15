@@ -182,7 +182,7 @@ with an `errcode` of `M_NOT_FOUND`.
 
 On success, the homeserver will respond with HTTP 200
 and a response body of an empty object. A future MSC may define additional keys, such as returning
-the event ID for `send` or the new expected send time for `restart`.
+the event ID for an `action` of `send` or the new expected send time for an `action` of `restart`.
 
 To allow safely retrying requests, the homeserver will respond with success
 if the target delayed event is already finalised with an outcome that matches the `action`, i.e.
@@ -200,8 +200,9 @@ with an `errcode` of `M_UNKNOWN`.
 If the action is `send` and the delayed event is unable to be sent due to an error,
 the homeserver will respond with that error (e.g. HTTP 403
 and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
-with an `errcode` of `M_FORBIDDEN` if the user doesn't have permission to send the event),
-as if the send attempt had been made by the `/send` or `/state` endpoint.
+with an `errcode` of `M_FORBIDDEN` if the user doesn't have permission to send the event at the time of sending,
+or HTTP 429 if the user has exceeded rate limits for sending room events at that time),
+as if the request had been to send the event as a non-delayed event with either the `/send` or `/state` endpoint.
 The homeserver SHOULD keep the delayed event scheduled, to account for the fact that the cause of the error
 may resolve by the time of the delayed event's scheduled send time,
 and to allow retries of the `send` action until then.
@@ -664,7 +665,7 @@ this probably is not a good fit.
 ### Reusing the `send`/`state` endpoints
 
 Instead of creating a new endpoint for scheduling a delayed event,
-the `send` and `state` endpoints could support sending events with a delay,
+the `/send` and `/state` endpoints could support sending events with a delay,
 via an optional query parameter for specifying the desired delay:
 
 `PUT /_matrix/client/v1/rooms/{roomId}/send/{eventType}/{txnId}?delay={delay_ms}`
@@ -793,17 +794,19 @@ The following alternative names for this concept are considered:
 
 ### Don't provide a `send` action
 
-Instead of providing a `send` action for delayed events,
+Instead of providing a `send` management action for scheduled delayed events,
 the client could cancel the scheduled delayed event and send a new non-delayed event instead.
 
 This would simplify the API, but it's less efficient since the client would have to send two requests instead of one.
 
 ### Use `DELETE` HTTP method for `cancel` action
 
-Instead of providing a `cancel` action for delayed events,
-the client could send a `DELETE` request to the same endpoint.
+Instead of providing a `cancel` management action for scheduled delayed events,
+the client could send a `DELETE` request to an endpoint representing a target delayed event.
 
 This feels more elegant, but it doesn't feel like a good suggestion for how the other actions are mapped.
+Also, `DELETE` suggests that the target resource will be truly deleted, but this is at odds with how
+cancelling a delayed event has it retained as a finalised event for later lookup.
 
 ### [Ab]use typing notifications
 
