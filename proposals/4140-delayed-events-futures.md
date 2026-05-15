@@ -48,7 +48,9 @@ The homeserver will automatically send the "hangup" if it does not receive a "he
 The following operations are added to the Client-Server API:
 
 - Schedule an event to be sent at a later time
-- Get a list of delayed events
+- Retrieve details on scheduled and finalised delayed events
+    - A delayed event is said to be "finalised" when it has been sent,
+      or has been cancelled due to user action or an error on the attempt to send the event.
 - Restart the timer of a scheduled delayed event
 - Send a scheduled delayed event immediately
 - Cancel a scheduled delayed event so that it is never sent
@@ -74,7 +76,7 @@ when called by an application service.
 The body for requests to this endpoint is a JSON object containing the following fields:
 
 - `delay` - Required. A positive non-zero number of milliseconds the homeserver should wait before sending the event.
-- `state_key` - Optional. The state key for the event to be sent, if it is to be a state event.
+- `state_key` - The state key for the event to be sent, if it is to be a state event; absent otherwise.
 - `content` - Required. The content of the event to be sent.
 
 The homeserver schedules the event to be sent with the specified delay and responds with an
@@ -227,84 +229,103 @@ timeout can be set to be long (e.g. 6 hours), as the SFU can be expected to not 
 
 ### Getting delayed events
 
-The new authenticated Client-Server API endpoint `GET /_matrix/client/v1/delayed_events` allows clients to get a list of
-all the delayed events owned by the requesting user that
-have been scheduled to send, have been sent, or failed to be sent.
+A set of new authenticated Client-Server API endpoints allows clients to look up
+both scheduled and finalised delayed events owned by the requesting user.
 
-The endpoint accepts a query parameter of `status` with a value of either `"scheduled"` or `"finalised"`
-to filter the response on either delayed events that are scheduled to be sent (`"scheduled"`),
-or ones that have been sent or failed be sent due to cancellation or an error (`"finalised"`).
-Without this parameter, delayed events of all status types are included in the response.
-Requests that set this parameter to an unsupported value will respond with HTTP 400 and `M_UNKNOWN`.
+The homeserver SHOULD apply rate limiting to these endpoints to provide mitigation against the
+[Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threat.
+They most likely require (dependent on the implementation) serialization steps
+and can be used to slow down the homeserver.
 
-The endpoint accepts a query parameter of `delay_id=<delay_id>`
-to filter the response on delayed events with a matching ID.
-This parameter may be specified multiple times to filter on multiple matching IDs.
+#### Getting a single delayed event
+
+The new authenticated Client-Server API endpoint `GET /_matrix/client/v1/delayed_events/{delay_id}` responds with
+details on the delayed event with the specified `delay_id` owned by the requesting user.
+
+If no such delayed event can be found, the homeserver will respond with HTTP 404
+and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+with an `errcode` of `M_NOT_FOUND`.
+
+On success, the homeserver will respond with HTTP 200 and a JSON object containing the following fields:
+
+- `delay_id` - Required. The ID of the delayed event.
+- `room_id` - Required. The ID of the room that the delayed event was scheduled to be sent in.
+- `type` - Required. The event type of the delayed event.
+- `state_key` - The state key of the delayed event if it is a state event; absent otherwise.
+- `delay` - Required. The delay in milliseconds after the point of scheduling that the event is/was to be sent at.
+- `running_since` - Required. The timestamp (as Unix time in milliseconds) when the delayed event was scheduled or
+  last restarted.
+- `content` - Required. The content of the delayed event.
+  This is the body of the original `PUT` request, not a preview of the full event after sending.
+- `error` - Present only for finalised events that were cancelled due to an error.
+  The [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
+  of the error that prevented the delayed event from being sent.
+- `event_id` - The `event_id` this event got in case it was sent.
+- `origin_server_ts` - The timestamp (as Unix time in milliseconds) when the event was finalised;
+  absent if it is still scheduled.
+  Using [timestamp massaging](https://spec.matrix.org/latest/application-service-api/#timestamp-massaging)
+  does not affect the value of this field.
+
+#### Getting a list of delayed events
+
+The new authenticated Client-Server API endpoint `GET /_matrix/client/v1/delayed_events` responds with
+a list of details of delayed events owned by the requesting user.
+
+Delayed events are returned in order of a time-based property which may specified by the `order_by` query parameter:
+- `send_ts` - the intended scheduled send time (`running_since` + `delay`) of the delayed event.
+  This is the ordering used when `order_by` is not specified.
+- `origin_server_ts` - the time when the delayed event was finalised, or its scheduled send time if still scheduled.
+- `running_since` - the time when the delayed event was scheduled or last restarted.
+
+By default, delayed events are returned in increasing chronological order of the value specified by `order_by`.
+To return results in reverse chronological order, the endpoint supports a query parameter of `dir=b`.
+Providing a query parameter of `dir=f` uses the default of increasing chronological order.
 
 The endpoint accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events
 as per the [pagination convention](https://spec.matrix.org/v1.18/appendices/#pagination).
 The homeserver can choose a suitable page size.
 
-The response is a JSON object containing the following fields:
+By default, the first page of results starts from the time the request is made.
+To have the first page start from a different point in time,
+it may be specified in a query parameter of `since_ts`, expressed as a Unix timestamp in milliseconds,
+or as a special-case string of "end" to start from the latest possible results.
 
-- `scheduled` - Required if the request has no `status` parameter, or sets it to `"scheduled"`.
-  An array of objects describing delayed events that have been scheduled to be sent,
-sorted by `running_since + delay` in increasing order (event that will timeout soonest first).
-These objects contain the following fields:
-  - `delay_id` - Required. The ID of the delayed event.
-  - `room_id` - Required. The room ID of the delayed event.
-  - `type` - Required. The event type of the delayed event.
-  - `state_key` - Optional. The state key of the delayed event if it is a state event.
-  - `delay` - Required. The delay in milliseconds before the event is to be sent.
-  - `running_since` - Required. The timestamp (as Unix time in milliseconds) when the delayed event was scheduled or
-    last restarted.
-  - `content` - Required. The content of the delayed event.
-  This is the body of the original `PUT` request, not a preview of the full event after sending.
-- `finalised` - Required if the request has no `status` parameter, or sets it to `"finalised"`.
-  An array of objects describing delayed events that have either been sent, cancelled, or were not sent due to an error,
-  sorted by `origin_server_ts` in decreasing order (latest finalised event first).
-  These objects contain the following fields:
-  - `delayed_event` - Required. Describes the original delayed event in the same format as
-    the items in the `scheduled` array.
-  - `outcome`: `"send"|"cancel"` - Whether the delayed event was sent, or was cancelled by an error or
-    [the management endpoint](#managing-delayed-events) with an `action` of `"cancel"`.
-  - `reason`: `"error"|"action"|"delay"` - What caused the delayed event to become finalised.
-    `"error"` means the delayed event failed to be sent due to an error;
-    `"action"` means it was sent or cancelled by [the management endpoint](#managing-delayed-events); and
-    `"delay"` means it was sent automatically on its scheduled delivery time.
-  - `error` - Optional. A Matrix error (as defined by [Standard error response](
-    https://spec.matrix.org/v1.18/client-server-api/#standard-error-response))
-    to explain why this event failed to be sent.
-  - `event_id` - Optional. The `event_id` this event got in case it was sent.
-  - `origin_server_ts` - Required. The timestamp of when the event was finalised.
-    Using [timestamp massaging](https://spec.matrix.org/latest/application-service-api/#timestamp-massaging)
-    does not affect the value of this field.
-- `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
+By default, all delayed events belonging to the requesting user are returned in the response,
+albeit subject to pagination.
+To filter which delayed events to return, the endpoint accepts any of the following query parameters:
+- `status`: `"scheduled"|"finalised"` - Return only scheduled or finalised delayed events.
+- `room_id` - Return only delayed events that were scheduled to be sent into the room with this ID.
+- `type` - Return only delayed events of the specified event type.
+- `outcome`: `"send"|"cancel"|"error"` - Return only finalised delayed events that were either
+  sent successfully, cancelled by user action, or cancelled by an error.
+- `reason`: `"action"|"delay"` - Return only finalised delayed events that were either
+  sent or cancelled by [the /send or /cancel endpoint](#managing-delayed-events), or
+  remained scheduled until their scheduled send time.
 
-The batch size and the amount of terminated events that stay on the homeserver can be chosen, by the homeserver.
-The recommended values are:
+If any query parameter is set to an unsupported value,
+the homeserver will respond with HTTP 400
+and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+with an `errcode` of `M_INVALID_PARAM`.
 
-- batch size: 10
-- `finalised` retention: 7 days
-- `finalised` max cached events per user: 1000
+On success, the response is HTTP 200 and a JSON object containing the following fields:
 
-There is no guarantee for a client that all events will be available in the
-finalised events list if they exceed the limits of their homeserver.
-Additionally, a homeserver may discard finalised delayed events that have been returned by a
-`GET /_matrix/client/v1/delayed_events?status=finalised` response.
+- `delayed_events` - An array of objects describing delayed events owned by the requesting user
+  that match the filters provided in the request, in the order specified by the `order_by` and `dir` query parameters.
+  These objects contain the same fields as the object returned by
+  [the single-item lookup](#getting-a-single-delayed-event).
+- `next_batch` - A token that be passed into a subsequent call to the endpoint to retrieve the next page of results.
+  Absent if there are is no next page of results.
+- `prev_batch` - A token that be passed into a subsequent call to the endpoint to retrieve the previous page of results.
+  Absent if there are is no previous page of results.
 
-The homeserver SHOULD apply rate limiting to the `finalised` and `scheduled` delayed events `GET` endpoints.
-Both most likely require (dependent on the implementation) serialization steps
-and can be used to slow down the homeserver.
-
-An example for a response to the `GET /_matrix/client/v1/delayed_events?status=scheduled` endpoint:
+An example for a response to the `GET /_matrix/client/v1/delayed_events?dir=b&since_ts=end` endpoint:
 
 ```http
 200 OK
 Content-Type: application/json
 
 {
-  "scheduled": [
+  "delayed_events": [
     {
       "delay_id": "1234567890",
       "room_id": "!roomid:example.com",
@@ -328,6 +349,18 @@ Content-Type: application/json
         "call_id": "",
         ...
       }
+    },
+    {
+      "delay_id": "zyxwvuts",
+      "room_id": "!roomid:example.com",
+      "type": "m.room.message",
+      "delay": 2000,
+      "running_since": 1721732853280,
+      "content":{
+        "body": "Boo!",
+        "msgtype": "m.text"
+      },
+      "event_id": "$xyzyxyz"
     }
   ],
   "next_batch": "b12345"
@@ -340,6 +373,20 @@ This can be used by clients to display events that have been scheduled to be sen
 
 For use cases where the existence of a delayed event is also of interest for other room members
 (e.g. self-destructing messages), it is recommended to include this information in the original/affected event itself.
+
+#### Retention of finalised delayed events
+
+The batch size and the amount of finalised events that stay on the homeserver can be chosen by the homeserver.
+The recommended values are:
+
+- batch size: 10
+- `finalised` retention: 7 days
+- `finalised` max cached events per user: 1000
+
+There is no guarantee for a client that all events will be available in the
+finalised events list if they exceed the limits of their homeserver.
+Additionally, a homeserver MAY discard finalised delayed events that have been returned by a
+`GET /_matrix/client/v1/delayed_events(/{delay_id})?` response.
 
 ### Homeserver implementation details
 
@@ -910,8 +957,8 @@ stable endpoints for sending and managing delayed events.
 
 In the Synapse implementation of this MSC:
 - `GET /_matrix/client/v1/delayed_events` does not yet support query parameters,
-  and returns only scheduled delayed events,
-  under a key of `"delayed_events"` instead of `"scheduled"`.
+  and returns only scheduled delayed events.
+- `GET /_matrix/client/v1/delayed_events/{delay_id}` is not yet implemented.
 - [The management endpoints](#managing-delayed-events) use a single URL for all management actions,
   in the manner described [here](#management-endpoint-action-in-request-body).
 
