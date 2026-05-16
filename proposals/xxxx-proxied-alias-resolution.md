@@ -30,8 +30,8 @@ When this proposal is implemented, [`GET /_matrix/federation/v1/query/directory`
 queried as normal. If the server being queried (receiving server) is the server which owns the
 room alias, it SHOULD [sign the response](https://spec.matrix.org/v1.18/appendices/#signing-json).
 If the server performing the query (sending server) caches room alias resolutions, it SHOULD store
-this signature alongside the response. The sending server MUST verify that the returned signature
-(if any) is valid and in-date at the time of the request, discarding the response if not.
+this signature alongside the response. If a signature is returned, the sending server MUST verify
+it - if it fails, the response is discarded and the server is treated as unavailable.
 
 [fed-1]: https://spec.matrix.org/v1.18/server-server-api/#get_matrixfederationv1querydirectory
 
