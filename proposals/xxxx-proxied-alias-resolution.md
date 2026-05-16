@@ -33,6 +33,8 @@ If the server performing the query (sending server) caches room alias resolution
 this signature alongside the response. The sending server MUST verify that the returned signature
 (if any) is valid and in-date at the time of the request, discarding the response if not.
 
+[fed-1]: https://spec.matrix.org/v1.18/server-server-api/#get_matrixfederationv1querydirectory
+
 If the sending server is unable to reach the room alias server, it MAY attempt to contact other
 trusted servers, such as configured key perspectives/notaries.
 
