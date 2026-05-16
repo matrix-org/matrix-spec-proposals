@@ -17,6 +17,13 @@ means.
 
 ## Proposal
 
+Quick glossary:
+
+- *Authoritative* or *origin*: used to refer to the server which owns the room alias (the server
+  whose name appears in the alias itself)
+- *Receiving server*: the server which is receiving a query request. May or may not be the *origin*.
+- *Sending server*: the server which is sending a query request.
+
 Note: *authoritative* and *origin* server are used interchangeably in this proposal to refer to the
 server which an alias belongs to, i.e. the server name in the alias.
 
@@ -27,63 +34,115 @@ servers, or at least key notary servers. These servers already have an implicitl
 trust.
 
 When this proposal is implemented, [`GET /_matrix/federation/v1/query/directory`][fed-1] should be
-queried as normal. If the server being queried (receiving server) is the server which owns the
-room alias, it SHOULD [sign the response](https://spec.matrix.org/v1.18/appendices/#signing-json).
-If the server performing the query (sending server) caches room alias resolutions, it SHOULD store
-this signature alongside the response. If a signature is returned, the sending server MUST verify
-it - if it fails, the response is discarded and the server is treated as unavailable.
+queried as normal - there are no new query parameters.
 
 [fed-1]: https://spec.matrix.org/v1.18/server-server-api/#get_matrixfederationv1querydirectory
 
+### Signing & Expiry
+
+If the server being queried (receiving server) is the server which owns the
+room alias, it SHOULD [sign the response](https://spec.matrix.org/v1.18/appendices/#signing-json).
+
+When a homeserver signs the query response, it MUST additionally include an `expires_ts` field with
+a unix timestamp (milliseconds) for when servers should consider the response stale, and evict it
+from their cache. So, the updated response body would look like:
+
+```json5
+{
+   "room_id": "!c10y-t1HZB9jgYr9mmaKtMDsS19HXbWRFc6d0bWGVYU",
+   "servers": [
+      "nexy7574.co.uk",
+      // ...
+   ],
+   "expires_ts": 1778969913414,
+   "signatures": {
+      // ...
+   }
+}
+```
+
+If the sending server receives a signed response, it MUST [verify the signature][sig-verify] of the
+origin server (signatures from other servers are ignored). If the signature is forged/corrupt, or
+the key used to sign the response expired before the request was made, the response is discarded,
+and the server should be treated as unreachable.
+
+[sig-verify]: https://spec.matrix.org/v1.18/appendices/#checking-for-a-signature
+
+Furthermore, if the `expires_ts` is in the past, the response is again discarded. The server MAY
+choose to abort further resolution attempts on account of the origin itself being reachable, but
+returning bogus data (the chances of a third-party acquiring a fresh response are low).
+
+Servers MUST NOT ever ret the cached entry past `expires_ts`. Likewise, servers MUST NOT re-use
+a cached response if the key used to sign it itself expires before `expires_ts`, and it cannot
+be refreshed. Servers MAY instead choose the lower of the two timestamps when deciding the cache
+entry's TTL, rather than attempting to re-validate the signature.
+
+If a sending server receives a signed response, it SHOULD store the signature and expiry timestamp,
+as this will allow it to act as a proxy (much like how third party servers can be used to fetch
+signing keys). If the signature and expiry timestamp are not stored, the server can only proxy by
+forwarding the request, as it will be unable to serve from its cache.
+
+### New room alias resolution steps
+
+The sending server MUST first attempt to contact the origin server directly. If the origin server
+responds, and the response passes any applicable checks in [§ Signing & Expiry](#signing--expiry),
+the sending server MUST use that response and cease any further resolution. This additionally means
+sending servers who receive an error response, such as `404 M_NOT_FOUND`, should use that response,
+NOT attempt to query other servers.
+
 If the sending server is unable to reach the room alias server, it MAY attempt to contact other
-trusted servers, such as configured key perspectives/notaries.
+servers it trusts (for example, configured notary servers). The sending server MUST NOT allow its
+clients to define which servers are queried, unlike with room joins & summaries.
 
 Currently, if a homeserver receives a request for an alias which does not belong to it, the request
-is refused, returning an error code. If this proposal is implemented, the behaviour should instead
-be changed to follow the following steps:
+is refused, returning an error code. If this proposal is implemented, the behaviour of queries is
+instead changed to the following:
 
-1. If the alias belongs to the receiving server, return as normal (see above).
-2. If the alias belongs to a different server, attempt to query the alias' origin directly.
-   1. If the alias origin responds, the response is checked for a signature.
-   2. If the response has a valid, in-date signature, the origin's response is returned directly.
-   3. If the response does not have a signature, or the signature is invalid, discard the response
-      and continue.
-3. If the receiving server has a cached entry for the queried alias, AND the signing key used to
-   sign the cached response is still in-date at the time of the incoming request, the server MAY
-   return the cached response.
+1. If the queried room alias is owned by receiving server, return as normal (see above).
+2. If the queried room alias belongs to a different server,
+   the receiving server should attempt to query the room alias origin directly.
+   1. If the room alias origin responds with `404 M_NOT_FOUND`, this is returned to the sending
+      server.
+   2. If the room alias origin responds with a successful response, the response is
+      [checked](#signing--expiry).
+   3. If the response is valid, it is directly returned to the sending server, and the process ends
+      here.
+   4. If the response is invalid, or some other error is returned, discard the response and continue.
+3. If the receiving server has a cached entry for the queried room alias, AND it passes
+   [the same checks](#signing--expiry) at the time of the request, the server MAY
+   return the cached response (see next paragraph).
    1. The sending server MUST verify that the authoritative server signed the response it received,
       discarding it if the signature is missing or corrupt.
-4. Otherwise, resolution is impossible, and `404 M_NOT_FOUND` is returned.
-
-Additionally, servers which cache room alias resolution responses SHOULD respect the
-`Cache-Control` header in the response, if it is present. Servers MUST limit the maximum lifetime
-of a cache entry to that of the signing key which signed the response, even if the `cache-control`
-header indicates it should be stored for longer. For example, if the key expires in 12 hours,
-but the room alias query response indicated it should be stored for 12 hours, the cache should only
-live for 12 hours. If the response indicated it should be stored for 5 minutes, it should be stored
-for 5 minutes, not 12 hours.
+4. Otherwise, resolution is impossible, and `502 M_NOT_FOUND` is returned (see below).
 
 Step 3 specifically qualifies that servers *MAY* return the cached response, because implementations
-may prefer to check that the alias is a canonical alias of a room it is a resident of. Servers may
-choose not to return aliases which they cannot find in canonical alias events,
-however this is up to the receiving server's discretion.
+may prefer to check that the alias is a canonical alias of a room it is a resident of. Servers MAY
+choose not to return aliases which they cannot find in canonical alias events, however this is up to
+the receiving server's discretion.
 
-Servers MUST NOT cache responses from servers other than the room alias' origin. This prevents an
+Servers MUST NOT cache responses from servers other than the authoritative server. This prevents an
 effect where a stale response may be incorrectly "freshened" by a second-degree server, and then
 passed on to a third-degree server, so on. Or visually, in a chain of
 `ORIGIN <- A <- B <- C`, `A` can cache the response from `ORIGIN`, and `A` can return that cached
 response to `B` (see step 3), but `B` *MUST NOT* cache that response. If `C` attempts to query `B`,
 `B` will perform the same steps `A` did, meaning it will always return a fresh response, or a
 not-found error.
+<!-- TODO: ^ Is this still necessary with expires_ts? I think it still seems like a good idea nonetheless -->
 
-Furthermore, servers MUST NOT serve cached responses that lack a signature from the origin. Such
-responses cannot be verified as authentic by any server other than the one that made the query to
-the origin. This also means that servers who do not wish to allow their aliases to be proxied may
-simply avoid signing the response in the first place, even if they support this proposal.
+Since origin servers MAY NOT return signatures, unsigned responses MUST NOT be considered for
+step 3. Both sides of the connection being required to validate the checks at the time of the
+request should prevent this anyway, but this clause is defined specifically to allow servers to
+continue the current behaviour of using these responses with a local cache to reduce the number of
+lookups performed by local users.
 
-Servers MUST NOT allow clients to define vias. Allowing clients to specify which non-authoritative
-servers are queried for a room alias may allow an attacker to inject a malicious response into the
-sending server's cache, which has greater implications for multi-user deployments.
+Servers who receive a `502 M_NOT_FOUND` response MAY continue discovery with another trusted server.
+However, servers who receive a `404 M_NOT_FOUND` MUST terminate discovery, as this means the origin
+server has reported the alias no longer exists. `502` is used to distinguish the *proxy* server not
+being capable of resolving the alias from `404`, meaning the origin reports that the alias no longer
+exists.
+<!-- TODO: Errors aren't typically signed, so this means a malicious proxy server could always
+return 404 to cause a (rather pathetic) denial of service. Maybe the error should be signed? Doesn't
+DNS have something like this with DNSSEC? -->
 
 ## Potential issues
 
@@ -114,7 +173,7 @@ contacted first, the likelihood of a poisoned response is lowered.
 
 If the authoritative server can't be reached, the sending server then queries third parties it
 already implicitly trusts, and at no point is such control handed over to a user
-(who may be malicious).
+(who may be malicious, see below).
 
 Then, each third party must contact the authoritative server before checking its cache. This
 resolves a problem where Alice may not be able to contact Charlie, but can contact Bob, and Bob can
