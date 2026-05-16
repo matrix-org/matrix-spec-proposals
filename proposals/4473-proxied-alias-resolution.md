@@ -1,4 +1,4 @@
-# MSCXXXX: Proxied room alias resolution
+# MSC4473: Proxied room alias resolution
 
 Room aliases provide a way to assign memorable addresses to otherwise random room identifiers. For
 example, `#matrix:matrix.org`. Typically, users will provide aliases to their clients, which the
