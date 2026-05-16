@@ -51,6 +51,8 @@ be changed to follow the following steps:
 3. If the receiving server has a cached entry for the queried alias, AND the signing key used to
    sign the cached response is still in-date at the time of the incoming request, the server MAY
    return the cached response.
+   1. The sending server MUST verify that the authoritative server signed the response it received,
+      discarding it if the signature is missing or corrupt.
 4. Otherwise, resolution is impossible, and `404 M_NOT_FOUND` is returned.
 
 Additionally, servers which cache room alias resolution responses SHOULD respect the
