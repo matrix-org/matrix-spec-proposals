@@ -190,9 +190,14 @@ alias.
 
 ## Unstable prefix
 
-As this change is transparent, no unstable prefix is required. Servers which do not understand this
-proposal will not include `signatures`, which disables proxying, and will return an error response
-if queried for an alias which does not belong to them.
+While this proposal is unstable, `uk.timedout.msc4473` should be used as an unstable prefix for the
+directory route:
+
+| Stable | Unstable |
+| ------ | -------- |
+| `GET /_matrix/federation/v1/query/directory` | `GET /_matrix/federation/unstable/uk.timedout.msc4473/query/directory` |
+
+Once stabilised, the endpoint can be switched back to the already existing endpoint transparently.
 
 ## Dependencies
 
