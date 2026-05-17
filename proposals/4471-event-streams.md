@@ -117,7 +117,6 @@ the subscribing user and the requested subscriber `device_id`. The content of `m
 {
   "room_id": "!room:example.org",
   "event_id": "$event:example.org",
-  "device_id": "DEVICEID",
   "code": "m.unknown_stream",
   "reason": "Unknown or expired stream"
 }
@@ -127,8 +126,6 @@ The fields are:
 
 * `room_id`: Required string. The room containing the stream descriptor.
 * `event_id`: Required string. The event containing the stream descriptor.
-* `device_id`: Required string. The publisher device rejecting the subscription. This must match the
-  descriptor's `device_id`.
 * `code`: Required string. A machine-readable reason for the rejection.
 * `reason`: Optional string. A human-readable reason for debugging. Clients should not rely on this value.
 
