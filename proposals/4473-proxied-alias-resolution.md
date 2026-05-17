@@ -5,7 +5,7 @@ example, `#matrix:matrix.org` is a user-friendly pointer to
 `!L58ME6ufiP49v97UIOBIpvWKEgj4912JmECPuDzlvCI` (at the time of writing).
 Typically, users will provide aliases to their clients, which the client then needs to resolve to a
 room ID for further use. In order to do this, clients will ask the server to resolve the alias for
-them via the [`GET /_matrix/client/v3/directory/room/{roomAlias}][c2s-resolve].
+them via the [`GET /_matrix/client/v3/directory/room/{roomAlias}`][c2s-resolve].
 The user's homeserver will then check its local cache and/or database, but if it cannot find an appropriate result for the
 alias, the server will then contact
 [`GET matrix-federation://{authority}/_matrix/federation/v1/query/directory`][s2s-resolve] to fetch
@@ -153,7 +153,7 @@ Furthermore, if the `expires_ts` is in the past, the response is again discarded
 choose to abort further resolution attempts on account of the origin itself being reachable, but
 returning bogus data (the chances of a third-party acquiring a fresh response are low).
 
-Servers MUST NOT ever ret the cached entry past `expires_ts`. Likewise, servers MUST NOT re-use
+Servers MUST NOT retain the cached entry past `expires_ts`. Likewise, servers MUST NOT re-use
 a cached response if the key used to sign it itself expires before `expires_ts`, and it cannot
 be refreshed. Servers MAY instead choose the lower of the two timestamps when deciding the cache
 entry's TTL, rather than attempting to re-validate the signature.
@@ -284,7 +284,8 @@ directory route:
 | ------ | -------- |
 | `GET /_matrix/federation/v2/query/directory` | `GET /_matrix/federation/unstable/uk.timedout.msc4473/query/directory` |
 
-Once stabilised, the endpoint can be switched back to the already existing endpoint transparently.
+After the proposal is stabilised, servers SHOULD continue to accept requests to the unstable
+endpoint for a period of time, which itself is at the discretion of the implementation.
 
 ## Dependencies
 
