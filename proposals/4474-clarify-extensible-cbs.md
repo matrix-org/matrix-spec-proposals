@@ -1,4 +1,4 @@
-# MSC0000: Clarify usage of content blocks in Extensible Events
+# MSC4474: Clarify usage of content blocks in Extensible Events
 
 [MSC1767](https://github.com/matrix-org/matrix-spec-proposals/pull/1767) defines the basics for "Extensible Events".
 In contrast to previous event definition, this introduces a way to modularly compose Matrix event types,
