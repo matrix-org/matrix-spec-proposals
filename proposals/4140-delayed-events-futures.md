@@ -272,7 +272,7 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
 The new authenticated Client-Server API endpoint `GET /_matrix/client/v1/delayed_events` responds with
 a list of details of delayed events owned by the requesting user.
 
-Delayed events are returned in order of a time-based property which may specified by the `order_by` query parameter:
+Delayed events are returned in order of a time-based property which may be specified by the `order_by` query parameter:
 - `send_ts` - the intended scheduled send time (`running_since` + `delay`) of the delayed event.
   This is the ordering used when `order_by` is not specified.
 - `origin_server_ts` - the time when the delayed event was finalised, or its scheduled send time if still scheduled.
