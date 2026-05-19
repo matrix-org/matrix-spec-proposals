@@ -31,9 +31,7 @@ Managing image packs in dedicated image pack rooms works as before on a technica
 [MSC2545](https://github.com/matrix-org/matrix-spec-proposals/pull/2545). Clients should however present such rooms
 in a different way to the user, e.g. in some dedicated image pack settings screen, rather than in the room list
 dedicated to chat rooms. Since a room may hold multiple image packs, clients may want to refer to image pack rooms as
-"image pack collections" or similar. If clients wish to treat an image pack room equivalent to a single image pack, they should
-refrain from setting any `m.image_pack` state events for non-empty state keys. The state event with an empty state key
-can then be treated as the canonical image pack for the room.
+"image pack collections" or similar.
 
 
 ## Potential issues
