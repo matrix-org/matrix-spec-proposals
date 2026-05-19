@@ -4,13 +4,13 @@ Users need an easy way to send multiple images together with their text message
 to represent them as a gallery in a single message. The same is true for files
 and other attachment types.
 
-Currently, most Matrix clients allow sending only a single file (image)
-together with a text message, which is not sufficient in many cases. Some
-clients provide a composer UI that appears to attach multiple images, but those
-images are actually sent as separate messages.
+Currently, most Matrix clients allow sending only a single file (image) together
+with a text message, which is not sufficient in many cases. Some clients provide
+a composer UI that appears to attach multiple images, but those images are
+actually sent as separate messages.
 
-This proposal describes a convenient and flexible way to attach multiple
-images and other files into a single message using inline MXC links.
+This proposal describes a convenient and flexible way to attach multiple images
+and other files into a single message using inline MXC links.
 
 ## Proposal
 
@@ -48,15 +48,37 @@ server-side changes to use this approach.
 Matrix clients should consider messages with images that reference Matrix media
 via MXC URIs as messages containing an inline gallery.
 
-To display the images in the timeline, clients should use thumbnail-sized
-images and present them as a grid: two per row on narrow screens (for example,
-mobile), with more columns on wider timelines.
+To display the media in the timeline, clients should use media thumbnails from
+the Media API and present them as a grid: two per row on narrow screens (for
+example, mobile), with more columns on wider timelines.
+
+By the click on the media, clients should show a listable gallery of full-sized
+images / videos from the current message. Optionally, they can also allow
+listing images from other messages too.
+
+#### Text-only rendering
+
+Text-only clients should render the message with plaintext links in the square
+brackets displaying the alt text of the link, falling back to the media filename
+(Content-Disposition value), and the media url as the last resort.
+
+#### Fallback for clients without support
+
+Clients, that do not support this feature, will render the message as just a
+text with MXC links to media fiels, that is a sufficient for the fallback.
 
 ### Client-side composing
 
-In the message composer, clients should allow inserting images inline within the
-message text. GUI clients can render these inline as thumbnails; text-based
-clients can use a textual representation of the MXC link.
+In the message composer, clients should allow inserting files (images, videos,
+other files) inline within the message text in the current cursor position.
+
+Files can be pasted by a file chooser, from the clipboard, inserted by drag and
+drop.
+
+GUI clients can render these inline as thumbnails directly in the message
+composer.
+
+Plaintext-based composers can use a textual representation of the MXC link, like GitLab and Github composers do.
 
 ### Server-side link tracking
 
@@ -100,8 +122,8 @@ to the images.
 
 Used in messengers: WhatsApp, Telegram.
 
-If we display the message text above the images, it will be the main body of
-the message, and the attached images will provide additional context.
+If we display the message text above the images, it will be the main body of the
+message, and the attached images will provide additional context.
 
 In this mode, users sometimes want to add individual captions or comments to
 specific images in a gallery, which is not possible today.
@@ -122,10 +144,19 @@ Therefore, this approach appears to be the most flexible and user-friendly.
 There were already several MSCs related to the image galleries and multiple
 media attachments:
 
-- https://github.com/matrix-org/matrix-spec-proposals/pull/2881
-- https://github.com/matrix-org/matrix-spec-proposals/pull/3382
-- https://github.com/matrix-org/matrix-spec-proposals/pull/4274
+- [MSC2881: Message
+  Attachments](https://github.com/matrix-org/matrix-spec-proposals/pull/2881)
 
+- [MSC3382: Inline message
+  Attachments](https://github.com/matrix-org/matrix-spec-proposals/pull/3382)
+
+- [MSC4274: Inline media galleries via
+  msgtypes](https://github.com/matrix-org/matrix-spec-proposals/pull/4274)
+
+But they cover only one type of galleries, and require changes on the server
+side.
+
+This MSC covers all gallery times and requires only changes on the client side.
 
 ## Security considerations
 
