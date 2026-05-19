@@ -100,7 +100,7 @@ The homeserver MUST NOT send the event before the scheduled time.
 To support batch sending, homeservers MAY add up to 30 seconds to the scheduled send time.
 Note: clients might find that their events are delayed further due to server load and similar conditions.
 
-The homeserver MAY enforce a maximum allowed delay for delay events.
+The homeserver MAY enforce a maximum allowed delay for delayed events.
 If a requested delay exceeds this maximum, the homeserver will respond with HTTP 400
 and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
 with an `errcode` of `M_MAX_DELAY_EXCEEDED` and the maximum allowed delay in milliseconds in a `max_delay` field.
