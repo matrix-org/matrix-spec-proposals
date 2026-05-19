@@ -315,10 +315,10 @@ On success, the response is HTTP 200 and a JSON object containing the following 
   that match the filters provided in the request, in the order specified by the `order_by` and `dir` query parameters.
   These objects contain the same fields as the object returned by
   [the single-item lookup](#getting-a-single-delayed-event).
-- `next_batch` - A token that be passed into a subsequent call to the endpoint to retrieve the next page of results.
-  Absent if there are is no next page of results.
-- `prev_batch` - A token that be passed into a subsequent call to the endpoint to retrieve the previous page of results.
-  Absent if there are is no previous page of results.
+- `next_batch` - A token that can be passed into a subsequent call to the endpoint to retrieve the next page of results.
+  Absent if paginating backwards or when there is no next page of results.
+- `prev_batch` - A token that can be passed into a subsequent call to the endpoint to retrieve the previous page of results.
+  Absent if paginating forward or when there is no previous page of results.
 
 An example for a response to the `GET /_matrix/client/v1/delayed_events?dir=b&since_ts=end` endpoint:
 
