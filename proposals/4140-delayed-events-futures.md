@@ -784,10 +784,11 @@ resource limits.
 
 The following alternative names for this concept are considered:
 
-- Future
-- DelayedEvents
-- PostponedEvents
-- LastWill
+- Futures: Doesn't seem like a good match because the result of the API call cannot be "awaited" as you
+  would normally `await` a future in various programming languages.
+- Postponed Events: Similar to "delayed events" but longer.
+- Last Will: Seems unfitting because the feature can be used regardless of whether the client goes offline
+  or not. The term also feels somewhat dark.
 
 ### Don't provide a `send` action
 
