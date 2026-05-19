@@ -418,9 +418,6 @@ the homeserver SHOULD NOT retry sending the event. Instead, the event will be st
 with its `error` field set, available to be retrieved by a client for the user who requested the event.
 It then becomes the user's responsibility to fetch this error and retry sending the event as appropriate.
 
-A limit on the maximum number of delayed events that can be scheduled at a time could also provide some mitigation
-against this attack.
-
 ### Guest accounts
 
 All delayed event related endpoints are available to guest accounts.
