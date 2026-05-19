@@ -389,7 +389,7 @@ finalised events list if they exceed the limits of their homeserver.
 Additionally, a homeserver MAY discard finalised delayed events that have been returned by a
 `GET /_matrix/client/v1/delayed_events(/{delay_id})?` response.
 
-### Homeserver implementation details
+### Additional homeserver behaviour
 
 #### `delay_id` in `unsigned` event data
 The `delay_id` of a sent delayed event MUST be included in the resulting room event's `unsigned` data
