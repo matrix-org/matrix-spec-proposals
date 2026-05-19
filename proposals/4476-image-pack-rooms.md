@@ -1,4 +1,4 @@
-# MSC0000: Image pack rooms
+# MSC4476: Image pack rooms
 
 [MSC2545](https://github.com/matrix-org/matrix-spec-proposals/pull/2545) introduced image packs for storing stickers and
 custom emojis in room state. While packs can be enabled globally via `m.image_pack.rooms` account data, there is
