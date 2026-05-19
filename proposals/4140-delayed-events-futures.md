@@ -382,8 +382,7 @@ The batch size and the amount of finalised events that stay on the homeserver ca
 The recommended values are:
 
 - batch size: 10
-- `finalised` retention: 7 days
-- `finalised` max cached events per user: 1000
+- `finalised` retention: up to 7 days or 1000 events per user, whichever occurs first
 
 There is no guarantee for a client that all events will be available in the
 finalised events list if they exceed the limits of their homeserver.
