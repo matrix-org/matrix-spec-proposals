@@ -73,7 +73,8 @@ A server may decide to "expire" connections, either to free resources or because
 for the client to start from scratch (e.g. because there are many updates to send down). This is done by responding with
 a 400 HTTP status and an error code of `M_UNKNOWN_POS`.
 
-A `pos` token can be used in `/messages` and `/relations` APIs.
+A `pos` token can be used in `/messages` and `/relations` APIs, in the same way as a `next_batch` from `/v3/sync`
+response.
 
 
 ## Lists and subscriptions
