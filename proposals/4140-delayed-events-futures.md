@@ -102,7 +102,7 @@ Note: clients might find that their events are delayed further due to server loa
 
 The homeserver MAY enforce a maximum allowed delay for delayed events.
 If a requested delay exceeds this maximum, the homeserver will respond with HTTP 400
-and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
 with an `errcode` of `M_MAX_DELAY_EXCEEDED` and the maximum allowed delay in milliseconds in a `max_delay` field.
 
 For example, the following specifies a maximum delay of 24 hours:
