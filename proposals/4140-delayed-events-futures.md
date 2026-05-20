@@ -853,15 +853,6 @@ Once the MSC is accepted, but before the homeserver advertises the spec version 
 should advertise `org.matrix.msc4140.stable` as an unstable feature flag to let clients know that they can use the
 stable endpoints for sending and managing delayed events.
 
-### Implementation differences
-
-In the Synapse implementation of this MSC:
-- `GET /_matrix/client/v1/delayed_events` does not yet support query parameters,
-  and returns only scheduled delayed events.
-- `GET /_matrix/client/v1/delayed_events/{delay_id}` is not yet implemented.
-- [The management endpoints](#managing-delayed-events) use a single URL for all management actions,
-  in the manner described [here](#management-endpoint-action-in-request-body).
-
 ## Dependencies
 
 None.
