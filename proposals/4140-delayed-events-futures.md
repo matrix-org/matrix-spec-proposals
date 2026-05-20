@@ -598,6 +598,17 @@ Both are reasonable data points that clients might want to use.
 This would solve issues related to delayed events since
 it would make it transparent to clients, when an event was scheduled and when it was distributed over federation.
 
+### Conflicting delayed state events
+
+A delayed state event can overwrite other state events that were sent in between the delayed event
+being scheduled and it being sent. Whether or not this is problematic strongly depends on the
+use case, though. When the overwrite is undesired, a possible remedy could be to cancel the scheduled
+delayed event when a conflicting new state event is sent into the room. Alternatively, it might be
+possible to avoid the conflict in the first place by using separate `state_key`s or by not relying on
+state events to begin with. Additionally, this type of race condition can also happen without delayed
+events due to federation delay. Potentially addressing this situation is, therefore, left to a future
+proposal.
+
 ## Alternatives
 
 ### OAuth 2.0 scope for management endpoints
@@ -785,73 +796,6 @@ Some alternatives for the `running_since` field on the `GET` response are:
 Currently, clients have to fetch the delayed event info after the timeout to find an error in case the event failed.
 We could instead define a new method to push failed delayed events down `/sync` to the sender. However, this could be
 complicated and it's not clear whether clients actually need immediate notifications about failed delayed events.
-
-### Cancelling delayed state events by a more recent state event
-
-There may be use cases that depend on delayed state events, which may be disrupted by
-changes made to the same piece of state that a scheduled delayed state event would set.
-To avoid this disruption, a special rule for handling delayed state events could be implemented:
-
-> A delayed event `D` gets cancelled if:
->
-> - `D` is a state event with key `k` and type `t` from sender `s`.
-> - A new state event `N` with type `t` and key `k` is sent into the room.
-> - The sender of `D` is different to the sender `N`.
-
-If a new state event is sent to the same room at the same entry (`event_type`, `state_key` pair) as a delayed event by a
-**different matrix user**, any delayed event for this entry (`event_type`, `state_key` pair) is cancelled.
-
-This only happens for a state update from a different user. If it is from the same user, the delayed event will not
-get cancelled.
-If the same user is updating the state which has associated delayed events,
-this user is in control of those delayed events.
-They can just cancel and check the events manually using the `GET /delayed_events` endpoint.
-
-In the case where the delayed event gets cancelled due to a different user updating the same state, there
-is no race condition here since a possible race between timeout and the _new state event_ will always converge to
-the _new state event_:
-
-- timeout for _delayed event_ followed by _new state event_:
-  the room state will be updated twice:
-  once by the content of the delayed event but later with the content of _new state event_.
-- _new state event_ followed by timeout for _delayed event_:
-  the _new state event_ will cancel the outstanding _delayed event_.
-
-The finalised delayed event as represented by the finalised list of the GET endpoint
-(See:[Getting delayed events](#getting-delayed-events)) will be stored with the following outcome:
-
-```json
-"outcome": "cancel",
-"reason": "error",
-"error": {
-  "errcode": "M_CANCELLED_BY_STATE_UPDATE",
-  "error":"The delayed event did not get sent because a different user updated the same state event.
-  So the scheduled event might change it in an undesired way."
-}
-```
-
-Whilst the MSC is in the proposal stage,
-The `M_UNKNOWN` `errcode` should be used instead of `M_CANCELLED_BY_STATE_UPDATE` as follows:
-
-```json
-"outcome": "cancel",
-"reason": "error",
-"error": {
-  "errcode": "M_UNKNOWN",
-  "org.matrix.msc4140.errcode": "M_CANCELLED_BY_STATE_UPDATE",
-  "error":"The delayed event did not get sent because a different user updated the same state event.
-  So the scheduled event might change it in an undesired way."
-}
-```
-
-Note that this behaviour does not apply to regular (non-state) events as there is no concept of a
-(`event_type`, `state_key`) pair that could be overwritten.
-
-This rule is proposed as alternative because there is presently no use case that relies on delayed state events.
-An earlier revision of MatrixRTC used delayed state events for call membership and relied on this rule to prevent
-race conditions, but it has since migrated to using [Sticky Events](
-https://github.com/matrix-org/matrix-spec-proposals/pull/4354) instead of state events for this,
-and thus no longer needs this rule.
 
 ## Security considerations
 
