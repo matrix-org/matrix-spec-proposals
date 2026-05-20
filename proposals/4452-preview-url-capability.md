@@ -1,6 +1,6 @@
 # MSC4452: Preview URL capabilities API
 
-It's possible for server-side implementations to want to disallow users the [GET /_matrix/client/v1/media/preview_url](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv1mediapreview_url) endpoint. This is often done to either reduce excess
+It's possible for server-side implementations to want to disallow users the [GET /_matrix/client/v1/media/preview_url](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1mediapreview_url) endpoint. This is often done to either reduce excess
 load on servers, for security reasons to avoid metadata leakage, or safety to prevent a
 homeserver from querying potentially untrusted services.
 
