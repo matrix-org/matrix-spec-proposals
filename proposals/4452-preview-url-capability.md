@@ -9,7 +9,7 @@ capabilities API.
 
 ## Proposal
 
-The [GET /_matrix/client/v3/capabilities](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3capabilities)
+The [GET /_matrix/client/v3/capabilities](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3capabilities)
 will include a new capability key, `m.preview_url` containing a single `enabled` flag.
 
 ```json
