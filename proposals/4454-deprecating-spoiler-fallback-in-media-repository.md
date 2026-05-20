@@ -25,6 +25,8 @@ suggesting uploading spoilered text unencrypted to the media repository.
 This proposal removes those recommendations on how clients should set the `body`
 for spoilered messages.
 
+This proposal does not affect `formatted_body`.
+
 ## Potential issues
 
 Inconsistent behavior between clients.
@@ -33,10 +35,7 @@ Inconsistent behavior between clients.
 
 ### Including the spoilered content in the body (without marker)
 
-When the spoiler in the plaintext is a short sentence such as
-`Alice lived happily ever after in the movie.`.
-
-This reflects current client behavior.
+This reflects current client (Element Web) behavior.
 
 A spoilered message sent in Element Web:
 
