@@ -81,7 +81,7 @@ Example (Cinny style):
 }
 ```
 
-## Summary
+### Summary
 
 This proposal intentionally removes prescriptive guidance so that clients are
 free to choose an approach that balances compatibility and privacy. All of the
