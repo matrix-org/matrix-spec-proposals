@@ -55,8 +55,7 @@ The following operations are added to the Client-Server API:
 - Send a scheduled delayed event immediately
 - Cancel a scheduled delayed event so that it is never sent
 
-At the point of an event being scheduled, the homeserver is
-[unable to allocate the event ID](#allocating-the-event-id-at-the-point-of-scheduling-the-send).
+At the point of an event being scheduled, the homeserver is unable to allocate the event ID[^eventId].
 Instead, the homeserver allocates a `delay_id` to the scheduled event which is used during the above API operations.
 
 ### Scheduling a delayed event
@@ -678,25 +677,14 @@ However, this could be negated by the complexity of having to support multiple r
 This approach also requires using a query parameter for a purpose other than filtering,
 which defies the usual semantics of a URI query.
 
-### Allocating the event ID at the point of scheduling the send
-
-This was considered, but when sending a delayed event the `event_id` is not yet available:
-
-The Matrix spec says that the `event_id` must use the [reference hash](
-https://spec.matrix.org/v1.18/rooms/v11/#event-ids) which is [calculated from the fields](
-https://spec.matrix.org/v1.18/server-server-api/#calculating-the-reference-hash-for-an-event)
-of an event including the `origin_server_ts` as defined in [this list](
-https://spec.matrix.org/v1.18/rooms/v11/#client-considerations).
-
-Since the `origin_server_ts` may change due to re-scheduling the event's send time, the event ID cannot be relied upon
-as it would also change.
-
 ### MSC4018 (use client sync loop)
 
 [MSC4018: Reliable call membership](https://github.com/matrix-org/matrix-spec-proposals/pull/4018) also
 proposes a way to make call memberships reliable. It uses the client sync loop as
 an indicator to determine if the event is expired, instead of letting the SFU
 inform about the call termination or using the call app ping/refresh loop as proposed earlier in this MSC.
+Conceptually, this is similar to [MQTT](https://mqtt.org/)'s "Will Message" that is published by the server
+when a client disconnects.
 
 The advantage is that this does not require introducing a new ping system
 (as is proposed here by using the `/delayed_events/{delay_id}/restart` endpoint).
@@ -743,32 +731,8 @@ disconnect and the delayed message still will enter non-soft-failed state (will 
 However, for the MatrixRTC use case it's required to be able to modify the event after it has been scheduled. As such,
 this approach has been discounted.
 
-### MQTT style Last Will
-
-[MQTT](https://mqtt.org/) has the concept of a Will Message that is published by the server when a client disconnects.
-
-The client can set a Will Message when it connects to the server.
-If the client disconnects unexpectedly, the server will
-publish the Will Message if the client is not back online within a specified time.
-
-A similar concept could be applied to Matrix by having the client specify a set of "Last Will" events and have the
-homeserver trigger them if the client (possibly identified by device ID) does not send an API request within a specified
-time.
-
-The main differentiator is that this type of approach might use the sync loop as the "heartbeat" equivalent similar to
-[MSC4018](https://github.com/matrix-org/matrix-spec-proposals/pull/4018).
-
-A benefit compared to this proposal is that theoretically there would be no additional network traffic overhead.
-
-Some complications are:
-
-- in order to avoid additional network traffic, the homeserver would need to proactively realise that a connection
-  has dropped. Depending on the network/load balancer stack this might be problematic.
-- as an alternative, the client could reduce the long poll timeout (from a typical 30s down to, say, 5s) which would
-  result in a traffic increase.
-- As syncing is a per-client concept, the MatrixRTC app has to either run in the same process as the client so that a
-  MatrixRTC app failure triggers the client Last Will or the client has to observe the MatrixRTC app and simulate the
-  Last Will if the MatrixRTC app fails.
+The considerations above apply irrespective of whether delayed events are federated directly
+or though other means such as by (ab)using typing notification EDUs.
 
 ### `M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`
 
@@ -805,20 +769,6 @@ the client could send a `DELETE` request to an endpoint representing a target de
 This feels more elegant, but it doesn't feel like a good suggestion for how the other actions are mapped.
 Also, `DELETE` suggests that the target resource will be truly deleted, but this is at odds with how
 cancelling a delayed event has it retained as a finalised event for later lookup.
-
-### [Ab]use typing notifications
-
-Some exploration of using typing notifications to indicate that a user is still connected to a call was done.
-
-The idea of extending [MSC3038: Typed typing notifications](
-https://github.com/matrix-org/matrix-spec-proposals/pull/3038) to allow for additional meta data
-(like device ID and call ID) was considered.
-
-A perceived benefit was that if the delay events were federated, then the typing notification EDUs might provide an
-efficient transport.
-
-However, as the conclusion was to [not federate the delayed events](#federated-delayed-events), this approach was
-discounted in favour of a dedicated endpoint.
 
 ### Alternative to `running_since` field
 
@@ -971,3 +921,9 @@ In the Synapse implementation of this MSC:
 ## Dependencies
 
 None.
+
+[^eventId]: An event's ID is computed from its [reference hash](https://spec.matrix.org/v1.18/rooms/v11/#event-ids)
+which is obtained by combining several event properties including `origin_server_ts`. The latter is
+only available once the event has actually been sent, however. Since scheduled delayed events may be
+cancelled or re-scheduled, the `origin_server_ts` and, thus, the event ID cannot be determined ahead
+of time.
