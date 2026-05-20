@@ -1,47 +1,30 @@
 # MSC4140: Cancellable delayed events
 
-This MSC proposes a mechanism by which a Matrix client can schedule an event to be sent into a room at a later time.
+Scheduling messages to be sent at a defined later time is a feature present on a number of other
+messaging platforms such as [Teams] or [Telegram]. This mechanism has a wide range of possible
+applications such as tea timers, reminders, self-destructing messages (where the redaction is
+scheduled to be sent later), or other ephemeral events such as temporary power level changes.
 
-The client does not have to be running or in contact with the homeserver at the time that the event is actually sent.
+[Teams]: https://support.microsoft.com/en-us/office/schedule-chat-messages-in-microsoft-teams-2fc5ea77-7bb4-4511-8f59-e62bac1c0f6a
+[Telegram]: https://telegram.org/blog/scheduled-reminders-themes
 
-Once the event has been scheduled, the user's homeserver is responsible for actually sending the event at the
-appropriate time and then distributing it as normal via federation.
+Another possible use case are reliable "hang up" events in VoIP calls. [MSC4143], for instance,
+communicates call membership through timeline events. Leaving a call requires sending a new
+event. The leaving client may not be able to send this event on its own, however, as it may lose
+connectivity due to network issues or because the application was shutdown unexpectedly.
+In this situation it would be helpful, if the client could schedule its "hang up" event to be
+sent by the server at a defined later time. While the client is still connected and in the call,
+it could repeatedly push the scheduled time forward as a kind of "heartbeat" mechanism. If the
+client then loses connectivity, the server would emit the "hang up" event at the scheduled time
+resulting in reliable call membership status for other participants.
 
-## Background and motivation
+This proposal caters to the use cases described above and introduces a mechanism by which a
+Matrix client can schedule "delayed events" which will be sent into a room at a later time by
+the homeserver. This includes APIs for scheduling delayed events and managing scheduled delayed
+events as well as a way to delegate the management of a delayed event to external services such as
+[Selective Forwarding Units (SFUs)].
 
-This proposal originates from the needs of VoIP signalling in Matrix:
-
-The Client-Server API currently has a [Voice over IP module](
-https://spec.matrix.org/v1.18/client-server-api/#voice-over-ip)
-that uses room messages to communicate the call state. However, it only allows for calls with two participants.
-
-[MSC3401: Native Group VoIP Signalling](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) proposes a scheme
-that allows for more than two participants by using room state events.
-
-In this arrangement each device signals its participant in a call by sending a state event that represents the device's
-"membership" of a call. Once the device is no longer in the call, it sends a new state event to update the call state
-and communicate that the device is no longer a member.
-
-This works well when the client is running and can send the state events as needed. However, if the client is not able
-to communicate with the homeserver (e.g. the user closes the app or loses connection) the call state is not updated to
-say that the participant has left.
-
-The motivation for this MSC is to allow updating call membership events after the user disconnected by allowing to
-schedule/delay/timeout/expire events in a generic way.
-
-[MSC4143: MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) has more details on the use case.
-
-There are numerous possible solutions to solve the call membership expiration. They are covered in detail
-in the [use case specific considerations/MatrixRTC](#matrixrtc) section, because they are not part
-of this proposal.
-
-This proposal enables a Matrix client to schedule a "hangup" event to be sent after a specified time period.
-The client can then periodically restart the timer whilst it is running. If the client is no longer running or able to
-communicate, then the timer would expire and the homeserver would send the "hangup" event on behalf of the client.
-
-Such an arrangement can also be described as a "heartbeat" mechanism. The client sends a "heartbeat" to the homeserver
-in the form of a "restart" of the delayed event to keep the call "alive".
-The homeserver will automatically send the "hangup" if it does not receive a "heartbeat".
+[Selective Forwarding Units (SFUs)]: https://trueconf.com/blog/wiki/sfu
 
 ## Proposal
 
@@ -422,153 +405,6 @@ It then becomes the user's responsibility to fetch this error and retry sending 
 
 All delayed event related endpoints are available to guest accounts.
 This allows guest accounts to participate in MatrixRTC sessions.
-
-## Use case specific considerations
-
-Delayed events can be used for many different features: tea timers, reminders, or ephemeral events could be implemented
-using delayed events, where clients send room events with
-intentional mentions or a redaction as a delayed event.
-It can even be used to send temporal power levels/mutes or bans.
-
-### MatrixRTC
-
-In this section, an overview is given how this MSC is used in [MSC4143: MatrixRTC](
-https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
-and alternative expiration systems are evaluated.
-
-#### Background
-
-MatrixRTC makes it necessary to have real time information about the current MatrixRTC session.
-To properly display room tiles and header in the room list (or compute a list of ongoing calls), it's required to know:
-
-- If there is a running session.
-- What type that session has.
-- Who and how many people are currently participating.
-
-A particular delicate situation is that clients are not able to inform others if they lose connection.
-There are numerous approaches to solve such a situation. They split into two categories:
-
-- Polling based
-  - Ask the users if they are still connected.
-  - Ask an RTC backend (SFU) who is connected.
-- Timeout based
-  - Update the room state every x seconds.
-    This allows clients to check how long an event has not been updated and ignore it if it's expired.
-  - Use delayed events with a 10s timeout to send the disconnected from call
-    in less then 10s after the user is no longer pinging the `/delayed_events` endpoint
-    (or delegate the disconnect action to a service attached to the SFU).
-  - Use the client sync loop as a special case timeout for call member events
-    (see [Alternatives/MSC4018 (use client sync loop))](#msc4018-use-client-sync-loop)).
-
-Polling based solutions have a large overhead in complexity and network requests on the clients.
-For example:
-
-> A room list with 100 rooms where there has been a call before in every room
-> (or there is an ongoing call) would require the client to send a to-device message
-> (or a request to the SFU) to every user that has an active state event to check if
-> they are still online. All this is just to display the room tile properly.
-
-For displaying the room list, timeout based approaches are much more reasonable because they allow computing MatrixRTC
-metadata for a room to be synchronous.
-
-The current solution updates the room state every X minutes.
-This is not elegant since room state gets repeatedly sent with the same content.
-In large calls, this could result in high traffic and increase the size of the room DAG.
-
-A call with 100 call members implies 100 state events every X minutes. X cannot be a
-long duration because
-it is the duration after which the event can be considered expired. Improper
-disconnects would result in the user being displayed as "still in the call" for
-X minutes (which should be as short as possible).
-
-Additionally, this approach requires perfect server client time synchronization to compute the expiration.
-This is currently not possible over federation since `unsigned.age` is not available over federation.
-
-#### How this MSC would be used for MatrixRTC
-
-With this proposal, the client can use delayed events to implement a "heartbeat" mechanism.
-
-On joining the call, the client sends a "join" state event as normal to indicate that it is participating:
-
-```http
-PUT /_matrix/client/v3/rooms/!wherever:example.com/state/m.rtc.member/@someone:example.com
-Content-Type: application/json
-
-{
-  "application": "m.call",
-  "call_id": "",
-  ...
-}
-```
-
-Before sending the join event, it also schedules a delayed "hangup" state event with `delay` of around 5-20 seconds that
-marks the end of its participation:
-
-```http
-PUT /_matrix/client/v3/rooms/!wherever:example.com/delayed_event/m.rtc.member/txn0
-Content-Type: application/json
-
-{
-  "delay": 10000,
-  "state_key": "@someone:example.com",
-  "content": {
-    "application": "m.call",
-    "call_id": "",
-    ...
-  }
-}
-```
-
-Let's say the homeserver returns a `delay_id` of `1234567890`.
-
-The client then periodically sends a "heartbeat" in the form of a "restart" of the delayed "hangup" state event to keep
-the call membership "alive".
-
-For example it could make the request every 5 seconds (or some other period less than the `delay`):
-
-```http
-POST /_matrix/client/v1/delayed_events/1234567890/restart
-Content-Type: application/json
-
-{
-}
-```
-
-This would have the effect that if the homeserver does not receive a "heartbeat" from the client for 10 seconds, then
-it will automatically send the "hangup" state event for the client.
-
-Since the delayed event is sent first, a client can guarantee (at the time they are sending
-the join event) that it will eventually leave.
-
-### Self-destructing messages
-
-This MSC also allows an implementation of "self-destructing" messages using redaction:
-
-First send (or generate the PDU when
-[MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080)
-is available):
-`PUT /_matrix/client/v3/rooms/{roomId}/send/m.room.message/{txnId}`
-
-```jsonc
-{
-  "msgtype": "m.text",
-  "body": "this message will self-redact in 10 minutes"
-}
-```
-
-then send:
-`PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/m.room.redaction/{txnId}`
-
-```jsonc
-{
-  "delay": 600000,
-  "content": {
-    "redacts": "{event_id}"
-  }
-}
-```
-
-This would redact the message with content: `"m.text": "my msg"` after 10 minutes.
 
 ## Potential issues
 
