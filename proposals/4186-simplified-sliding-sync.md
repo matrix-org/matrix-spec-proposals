@@ -174,8 +174,9 @@ before being applied.
 The fields are combined by taking the "superset", i.e.:
 - `timeline_limit` — take the maximum timeline limit across all room configs.
 - `required_state` — take the union of the required state fields, i.e. if a state event would be returned by any room
-  config it is returned by the combined room config. The combined config has `lazy_members` set to true if and only if
-  any of the configs have `lazy_members` set to true.
+  config it is returned by the combined room config. This means that the combined config has `lazy_members` set to true
+  if and only if a) any of the configs have `lazy_members` set to true AND b) no config which have `lazy_members`
+  disabled return all membership events.
 
 
 ### Changing room configs
@@ -325,6 +326,20 @@ the server will return the membership events for:
    Note that the fact that membership updates are *not* necessarily sent when `limited` is true means that clients must
    flush any "membership" cache when `limited` is true. This is in contrast to Synapse's implementation of lazy-loading
    in `/v3/sync`.
+
+If the client wants to always include a specific set of users, they can add a specific entry to the `include` list,
+like:
+
+```jsonc
+    {
+        "required_state": {
+            "include": [{}, {"type":"m.room.member", "state_key":"@user:id"}],
+            "lazy_members": true
+        }
+    }
+```
+
+This can be used to always include the user's own `membership event.
 
 
 > [!Note]
