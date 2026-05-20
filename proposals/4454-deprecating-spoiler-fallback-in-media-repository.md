@@ -1,9 +1,8 @@
 # MSC4454: Deprecating Spoiler Fallback In Media Repository
 
-This MSC proposes removing specification language describing unused client
-behaviour for spoiler fallbacks, which is ambiguous and could be interpreted as
-encouraging plaintext storage of spoilered content in End-to-end encryption
-contexts.
+This MSC removes specification text that describes unused client behavior for
+spoiler fallbacks, since it is ambiguous and could be interpreted as encouraging
+plaintext storage of spoilered content in end-to-end encrypted contexts.
 
 This proposal prioritizes preventing unintended disclosure of spoilered content
 over preserving plaintext fidelity.
@@ -17,92 +16,24 @@ reads that a client should provide a plaintext (`body`) of
 spoilered.
 
 This behavior is not implemented by known clients and represents unnecessary
-specification complexity. It isn't a good idea to have this in the Spec,
-especially considering that if a client were to implement that it would lead to
-leaking message text, when spoilering a message in a E2EE message. The current
-spec text doesn't specify how to handle spoilers in E2EE rooms, and could be
-read as suggesting uploading the spoilered text unencrypted to the media
-repository.
+specification complexity. It is not appropriate to keep this text in the spec,
+because a client implementing it could leak message text when sending spoilered
+content in an end-to-end encrypted (E2EE) room. The current spec does not
+specify how spoilers should be handled in E2EE rooms and could be read as
+suggesting uploading spoilered text unencrypted to the media repository.
 
-So the proposal is removing that possibility in favor of just putting a
-`Alice [Spoiler](lived happily ever after) in the movie.` in the `body`.
-
-So instead of
-
-```json
-{
-  "msgtype": "m.text",
-  "format": "org.matrix.custom.html",
-  "body": "Alice [Spoiler](mxc://example.org/abc123) in the movie.",
-  "formatted_body": "Alice <span data-mx-spoiler>lived happily ever after</span> in the movie."
-}
-```
-
-we would send
-
-```json
-{
-  "msgtype": "m.text",
-  "format": "org.matrix.custom.html",
-  "body": "Alice [Spoiler](lived happily ever after) in the movie.",
-  "formatted_body": "Alice <span data-mx-spoiler>lived happily ever after</span> in the movie."
-}
-```
-
-If a reason is supplied we would send
-
-```json
-{
-  "msgtype": "m.text",
-  "format": "org.matrix.custom.html",
-  "body": "Alice [Spoiler for health of Alice](lived happily ever after) in the movie.",
-  "formatted_body": "Alice <span data-mx-spoiler='health of alice'>lived happily ever after</span> in the movie."
-}
-```
-
-instead of:
-
-```json
-{
-  "msgtype": "m.text",
-  "format": "org.matrix.custom.html",
-  "body": "Alice [Spoiler for health of Alice](mxc://example.org/abc123) in the movie.",
-  "formatted_body": "Alice <span data-mx-spoiler='health of alice'>lived happily ever after</span> in the movie."
-}
-```
-
-
-Clients generating messages with spoilers:
-
-- MAY NOT include spoilered content in the `body` field
-- SHOULD wrap the spoilered text in `[Spoiler](spoilered text goes here)`
-- if a reason is supplied the spoilered text SHOULD be wrapped like
-  `[Spoiler for REASON](spoilered text goes here)`
-- MAY encode the full spoilered content only in `formatted_body`
-
-Clients rendering messages:
-
-- SHOULD prefer `formatted_body` when available
-- MAY fall back to `body` when rich formatting is unsupported
-
-The `formatted_body` field is the authoritative source for spoiler semantics.
+This proposal removes those recommendations on how clients should set the `body`
+for spoilered messages.
 
 ## Potential issues
 
-Clients which don't consider this and just display the plain text message in
-some contexts including the spoilered message in the plain `body` could cause
-undesired behavior, but as they most likely also don't support spoilers at all
-or are plain text clients increasing the reliance on rich text wouldn't do any
-good.
-
-Note this MSC has changed how spoilered text should be included in the plain
-text since the creation of the MSC
+Inconsistent behavior between clients.
 
 ## Alternatives
 
-### including the spoilered content in the body, without marker
+### Including the spoilered content in the body (without marker)
 
-When the spoiler in the plaintext would just be something like
+When the spoiler in the plaintext is a short sentence such as
 `Alice lived happily ever after in the movie.`.
 
 This reflects current client behavior.
@@ -119,12 +50,11 @@ A spoilered message sent in Element Web:
  }
 ```
 
-### Marking spoilers in plaintext with `||`
+### Marking spoilers in plaintext with ||
 
-An alternative would be inserting `||` around the spoiler (this is how cinny
-does it).
+An alternative is inserting `||` around the spoiler (this is how Cinny does it).
 
-Example (as sent in cinny):
+Example (as sent in Cinny):
 
 ```json
 {
@@ -143,8 +73,8 @@ repositories.
 
 ## Unstable prefix
 
-not applicable
+Not applicable
 
 ## Dependencies
 
-none
+None
