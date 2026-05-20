@@ -34,11 +34,22 @@ depending on the authenticated user (e.g. disabled for guest users).
 
 ## Potential issues
 
-None.
+This increases complexity for clients who offer URL previews as a feature. They will need to check
+the capabilities offered by the homeserver before they can start making requests. This has been mitigated
+by reusing the capabilities endpoint.
 
 ## Alternatives
 
-None.
+In practice most implementations of URL previews either allow the server admin to disable/enable it, or  do
+not support it. With that in mind, an alternative could be to just standardise the error code without the capability.
+However, this is a problem for three reasons.
+
+1. Clients will continue to make requests to the homeserver even if the feature is disabled, increasing the amount of traffic
+   the server needs to handle.
+2. Clients will leak URLs to the homeserver (which may be within encrypted messages). While this is an acceptable trade-off
+   if the feature works, it's pointless if the requests are being failed.
+3. Clients often allow users to choose whether they want the feature on. It's useful to show the option as disabled
+   if the homeserver doesn't support it.
 
 ## Security considerations
 
