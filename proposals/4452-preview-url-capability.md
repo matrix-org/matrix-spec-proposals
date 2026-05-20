@@ -36,7 +36,8 @@ depending on the authenticated user (e.g. disabled for guest users).
 
 This increases complexity for clients who offer URL previews as a feature. They will need to check
 the capabilities offered by the homeserver before they can start making requests. This has been mitigated
-by reusing the capabilities endpoint.
+by reusing the capabilities endpoint. For the reasons outlined in Alternatives, it's an acceptable
+tradeoff to include a capability for this feature.
 
 ## Alternatives
 
@@ -50,6 +51,8 @@ However, this is a problem for three reasons.
    if the feature works, it's pointless if the requests are being failed.
 3. Clients often allow users to choose whether they want the feature on. It's useful to show the option as disabled
    if the homeserver doesn't support it.
+
+Therefore, having both the error and the capability would be the best way forward.
 
 ## Security considerations
 
