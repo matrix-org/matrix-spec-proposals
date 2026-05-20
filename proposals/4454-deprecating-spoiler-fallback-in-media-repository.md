@@ -22,8 +22,8 @@ content in an end-to-end encrypted (E2EE) room. The current spec does not
 specify how spoilers should be handled in E2EE rooms and could be read as
 suggesting uploading spoilered text unencrypted to the media repository.
 
-This proposal removes those recommendations on how clients should set the `body`
-for spoilered messages.
+This proposal removes those recommendations on how clients should set the plain
+text `body` for spoilered messages.
 
 This proposal does not affect `formatted_body`.
 
@@ -31,13 +31,27 @@ This proposal does not affect `formatted_body`.
 
 Inconsistent behavior between clients.
 
+Anyhow this is already basically the reality nowadays, so nothing lost, nothing
+won.
+
 ## Alternatives
 
-### Including the spoilered content in the body (without marker)
+This proposal removes the previous guidance that suggested a specific way to
+populate the `body` for spoilered messages. It does not introduce a new required
+behavior; implementations may continue using any approach that fits their design
+model. In other words, removing the recommendation makes multiple client
+behaviours spec-compliant rather than prescribing one.
 
-This reflects current client (Element Web) behavior.
+Below are two common approaches implemented by clients today. They are shown as
+examples and are not being mandated by this proposal.
 
-A spoilered message sent in Element Web:
+### Alternative 1: Include the spoilered content verbatim in `body`
+
+Some clients (for example Element Web) put the plaintext of the spoiler into the
+`body` field and use `formatted_body` to mark the spoiler in HTML
+(`data-mx-spoiler`).
+
+Example (Element Web style):
 
 ```json
 {
@@ -46,24 +60,32 @@ A spoilered message sent in Element Web:
     "body": "test meow",
     "formatted_body": "<span data-mx-spoiler>test meow</span>",
     "m.mentions": {}
- }
+}
 ```
 
-### Marking spoilers in plaintext with ||
+### Alternative 2: Mark spoilers in plaintext with delimiters (e.g. `||`)
 
-An alternative is inserting `||` around the spoiler (this is how Cinny does it).
+Insert a plaintext delimiter around spoiler text (Cinny uses `||`, so just
+discord-style) and also provide a `formatted_body` with a spoiler markup for
+HTML renderers.
 
-Example (as sent in Cinny):
+Example (Cinny style):
 
 ```json
 {
-    "body": "||test meow||",
+    "msgtype": "m.text",
     "format": "org.matrix.custom.html",
+    "body": "||test meow||",
     "formatted_body": "<span data-md=\"||\" data-mx-spoiler>test meow</span>",
-    "m.mentions": {},
-    "msgtype": "m.text"
+    "m.mentions": {}
 }
 ```
+
+## Summary
+
+This proposal intentionally removes prescriptive guidance so that clients are
+free to choose an approach that balances compatibility and privacy. All of the
+approaches illustrated above are spec-compliant under this change.
 
 ## Security considerations
 
