@@ -142,7 +142,7 @@ the following:
         "result": "success",
         "method": "m.method.dns" | "m.method.relation" | "m.method.matrix",
         // expiry should be defined as the unix epoch after which to try again
-        "expires": "1778107123",
+        "expires": 1778107123,
         "scope": "m.scope.site" | "m.scope.domain" | "m.scope.account"
     },
     // optional additional url preview stuff
