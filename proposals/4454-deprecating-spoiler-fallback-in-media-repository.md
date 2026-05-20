@@ -22,8 +22,14 @@ content in an end-to-end encrypted (E2EE) room. The current spec does not
 specify how spoilers should be handled in E2EE rooms and could be read as
 suggesting uploading spoilered text unencrypted to the media repository.
 
-This proposal removes those recommendations on how clients should set the plain
-text `body` for spoilered messages.
+This proposal removes the recommended fallback for spoilers in `body`. The
+plaintext representation of spoilers is left as an implementation detail.
+
+Spoiler-aware clients SHOULD NOT display body anywhere when there are spoilers
+in `formatted_body`. For contexts like room list previews and notifications
+where a plain text representation is needed, clients SHOULD either generate
+plain text from the HTML locally, or simply display a placeholder message when
+any spoilers are detected.
 
 This proposal does not affect `formatted_body`.
 
