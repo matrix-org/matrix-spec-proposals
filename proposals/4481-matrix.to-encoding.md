@@ -1,4 +1,4 @@
-# MSC0000: Use characters in matrix.to
+# MSC4481: Use Matrix URI-style type segments in matrix.to
 
 The spec defines matrix.to navigation as a web-compatible way to link to Matrix room aliases, room ids, messages within
 rooms, and user ids at <https://spec.matrix.org/v1.18/appendices/#matrixto-navigation>.
