@@ -19,7 +19,11 @@ It also proposes removing some unnecessary fields from the Widget postMessage AP
 
  * Spec the request-response pattern over PostMessage
    For requests:
-     * The Host receives a postmessage from the widget's 'Window' object (ie. [source](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#source) is the Window object that the Host contained for the widget - it must check the `source` and not the origin as multiple widgets may be hosted on the same origin. However, both Host and Widget 
+     * The Host receives a postmessage from the widget's 'Window' object (ie. [`source`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#source) and only sends postmessages to dedicated widgets (no `*` target is allowed)
+     * Matching a request-respone with the correct widget uses fields that cannot be faked:
+      * The client must check the [`source`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#source) and not the origin as multiple widgets may be hosted on the same origin. (makes sure widgetA does not impersonate widgetB)
+      * The client must send a request-response only to the widget that actually should receive it. (makes sure widgetA does not get any data intended for widgetB)
+     * -> no widgetId required in the transport
  * Formatting for requests and response
    ```json5
    {
