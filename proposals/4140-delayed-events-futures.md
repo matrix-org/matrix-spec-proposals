@@ -166,7 +166,7 @@ Content-Type: application/json
 ```
 
 These endpoints are unauthenticated so that control over a particular scheduled delayed event may be
-[delegated to an external service](#delegating-delayed-events)
+[delegated to an external service](#delegating-scheduled-delayed-events)
 by sharing the target delayed event's `delay_id` with the service.
 
 Where the `action` is `send`, the homeserver SHOULD apply rate limiting to provide mitigation against the
@@ -207,7 +207,7 @@ The homeserver SHOULD keep the delayed event scheduled, to account for the fact 
 may resolve by the time of the delayed event's scheduled send time,
 and to allow retries of the `send` action until then.
 
-#### Delegating delayed events
+#### Delegating scheduled delayed events
 
 It is useful for external services to also interact with delayed events.
 If a client disconnects, an external service can be the best source to send the delayed event/"last will".
@@ -614,7 +614,7 @@ proposal.
 ### OAuth 2.0 scope for management endpoints
 
 Instead of the [delayed event management endpoints](#managing-scheduled-delayed-events) being unauthenticated
-to permit [delegation to an external service](#delegating-delayed-events),
+to permit [delegation to an external service](#delegating-scheduled-delayed-events),
 those endpoints could be given an OAuth 2.0 scope and be restricted to sessions that have requested it.
 The scope would be within the existing `urn:matrix:client:api:*` scope,
 so that access to the entirety the Client-Server API would include access to these endpoints as well.
