@@ -313,6 +313,8 @@ HTTP response codes:
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
+Cancelling a session will cause all future reads and writes to fail with a `404 M_NOT_FOUND`.
+
 ### Example API usage
 
 The actions above can be illustrated as follows:
