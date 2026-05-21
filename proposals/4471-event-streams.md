@@ -22,7 +22,7 @@ A stream has four protocol elements:
 
 * a descriptor in a durable room event that declares this event will have streaming updates
 * `m.stream.subscribe` to-device events sent by subscriber devices to the publisher device
-* `m.stream.cancel` to-device events sent by the publisher device to reject subscriptions
+* `m.stream.cancel` to-device events sent by either side to cancel subscriptions
 * `m.stream.update` to-device events sent by the publisher device to subscriber devices
 
 Stream updates are transient. They are not inserted into the room DAG, are not state, are not returned
@@ -84,7 +84,7 @@ The content of `m.stream.subscribe` is:
 {
   "room_id": "!room:example.org",
   "event_id": "$event:example.org",
-  "device_id": "SUBSCRIBERDEVICE",
+  "subscriber_device_id": "SUBSCRIBERDEVICE",
   "expiry_ms": 300000,
   "resync": false
 }
@@ -94,7 +94,7 @@ The fields are:
 
 * `room_id`: Required string. The room containing the stream descriptor.
 * `event_id`: Required string. The event containing the stream descriptor.
-* `device_id`: Required string. The subscriber device which should receive updates.
+* `subscriber_device_id`: Required string. The subscriber device which should receive updates.
 * `expiry_ms`: Required integer. The requested subscription lifetime in milliseconds.
 * `resync`: Optional boolean. If true, the subscriber device requests a fresh `op: "replace"` baseline.
   If omitted, false is assumed.
@@ -103,20 +103,23 @@ The publisher device should accept the subscription only if:
 
 * it is the device named by the descriptor's `device_id`
 * it has a registered active stream for `(room_id, event_id)`
-* the requested `device_id` is non-empty and belongs to the subscribing user
+* the requested `subscriber_device_id` is non-empty and belongs to the subscribing user
 * the subscribing user is allowed to see the room event containing the descriptor and receive the stream:
   * the subscribing user should currently be joined to the room and be allowed to see the descriptor event
     under normal room history visibility rules
   * for encrypted streams, the requested subscriber device should be eligible to receive encrypted room
     content under the publisher device's E2EE trust policy.
 
-If the publisher device rejects a subscription, it should send an `m.stream.cancel` to-device event to
-the subscribing user and the requested subscriber `device_id`. The content of `m.stream.cancel` is:
+Either side may cancel a subscription by sending an `m.stream.cancel` to-device event for the
+subscription tuple. If the publisher device rejects a subscription, it should send `m.stream.cancel` to
+the subscribing user. A subscriber device may send `m.stream.cancel` to the publisher device when it no
+longer wants updates for the stream. The content of `m.stream.cancel` is:
 
 ```json
 {
   "room_id": "!room:example.org",
   "event_id": "$event:example.org",
+  "subscriber_device_id": "SUBSCRIBERDEVICE",
   "code": "m.unknown_stream",
   "reason": "Unknown or expired stream"
 }
@@ -126,7 +129,8 @@ The fields are:
 
 * `room_id`: Required string. The room containing the stream descriptor.
 * `event_id`: Required string. The event containing the stream descriptor.
-* `code`: Required string. A machine-readable reason for the rejection.
+* `subscriber_device_id`: Required string. The subscriber device whose subscription is cancelled.
+* `code`: Required string. A machine-readable reason for the cancellation.
 * `reason`: Optional string. A human-readable reason for debugging. Clients should not rely on this value.
 
 This MSC defines the following cancellation codes:
@@ -136,6 +140,7 @@ This MSC defines the following cancellation codes:
 * `m.invalid_subscription`: The subscription request is malformed or names an invalid subscriber device.
 * `m.forbidden`: The publisher device declined because the subscriber is not allowed to receive updates.
 * `m.limit_exceeded`: The publisher device declined because of implementation limits.
+* `m.user_cancelled`: The subscriber device no longer wants updates for the stream.
 
 Publisher devices may cap the accepted subscription lifetime. It is the subscriber's responsibility to
 renew the subscription by sending another `m.stream.subscribe` event before it expires if the stream is
