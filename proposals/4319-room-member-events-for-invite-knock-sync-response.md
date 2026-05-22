@@ -54,7 +54,7 @@ objects. It uses the same format as the [`State`](https://spec.matrix.org/v1.15/
 object in [`JoinedRoom`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync_response-200_joined-room)
 and MUST include the `m.room.member` event that was created during the invite or knock process, in
 the [`ClientEventWithoutRoomID`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync_response-200_clienteventwithoutroomid)
-format.
+format. This SHOULD be the only event present in the `events` array.
 
 > [!NOTE]
 > Making it mandatory makes sense because this event is the reason why the room appears in `invite`
@@ -70,8 +70,9 @@ include this event in the `events` array of the `invite_state` or `knock_state` 
 as in `State` for a time limited to 1 spec release after this proposal is released in a new spec
 version.
 
-For compatibility with the current server implementations, clients MAY look for the `m.room.member`
-event in `invite_state` or `knock_state` as a fallback if it is not found under the `state` key.
+For compatibility with the current server implementations, clients MAY look for the invite/knock
+`m.room.member` event in `invite_state` or `knock_state` as a fallback if it is not found under the
+`state` key.
 
 > [!NOTE]
 > The example for the response of `GET /sync` includes the stripped `m.room.member` event although
@@ -79,10 +80,11 @@ event in `invite_state` or `knock_state` as a fallback if it is not found under 
 
 Finally, the [list of events that should be included in the stripped state][stripped-state] over the
 Client-Server and Server-Server APIs is extended with the `m.room.member` event of the `sender` of
-the invite. This event has the same format as other events in the stripped state, i.e. the full
-event format according to the room version in the Server-Server API endpoints, and the `Stripped
-state event` format in the Client-Server API's `/sync` endpoint. This event allows clients to be
-able to display information about the sender of an invite, like their display name or avatar.
+the invite for rooms that the user has been invited to. This event has the same format as other
+events in the stripped state, i.e. the full event format according to the room version in the
+Server-Server API endpoints, and the `Stripped state event` format in the Client-Server API's
+`/sync` endpoint. This event allows clients to be able to display information about the sender of
+an invite, like their display name or avatar.
 
 Example of an `InvitedState` object:
 
