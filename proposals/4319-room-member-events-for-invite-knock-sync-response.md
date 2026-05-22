@@ -47,6 +47,8 @@ easiest way to do this is to use its `event_id`.
 
 ## Proposal
 
+### `m.room.member` event with a `membership` of `invite` or `knock`
+ 
 For clients to be able to get all the details about an invite or knock, a `state` key is added to
 the [`InvitedRoom`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync_response-200_invited-room)
 and [`KnockedRoom`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3sync_response-200_knocked-room)
@@ -78,13 +80,23 @@ For compatibility with the current server implementations, clients MAY look for 
 > The example for the response of `GET /sync` includes the stripped `m.room.member` event although
 > it is not specified.
 
-Finally, the [list of events that should be included in the stripped state][stripped-state] over the
+### `m.room.member` event of the `sender` of the invite
+
+The [list of events that should be included in the stripped state][stripped-state] over the
 Client-Server and Server-Server APIs is extended with the `m.room.member` event of the `sender` of
 the invite for rooms that the user has been invited to. This event has the same format as other
 events in the stripped state, i.e. the full event format according to the room version in the
 Server-Server API endpoints, and the `Stripped state event` format in the Client-Server API's
 `/sync` endpoint. This event allows clients to be able to display information about the sender of
 an invite, like their display name or avatar.
+
+> [!NOTE]
+> For a knock the target user and the sender MUST be the same user according to the
+> [authorisation rules](https://spec.matrix.org/v1.15/rooms/v11/#authorisation-rules), so the
+> `m.room.member` event of the sender is the same as in the previous section and it doesn't need to
+> be provided separately. 
+
+### Example
 
 Example of an `InvitedState` object:
 
@@ -148,6 +160,8 @@ Example of an `InvitedState` object:
   }
 }
 ```
+
+### Dependencies
 
 Although it is not considered a dependency of this MSC, if this is accepted the new `/sync`
 endpoint introduced in [MSC4286: Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186)
