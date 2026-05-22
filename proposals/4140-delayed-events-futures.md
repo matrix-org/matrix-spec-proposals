@@ -623,7 +623,7 @@ Using OAuth 2.0 to restrict access on these endpoints has many benefits over usi
 access token, such as more fine-grained revocability on access to the endpoints, and
 better identification of what entity is requesting these endpoints, which can be used to apply per-entity ratelimits.
 
-The downsides of this approach are its requirement on the homeserver supporting the OAuth 2.0 login API,
+The downsides of this approach are the required work of having to implement scoped access tokens in homeservers
 and the additional network/configuration overhead for external services to request access to this scope.
 
 ### Management endpoint action in request body
