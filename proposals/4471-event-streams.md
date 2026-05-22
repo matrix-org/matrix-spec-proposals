@@ -85,7 +85,6 @@ The content of `m.stream.subscribe` is:
   "room_id": "!room:example.org",
   "event_id": "$event:example.org",
   "subscriber_device_id": "SUBSCRIBERDEVICE",
-  "expiry_ms": 300000,
   "resync": false
 }
 ```
@@ -95,7 +94,6 @@ The fields are:
 * `room_id`: Required string. The room containing the stream descriptor.
 * `event_id`: Required string. The event containing the stream descriptor.
 * `subscriber_device_id`: Required string. The subscriber device which should receive updates.
-* `expiry_ms`: Required integer. The requested subscription lifetime in milliseconds.
 * `resync`: Optional boolean. If true, the subscriber device requests a fresh `op: "replace"` baseline.
   If omitted, false is assumed.
 
@@ -142,10 +140,11 @@ This MSC defines the following cancellation codes:
 * `m.limit_exceeded`: The publisher device declined because of implementation limits.
 * `m.user_cancelled`: The subscriber device no longer wants updates for the stream.
 
-Publisher devices may cap the accepted subscription lifetime. It is the subscriber's responsibility to
-renew the subscription by sending another `m.stream.subscribe` event before it expires if the stream is
-still wanted. If a duplicate subscription is accepted and `resync` is false or omitted, the publisher
-device should refresh the subscription lifetime without resending already-sent stream content.
+An accepted subscription remains active until either side cancels it, the stream completes, or the
+descriptor expires. A subscriber device should cancel its subscription when it no longer wants updates,
+such as when the event leaves view. A publisher device must not send updates for an expired descriptor.
+If a duplicate subscription is accepted and `resync` is false or omitted, the publisher device should not
+resend already-sent stream content.
 
 ### Message stream updates
 
