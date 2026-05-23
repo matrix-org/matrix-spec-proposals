@@ -1,7 +1,7 @@
 # Widget State Event Proposal
 This MSC splits [MSC1236](https://github.com/matrix-org/matrix-spec-proposals/issues/3803) into two.
- - One responsible for the widget state event.
- - And one for the postmessage api.
+- One responsible for the widget state event.
+- And one for the postmessage api.
 
 This MSC will only focus on the state event.
 
@@ -14,25 +14,40 @@ fit well and do not have overlap with the core widget concepts introduced in thi
 
 ## Proposal
 
-Rooms can have data that go beyond the chat timeline. Widgets focus on allowing custom appliactions to render and interact with the
+Rooms can have data that go beyond the chat timeline. Widgets focus on allowing custom applications to render and interact with the
 room data in a custom way.
 
-This MSC specifically focuses on this aspect of widgets since it is the only well-established usecase we have in the matrix ecosystem.
+This MSC specifically focuses on this aspect of widgets since it is the only well-established use-case we have in the matrix ecosystem.
 
-It does intentionally not talk about Account widgets ([MSC1236](https://github.com/matrix-org/matrix-spec-proposals/issues/3803) for ref)
+The scope is to define a widget for a single room only. We want to define a simple base and leave the support for wider scope
+(example: multiple rooms, spaces) for separate MSCs.
 
-state event
+### State Event
 ```json5
 {
-  "eventId": "$anId",
-  "id": "!anId",
-  "name": "FlappyRoyal",
-  "url": "https://custon.widget.app/widget",
-  "avatar_url": "mxc://anAvatar",
+  // irrelevant fields omitted for brevity
+  "type": "m.widget",
+  "state_key": "some-uuid",
+  "content": {
+    "name": "some-widget-name", // required
+    "url": "https://custom.widget.app/widget", // required
+    "avatar_url": "mxc://anAvatar", // optional
+  }
 }
 ```
+ - `name`: The widget name SHOULD be treated similar to a room name. It should be meaningful to all room members. It is expected to be the same string on all clients independent of localization.
+ - `url`: The actual widget url where the widget is loaded from. This also takes the role as the widget type parameter. Most per room and per user fields are available through the widget api [MSC4412](https://github.com/matrix-org/matrix-spec-proposals/pull/4412) so the urls should be very short.
+ - `avatar_url` The icon used to render the widget in the client list.
 
-This is the old state event here we justify what is not needed and gets removed
+Url template parameters are excluded. Additional per user and per room data are exposed via widget api. 
+This has an advantage that it also solves the reactive data, example: theme, language. If the theme is passed over widget api
+it can be updated reactively. For additional room level metadata can be hardcoded from URL. This emplies that a widget
+that relies on per user data has to use widget api. This MSC values simplicty for the basic building blocks more then
+focusing on the use case of injecting user specific data into url parameters.
+
+## Comparions to current unspecced implementation
+
+This is the old state event. Here we justify what is not needed and gets removed
 ```json5
 {
   "avatar_url": "mxc://anAvatar", // Keep
@@ -55,11 +70,7 @@ This is the old state event here we justify what is not needed and gets removed
     Additional data can be passed over the widget api. (TODO: Backwards comapt comment)
  - `roomId` Widgets are only for the room they are added to. This data is implicitly known by the client.
  - `type` Is only used for allowing clients to categorize widgets. A dedicated category concept is desired here. Not part of the core msc.
- 
-## Alternatives
- - Enforce Iframe instead of WebView
 
- 
 ## Closes
 https://github.com/matrix-org/matrix-spec-proposals/pull/2764
 https://github.com/matrix-org/matrix-doc/pull/2774
