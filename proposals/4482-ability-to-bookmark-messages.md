@@ -1,4 +1,4 @@
-# MSC9999: Ability to Bookmark Messages
+# MSC4482: Ability to Bookmark Messages
 
 We often find ourselves wanting to bookmark messages to look them up at a later point, be it phone numbers, addresses or something else.
 Due to that we started thinking about how to implemented it.
