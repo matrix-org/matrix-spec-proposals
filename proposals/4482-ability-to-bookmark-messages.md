@@ -10,7 +10,19 @@ This feature can be extended for example to allow clients to add reminders after
 
 ## Proposal
 
+This proposal requires 2 additions to the spec : one new room type and one new event that would be sent in this new kind of room.
+This proposal leverages extensible timeline events and the fact that unknown room types are treated as regular rooms to provide a nice retrocompatibility experience with clients that do not implements this feature. 
+
+### New room type
+
+This MSC introduces a new room type called `m.bookmarks`.
+This kind of room SHOULD only hold some `m.bookmark` events defined below. 
+
 ### Event structure
+
+This MSC introduces a new kind of event which is a timeline event that uses extensible events blocks.
+It introduces a new `m.pointer` block that references a particular event sitting in a given room.
+The pointer is provided as is: it may not be "valid" (i.e. the user does not have access / permission to view the referenced event).
 
 ```json5
 {
@@ -29,9 +41,6 @@ This feature can be extended for example to allow clients to add reminders after
 }
 ```
 
-
-### New room type : `m.bookmark`
-
 ## Client implementation recommendations 
 
 ## General
@@ -45,13 +54,10 @@ If there are multiple `m.bookmark` rooms, we leave this as an implementation det
 The room should be created on first bookmark creation.
 The client should check if a `m.bookmark` room already exists before creating a new one.
 
-
-
 ## Potential issues
 
 - Room upgrades: could lead to bookmarks going missing if not handled properly. 
 - Multiple people: having multiple people in a room will lead to unintended consequences. 
-
 
 ## Alternatives
 
