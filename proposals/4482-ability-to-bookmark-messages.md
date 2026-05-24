@@ -30,7 +30,7 @@ The pointer is provided as is: it may not be "valid" (i.e. the user does not hav
   "content": {
     "m.text": [
       {
-        "body": "You bookmarked <message_link> in <roomid>"
+        "body": "You bookmarked <matrix_uri> in <room_name>" // Example fallback text
       }
     ],
     "m.pointer": {
@@ -40,6 +40,8 @@ The pointer is provided as is: it may not be "valid" (i.e. the user does not hav
   } 
 }
 ```
+
+The fallback text block of this event should contain at least the [Matrix URI](https://spec.matrix.org/v1.18/appendices/#matrix-uri-scheme) pointing to the bookmarked event. The rest of the body of this text block is left as an implementation detail of each client. 
 
 ## Client implementation recommendations 
 
