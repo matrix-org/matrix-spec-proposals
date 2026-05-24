@@ -85,6 +85,22 @@ We chose to store these bookmarks outside of the room for multiple reasons:
 - We seek retrocompatibility with clients may not implement this MSC. Sending extensible events in a room should provide a nice (ordered) view of all saved bookmarks, whereas account data is downloaded but never displayed. 
 - Having all your bookmarks in the same place is handier to provide a global view of all these bookmarks.
 
+### Comparison to existing MSCs
+
+[MSC4438](msc.re/4438) also tries to implement bookmarks in Matrix, but in that MSC it was decided to use account data instead. We see several
+possible issues with this way of implementing bookmarks:
+- Account data is fetched in one go, so over time, bookmarks pile up in the account data. The bookmarks are loaded even
+if not needed.
+- Using account data doesnt give Clients, that haven't implemented it, a fallback option, which still allows the user to
+have the option to access their bookmarks.
+
+We also decided that we want to leverage existing features in Matrix to our advantage, to make it as light and
+extensible as possible.
+
+The above mentioned problems also come up in other MSCs that tried to implement this or similar features, for example
+[MSC2772](msc.re/2772).
+
+
 ## Security considerations
 
 We don't see any security issues, since the new room and event types introduced only reference existing Matrix events.
