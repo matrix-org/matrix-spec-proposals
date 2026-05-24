@@ -45,34 +45,47 @@ The pointer is provided as is: it may not be "valid" (i.e. the user does not hav
 
 ## General
 
-If the client support the `m.bookmark` room type, it should'nt be displayed as a normal room in the regular room list. Instead the client could display bookmarks in dedicated sections of the client. 
-The client should ensure that only one `m.bookmark` room is existing at once.
-If there are multiple `m.bookmark` rooms, we leave this as an implementation detail.
+If the client support the `m.bookmarks` room type, it should'nt be displayed as a normal room in the regular room list. Instead the client could display bookmarks in dedicated sections of the client. 
+The client should ensure that only one `m.bookmarks` room is existing at once.
+If there are multiple `m.bookmarks` rooms, we leave this as an implementation detail.
 
 ## Room creation
 
-The room should be created on first bookmark creation.
-The client should check if a `m.bookmark` room already exists before creating a new one.
+The room should be created upon first bookmark creation.
+The client should check if a `m.bookmarks` room already exists before creating a new one.
 
 ## Potential issues
 
-- Room upgrades: could lead to bookmarks going missing if not handled properly. 
+- Room upgrades: could lead to bookmarks going missing if not handled properly.
 - Multiple people: having multiple people in a room will lead to unintended consequences. 
+- Bookmark synchronization: timeline events do not have the same deliverability guaranties than state events. Each client has the responsibility of pulling the potential bookmark changes from the server.  
 
 ## Alternatives
 
-- One could use a room full of matrix.to links.
-- Bookmarks could be implemented by duplicating the original message -> we didn't do this for 
-    - respect redactions
-    - be lean
-- We didn't wanted to do "personal pins" through room related events because : 
-    - we want to keep them private
-    - have an easy entry point to find all your bookmarks
-- Using (room) account data was also irrelevant because fetching all the data at once could be problematic
+### Event duplication
+
+One could achieve bookmarking by transfering itself some events in a different "bookmarks" room.
+This means duplicating the original event which : 
+- does not respect the redaction of the original event
+- isn't efficient
+- does not provide a convenient UI integration
+
+### Manual "pointers"
+
+Creating Matrix event "pointers" can already be achieved by using `matrix.to` links of `matrix://` URIs sent as plain text messages in some room.
+While solving the redaction and efficiency problems, this isn't still convenient since this is hardly integrable in a client UI.
+
+### Personal pins
+
+One way to approach bookmarking Matrix events could be through "personal pins", by storing bookmarks per-room, in a Whatsapp "starred messages" fashion.
+We chose to store these bookmarks outside of the room for multiple reasons:
+- These bookmarks should be private. This leaves only the room account data structure to store personal data associated to this room. We chose not to do this to avoid bloating the account data that does not have a pagination mechanism as timeline events have.
+- We seek retrocompatibility with clients may not implement this MSC. Sending extensible events in a room should provide a nice (ordered) view of all saved bookmarks, whereas account data is downloaded but never displayed. 
+- Having all your bookmarks in the same place is handier to provide a global view of all these bookmarks.
 
 ## Security considerations
 
-We don't see any security issues, since pointers do not contain other data
+We don't see any security issues, since the new room and event types introduced only reference existing Matrix events.
 
 ## Unstable prefix
 
