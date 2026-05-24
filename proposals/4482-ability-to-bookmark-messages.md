@@ -107,6 +107,8 @@ We don't see any security issues, since the new room and event types introduced 
 
 ## Unstable prefix
 
+**This Part will be updated, when implementation starts**
+
 *If a proposal is implemented before it is included in the spec, then implementers must ensure that the
 implementation is compatible with the final version that lands in the spec. This generally means that
 experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
