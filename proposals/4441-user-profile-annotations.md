@@ -36,7 +36,7 @@ As `m.profile_annotations` is encryptable, it may be optionally encrypted with t
 
 `m.profile_annotations`:
 
-```
+```json
 {
     "encrypted": {
         "iv": "...",
