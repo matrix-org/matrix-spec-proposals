@@ -85,7 +85,7 @@ Before this MSC is accepted, implementations should use the unstable `account_da
 ## Dependencies
 
 This MSC depends on the following proposals not yet accepted:
-* [MSC4483: Encrypted Account Data][]
+* [MSC4483: Encrypted Account Data][MSC4483]
 
 [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
 [MSC4483]: https://github.com/matrix-org/matrix-spec-proposals/pull/4483
