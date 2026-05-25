@@ -1,4 +1,4 @@
-# MSCXXXX: Encrypted Account Data
+# MSC4483: Encrypted Account Data
 
 Many features, such as [MSC4441][], store information within [`account_data`][] that may contain sensitive information
 that the server doesn't require access to, and hence can be encrypted to improve privacy. This MSC introduces encrypted
@@ -83,7 +83,7 @@ Before this MSC is accepted, implementations should use the following unstable k
 
 | Stable identifier    | Purpose         | Unstable identifier                  |
 | -------------------- | --------------- | ------------------------------------ |
-| `m.account_data.key` | ADK secret name | `dev.zirco.MSCXXXX.account_data.key` |
+| `m.account_data.key` | ADK secret name | `dev.zirco.msc4483.account_data.key` |
 
 [MSC4441]: https://github.com/matrix-org/matrix-spec-proposals/pull/4441
 [`account_data`]: https://spec.matrix.org/v1.18/client-server-api/#client-config
