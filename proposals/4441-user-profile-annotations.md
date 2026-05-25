@@ -1,31 +1,25 @@
-# MSC4441: Encrypted User Profile Annotations via Account Data
+# MSC4441: User Profile Annotations ("Profile Notes")
 
 Many platforms, such as Discord, provide a capability for a user to leave personal "notes" on a user's profile. Matrix,
 however, has no similar functionality that can be shared between different clients. This proposal builds User Profile
 Annotations, a method for storing encrypted, private metadata on user profiles.
 
-This proposal builds User Profile Annotations,
-a method of storing personal context on other users' profiles. This is made possible using a new `m.profile_annotations`
-Account Data event, allowing the storage of free text (and other annotations) for a user's reference.
-
-The framework introduced within this MSC builds upon [Extensible Events][MSC1767] and provides room for future extension
-into other forms of user context, such as contact labels or custom nickname overrides. The content stored within these
-annotations is also encrypted using an account secret scoped specifically for account data.
+Because profile annotations may contain sensitive information about the users they reference, the data is made
+optionally encryptable using [MSC4483: Encrypted Account Data][MSC4483].
 
 ## Proposal
 
-This proposal introduces a new `m.profile_annotations` Account Data event, allowing the storage of free text (and other
-future annotations) on users. The framework introduced within this MSC builds on [Extensible Events][MSC1767] and
-provides room for future extension into other forms of user context, such as contact labels and custom nickname
-overrides.
+This proposal introduces a new `m.profile_annotations` Account Data entry, allowing the storage of free text (and other
+future annotations) on users. The framework introduced within this MSC provides room for future extension into other
+forms of user context, such as contact labels and custom nickname overrides.
 
-### Plaintext `m.profile_annotations`
+### `m.profile_annotations`
 
-A new event, `m.profile_annotations`, is stored in [`account_data`][account_data]. The `content` of this event MUST be a
-mapping between valid user MXIDs and annotations stored on that user. Within a user, the `m.text`
-property represents a text annotation ("note") on that user. It follows the text format as defined in [MSC1767][MSC1767].
+A new [encryptable account data][] value, `m.profile_annotations`, is stored in [`account_data`][]. The `content` MUST
+be a mapping between valid user MXIDs and annotations stored on that user. Within a user, the `m.text` property
+represents a textual annotation ("note") on that user, with the object holding an ordered array as defined by [MSC1767][].
 
-Unknown keys within user annotations MUST be ignored.
+`m.profile_annotations`:
 
 ```json
 {
@@ -38,51 +32,16 @@ Unknown keys within user annotations MUST be ignored.
 }
 ```
 
-### Account Data Key (ADK)
-
-Clients MAY choose to store a new secret, `m.account_data.key` within [SSSS][SSSS]. The secret key is 256 bits of
-cryptographic random data used as the secret in HKDF when encrypting profile annotations (and potentially, in the
-future, other forms of account data).
-
-`m.account_data.key`:
-
-```json
-{
-    "encrypted": {
-        "key_id_1": {
-            "ciphertext": "...",
-            // ... other properties according to key_id_1's algorithm
-        }
-    }
-}
-```
-
-### Encrypted `m.profile_annotations`
-
-Using the ADK bytes introduced above, contents of `m.profile_annotations` can be encrypted using
-[`m.secret_storage.v1.aes-hmac-sha2`][SS_crypto]. The info property of the HKDF is the value `m.profile_annotations`,
-an ASCII `/`, concatenated with the MXID of the user it represents (e.g. `m.profile_annotations/@logn:zirco.dev`).
-
-This encryption is applied individually to the Canonical JSON contents of each user's annotation. Not all user keys
-within the event must be encrypted: some may still contain plaintext data, however a user annotation MUST NOT contain
-both encrypted and plaintext data.
-
-An example of the event `content` follows:
+As `m.profile_annotations` is encryptable, it may be optionally encrypted with the format specified within [MSC4483][].
 
 `m.profile_annotations`:
-```json
+
+```
 {
-    "@logn:zirco.dev": {
-        "encrypted": {
-            "iv": "...",
-            "ciphertext": "...",
-            "mac": "..."
-        }
-    },
-    "@sky:codestorm.net": {
-        "m.text": [
-            { "body": "Hello, world" }
-        ]
+    "encrypted": {
+        "iv": "...",
+        "ciphertext": "...",
+        "mac": "..."
     }
 }
 ```
@@ -90,27 +49,19 @@ An example of the event `content` follows:
 ## Potential issues
 
 #### Concurrent writes
-Account data is last-write-wins. The usage of one key representing all users may lead to a data race in rare scenarios
-(although this tradeoff was accepted to keep the behavior similar to existing state like `m.direct`).
+Account data is last-write-wins. The usage of one account data entry representing all users may lead to a data race in
+rare scenarios (although this tradeoff was accepted to keep the behavior similar to existing state like `m.direct`).
+
+#### Clients that lack support for Encrypted Account Data
+
+If clients lack support for Encrypted Account Data, an edit to one singular entry will risk overwriting all other
+profile annotations.
 
 ## Alternatives
 
 #### Store annotations as a new API endpoint
 Rather than using `account_data`, a new dedicated endpoint for annotations would be created. Rejected because it
 requires substantial serverside changes, this MSC aims to be entirely clintside.
-
-#### Encrypt the entire event as one blob
-Rejected because encrypting each user's data individually allows for finer grained control, alongside preventing the
-need to decrypt large blobs of data when viewing only a singular user's profile.
-
-#### Eliminate the ADK and simply use the SSSS master
-Using the SSSS master would require re-encrypting notes whenever recovery keys change. Using a separate ADK is
-extensible for further `account_data` events, alongside providing the ability to rotate the ADK independently of SSSS.
-
-## Security considerations
-
-- The SSSS model does not provide forward secrecy in the case of key compromise.
-- Plaintext fallback may not be immediately obvious to users if their note contents are not encrypted.
 
 ## Trust and Safety considerations
 
@@ -130,14 +81,13 @@ Before this MSC is accepted, implementations should use the unstable `account_da
 | Stable identifier        | Purpose                                  | Unstable identifier                      |
 | ------------------------ | ---------------------------------------- | ---------------------------------------- |
 | `m.profile_annotations`  | Storage of User Profile Annotations      | `dev.zirco.msc4441.profile_annotations`  |
-| `m.profile_annotations/` | Prefix of HKDF `info`                    | `dev.zirco.msc4441.profile_annotations/` |
-| `m.account_data.key`     | ADK secret storage for encrypted content | `dev.zirco.msc4441.account_data.key`     |
 
 ## Dependencies
 
-None.
+This MSC depends on the following proposals not yet accepted:
+* [MSC4483: Encrypted Account Data][]
 
-  [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
-  [account_data]: https://spec.matrix.org/v1.18/client-server-api/#client-config
-  [SSSS]: https://spec.matrix.org/v1.18/client-server-api/#secrets
-  [SS_crypto]: https://spec.matrix.org/v1.18/client-server-api/#msecret_storagev1aes-hmac-sha2-1
+[MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
+[MSC4483]: https://github.com/matrix-org/matrix-spec-proposals/pull/4483
+[`account_data`]: https://spec.matrix.org/v1.18/client-server-api/#client-config
+[encryptable account data]: https://github.com/thetayloredman/matrix-spec-proposals/blob/encrypted-account-data/proposals/4483-encrypted-account-data.md#encrypted-account-data
