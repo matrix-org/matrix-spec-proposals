@@ -17,11 +17,12 @@ similar to what the `/preview_url` endpoint currently returns:
 
 * `matrix:matched_url` - The URL that is present in `body` and triggered this preview
   to be generated.
-* `matrix:image:encryption` - An [EncryptedFile](https://spec.matrix.org/v1.9/client-server-api/#extensions-to-mroommessage-msgtypes)
-  object for encrypted thumbnail images. Similar to encrypted image messages,
+* `matrix:image:encrypted` - An [EncryptedFile](https://spec.matrix.org/v1.9/client-server-api/#extensions-to-mroommessage-msgtypes)
+  object if the thumbnail image is encrypted. Similar to encrypted image messages,
   the URL is inside this object, and not in `og:image`.
 * `matrix:image:size` - The byte size of the image, like in `/preview_url`.
-* `og:image` - An `mxc://` URI for unencrypted images, like in `/preview_url`.
+* `og:image` - An `mxc://` URI if the thumbnail image is unencrypted,
+  like in `/preview_url`.
 * `og:url` - Standard OpenGraph tag for the canonical URL of the previewed page.
 * Any other standard OpenGraph tags.
 
@@ -35,7 +36,7 @@ adds blurhashes to URL preview media.
 ### Client behavior
 #### Sending preview data
 When sending previews to encrypted rooms, clients SHOULD encrypt preview images
-and put them in the `matrix:image:encryption` field. Other `og:image:*` and the
+and put them in the `matrix:image:encrypted` field. Other `og:image:*` and the
 `matrix:image:size` field can still be used for image metadata, but the
 `og:image` field is omitted for encrypted thumbnails.
 
@@ -47,7 +48,8 @@ could also extend `/preview_url` with a parameter to request a persistent URI.
 #### Receiving messages with `m.url_previews`
 If an object in the list contains only `matrix:matched_url` and no other fields,
 receiving clients SHOULD fall back to the old behavior of requesting a preview
-using `/preview_url`.
+using `/preview_url`. This enables using the field as a URL preview whitelist
+even without bundled preview data.
 
 Clients SHOULD ensure that `matrix:matched_url` is set and that the value is
 present in `body`, and ignore the entry if not. A future MSC may change this
@@ -126,7 +128,7 @@ extensible events.
         "og:image:width": 800,
         "og:image:height": 400,
         "og:image:type": "image/jpeg",
-        "matrix:image:encryption": {
+        "matrix:image:encrypted": {
           "key": {
             "k": "GRAgOUnbbkcd-UWoX5kTiIXJII81qwpSCnxLd5X6pxU",
             "alg": "A256CTR",
@@ -321,7 +323,7 @@ pick one.
 Until this MSC is accepted, implementations can apply the following renames:
 
 * `com.beeper.linkpreviews` instead of `m.url_previews`
-* `beeper:image:encryption` instead of `matrix:image:encryption`
+* `beeper:image:encryption` instead of `matrix:image:encrypted`
 * `matched_url` instead of `matrix:matched_url`
   * note: this was implemented without a prefix before the MSC was made, which
     is why the "unstable prefix" is no prefix in this case.
