@@ -11,8 +11,9 @@ Require `destination` for
 
 ## Potential issues
 
-Older homeservers may be unable to federate with servers that implement this MSC,
-however all major implementations have caught up by now:
+Older homeservers which do not send the field may be unable to federate
+with servers that implement this MSC, however all major implementations
+have caught up by now:
 
 - Continuwuity:
   [read](https://forgejo.ellis.link/continuwuation/continuwuity/src/commit/8d66500c991202f464785d34f3cfa31a1c831997/src/api/router/auth.rs#L327-L329),
