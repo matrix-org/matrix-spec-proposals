@@ -35,11 +35,11 @@ update their displayname and therefore don't need a mass update endpoint.
 If a server stores profile fields in separate database rows, it may need to
 run multiple queries to store all the fields.
 
-Replacing the entire profile is prone to race conditions if used improperly.
-The primary use case of the endpoint is bridges and bots, which always know the
-expected state of the entire profile. Clients meant for human use need to be
-more careful, as there are no real-time notifications when the user changes
-their profile on another client.
+Replacing the entire profile is prone to race conditions. The primary use case
+of the endpoint is bridges and bots, which always know the expected state of the
+entire profile. Clients meant for human use need to be more careful, as there
+are no real-time notifications when the user changes their profile on another
+client.
 
 ## Alternatives
 A `PATCH` variant could also be added. However, there are no patch endpoints in
