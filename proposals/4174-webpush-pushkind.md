@@ -175,7 +175,7 @@ amplification is very limited since HTTPS is required and the TLS certificate of
 request won't reach any functionality of the targeted application. The homeserver can reject pusher if the response
 code is not one intended.
 
-## Unstable prefix
+
 
 
 ## Dependencies
