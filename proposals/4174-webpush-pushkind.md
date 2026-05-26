@@ -86,7 +86,7 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
 - The request body contains the `app_id` and `ack_token` parameters, received with the push notification.
 - The response contains the following HTTP code and error code:
   - 404, M_NOT_FOUND: if no pusher with this app_id exists
-  - 410, M_EXPIRED_ACTIVATION_TOKEN: if this token for this app_id is expired
+  - 400, M_EXPIRED_ACTIVATION_TOKEN: if this token for this app_id is expired
   - 400, M_UNKNOWN_ACTIVATION_TOKEN: if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
   - 200: if the pusher has been activated. The response body should be an empty object.
 
@@ -118,19 +118,18 @@ The current overview is here: <https://spec.matrix.org/v1.17/push-gateway-api/#o
 It becomes:
 
 ```
-                                                +-------------------+
-                  Matrix HTTP                   |                   |
-             Notification Protocol              |   Device Vendor   |
-                                                |                   |
-           +-------------------+                | +---------------+ |
-           |                   |                | |               | |
-           | Matrix homeserver +--> Web Push +----> Push Server   | |
-           |                   |                | |               | |
-           +-^-----------------+                | +----+----------+ |
-             |                                  |      |            |
-    Matrix   |                                  |      |            |
- Client/Server API  +                           |      |            |
-             |      |                           +-------------------+
+                  Matrix HTTP
+             Notification Protocol
+
+           +-------------------+                  +---------------+
+           |                   |                  |               |
+           | Matrix homeserver +--> Web Push +----> Push Server   |
+           |                   |                  |               |
+           +-^-----------------+                  +----+----------+
+             |                                         |
+    Matrix   |                                         |
+ Client/Server API                                     |
+             |                                         |
              |   +--+-+                                |
              |   |    <--------------------------------+
              +---+    |
@@ -178,8 +177,6 @@ code is not one intended.
 
 ## Unstable prefix
 
-- Until this proposal is considered stable, implementations must use
-`org.matrix.msc4174.webpush` instead of `m.webpush`.
 
 ## Dependencies
 
