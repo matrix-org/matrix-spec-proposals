@@ -52,8 +52,10 @@ using `/preview_url`. This enables using the field as a URL preview whitelist
 even without bundled preview data.
 
 Clients SHOULD ensure that `matrix:matched_url` is set and that the value is
-present in `body`, and ignore the entry if not. A future MSC may change this
-recommendation to allow URL previews without a corresponding link in the body.
+present in `body`, and ignore the entry if not. Previous versions of this MSC
+also allowed URL previews without a corresponding link in the body, but that
+feature was removed as it's not clear whether it's needed and it introduces
+T&S concerns. A future MSC may bring back explicit support for such previews.
 
 Clients MAY choose to ignore bundled data and ask the homeserver for a preview
 even if bundled data is present, as a security measure against faking preview
