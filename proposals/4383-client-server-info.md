@@ -1,22 +1,32 @@
 # MSC4383: Client-Server Discovery of Server Version
 
-### Motivation
+### Introduction
 
-Client applications utilizing the Matrix SDK[^6], a Client-Server[^7] library, have been observed
-making requests to `GET /_matrix/federation/v1/version`[^2]. It is the only known example of a
-cross-interface request made by an implementation[^3]. The purpose is valid: informing logs
-used for crash reports of the server specifics; often essential for efficient triage and robust
-patching of client software. This proposal reestablises the proper partition between client and
-federation interfaces while retaining the value added by the de facto misuse.
+The Matrix client-server API does not advertise which homeserver implementation a client is
+connected to. In its absence, client applications have settled on querying the server-server
+endpoint `GET /_matrix/federation/v1/version`[^2] from the client side, where the homeserver
+identifies itself by name and version. The result is embedded in crash reports and diagnostic
+submissions so that defect triage can route a report to the appropriate implementation team. This
+proposal offers the same information over the client-server interface, allowing the cross-interface
+workaround to be retired.
 
-Such cross-interface requests are problematic: the partition in the `/_matrix` URL hierarchy is
-understood by site-administrators to allow for distinct middleware configurations. Sites commonly
-employ WAF rules covering the client and federation hierarchies with source and destination
-assumptions. Some sites disable the entire federation portion, rendering the status quo as unreliable.
+The observed use is logging only. The identification is included in rageshakes and similar
+diagnostic submissions so that recipients can recognise the server vendor and version; the field
+is not consulted to determine application behaviour. The query is to the user's own homeserver
+only; remote-server identification is out of scope, and a client has no general means to resolve
+a remote server name in any case.
 
-This proposal reestablishes the partition between client-server and server-server by simply offering
-the same version data over both. With the adoption of this proposal, no need for cross-interface
-requests will be known to remain.
+Cross-interface requests are problematic. The partition in the `/_matrix` URL hierarchy is
+understood by site administrators to permit distinct middleware configurations, and sites commonly
+apply WAF rules to the client and federation hierarchies under differing source and destination
+assumptions. Some sites disable the federation portion entirely, rendering the status quo
+unreliable. Client applications utilising the Matrix SDK[^6], a client-server library, have been
+observed[^3] making this cross-interface request; it is the only known example of an implementation
+doing so.
+
+This proposal reestablishes the partition between the client-server and server-server interfaces
+by exposing the same version data over both. With its adoption, no need for cross-interface
+requests is known to remain.
 
 ### Proposal
 
