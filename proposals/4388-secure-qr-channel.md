@@ -199,10 +199,10 @@ Content-Type: application/json
 The server can chose what level of authentication is required to create a rendezvous session. Suitable policies might
 include:
 
-- Public/open - anyone can create a rendezvous session without an access token. This allows for the QR code to be
-  created on either the new or existing Matrix client.
-- Requires authenticated user - this would reduce abuse to known users, but would restrict the mechanism so that the QR
-  code must be created on the existing Matrix client (and therefore the new Matrix client must have a camera).
+- Requires authenticated user - this would reduce abuse to known users. This should be the default.
+- Public/open - anyone can create a rendezvous session without an access token. This allows for clients to use this
+  server as its default when creating QR codes as a new session (as it doesn't yet know what server the user will
+  log in to).
 
 The expiry time is detailed [below](#maximum-duration-of-a-rendezvous).
 
