@@ -1,4 +1,4 @@
-# MSCXXXX: Server Administration OAuth Scope
+# MSC4484: Server Administration OAuth Scope
 
 Since Matrix 1.18, the [Server Administration](https://spec.matrix.org/v1.18/client-server-api/#server-administration)
 API module has provided homeserver-agnostic endpoints to manage suspending and locking user accounts. These endpoints
@@ -82,7 +82,7 @@ user's extant OAuth sessions that have the scope.
 ## Unstable prefix
 
 While this proposal is unstable, clients and servers should use the
-`urn:matrix:client:cc.c10y.mscXXXX.server_administration` scope instead of the
-`urn:matrix:client:api:server_administration` scope. Servers may use the `org.continuwuity.mscXXXX.unstable`
+`urn:matrix:client:cc.c10y.msc4484.server_administration` scope instead of the
+`urn:matrix:client:api:server_administration` scope. Servers may use the `org.continuwuity.msc4484.unstable`
 unstable feature flag to indicate that clients using OAuth must request the unstable
-`urn:matrix:client:cc.c10y.mscXXXX.server_administration` scope to use the Server Administration endpoints.
+`urn:matrix:client:cc.c10y.msc4484.server_administration` scope to use the Server Administration endpoints.
