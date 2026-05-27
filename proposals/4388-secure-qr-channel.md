@@ -245,8 +245,9 @@ Content-Type: application/json
 ```
 
 The server MUST perform a compare-and-swap operation by checking that the `sequence_token` matches
-the current sequence token for the session. If it does not match then the `data` MUST not be
-accepted and the `M_CONCURRENT_WRITE` error is returned.
+the current sequence token for the session. If the `sequence_token` does not match then the `data` MUST not be
+accepted and the `M_CONCURRENT_WRITE` error is returned. On receipt of a `M_CONCURRENT_WRITE` the client can do a `GET`
+to fetch the latest data and `sequence_token` and then retry.
 
 HTTP response codes, and Matrix error codes:
 
