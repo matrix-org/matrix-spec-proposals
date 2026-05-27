@@ -85,9 +85,11 @@ existing response body.
 
 ##### Unstable prefix
 
-| Stable identifier | Purpose | Unstable identifier |
-| --- | --- | ---|
-| `server` | Server information | `net.zemos.msc4383.server` |
+| Name | Stable identifier | Unstable identifier |
+| --- | --- | --- |
+| Server information field | `server` | `net.zemos.msc4383.server` |
+| Support advertisement (in `unstable_features`) | (none) | `net.zemos.msc4383` |
+| Stable-companion advertisement (in `unstable_features`) | (none) | `net.zemos.msc4383.stable` |
 
 ### Backwards Compatibility
 
