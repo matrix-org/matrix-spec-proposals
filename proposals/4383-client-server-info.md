@@ -20,9 +20,9 @@ Cross-interface requests are problematic. The partition in the `/_matrix` URL hi
 understood by site administrators to permit distinct middleware configurations, and sites commonly
 apply WAF rules to the client and federation hierarchies under differing source and destination
 assumptions. Some sites disable the federation portion entirely, rendering the status quo
-unreliable. Client applications utilising the Matrix SDK[^6], a client-server library, have been
+unreliable. Client applications utilising the Matrix SDK[^5], a client-server library, have been
 observed[^3] making this cross-interface request. element-web exhibits a related workaround in its
-rageshake collector[^11]: a primary call to the Synapse-specific administrative endpoint
+rageshake collector[^9]: a primary call to the Synapse-specific administrative endpoint
 `GET /_synapse/admin/v1/server_version`, falling back to the same federation `/version` call when
 the administrative endpoint is unavailable. The administrative-endpoint path substitutes a
 vendor-specific dependency for the partition violation; neither workaround functions under
@@ -125,27 +125,25 @@ server, though specific formal vendor and semantic version information appears a
 ### Potential Issues
 
 Server vendor and version information has been considered counter-productive to the motivations
-of Matrix as a unifying communication standard. Matrix believes any use of implementation
+of Matrix as a unifying communication standard. Matrix considers that any use of implementation
 knowledge as a condition in its applications always represents an accidental failure of its
 implementations or the standard binding them; the solution to such problems is thus found in
-cooperation, community and conformity, precluding the need for bug-for-bug conditions and
-workarounds. This MSC has the option of including a normative statement which inhibits the use
-of vendor information to determine functionality.
+cooperation, community and conformity, precluding the need for bug-for-bug conditions and workarounds.
 
 ### Security Considerations
 
 The federation endpoint is the only location which presently reveals this information.
-Site-administrators which have taken some measure to hide, or obscure, or modify it (i.e. with a
+Site administrators which have taken some measure to hide, or obscure, or modify it (i.e. with a
 proxy) will have to note their implementation's new exposure of it when upgrading.
 
 ### Implementations
 
-- Server: Tuwunel[^8] (shipped in v1.6.2), populating the `server` object on
+- Server: Tuwunel[^6] (shipped in v1.6.2), populating the `server` object on
   `GET /_matrix/client/versions` and advertising `net.zemos.msc4383` in
   `unstable_features`.
-- Protocol types: a Ruma[^9] pull request adds the `Server` struct and the
+- Protocol types: a Ruma[^7] pull request adds the `Server` struct and the
   `Response.server` field behind the `unstable-msc4383` Cargo feature.
-- Client SDK: a matrix-rust-sdk[^10] pull request rewrites
+- Client SDK: a matrix-rust-sdk[^8] pull request rewrites
   `Client::server_vendor_info` to prefer the client-server source, falling
   back to `GET /_matrix/federation/v1/version` only when the object is
   absent. The feature is enabled by default in `matrix-sdk-ffi`, so
@@ -162,14 +160,13 @@ proxy) will have to note their implementation's new exposure of it when upgradin
 
 [^4]: https://github.com/matrix-org/matrix-spec-proposals/pull/2301
 
-[^6]: https://github.com/matrix-org/matrix-rust-sdk
+[^5]: https://github.com/matrix-org/matrix-rust-sdk
 
-[^7]: https://spec.matrix.org/v1.16/client-server-api/
+[^6]: https://github.com/matrix-construct/tuwunel
 
-[^8]: https://github.com/matrix-construct/tuwunel
+[^7]: https://github.com/ruma/ruma/pull/2495
 
-[^9]: https://github.com/ruma/ruma/pull/2495
+[^8]: https://github.com/matrix-org/matrix-rust-sdk/pull/6622
 
-[^10]: https://github.com/matrix-org/matrix-rust-sdk/pull/6622
-
-[^11]: https://github.com/element-hq/element-web/blob/220f68935e1700f3bd6e0786aac049bf6803badb/apps/web/src/rageshake/submit-rageshake.ts#L153-L189
+[^9]:
+    https://github.com/element-hq/element-web/blob/220f68935e1700f3bd6e0786aac049bf6803badb/apps/web/src/rageshake/submit-rageshake.ts#L153-L189
