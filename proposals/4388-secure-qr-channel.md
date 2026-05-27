@@ -69,8 +69,12 @@ sequenceDiagram
 ## Insecure rendezvous session
 
 It is proposed that an HTTP-based protocol be used to establish an ephemeral bi-directional communication session over
-which the two devices can exchange the necessary data. This session is described as "insecure" as it provides no
+which the two devices can exchange the necessary data.
+
+This session is described as "insecure" as it provides no
 end-to-end confidentiality nor authenticity by itself - these are layered on top of it.
+
+The name "rendezvous" is used as it is the designated place where the two clients will meet.
 
 New optional HTTP endpoints are to be added to the Client-Server API.
 
@@ -83,12 +87,22 @@ a _rendezvous ID_ which, along with the server [base URL], should be shared out-
 The rendezvous ID points to an arbitrary data resource (the "payload") on the homeserver, which is initially populated
 using data from A's initial `POST` request. The payload is a string which the homeserver must enforce a maximum length on.
 
+The maximum length of a rendezvous ID is 65,535 bytes.
+
+Note that the rendezvous session is not a channel that two clients can use to send a sequence of messages between them,
+but rather a single shared mutable spot whose contents can be inspected and overwritten by either party. Each new write
+replaces the previous payload entirely; the homeserver retains no history of prior payloads.
+
 Anyone who is able to reach the homeserver and has the rendezvous ID - including: Device A; Device B; or a third party; -
 can then "receive" the payload by polling via a `GET` request, and "send" a new payload by making a `PUT` request.
 
 In this way, Device A and Device B can communicate by repeatedly inspecting and updating the payload at the rendezvous session.
 
-The maximum length of a rendezvous ID is 65,535 bytes.
+This has consequences for how clients use the session: a client cannot tell whether its previous payload has been
+received by the remote client until that remote client itself writes a new payload and the original client observes the
+change. This favours a "ping-pong" architecture, where a client sends a message, waits for a reply, and only then sends
+its next message. If a client needs to send several messages in a row without an intervening reply, it should update
+the payload to contain a list of those messages rather than overwriting it repeatedly.
 
 ### The send mechanism
 
