@@ -49,6 +49,12 @@ Example of a full response:
 }
 ```
 
+The endpoint specification is otherwise unchanged.
+`GET /_matrix/client/versions`[^1] remains unauthenticated, is not
+rate-limited, and guest-access restrictions are not applicable. No new
+error responses are introduced; the field is purely additive on the
+existing response body.
+
 ##### Unstable prefix
 
 | Stable identifier | Purpose | Unstable identifier |
