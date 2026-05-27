@@ -25,7 +25,7 @@ parity to the eponymous object returned by `GET /_matrix/federation/v1/version`[
 
 Example of the `server` object:
 
-```
+```json
   "server": {
     "name": "My_Homeserver_Implementation",
     "version": "ArbitraryVersionNumber"
@@ -33,7 +33,7 @@ Example of the `server` object:
 ```
 
 Example of a full response:
-```
+```json
 {
   "server": {
     "name": "My_Homeserver_Implementation",
@@ -71,7 +71,7 @@ cooperation, community and conformity, precluding the need for bug-for-bug condi
 workarounds. This MSC has the option of including a normative statement which inhibits the use
 of vendor information to determine functionality.
 
-### Security Concerns
+### Security Considerations
 
 The federation endpoint is the only location which presently reveals this information.
 Site-administrators which have taken some measure to hide, or obscure, or modify it (i.e. with a
@@ -82,7 +82,8 @@ proxy) will have to note their implementation's new exposure of it when upgradin
 
 [^2]: https://spec.matrix.org/v1.16/server-server-api/#server-implementation
 
-[^3]: https://github.com/matrix-org/matrix-rust-sdk/blob/d228bde8ef51a98da10a6b7d4b9f3e5b8f49ad3c/crates/matrix-sdk/src/client/mod.rs#L581-L616
+[^3]:
+    https://github.com/matrix-org/matrix-rust-sdk/blob/d228bde8ef51a98da10a6b7d4b9f3e5b8f49ad3c/crates/matrix-sdk/src/client/mod.rs#L581-L616
 
 [^4]: https://github.com/matrix-org/matrix-spec-proposals/pull/2301
 
