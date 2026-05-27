@@ -38,23 +38,9 @@ Adding a `kind` of `webpush` to [`POST /_matrix/client/v3/pushers/set`](https://
 
 ## Proposal
 
-The MSC introduces a new pusher `kind`, for use with [`/pushers/set`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3pushersset): `webpush`.
+### New pusher
 
-[`PusherData`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3pushersset_request_pusherdata) is extended as follows:
-- `url`: is updated to be required if `kind` is `http`, or if `kind` is `webpush`. If `kind` is `webpush`, this is the URL defined as a `push resource` by RFC8030, and MUST be an HTTPS URL.
-- `auth`: is introduced, required if `kind` is `webpush`, not used otherwise. This holds the authentication secret as
-specified by [RFC8291 section 3.2](https://www.rfc-editor.org/rfc/rfc8291#section-3.2) - 16 random bytes encoded in URL-safe Base64 without padding.
-
-In addition to the changes to `PusherData`, the response to
-[GET /pushers](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3pushers)
-is further extended to include a new boolean property, `activated`. This is present only for pushers with
-`kind: webpush`, and reflects whether the pusher has been activated via a request to
-`/_matrix/client/v3/pushers/ack`.
-
-The homeserver doesn't send any notifications - except the one to validate the pusher - to the pusher, until the pusher is activated.
-
-The POST request to the endpoint dedicated to the creation, modification and deletion of pushers,
-`POST /_matrix/client/v3/pushers/set` now supports a new `kind`: `webpush`.
+The MSC introduces a new pusher `kind`, for use with [`/pushers/set`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3pushersset): `webpush`:
 - `kind`: is updated to introduce `webpush` which makes a
 pusher that sends Web Push encrypted messages.
 - `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key.
@@ -62,13 +48,18 @@ pusher that sends Web Push encrypted messages.
   P-256 keypair, converted to bytes using the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf),
   section 2.3.3, replicated from X9.62),  and encoded in URL-safe Base64 without padding.
 
-If the request creates a new pusher or modifies values under `pushkey` , `PusherData.url`, or `PusherData.auth`, then
-the server MUST respond with 201, "The pusher is set but needs to be activated". The server MUST then send a push notification to the
-url, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key, with a message containing
-`app_id` and `ack_token`. `ack_token` MUST be a unique identifier conforming to [the opaque identifier grammar](https://spec.matrix.org/v1.17/appendices/#opaque-identifiers).
+[`PusherData`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3pushersset_request_pusherdata) is extended as follows:
+- `url`: is updated to be required if `kind` is `http`, or if `kind` is `webpush`. If `kind` is `webpush`, this is the URL defined as a `push resource` by RFC8030, and MUST be an HTTPS URL.
+- `auth`: is introduced, required if `kind` is `webpush`, not used otherwise. This holds the authentication secret as
+specified by [RFC8291 section 3.2](https://www.rfc-editor.org/rfc/rfc8291#section-3.2) - 16 random bytes encoded in URL-safe Base64 without padding.
+
+If the request creates a new pusher or modifies values under `PusherData.url`, or `PusherData.auth`, then
+the server MUST respond with 201, "The pusher is set but needs to be activated".
+The server MUST then send a push notification to the url, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key, with a message containing
+`app_id` and `ack_token`.
+`ack_token` MUST be a unique identifier conforming to [the opaque identifier grammar](https://spec.matrix.org/v1.17/appendices/#opaque-identifiers).
 To ensure sufficient entropy is used, it is recommended to use a UUIDv4 token in hyphen form.
 
-The server must expire the `ack_token` after 5 minutes. In this case, the registration remains inactivated until the client tries to register again, then the homeserver sends a new `ack_token`.
 Example of a push notification containing a validation token:
 
 ```
@@ -77,6 +68,10 @@ Example of a push notification containing a validation token:
 	"ack_token": "6fc76b70-5fad-4eb7-93ea-a1af7a03258b"
 }
 ```
+
+The server must expire the `ack_token` after 5 minutes. In this case, the registration remains inactivated until the client tries to register again, then the homeserver sends a new `ack_token`.
+
+The homeserver doesn't send any notifications - except the one to validate the pusher - to the pusher, until the pusher is activated (cf. [New endpoint for pusher validation](#new-endpoint-for-pusher-validation)).
 
 ### New endpoint for pusher validation
 
@@ -93,6 +88,11 @@ A new endpoint is introduced, dedicated to pusher validation. This is called by 
 M_EXPIRED_ACTIVATION_TOKEN and M_UNKNOWN_ACTIVATION_TOKEN are new error codes.
 
 Note: As specified by RFC8030, the homeserver deletes the registration if it receives a 404, 410 or 403 from the push server on push.
+
+### Request to get pushers
+
+The request to get user's pushers [`GET /_matrix/client/v3/pushers`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3pushers) is updated as follow:
+- `Pusher` contains a new field for `webpush` pushers: `activated`, that is `true` if the pusher has been validated with the [endpoint for pusher validation](#new-endpoint-for-pusher-validation).
 
 ### New entry in capabilities list
 
