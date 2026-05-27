@@ -100,7 +100,8 @@ As many popular push servers require VAPID (Voluntary Application Server Identif
 
 The VAPID public key is in the uncompressed form, in URL-safe Base64 without padding.
 
-The capability is available to the user if `"enabled"` is present and is `true`.
+The capability is available to the user if `"enabled"` is present and is `true`. If `"enabled"` is not present or not `true`, the capability is not available.
+
 ```
 "m.webpush": {
 	"enabled": true,
