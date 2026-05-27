@@ -63,6 +63,20 @@ Example of a full response:
 }
 ```
 
+A server that advertises `net.zemos.msc4383` in `unstable_features` (or,
+after acceptance, supports the stable identifier) MUST include the
+`server` object in responses to `GET /_matrix/client/versions`, and MUST
+populate at least the `name` and `version` fields. The two fields
+SHOULD carry the same values the server reports from
+`GET /_matrix/federation/v1/version`; an implementation that does not
+operate a federation endpoint MAY emit its own values.
+
+Clients MUST NOT use the contents of the `server` object to gate
+application logic. The object is intended for inclusion in diagnostic
+submissions and similar logging contexts; routing user-visible behaviour
+on server identity is contrary to Matrix's interoperability goal (see
+Potential Issues).
+
 The endpoint specification is otherwise unchanged.
 `GET /_matrix/client/versions`[^1] remains unauthenticated, is not
 rate-limited, and guest-access restrictions are not applicable. No new
