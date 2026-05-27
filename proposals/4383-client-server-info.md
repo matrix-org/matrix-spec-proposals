@@ -77,6 +77,20 @@ The federation endpoint is the only location which presently reveals this inform
 Site-administrators which have taken some measure to hide, or obscure, or modify it (i.e. with a
 proxy) will have to note their implementation's new exposure of it when upgrading.
 
+### Implementations
+
+- Server: Tuwunel[^8] (shipped in v1.6.2), populating the `server` object on
+  `GET /_matrix/client/versions` and advertising `net.zemos.msc4383` in
+  `unstable_features`.
+- Protocol types: a Ruma[^9] pull request adds the `Server` struct and the
+  `Response.server` field behind the `unstable-msc4383` Cargo feature.
+- Client SDK: a matrix-rust-sdk[^10] pull request rewrites
+  `Client::server_vendor_info` to prefer the client-server source, falling
+  back to `GET /_matrix/federation/v1/version` only when the object is
+  absent. The feature is enabled by default in `matrix-sdk-ffi`, so
+  applications consuming the FFI binding acquire the client-server path
+  on rebuild without an app-side flag.
+
 
 [^1]: https://spec.matrix.org/v1.16/client-server-api/#api-versions
 
@@ -90,3 +104,9 @@ proxy) will have to note their implementation's new exposure of it when upgradin
 [^6]: https://github.com/matrix-org/matrix-rust-sdk
 
 [^7]: https://spec.matrix.org/v1.16/client-server-api/
+
+[^8]: https://github.com/matrix-construct/tuwunel
+
+[^9]: https://github.com/ruma/ruma/pull/2495
+
+[^10]: https://github.com/matrix-org/matrix-rust-sdk/pull/6622
