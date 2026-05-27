@@ -61,6 +61,31 @@ existing response body.
 | --- | --- | ---|
 | `server` | Server information | `net.zemos.msc4383.server` |
 
+### Backwards Compatibility
+
+The `server` object is additive. Clients that do not recognise it
+ignore it per the existing client-server forward-compatibility rules.
+No existing field is renamed or removed, and the response shape on
+`GET /_matrix/client/versions`[^1] is otherwise unchanged.
+
+Implementations populating the field advertise `net.zemos.msc4383: true`
+in `unstable_features`, so clients can detect support without inspecting
+the object. Clients that have existing fallback paths to
+`GET /_matrix/federation/v1/version`[^2] may keep those paths conditional
+on the flag's absence; once servers in the deployment universe advertise
+the flag, the fallback may be retired.
+
+SDKs that already expose a method fetching this data from the federation
+endpoint can transparently prefer the client-server source under this
+proposal and retain the federation call as a fallback, so application
+consumers receive the partition correction without code change. The
+matrix-rust-sdk implementation (see Implementations) demonstrates this
+pattern: the existing `Client::server_vendor_info` API preserves its
+return-type contract while switching its primary source to
+`GET /_matrix/client/versions`, and applications consuming the FFI
+binding inherit the new behaviour on rebuild without an application-side
+opt-in.
+
 ### Alternatives
 
 MSC2301[^4] enriches the discovery information, including some identifying information about the
