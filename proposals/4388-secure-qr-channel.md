@@ -106,10 +106,16 @@ the payload to contain a list of those messages rather than overwriting it repea
 
 ### The send mechanism
 
-Every send request MUST include a `sequence_token` value whose value is the `sequence_token` from the last `GET`
+Every send (`PUT`) request MUST include a `sequence_token` value whose value is the `sequence_token` from the last `GET`
 response seen by the requester. (The initiating device may also use the `sequence_token` supplied in the initial `POST` response
 to immediately update the payload.) Sends will succeed only if the supplied `sequence_token` matches the server's current
 revision of the payload. This prevents concurrent writes to the payload.
+
+To make sends idempotent (so that clients can safely retry a request whose response was lost), the server MUST also
+accept a send request whose `sequence_token` does not match the current revision if the supplied `data` is byte-for-byte
+identical to the current payload. In that case the server MUST NOT advance the payload or generate a new
+`sequence_token`, and MUST return the current `sequence_token` in the response, as if the client's previous (successful)
+request were being acknowledged again. Any other mismatch of `sequence_token` MUST be rejected as a concurrent write.
 
 n.b. Once a new payload has been sent there is no mechanism to retrieve previous payloads.
 
@@ -248,6 +254,13 @@ The server MUST perform a compare-and-swap operation by checking that the `seque
 the current sequence token for the session. If the `sequence_token` does not match then the `data` MUST not be
 accepted and the `M_CONCURRENT_WRITE` error is returned. On receipt of a `M_CONCURRENT_WRITE` the client can do a `GET`
 to fetch the latest data and `sequence_token` and then retry.
+
+To support idempotent retries (e.g. when a client did not receive the response to a previous `PUT` and so does not know
+whether it succeeded), the server MUST treat the request as successful - without advancing the payload or issuing a new
+`sequence_token` - if the supplied `sequence_token` does not match the current sequence token but the supplied `data`
+is byte-for-byte identical to the current payload. In this case the server returns `200 OK` with the current
+`sequence_token`, rather than `M_CONCURRENT_WRITE`. This allows a client to safely repeat the same `PUT` request without
+first issuing a `GET`.
 
 HTTP response codes, and Matrix error codes:
 
