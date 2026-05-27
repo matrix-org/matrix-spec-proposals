@@ -21,8 +21,12 @@ understood by site administrators to permit distinct middleware configurations, 
 apply WAF rules to the client and federation hierarchies under differing source and destination
 assumptions. Some sites disable the federation portion entirely, rendering the status quo
 unreliable. Client applications utilising the Matrix SDK[^6], a client-server library, have been
-observed[^3] making this cross-interface request; it is the only known example of an implementation
-doing so.
+observed[^3] making this cross-interface request. element-web exhibits a related workaround in its
+rageshake collector[^11]: a primary call to the Synapse-specific administrative endpoint
+`GET /_synapse/admin/v1/server_version`, falling back to the same federation `/version` call when
+the administrative endpoint is unavailable. The administrative-endpoint path substitutes a
+vendor-specific dependency for the partition violation; neither workaround functions under
+deployments that restrict the corresponding interface.
 
 This proposal reestablishes the partition between the client-server and server-server interfaces
 by exposing the same version data over both. With its adoption, no need for cross-interface
@@ -151,3 +155,5 @@ proxy) will have to note their implementation's new exposure of it when upgradin
 [^9]: https://github.com/ruma/ruma/pull/2495
 
 [^10]: https://github.com/matrix-org/matrix-rust-sdk/pull/6622
+
+[^11]: https://github.com/element-hq/element-web/blob/220f68935e1700f3bd6e0786aac049bf6803badb/apps/web/src/rageshake/submit-rageshake.ts#L153-L189
