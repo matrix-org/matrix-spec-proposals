@@ -41,7 +41,7 @@ tradeoff to include a capability for this feature.
 
 ## Alternatives
 
-In practice most implementations of URL previews either allow the server admin to disable/enable it, or  do
+In practice most implementations of URL previews either allow the server admin to disable/enable it, or do
 not support it. With that in mind, an alternative could be to just standardise the error code without the capability.
 However, this is a problem for three reasons.
 
