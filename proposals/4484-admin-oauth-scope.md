@@ -86,3 +86,7 @@ While this proposal is unstable, clients and servers should use the
 `urn:matrix:client:api:server_administration` scope. Servers may use the `org.continuwuity.msc4484.unstable`
 unstable feature flag to indicate that clients using OAuth must request the unstable
 `urn:matrix:client:cc.c10y.msc4484.server_administration` scope to use the Server Administration endpoints.
+
+## Dependencies
+
+None.
