@@ -17,7 +17,7 @@ ensuring the user can give informed consent to clients that wish to perform admi
 ## Proposal
 
 A new scope is added to the specification, which clients using OAuth MAY request:
-`urn:matrix:client:api:server_administration` (herein referred to as "the scope" for brevity). Clients using OAuth
+`urn:matrix:client:server_administration` (herein referred to as "the scope" for brevity). Clients using OAuth
 MUST request the scope to use any of the endpoints in the Server Administration module (all of which are currently
 under the `/_matrix/client/*/admin/` path).
 
