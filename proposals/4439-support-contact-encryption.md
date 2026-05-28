@@ -16,7 +16,8 @@ response from [`/.well-known/matrix/support`]. This field indicates a PGP key th
 communication to that particular contact. If the field is used, the `email_address` field SHOULD also be present.
 
 The value of this field MUST be a URI pointing to a location where the key may be retrieved. Raw key material MUST
-NOT appear as the value of this field. As with [RFC9116], it is always the responsibility of the sender to ensure they
+NOT appear as the value of this field. If a key fingerprint is to be used as this field, it MUST be prefixed with
+the `openpgp4fpr:` URI scheme. As with [RFC9116], it is always the responsibility of the sender to ensure they
 trust the key provided.
 
 Example of an OpenPGP key available from a web URI:
