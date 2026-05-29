@@ -54,6 +54,7 @@ The following changes are made to [`/pushers/set`](https://spec.matrix.org/v1.17
 - `data.url`: is updated to be required if `kind` is `http`, or if `kind` is `webpush`. If `kind` is `webpush`, this is the URL defined as a `push resource` by RFC8030, and MUST be an HTTPS URL.
 - `data.auth`: is introduced, required if `kind` is `webpush`, not used otherwise. This holds the authentication secret as
 specified by [RFC8291 section 3.2](https://www.rfc-editor.org/rfc/rfc8291#section-3.2) - 16 random bytes encoded in URL-safe Base64 without padding.
+- `data.format`: is updated to be available if `kind` is `webpush` too.
 
 If the request creates a new pusher or modifies values under `PusherData.url`, or `PusherData.auth`, then
 the server MUST respond with 201, "The pusher is set but needs to be activated".
@@ -116,6 +117,27 @@ The capability is available to the user if `"enabled"` is present and is `true`.
 
 A client that supports this kind of pusher should use it if the server supports it too, and
 not register another `http` pusher to avoid duplicate pushes.
+
+## Content of the push notifications
+
+Push notifications sent by "webpush" pushers contains the same data as push notifications sent by "HTTP" pushers,
+defined in the [Push Gateway Specification](https://spec.matrix.org/v1.18/push-gateway-api/),
+encrypted following [RFC8291](https://www.rfc-editor.org/rfc/rfc8291).
+
+When the format is "event_id_only", only the `event_id`, `room_id`, `counts`, and `devices` are required to be populated.
+
+If the endpoint returns an HTTP error code, the homeserver SHOULD retry for a reasonable amount of time using exponential backoff,
+and the homeserver MUST respect `Retry-After` header on 429 (*Too Many Requests*) responses.
+
+Push notifications are sent with the following headers:
+- `TTL`: set to `172800`, to expire the push notification after 2 days if the client's push service doesn't connect to the push server,
+    as defined by [RFC8030](https://www.rfc-editor.org/rfc/rfc8030).
+- `Urgency`: set to `high` if the Notification's `prio` is `high`, set to `normal` otherwise.
+    It defines how the push service should handle the notification in resources constraint environment,
+    specified by [RFC8030](https://www.rfc-editor.org/rfc/rfc8030).
+- `Authorization`: containing the VAPID authorization,
+    as defined by [RFC8292](https://www.rfc-editor.org/rfc/rfc8292).
+    The homeserver should reuse the authorization tokens to permit the push server to cache the results of signature validation.
 
 ## Overview of push notification flow using Web Push
 
