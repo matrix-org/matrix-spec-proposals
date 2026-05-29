@@ -40,7 +40,7 @@ Adding a `kind` of `webpush` to [`POST /_matrix/client/v3/pushers/set`](https://
 
 The MSC introduces a new pusher `kind`, `webpush`, for use with
 the [Pushers API](https://spec.matrix.org/v1.17/client-server-api/#client-behaviour-11).
-Such a pusher will send push notifcations via encrypted Web Push messages.
+Such a pusher will send push notifications via encrypted Web Push messages.
 
 ### Changes to `/pushers/set`
 
