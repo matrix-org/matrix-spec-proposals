@@ -103,20 +103,7 @@ Note: clients might find that their events are delayed further due to server loa
 The homeserver MAY enforce a maximum allowed delay for delayed events.
 If a requested delay exceeds this maximum, the homeserver will respond with HTTP 400
 and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
-with an `errcode` of `M_MAX_DELAY_EXCEEDED` and the maximum allowed delay in milliseconds in a `max_delay` field.
-
-For example, the following specifies a maximum delay of 24 hours:
-
-```http
-400 Bad Request
-Content-Type: application/json
-
-{
-  "errcode": "M_MAX_DELAY_EXCEEDED",
-  "error": "The requested delay exceeds the allowed maximum.",
-  "max_delay": 86400000
-}
-```
+with an `errcode` of `M_INVALID_PARAM`.
 
 The homeserver SHOULD apply rate limiting to the scheduling of delayed events to provide mitigation against the
 [Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threat.
@@ -139,6 +126,26 @@ Retry-After: 1200
 {
   "errcode": "M_LIMIT_EXCEEDED",
   "error": "The maximum number of delayed events has been reached.",
+}
+```
+
+#### Delayed event limits as a capability
+
+The values of both the maximum allowed delay and the maximum allowed number of scheduled events are advertised as a
+[capability](https://spec.matrix.org/v1.18/client-server-api/#capabilities-negotiation) named `m.delayed_events`, via
+the values of fields named `max_delay` and `max_scheduled` respectively.
+If the server doesn't enforce one of these limits, its representative field MUST be absent from the capability.
+If the server enforces none of these limits, the capability MAY be omitted entirely instead of having an empty body.
+
+For example, the following specifies a maximum allowed delay of 24 hours and a per-user limit of 10 delayed events:
+
+```json
+{
+  "capabilities": {
+    "m.delayed_events": {
+      "max_delay": 86400000,
+      "max_scheduled": 10
+    }
 }
 ```
 
@@ -745,10 +752,6 @@ this approach has been discounted.
 The considerations above apply irrespective of whether delayed events are federated directly
 or though other means such as by (ab)using typing notification EDUs.
 
-### `M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`
-
-The existing `M_INVALID_PARAM` error code could be used instead of introducing a new error code `M_MAX_DELAY_EXCEEDED`.
-
 ### `M_MAX_DELAYED_EVENTS_EXCEEDED` instead of `M_LIMIT_EXCEEDED`
 
 A new error code `M_MAX_DELAYED_EVENTS_EXCEEDED` could be introduced instead of reusing the existing `M_LIMIT_EXCEEDED` error
@@ -834,9 +837,8 @@ Whilst the MSC is unstable:
   instead of the `POST /_matrix/client/v1/delayed_events/{delay_id}/{action}` endpoints.
 - `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used
   instead of the `GET /_matrix/client/v1/delayed_events` endpoint.
-- `ORG.MATRIX.MSC4140_MAX_DELAY_EXCEEDED` should be used instead of `M_MAX_DELAY_EXCEEDED`.
-- `org.matrix.msc4140.max_delay` should be used instead of `max_delay`.
 - `org.matrix.msc4140.delay_id` should be used instead of `delay_id` as the key in `unsigned` event data.
+- `org.matrix.msc4140.delayed_events` should be used instead of the `m.delayed_events` capability name.
 
 Additionally, the feature is to be advertised as an unstable feature in the `GET /_matrix/client/versions` response,
 with the key `org.matrix.msc4140` set to `true`. So, the response could then look as follows:
