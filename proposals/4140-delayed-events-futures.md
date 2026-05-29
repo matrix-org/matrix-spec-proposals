@@ -269,7 +269,7 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
   The [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
   of the error that prevented the delayed event from being sent.
 - `event_id` - The `event_id` this event got in case it was sent.
-- `origin_server_ts` - The timestamp (as Unix time in milliseconds) when the event was finalised;
+- `finalised_ts` - The timestamp (as Unix time in milliseconds) when the event was finalised;
   absent if it is still scheduled.
   Using [timestamp massaging](https://spec.matrix.org/latest/application-service-api/#timestamp-massaging)
   does not affect the value of this field.
@@ -282,7 +282,7 @@ a list of details of delayed events owned by the requesting user.
 Delayed events are returned in order of a time-based property which may be specified by the `order_by` query parameter:
 - `send_ts` - the intended scheduled send time (`running_since` + `delay`) of the delayed event.
   This is the ordering used when `order_by` is not specified.
-- `origin_server_ts` - the time when the delayed event was finalised, or its scheduled send time if still scheduled.
+- `finalised_ts` - the time when the delayed event was finalised, or its scheduled send time if still scheduled.
 - `running_since` - the time when the delayed event was scheduled or last restarted.
 
 By default, delayed events are returned in increasing chronological order of the value specified by `order_by`.
