@@ -274,6 +274,16 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
   Using [timestamp massaging](https://spec.matrix.org/latest/application-service-api/#timestamp-massaging)
   does not affect the value of this field.
 
+Whether a delayed event is still scheduled, or has been sent, failed to be sent due to an error, or was cancelled
+can be determined by examining which of the optional fields are present in the response object:
+
+- If `finalised_ts` is absent, then the delayed event is still scheduled.
+- Otherwise, if `event_id` is present, then the delayed event has been sent.
+  - If `finalised_ts` < `running_since` + `delay`, then the event was sent manually by
+    [the `/send` endpoint](#managing-scheduled-delayed-events); otherwise, it was sent on its scheduled send time.
+- Otherwise, if `error` is present, then the delayed event failed to be sent (and was descheduled) due to an error.
+- Otherwise, the delayed event was cancelled by [the `/cancel` endpoint](#managing-scheduled-delayed-events).
+
 #### Getting a list of delayed events
 
 The new authenticated Client-Server API endpoint `GET /_matrix/client/v1/delayed_events` responds with
