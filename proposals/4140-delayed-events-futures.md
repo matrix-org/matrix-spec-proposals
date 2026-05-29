@@ -317,7 +317,7 @@ To filter which delayed events to return, the endpoint accepts any of the follow
 - `outcome`: `"send"|"cancel"|"error"` - Return only finalised delayed events that were either
   sent successfully, cancelled by user action, or cancelled by an error.
 - `reason`: `"action"|"delay"` - Return only finalised delayed events that were either
-  sent or cancelled by [the /send or /cancel endpoint](#managing-scheduled-delayed-events), or
+  sent or cancelled by [the `/send` or `/cancel` endpoint](#managing-scheduled-delayed-events), or
   remained scheduled until their scheduled send time.
 
 If any query parameter is set to an unsupported value,
