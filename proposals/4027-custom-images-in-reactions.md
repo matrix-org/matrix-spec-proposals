@@ -28,6 +28,9 @@ This proposal suggests two changes to events with the `m.annotation` relation.
 1. If the `key` of an `m.annotation` relation is an MXC URI of an image, clients
    should render the referenced image instead of the key text.
 
+   * The MXC URI may also be used as the `emoji` in the `m.recent_emoji` account
+     data event specified in <https://spec.matrix.org/v1.18/client-server-api/#recently-used-emoji>.
+
 2. When the annotation's key is an MXC URI, a new (optional) `shortcode` key may
    be added to the content of the event with a textual name for the image.
 
