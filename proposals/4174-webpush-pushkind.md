@@ -38,19 +38,21 @@ Adding a `kind` of `webpush` to [`POST /_matrix/client/v3/pushers/set`](https://
 
 ## Proposal
 
-### New pusher
+The MSC introduces a new pusher `kind`, `webpush`, for use with
+the [Pushers API](https://spec.matrix.org/v1.17/client-server-api/#client-behaviour-11).
+Such a pusher will send push notifcations via encrypted Web Push messages.
 
-The MSC introduces a new pusher `kind`, for use with [`/pushers/set`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3pushersset): `webpush`:
-- `kind`: is updated to introduce `webpush` which makes a
-pusher that sends Web Push encrypted messages.
+### Changes to `/pushers/set`
+
+The following changes are made to [`/pushers/set`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3pushersset).
+
+- `kind`: is updated to introduce `webpush`.
 - `pushkey`: is updated, if the `kind` is `webpush`, this is the user agent public key.
   Per  [RFC8291 section 3.1](https://www.rfc-editor.org/rfc/rfc8291#section-3.1), this is the public part of a
   P-256 keypair, converted to bytes using the uncompressed form ([SEC 1](https://www.secg.org/sec1-v2.pdf),
   section 2.3.3, replicated from X9.62),  and encoded in URL-safe Base64 without padding.
-
-[`PusherData`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3pushersset_request_pusherdata) is extended as follows:
-- `url`: is updated to be required if `kind` is `http`, or if `kind` is `webpush`. If `kind` is `webpush`, this is the URL defined as a `push resource` by RFC8030, and MUST be an HTTPS URL.
-- `auth`: is introduced, required if `kind` is `webpush`, not used otherwise. This holds the authentication secret as
+- `data.url`: is updated to be required if `kind` is `http`, or if `kind` is `webpush`. If `kind` is `webpush`, this is the URL defined as a `push resource` by RFC8030, and MUST be an HTTPS URL.
+- `data.auth`: is introduced, required if `kind` is `webpush`, not used otherwise. This holds the authentication secret as
 specified by [RFC8291 section 3.2](https://www.rfc-editor.org/rfc/rfc8291#section-3.2) - 16 random bytes encoded in URL-safe Base64 without padding.
 
 If the request creates a new pusher or modifies values under `PusherData.url`, or `PusherData.auth`, then
@@ -89,10 +91,13 @@ M_EXPIRED_ACTIVATION_TOKEN and M_UNKNOWN_ACTIVATION_TOKEN are new error codes.
 
 Note: As specified by RFC8030, the homeserver deletes the registration if it receives a 404, 410 or 403 from the push server on push.
 
-### Request to get pushers
+### Changes to `GET /pushers`
 
-The request to get user's pushers [`GET /_matrix/client/v3/pushers`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3pushers) is updated as follow:
-- `Pusher` contains a new field for `webpush` pushers: `activated`, that is `true` if the pusher has been validated with the [endpoint for pusher validation](#new-endpoint-for-pusher-validation).
+In addition to the changes to the response body implied by the changes to `/pushers/set`,
+[`GET /pushers`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3pushers) is updated
+to return a new property for `webpush` pushers: `activated`.
+
+`activated` must be present for `webpush` pushers. It is `true` if the pusher has been validated with the [endpoint for pusher validation](#new-endpoint-for-pusher-validation), and otherwise false.
 
 ### New entry in capabilities list
 
