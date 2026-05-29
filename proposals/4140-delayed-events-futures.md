@@ -789,9 +789,12 @@ cancelling a delayed event has it retained as a finalised event for later lookup
 
 Some alternatives for the `running_since` field on the `GET` response are:
 
-- `delaying_from`
-- `delayed_since`
-- `delaying_since`
+- `scheduled_ts` - clearly designates the field as a timestamp due to its suffix of `ts`,
+  but might be interpreted as the scheduled send time
+- `created_ts` - also clearly a timestamp, but no other part of this proposal uses the term "created"
+- `delaying_from` - `delaying` might be clearer than `running`, and `from` might be clearer than `since`
+- `delayed_since` - using past tense might better convey that this time is in the past
+- `delaying_since` - `since` might be a clearer suffix than `from`
 - `last_restart` - but this feels less clear than `running_since` for a delayed event that hasn't been restarted
 - `send_time` - with a value of `delay` + the start time of the timer
 
