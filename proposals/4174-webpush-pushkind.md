@@ -10,7 +10,7 @@ on that.
 Leaking the room and event id to third parties is problematic and can be avoided.
 
 
-Web Push is a standard for (E2EE) push notifications, defined by 3 RFCs:
+[Web Push](https://datatracker.ietf.org/wg/webpush/documents/) is a standard for (E2EE) push notifications, defined by 3 RFCs:
 - [RFC8030](https://www.rfc-editor.org/rfc/rfc8030) defines the application server to push server communications. In matrix context, the application server is the homeserver.
 - [RFC8291](https://www.rfc-editor.org/rfc/rfc8291) defines the encryption:
     - the subscribing client (user agent in RFC8030) generates a P-256 key pair, and the *authentication secret*, and sends the P-256 public key and the *authentication secret* to the homeserver during registration
