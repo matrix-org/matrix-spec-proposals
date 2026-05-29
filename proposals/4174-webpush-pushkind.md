@@ -141,31 +141,42 @@ Push notifications are sent with the following headers:
 
 ## Overview of push notification flow using Web Push
 
-The current overview is here: <https://spec.matrix.org/v1.17/push-gateway-api/#overview>
+The current overview is here: <https://spec.matrix.org/v1.17/push-gateway-api/#overview>.
+This proposal effectively removes the Matrix Push Gateway.
 
-It becomes:
+In a web environment, the device vendor's Push Provider is replaced with the browser vendor's
+Push Server and [Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API),
+to looks like:
 
 ```
-                  Matrix HTTP
-             Notification Protocol
-
-           +-------------------+                  +---------------+
-           |                   |                  |               |
-           | Matrix homeserver +--> Web Push +----> Push Server   |
-           |                   |                  |               |
-           +-^-----------------+                  +----+----------+
-             |                                         |
-    Matrix   |                                         |
- Client/Server API                                     |
-             |                                         |
-             |   +--+-+                                |
-             |   |    <--------------------------------+
-             +---+    |
-                 |    |          Provider Push Protocol
-                 +----+
-
-         Mobile Device or Client
+                                     +---------------------+
+                                     |                     |
+                                     |   Browser Vendor    |
+                                     |                     |
+    +-------------------+            | +-----------------+ |
+    |                   |  Web Push  | |                 | |
+    | Matrix homeserver +-------------->   Push Server   | |
+    |                   |            | |                 | |
+    +--------^----------+            | +--------+--------+ |
+             | C/S API               |          |          |
+             |                       |          |          |
+             |   +-------------------+----------|----------+----+
+             |   |                   |          |          |    |
+             |   |   +----+          | +--------V--------+ |    |
+             |   |   |    |          | |                 | |    |
+             +-------+    |<-----------+    Push API     | |    |
+                 |   |    |          | |                 | |    |
+                 |   +----+          | +-----------------+ |    |
+                 | Matrix Client     |                     |    |
+                 |                   +---------------------+    |
+                 |                                              |
+                 +----------------------------------------------+
+                                  Web Browser
 ```
+
+However, note that Web Push is not limited to use in browsers.
+For example, Google also provide a Web Push interface for Android Push notifications (FCM),
+in which case the javascript Push API is replaced with the Play Services.
 
 ## Potential issues
 
