@@ -4,7 +4,7 @@ In current matrix we have no way to tell clients that we simply do not have pres
 for a given homeserver or user. This proposal addresses this fact by adding a `disabled` state.
 
 By adding a `disabled` state to presence it allows us to kill two birds with one stone. Its used for
-MSC4043 and for this proposal. In this proposal its simply used to indicatea lack of information about 
+[MSC4043](https://github.com/matrix-org/matrix-spec-proposals/pull/4043) and for this proposal. In this proposal its simply used to indicatea lack of information about 
 a given user. This is going to 9 times out of 10 be because of that presence is disabled somewhere in the 
 chain and therefore you cant get data. Be that disabled by the other user or their server or your server.
 If you are on matrix.org for example all presence will return this value if this proposal is adopted until 
