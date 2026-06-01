@@ -165,7 +165,7 @@ arrives after the sender has disconnected from the session or has determined the
 restarted) `lifetime` to be exceeded.
 
     *  ringing (outgoing or incoming)
-    .  previous ring duration overriden by an ack.
+    .  previous ring duration overridden by an ack.
 
                                               offline
             sender    receiverA   receiverB    device
