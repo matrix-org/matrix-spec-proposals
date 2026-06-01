@@ -33,15 +33,15 @@ the existence of a session for a specific MatrixRTC application.
 }
 ```
 
-- `application`:\
+- `application` (required):\
   A JSON object that MUST specify the application type and MAY include additional fields to convey
   required metadata for processing the notification.
-- `m.text`:\
+- `m.text` (required):\
   A fallback textual representation of the notification as per [MSC1767].
-- `m.mentions`:\
+- `m.mentions` (required):\
   As defined by `m.mentions` in the [Client-Server API]. Declares which users the notification
   targets.
-- `m.relates_to`:\
+- `m.relates_to` (required):\
   An `m.reference` relation to the `m.rtc.member` event of the notifying member. This can be used to
   gather session data for this notification event.
 
@@ -82,14 +82,14 @@ introduced in the `application` content block to enable ringing and notifying re
 }
 ```
 
-- `notification_type` required:\
+- `notification_type` (required):\
   The type of notification to trigger. One of `ring`, `notification`.
-- `sender_ts`:\
+- `sender_ts` (required):\
   The local timestamp on the sending device when the event was emitted. This is used in combination
   with `lifetime` to evaluate if the notification event is valid. To mitigate clients lying about
   the `sender_ts`, this value has to be checked against `origin_server_ts`. Receivers SHOULD use
   `origin_server_ts` if `|sender_ts - origin_server_ts| > 20000 ms`.
-- `lifetime` required if `notification_type` is `ring`, otherwise ignored:\
+- `lifetime` (required if `notification_type` is `ring`, otherwise ignored):\
   The time in milliseconds relative to `sender_ts` for which the notification should be considered
   active. The recommended value is 30 seconds. The receiving client SHOULD cap the lifetime to an
   upper bound (recommended: 2 minutes). `lifetime` MUST be non-negative and SHOULD NOT exceed 120000
