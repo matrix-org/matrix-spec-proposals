@@ -146,6 +146,7 @@ For example, the following specifies a maximum allowed delay of 24 hours and a p
       "max_delay": 86400000,
       "max_scheduled": 10
     }
+  }
 }
 ```
 
