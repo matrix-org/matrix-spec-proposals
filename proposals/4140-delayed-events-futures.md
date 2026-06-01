@@ -746,6 +746,21 @@ state events to begin with. Additionally, this type of race condition can also h
 events due to federation delay. Potentially addressing this situation is, therefore, left to a future
 proposal.
 
+### Rate-limiting for heartbeats
+
+In office environments several clients might share the same public IP address. If the server
+rate limits based on IP address and multiple clients use the heartbeat pattern (where a scheduled
+delayed event is rescheduled recurringly), it is more likely for them to run into rate limit blocks.
+This can result in their delayed event being triggered too early which can negatively affect application
+logic. For instance, if the delayed event is a call disconnect event, triggering it too early will result
+in unexpected disconnections from the call[^call-rate-limit].
+
+The same problem with rate limiting based on IP address also occurs when an external service
+manages delayed events for a large number of users.
+
+[^call-rate-limit]: See also https://github.com/element-hq/element-call/issues/3985.
+
+To mitigate this, the server SHOULD rate limit the management endpoints based on the `delay_id`.
 ## Alternatives
 
 ### OAuth 2.0 scope for management endpoints
