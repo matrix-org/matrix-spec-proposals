@@ -391,7 +391,7 @@ Content-Type: application/json
       "delay": 2000,
       "running_since": 1721732853280,
       "content": {
-        "body": "Hllo, evryone!",
+        "body": "hello, every body!",
         "msgtype": "m.text"
       },
       "finalised_ts": 1721732853780,
