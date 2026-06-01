@@ -290,13 +290,12 @@ can be determined by examining which of the optional fields are present in the r
 The new authenticated Client-Server API endpoint `GET /_matrix/client/v1/delayed_events` responds with
 a list of details of delayed events owned by the requesting user.
 
-Delayed events are returned in order of a time-based property which may be specified by the `order_by` query parameter:
-- `send_ts` - the intended scheduled send time (`running_since` + `delay`) of the delayed event.
-  This is the ordering used when `order_by` is not specified.
-- `finalised_ts` - the time when the delayed event was finalised, or its scheduled send time if still scheduled.
-- `running_since` - the time when the delayed event was scheduled or last restarted.
+Delayed events are returned in chronological order of their intended send time, which is `running_since` + `delay`.
 
-By default, delayed events are returned in increasing chronological order of the value specified by `order_by`.
+To filter results to include only delayed events with a scheduled send time within a specific time range,
+the endpoint supports query parameters of `from_ts` and `to_ts`, which are Unix timestamps that specify this time range.
+If either parameter is unspecified, its respective end of the time range is unbounded.
+
 To return results in reverse chronological order, the endpoint supports a query parameter of `dir=b`.
 Providing a query parameter of `dir=f` uses the default of increasing chronological order.
 
@@ -304,22 +303,11 @@ The endpoint accepts a query parameter `from` which is a token that can be used 
 as per the [pagination convention](https://spec.matrix.org/v1.18/appendices/#pagination).
 The homeserver can choose a suitable page size.
 
-By default, the first page of results starts from the time the request is made.
-To have the first page start from a different point in time,
-it may be specified in a query parameter of `since_ts`, expressed as a Unix timestamp in milliseconds,
-or as a special-case string of "end" to start from the latest possible results.
-
-By default, all delayed events belonging to the requesting user are returned in the response,
-albeit subject to pagination.
-To filter which delayed events to return, the endpoint accepts any of the following query parameters:
-- `status`: `"scheduled"|"finalised"` - Return only scheduled or finalised delayed events.
+To filter results on delayed events with certain properties, the endpoint accepts any of the following query parameters:
 - `room_id` - Return only delayed events that were scheduled to be sent into the room with this ID.
 - `type` - Return only delayed events of the specified event type.
-- `outcome`: `"send"|"cancel"|"error"` - Return only finalised delayed events that were either
-  sent successfully, cancelled by user action, or cancelled by an error.
-- `reason`: `"action"|"delay"` - Return only finalised delayed events that were either
-  sent or cancelled by [the `/send` or `/cancel` endpoint](#managing-scheduled-delayed-events), or
-  remained scheduled until their scheduled send time.
+- `status`: `"scheduled"|"send"|"cancel"|"error"` - Return only delayed events that are still scheduled to be sent, or
+  only finalised delayed events that were either sent successfully, cancelled by user action, or cancelled by an error.
 
 If any query parameter is set to an unsupported value,
 the homeserver will respond with HTTP 400
@@ -329,15 +317,16 @@ with an `errcode` of `M_INVALID_PARAM`.
 On success, the response is HTTP 200 and a JSON object containing the following fields:
 
 - `delayed_events` - An array of objects describing delayed events owned by the requesting user
-  that match the filters provided in the request, in the order specified by the `order_by` and `dir` query parameters.
+  that match the filters provided in the request, in the order specified by `dir`.
   These objects contain the same fields as the object returned by
   [the single-item lookup](#getting-a-single-delayed-event).
 - `next_batch` - A token that can be passed into a subsequent call to the endpoint to retrieve the next page of results.
-  Absent if paginating backwards or when there is no next page of results.
-- `prev_batch` - A token that can be passed into a subsequent call to the endpoint to retrieve the previous page of results.
-  Absent if paginating forward or when there is no previous page of results.
+  Absent when there is no next page of results.
 
-An example for a response to the `GET /_matrix/client/v1/delayed_events?dir=b&since_ts=end` endpoint:
+For example,
+`GET /_matrix/client/v1/delayed_events?dir=b&to_ts=1721732858785`
+returns all of the requesting user's delayed events that had been scheduled to be sent no later than the specified time,
+starting from the one that had been scheduled to be sent last, and including ones that were already sent or cancelled:
 
 ```http
 200 OK
@@ -346,52 +335,182 @@ Content-Type: application/json
 {
   "delayed_events": [
     {
-      "delay_id": "1234567890",
+      "delay_id": "the-latest-scheduled-event",
       "room_id": "!roomid:example.com",
       "type": "m.room.message",
-      "delay": 15000,
+      "delay": 5500,
       "running_since": 1721732853284,
-      "content":{
+      "content": {
         "msgtype": "m.text",
         "body": "I am now offline"
       }
     },
     {
-      "delay_id": "abcdefgh",
+      "delay_id": "an-earlier-scheduled-event",
       "room_id": "!roomid:example.com",
       "type": "m.rtc.member",
       "state_key": "@user:example.com_DEVICEID",
       "delay": 5000,
       "running_since": 1721732853284,
-      "content":{
+      "content": {
         "application": "m.call",
         "call_id": "",
         ...
       }
     },
     {
-      "delay_id": "zyxwvuts",
-      "room_id": "!roomid:example.com",
+      "delay_id": "an-event-sent-manually-before-scheduled-send-time",
+      "room_id": "!another-roomid:example.com",
+      "type": "m.room.message",
+      "delay": 5000,
+      "running_since": 1721732853280,
+      "finalised_ts": 1721732854280,
+      "event_id": "$abcabca",
+      "content": {
+        "body": "I have something important to say",
+        "msgtype": "m.text"
+      }
+    },
+    {
+      "delay_id": "an-event-sent-as-scheduled",
+      "room_id": "!another-roomid:example.com",
+      "type": "m.room.message",
+      "delay": 2000,
+      "running_since": 1721732854280,
+      "finalised_ts": 1721732856280,
+      "event_id": "$xyzyxyz",
+      "content": {
+        "body": "Hello, everyone!",
+        "msgtype": "m.text"
+      }
+    },
+    {
+      "delay_id": "a-cancelled-event",
+      "room_id": "!another-roomid:example.com",
       "type": "m.room.message",
       "delay": 2000,
       "running_since": 1721732853280,
-      "content":{
-        "body": "Boo!",
+      "content": {
+        "body": "Hllo, evryone!",
         "msgtype": "m.text"
       },
-      "event_id": "$xyzyxyz"
+      "finalised_ts": 1721732853780,
     }
   ],
   "next_batch": "b12345"
 }
 ```
 
-Unless the delayed event is updated beforehand, the event will be sent after `running_since` + `delay`.
+As another example,
+`GET /_matrix/client/v1/delayed_events?status=scheduled&room_id=!room:example.org&type=m.room.topic`
+returns all of the requesting user's scheduled topic changes to `!room:example.org`, from earliest to latest:
 
-This can be used by clients to display events that have been scheduled to be sent in the future.
+```http
+200 OK
+Content-Type: application/json
 
-For use cases where the existence of a delayed event is also of interest for other room members
-(e.g. self-destructing messages), it is recommended to include this information in the original/affected event itself.
+{
+  "delayed_events": [
+    {
+      "delay_id": "d0",
+      "room_id": "!roomid:example.com",
+      "type": "m.room.topic",
+      "state_key": "",
+      "delay": 5000,
+      "running_since": 1721732853280,
+      "content": {
+        "topic": "This is a brand new room"
+      }
+    },
+    {
+      "delay_id": "d1",
+      "room_id": "!roomid:example.com",
+      "type": "m.room.topic",
+      "state_key": "",
+      "delay": 15000,
+      "running_since": 1721732853280,
+      "content": {
+        "topic": "This room is not as new"
+      }
+    },
+    {
+      "delay_id": "d2",
+      "room_id": "!roomid:example.com",
+      "type": "m.room.topic",
+      "state_key": "",
+      "delay": 20000,
+      "running_since": 1721732853280,
+      "content": {
+        "topic": "What an old room this is"
+      }
+    },
+  ]
+}
+```
+
+As yet another example,
+`GET /_matrix/client/v1/delayed_events?status=error&type=m.room.member`
+returns all of the requesting user's failed attempts to schedule the invitation/removal/banning of a user:
+
+```http
+200 OK
+Content-Type: application/json
+
+{
+  "delayed_events": [
+    {
+      "delay_id": "d1",
+      "room_id": "!room1:example.com",
+      "type": "m.room.member",
+      "state_key": "@new-user:example.com",
+      "delay": 5000,
+      "running_since": 1721732853280,
+      "content": {
+        "membership": "invite",
+        "reason": "You should be in this room by now"
+      },
+      "error": {
+        "errcode": "M_LIMIT_EXCEEDED",
+        "error": "Too many requests",
+        "retry_after_ms": 2000
+      }
+    },
+    {
+      "delay_id": "d2",
+      "room_id": "!room2:example.com",
+      "type": "m.room.member",
+      "state_key": "@wanted-user:example.com",
+      "delay": 5000,
+      "running_since": 1721732854280,
+      "content": {
+        "membership": "join",
+        "reason": "You just have to be in this room"
+      },
+      "error": {
+        "errcode": "M_FORBIDDEN",
+        "error": "Cannot force another user to join."
+      }
+    },
+    {
+      "delay_id": "d2",
+      "room_id": "!room3:example.com",
+      "type": "m.room.topic",
+      "state_key": "@temporary-user:example.com",
+      "delay": 5000,
+      "running_since": 1721732855280,
+      "content": {
+        "membership": "leave",
+        "reason": "Your time is up"
+      },
+      "error": {
+        "errcode": "M_FORBIDDEN",
+        "error": "You do not have a high enough power level to kick from this room."
+      }
+    },
+  ]
+}
+```
+
 
 #### Retention of finalised delayed events
 
