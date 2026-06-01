@@ -1,227 +1,280 @@
-# MSC4075: MatrixRTC Notification Event (call ringing)
+# MSC4075: MatrixRTC notifications & call ringing
 
-It is important that an RTC session initiated on clientA can make targeted clients ring.
-This is of interest in 1:1 Rooms/Calls but also in bigger rooms ringing can be desired.
+Notifications for MatrixRTC applications as per [MSC4143] differ from normal chat notifications.
+There are also differences between MatrixRTC applications. For calling applications, for instance,
+being able to ring other participants for a specific time to prompt them to join the call is a
+standard use case. Whiteboard applications in turn might want to send completely different
+notifications.
 
-The existing "legacy" [1:1 VoIP calling in Matrix](https://spec.matrix.org/v1.11/client-server-api/#voice-over-ip)
-uses room events to negotiate the call.
-A client can use the initial steps in the negotiation to also make the phone ring.
-
-With [MSC4143: MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
-this signalling is done over state events. Furthermore, [MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
-allows for large group calls (not just 1:1) which makes it very
-desirable to have more configurations over the ringing process.
+While it's possible to base notifications on push rules and the existing [MatrixRTC][MSC4143]
+membership events, providing notification metadata in those events directly overloads them. Instead,
+this proposal introduces a dedicated timeline event to trigger application-specific MatrixRTC
+notifications and defines notifications for the `m.call` application type from [MSC4196].
 
 ## Proposal
 
-A new event `m.rtc.notification` is proposed which can be sent by a client that
-wants to notify others about the existence of a session for a MatrixRTC application.
-This event is added to the push rules for clients which
-support the application type so they receive push notifications. The push rules for intentional
-mentions make sure no unnecessary push notification is sent.
+A new event `m.rtc.notification` is introduced which can be sent by clients to notify others about
+the existence of a session for a specific MatrixRTC application.
 
-This event contains the following fields by leveraging intentional mentions.
-
-```json5
+``` json5
 {
-  "type":"m.rtc.notification", // org.matrix.msc4075.rtc.notification
+  "type":"m.rtc.notification",
   "content": {
-    "sender_ts": 1752583130365,
-    "lifetime": 30000,
+    "application": {
+      // MatrixRTC application type
+      "type": "...",
+      // Application-specific notification metadata
+      ...
+    },
+    "m.text": [{"body": "Session started by {sender}"}],
     "m.mentions": {"user_ids": [], "room": true | false},
-    "m.relates_to": {"rel_type":"m.reference", "event_id":"$rtc_member_event_id"},
-    "notification_type": "ring | notification",
+    "m.relates_to": {"rel_type":"m.reference", "event_id":"$rtc_member_event_id"}
   }
 }
 ```
 
-The fields are defined as follows:
+- `application`:\
+  A JSON object that MUST specify the application type and MAY include additional fields to convey
+  required metadata for processing the notification.
+- `m.text`:\
+  A fallback textual representation of the notification as per [MSC1767].
+- `m.mentions`:\
+  As defined by `m.mentions` in the [Client-Server API]. Declares which users the notification
+  targets.
+- `m.relates_to`:\
+  An `m.reference` relation to the `m.rtc.member` event of the notifying member. This can be used to
+  gather session data for this notification event.
 
-- `sender_ts` the local timestamp observed by the sender device. Is used in combination with lifetime to evaluate if
-  the notification event is valid. To mitigate clients lying about the `sender_ts` this value has to be checked with `origin_server_ts`.
-  Receivers **SHOULD** use `origin_server_ts` if `|sender_ts - origin_server_ts| > 20000 ms`.
-- `lifetime` the relative time to the `sender_ts` for which the `ring` is active or to define the window in which the
-  `notification` is not ignored. The recommended value is **30 seconds**.
-  The receiving client **SHOULD** cap the lifetime to an upper bound. (recommended: **2 minutes**).
-  `lifetime` **MUST** be non-negative and SHOULD NOT exceed 120000 ms.
+Clients can only send `m.rtc.notification` events after having sent their `m.rtc.member` event due
+to the required relation between both events.
 
-- `m.mentions` optional:\
-  Has the structure as defined for `m.mentions` in the [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#definition-mmentions).
-- `notification_type` required string:\
-  The type of notification to send.\
-  `ring`: The client should ring.\
-  `notification`: The client should show a notification.\
-- `m.relates_to`: optional:\
-  A relation (with type: `m.reference`) to the session participation event
-  (`m.rtc.member`) of the notifying member.
-  If available this can be used to gather session data for this notification event.
-  It should always be used if the notification is related to an RTC session.
-  (Eventually this event might be used to send
-  RTC session independent ringing notifications with a custom message. A bot-controlled tea timer for instance.)
-The `session` information for this notification event can be obtained by the relation to the `m.rtc.member` event.
+Clients SHOULD send `m.rtc.notification` as a sticky event as per [MSC4354] for the associated
+delivery guarantee.
 
-In the following we define **call** as any MatrixRTC session with the
-same `"session"` contents.
+The receiving client SHOULD only notify the user if all of the following conditions apply:
 
-### Client behaviour on receiving a `m.rtc.notification` event
+- The notification event is not filtered out by the current push rules.
+- The user is included in the `m.mentions` section (either directly or via `room = true`).
+- The sender's `m.rtc.member` event connects them to an open MatrixRTC slot in the room.
+- The user is not already connected to the respective MatrixRTC session via an `m.rtc.member` event.
 
-On retrieval, the client should not render the event in the timeline.
-If the notification conditions (listed below) apply,
-the client has to inform the user about the **call** with an appropriate user flow.
-For `notification_type == "ring"` some kind of sound is required
-(except if overwritten by another client specific setting),
-for `notification_type == "notification"` a visual indication is enough.
-This visual indication should be more than an unread indicator
-and similar to a notification banner.
-This is not enforced by the spec however and ultimately a client choice.
+Active notifications SHOULD be cancelled if any of these conditions stop being valid later.
 
-The client should only inform the user if all of the following conditions apply:
+How the notification is displayed to the user is specific to both the application and the client.
 
-- `m.rtc.notification` content:\
-  If the user is *not* listed in the `m.mentions` section as defined in the\
-  [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#definition-mmentions),\
-  the event should be ignored. (Push notifications are automatically filtered
-  so this only is important for events received via a sync)
-- Local notification settings:\
-  If the room is set to silent, the client should never play a ring sound.
-  In this scenario, a `m.rtc.notification`
-  event should at most be used to mark the room as unread or update the room's
-  "has active **call** icon". (the exact behaviour is up to the client)
-- Currently playing a ring sound (room timeline):\
-  If the user already received a ring event for this **call** and is playing
-  the ring sound any incoming `m.rtc.notification` for the same **call**
-  should be ignored. If the user failed to pick up and a new `m.rtc.notification`
-  arrives for the same room the device should ring again.
-- Current user is a member of the **call** (room state):\
-  None of the devices should ring if they receive a `m.rtc.notification` if the
-  room's state `m.rtc.member` event of the user contains a membership for
-  the **call** in the `m.rtc.notification` event.
-  This includes stopping the current ring sound if the room state updates so
-  this condition is true.
-- If a notification event is received in "real time":\
-  Notify events that are older than **`lifetime`** are ignored (using the
-  `sender_ts` timestamp).\
-  Otherwise a client syncing for the first time would ring for outdated call events.
-  In general ringing only makes sense in "real time".
-  Any client which is not able to receive the event in the `lifetime` period should
-  not ring to prohibit annoying/misleading/irrelevant/outdated rings.
+If the receiving client doesn't support the referenced application type, it SHOULD use the `m.text`
+fallback to visualise the notification.
 
-### Client behaviour when sending a `m.rtc.notification` event
+### Call ringing
 
-Sending a `m.rtc.notification` should only happen if all of these conditions apply:
+For notifications associated with `m.call` applications as per [MSC4196], additional properties are
+introduced in the `application` content block to enable ringing and notifying recipients.
 
-- If the user deliberately wants to send a new notification event
-  (It is possible to send a `m.rtc.notification` for an ongoing call if that
-  makes sense. Starting a call ahead of time, planning in a small group,
-  ringing another set of users at a specific time so they don't forget to join.
-  Ringing one specific user again who missed joining during the first ring.)
-- If the user has not yet received a `m.rtc.notification` for the **call** they want to
-  participate but the other conditions apply. (So the obvious case is, that this
-  is the first user in a new call session).
-- If possible the user should send their `m.rtc.member` event first to allow setting up the relation
-  for the notification event.
-- The sending client can compute the "exact" (or at least "a good approximation"
-  if the local clocks are not configured correctly) at which the
-  `m.rtc.notification` ring will end using the `lifetime` + `sender_ts`.
-  This allows the sending client to show a local dialling/ringing
-  animation/indicator/sound.
-  - The location to put this information would be the invite event.
-  This would be an edge case and only required for the specific use case
-    of being able to ring without a shared DM/Room.
-    It should be discussed in an additional MSC and is not part of this proposal.
-
-### Extensible Events
-
-The concept of [extensible events](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md)
-is used to offer a fallback for clients that do not support notification events
-and benefit from a fallback text representation.
-
-The body should contain a `m.text` field with the following content:
-
-```json5
-// notification
- m.text: [{"body": "Call started by {sender}"}]
-
-// ring event
- m.text: [{"body": "Call started by {sender} 🎶"}]
+``` json5
+{
+  "application": {
+    "type": "m.call",
+    "notification_type": "ring | notification",
+    "sender_ts": 1752583130365,
+    "lifetime": 30000
+    "m.call.intent": "audio | video | something-else",
+  }
+}
 ```
+
+- `notification_type` required:\
+  The type of notification to trigger. One of `ring`, `notification`.
+- `sender_ts`:\
+  The local timestamp on the sending device when the event was emitted. This is used in combination
+  with `lifetime` to evaluate if the notification event is valid. To mitigate clients lying about
+  the `sender_ts`, this value has to be checked against `origin_server_ts`. Receivers SHOULD use
+  `origin_server_ts` if `|sender_ts - origin_server_ts| > 20000 ms`.
+- `lifetime` required if `notification_type` is `ring`, otherwise ignored:\
+  The time in milliseconds relative to `sender_ts` for which the notification should be considered
+  active. The recommended value is 30 seconds. The receiving client SHOULD cap the lifetime to an
+  upper bound (recommended: 2 minutes). `lifetime` MUST be non-negative and SHOULD NOT exceed 120000
+  ms.
+- `m.call.intent`:\
+  The intent of the call as per [MSC4196].
+
+For `notification_type == "ring"`, the receiving client should audibly notify the user while for
+`notification_type == "notification"` a visual indication is enough. Further specifics of how the
+notification is presented to the user, including the ringing sound, are left to the receiving
+client.
+
+After sending a notification event with `notification_type = ring`, the client SHOULD indicate to
+the sending user that the recipients are currently being rung until either:
+
+- `sender_ts + lifetime` has elapsed or
+- the sender has disconnected from the session or
+- all recipients have connected to the session.
+
+On top of the application-independent requirements from above, receiving clients SHOULD ignore
+notification events if:
+
+- The event's `lifetime` as measured from `sender_ts` / `origin_server_ts` has elapsed. This
+  prevents outdated notification events from causing notifications.
+- The client is already presenting an earlier notification event for the same session.
+
+#### Optimistic ringing
+
+For `notification_type = ring`, receiving clients MAY start optimistically ringing the user ahead of
+validating the sender's `m.rtc.member` event and the associated `m.rtc.slot` event provided that all
+other conditions pass. This helps reduce ringing delay if the client has to fetch the events from
+the server.
+
+    optimistic
+    ---------------|====== ring ======|====== ring ======|
+    pessimistic
+    ---------------|------------------|====== ring ======|
+    ^              ^                  ^
+    notification   notification       MatrixRTC session
+    event sent     event received     validated
+                   and validated
+                   locally
+
+If the membership and slot event later fail validation, the client should stop ringing. This may
+result in an intermediate erroneous ring.
+
+    optimistic
+    ---------------|====== ring ======|------------------|
+    pessimistic
+    ---------------|------------------|------------------|
+    ^              ^                  ^
+    notification   notification       MatrixRTC session
+    event sent     event received     failed to validate
+                   and validated
+                   locally
+
+#### Ringing acknowledgements
+
+Federation delay, server load and client connectivity may drastically reduce the effective ringing
+time for the receiving user. At the same time, the sender gets no indication of whether or not his
+ring has reached the receiver at all. To mitigate this, ringing acknowledgements are introduced.
+
+Acknowledgements are to-device messages of the type `m.call.ring.ack` with a `sender_ts` property in
+their content object that indicates the timestamp at which the to-device message was sent.
+
+Receiving clients MAY send acknowledgements back to the sender once they start ringing. If they do,
+they MUST measure `lifetime` from the `sender_ts` timestamp they submitted back rather than from
+`sender_ts` / `origin_ts` in the notification event.
+
+The sending client in turn should restart its own measurement of `lifetime` with every received
+acknowledgement based on the contained `sender_ts`. This does not apply if an acknowledgement
+arrives after the sender has disconnected from the session or has determined the (possibly
+restarted) `lifetime` to be exceeded.
+
+    *  ringing (outgoing or incoming)
+    .  previous ring duration overriden by an ack.
+
+                                              offline
+            sender    receiverA   receiverB    device
+              |           |           |           |
+             *|--notif.-->|--notif.-->|           |
+             *|           |           |           |
+           * *|<---ack.---|*          |           |
+           * .|           |*          |           |
+         * * .|<----------|*---ack.---|*          |
+         * . .|           |*          |*          |
+         * .  |           |*          |*          |
+         * .  |           |*          |*          |
+         *    |           |           |*          |
+         *    |           |           |*          |
+              |           |           |           |
+
+In order to be able to send the to-device messages, the sender's device ID is included as a
+mandatory property `device_id` inside the `application` object of the notification event.
+
+Clients SHOULD set the notification event's sticky duration to at least twice the `lifetime` to
+account for incoming acknowledgements extending the ringing.
+
+## Potential issues
+
+### Event size limits
+
+Adding a large number of users in `m.mentions` can lead to the event exceeding the 64kiB event size
+limit. Clients can use @room mentioning or send multiple notification events to handle this.
+
+### Abuse of optimistic ringing
+
+Malicious clients could spam notification events that link to invalid MatrixRTC sessions causing
+clients that ring optimistically to notify the user erroneously while the session check is pending.
+Receiving clients can mitigate this by adapting their notification settings for the room.
 
 ## Alternatives
 
-### Use call member room state events
+### Infer ringing from membership events
 
-It would be possible to use the call member room state events to determine a call
-start.
-The logic would be as follows:
-*If we check if there are already other members
-(`m.rtc.member` events) for the call. In case there is not we make the phone ring.*
+Notifications could be based off of the `m.rtc.member` events from [MSC4143].
 
 Pros:
 
-- This would not require any new event.
-- Clients cannot "forget" to ring others about when they
-  start a new call, because they would automatically send an event by joining.
-- There would be less traffic. With the proposed solution the first one who joins
-  needs to send a `m.rtc.notification` event and a `m.rtc.member` state event.
+- No separate event type meaning slightly less traffic.
+- Clients cannot "forget" to notify others about a session starting because membership events are
+  required to connect to a session.
 
-Cons
+Cons:
 
-- All the ringing conditions run on the receiving user. There is no way for the
-  user who starts the call to decide if it should ring the other participants.
-  (Consider a very large room where I want to start a call only for the interested
-  ones who want to discuss a side project. It would be very annoying if the
-  initiator could not control how and who is going to be informed about that call.)
-- Additionally, it is not as flexible as the proposed separate event.
-  Which allows an external instance (a meeting organizer bot) to
-  just ring all the users which are invited to a meeting without needing to
-  participate in the call with a `m.rtc.member` event of the call.
-- Push notifications would need to be sent for EVERY `m.rtc.member` state event
-  update. For each joining and leaving user and for each membership update during
-  a call (due to a SFU (single forwarding unit) change, changing devices
-  (could even happen for screen shares if the screen share is implemented as a
-  separate participating device) or MatrixRTC business logic of the call.)
-  This could result in a lot of push notifications with no obvious/simple way to
-  filter them.
-- It would require bloating the `m.rtc.member` event if the `notification_type`
-  or a specific list of users to notify want to be specified.
-- It would not make it possible to ring without participating.
+- Including notification metadata in `m.rtc.member` events would bloat them.
+- Not including notification metadata in `m.rtc.member` events would mean that all the ringing
+  conditions are on the receiving user. There would be no way for users to decide whether their
+  membership event should notify other people in the room let alone which ones.
+- Would be difficult to extend later to allow external services (such as a meeting organizer bot) to
+  send notifications without having an `m.rtc.member` event.
 
-### Which properties are defined by the sender vs receiver
+### Measure lifetime from first acknowledgement
 
-- The duration of the ring sound could be the receiving client's decision. This MSC
-  tries to find a middle ground by allowing the sender to define a lifetime but
-  the receiver can overwrite it in case that it is
-  necessary for the expected client UX. This at least provides
-  an expected ring duration that can be used for the sender UX.
-  Ultimately the sender can never know how the receiving client
-  will implement the ring. See [the related discussion](https://github.com/matrix-org/matrix-spec-proposals/pull/4075#discussion_r1597704775)
-- The ring sound is a client choice. (It was considered to
-  add the ring sound to the notification event but how "ringing" actually should
-  look like is intentionally in control of the receiver. So that users can use
-  clients that suit them in terms of accessibility and personal taste.)
+Rather than having senders restart their lifetime countdown with every acknowledgement, they could
+only do it for the first to arrive. This could result in different ringing durations on receiving
+clients though which might negatively impact a user's ability to answer the call.
+
+### Synchronise acknowledgements among receivers
+
+To enable receiving clients to stop ringing at the same time, acknowledgements could also be
+exchanged between all receiving devices. This would vastly increase the number of required to-device
+messages, however. Additionally, it would optimise for the case where the user observes but doesn't
+answer the call. This can be considered rare in practice as not answering will often be due to not
+observing the ring.
+
+### Memberless ringing
+
+The required relation to the sender's member event prevents users that are not part of the session
+from sending notification events. This might be a use case though, for instance, in the form of
+calendar bots. To enable this, the relation could be anchored on the slot event instead. This,
+however, means that membership disconnects (the sender hung up) could no longer be used to determine
+if ringing on the receiver's side can end. Since the concrete use case hasn't been validated yet,
+supporting it is descoped to a future proposal.
 
 ## Security considerations
 
-This is another timeline event where any room participant can send a push
-notification to others. Since this will make clients ring this has a higher
-effect on the receiver. Since ringing has to obey the mute settings, it is
-very easy for the targeted users to mitigate the "attack". It can be very
-much compared to spamming a room with "@room" messages.
+The `m.rtc.notification` event allows room participants to send notifications to other users which
+could be an abuse vector especially when using ringing. Since notification events are still subject
+to push rules, however, it is easy for targeted users to mitigate this "attack".
 
-The default power level for `m.rtc.notification` is `50` and equivalent to the default
-power level required for `m.rtc.member` state events.
-
-Additional control is provided indirectly with the use of intentional mentions.
-Setting `"notifications":{"room":X}` allows to choose `X` for the power required
-level to ring the whole room.
+Additional control is provided via power levels for `m.mentions`. Setting
+`"notifications": { "room": X }` allows to configure the level `X` required to be able to notify the
+whole room.
 
 ## Unstable prefix
 
-While this MSC is not present in the spec, clients and widgets should:
+While this MSC is not present in the spec, clients and widgets should use:
 
-- Use `org.matrix.msc4075.rtc.notification` in place of `m.rtc.notification`
-  as the event type
+- `org.matrix.msc4075.rtc.notification` in place of `m.rtc.notification` as the timeline event type
+- `org.matrix.msc4075.call.ring.ack` in place of `m.call.ring.ack` as the to-device message's event
+  type
 
 ## Dependencies
 
-This MSC builds on [MSC4143: MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
+This MSC builds on:
+
+- [MSC4143: MatrixRTC][MSC4143]
+
+- [MSC4196: MatrixRTC voice and video calling application `m.call`][MSC4196]
+
+- [MSC4354: Sticky events][MSC4354]
+
+  [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
+  [MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
+  [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
+  [Client-Server API]: https://spec.matrix.org/v1.11/client-server-api/#definition-mmentions
+  [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
