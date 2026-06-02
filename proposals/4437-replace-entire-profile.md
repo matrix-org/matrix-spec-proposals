@@ -8,13 +8,13 @@ requests.
 
 ## Proposal
 This proposal introduces a `PUT` variant of the existing
-[GET `/_matrix/client/v3/profile/{userId}`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3profileuserid) endpoint, which will replace the user's
-entire profile. This includes deleting any existing fields in the profile which
-are not specified in the request content.
+[GET `/_matrix/client/v3/profile/{userId}`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3profileuserid)
+endpoint, which will replace the user's entire profile. This includes deleting
+any existing fields in the profile which are not specified in the request content.
 
 Servers MUST apply the same validation rules to this endpoint as they do for the
-individual field editing [`PUT /_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.18/client-server-api/#put_matrixclientv3profileuseridkeyname). If
-any field in the request fails the validation, the entire request MUST be
+individual field editing [`PUT /_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.18/client-server-api/#put_matrixclientv3profileuseridkeyname).
+If any field in the request fails the validation, the entire request MUST be
 rejected with the same error code as setting that field in an individual request
 would. The endpoint does not have any unique error cases that aren't already
 returned by the existing profile update endpoint.
@@ -60,8 +60,8 @@ endpoints either.
 Implementations can use `PUT /_matrix/client/unstable/com.beeper.msc4437/profile/{userId}`
 instead of `PUT /_matrix/client/v3/profile/{userId}` as the endpoint until this
 MSC is accepted. `com.beeper.msc4437` is used as the `unstable_features` flag in
-[`/versions`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientversions) to
-advertise support for the unstable endpoint.
+[`/versions`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientversions)
+to advertise support for the unstable endpoint.
 
 Once the MSC is accepted, `com.beeper.msc4437.stable` can be used to advertise
 support for the stable endpoint until support for the spec release is advertised.
