@@ -289,7 +289,7 @@ The homeserver can choose a suitable page size.
 To filter results on delayed events with certain properties, the endpoint accepts any of the following query parameters:
 - `room_id` - Return only delayed events that were scheduled to be sent into the room with this ID.
 - `type` - Return only delayed events of the specified event type.
-- `status`: `"scheduled"|"send"|"cancel"|"error"` - Return only delayed events that are still scheduled to be sent, or
+- `status`: `"scheduled"|"sent"|"cancelled"|"failed"` - Return only delayed events that are still scheduled to be sent, or
   only finalised delayed events that were either sent successfully, cancelled by user action, or cancelled by an error.
 
 If any query parameter is set to an unsupported value,
