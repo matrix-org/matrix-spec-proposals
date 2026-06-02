@@ -781,9 +781,12 @@ Some alternatives for the `running_since` field on the `GET` response are:
 
 ### Syncing failed delayed events
 
-Currently, clients have to fetch the delayed event info after the timeout to find an error in case the event failed.
-We could instead define a new method to push failed delayed events down `/sync` to the sender. However, this could be
-complicated and it's not clear whether clients actually need immediate notifications about failed delayed events.
+Currently, clients have to fetch the delayed event info after the timeout to find an error in case the event failed,
+or if another client belonging to the same user had cancelled a scheduled delayed event.
+We could instead define a new method to push failed & cancelled delayed events down `/sync` to the sender.
+For application services, this information would need to be pushed via transactions.
+However, this is not strictly necessary for delayed events to be usable, and may thus be discussed in a separate MSC
+in the interest of keeping this MSC focused on the core functionality of delayed events.
 
 ## Security considerations
 
