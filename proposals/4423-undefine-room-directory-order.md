@@ -27,7 +27,8 @@ concern.
 
 Per the intro, the "largest rooms first" requirement is dropped from the above-listed endpoints. No
 ordering is defined by the specification. Implementations will need to consider using stable ordering
-to ensure pagination responses are sane, though.
+to ensure pagination responses are sane, though. How that ordering is implemented is left as an
+implementation detail. "Largest rooms first" is a reasonable choice.
 
 
 ## Potential issues
