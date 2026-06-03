@@ -18,6 +18,8 @@ it could repeatedly push the scheduled time forward as a kind of "heartbeat" mec
 client then loses connectivity, the server would emit the "hang up" event at the scheduled time
 resulting in reliable call membership status for other participants.
 
+[MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
+
 This proposal caters to the use cases described above and introduces a mechanism by which a
 Matrix client can schedule "delayed events" which will be sent into a room at a later time by
 the homeserver. This includes APIs for scheduling delayed events and managing scheduled delayed
