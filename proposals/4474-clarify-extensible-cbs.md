@@ -15,9 +15,11 @@ MSC1767 defines the concept of "content blocks".
 This MSC clarifies that content blocks MUST (not "can") be defined independently of events,
 and event type definitions MUST draw (exclusively) on these existing definitions to compose an event type.
 Content blocks can also be nested, e.g. to alias them,
-such as in [MSC3551](https://github.com/matrix-org/matrix-spec-proposals/pull/3551)
-which defines `m.caption` to contain exactly one `m.text` content block,
-and MAY be used exclusively as a non-root property of `content`.
+such as in [m.topic](https://spec.matrix.org/v1.15/client-server-api/#mroomtopic)
+which is defined to contain exactly one `m.text` content block.
+While MSC1767 introduced content blocks as root properties of `content`,
+its sibling MSCs already use content blocks as not required to be used as root properties of `content`,
+instead a content block MAY be defined with uses that are exclusively nesting it inside other content blocks.
 
 This behavior is clearly necessary for the fallback behavior central to extensible events:  
 The "extensibility" property is based from the idea that if a receiver does not understand some event type,
@@ -30,6 +32,7 @@ it is also logical to impose the same behaviour when nested inside another conte
 MSC1767 is modified thus:
 
 - Each content block MUST be defined exactly once.
+- A content block MAY be introduced as nested only, i.e. without being used as top level property.
 - The context in which a content block is used MAY impose additional restrictions to it as,
   long as these restrictions leave it compatible with its general definition.
 
