@@ -200,7 +200,7 @@ Response body for `200 OK` is `application/json` with contents:
 |Field|Type||
 |-|-|-|
 |`id`|required `string`|Opaque identifier for the rendezvous session. Must comply with the [opaque identifier grammar]|
-|`sequence_token`|required `string`|The opaque token to identify if the payload has changed. Must comply with the [opaque identifier grammar]
+|`sequence_token`|required `string`|The opaque token to identify if the payload has changed. Must comply with the [opaque identifier grammar]|
 |`expires_in_ms`|required `integer`|The number of milliseconds remaining until the rendezvous session expires|
 
 Example response:
