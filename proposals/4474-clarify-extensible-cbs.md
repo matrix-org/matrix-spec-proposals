@@ -38,19 +38,20 @@ MSC1767 is modified thus:
 
 For example, an "OPTIONAL" attribute MAY be "REQUIRED" if defined by a certain context *containing* the content block,
 such as an event type or other content block definition.
-Regard `m.text` as defined by MSC1767.
-Then we can create a new content block `dev.fitko.neo.label.v1`.
-It consists of a nested `m.text` content block,
-which MUST contain a plain text representation.
-Clients ignore any representations using different `mimetypes`.
 
-```jsonc
-"dev.fitko.neo.label.v1": {
-  "m.text": [
-    { "body": "Open Website" }
-  ]
-}
-```
+> Regard `m.text` as defined by MSC1767.
+> Then we can create a new content block `dev.fitko.neo.label.v1`.
+> It consists of a nested `m.text` content block,
+> which REQUIRES a plain text representation.
+> Clients SHOULD ignore any representations using different `mimetypes`.
+>
+> ```jsonc
+> "dev.fitko.neo.label.v1": {
+>   "m.text": [
+>     { "body": "Open Website" }
+>   ]
+> }
+> ```
 
 [... maybe more]
 
