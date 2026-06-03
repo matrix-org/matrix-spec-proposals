@@ -535,7 +535,7 @@ However, for the MatrixRTC use case it's required to be able to modify the event
 this approach has been discounted.
 
 The considerations above apply irrespective of whether delayed events are federated directly
-or though other means such as by (ab)using typing notification EDUs.
+or through other means such as by (ab)using typing notification EDUs.
 
 ### `M_MAX_DELAYED_EVENTS_EXCEEDED` instead of `M_LIMIT_EXCEEDED`
 
