@@ -611,8 +611,8 @@ timeout duration of scheduled delayed events. The exact limits are left as an im
 It is the homeserver maintainer's responsibility to evaluate the best trade-off between what use cases
 their users have for delayed events for and the resources they are able to provide.
 
-Its the homeserver implementer's responsibility to communicate this and educate the homeserver hosters about
-the trade-offs and potentially give sane example values for those configurations.
+It is the homeserver implementer's responsibility to communicate this and educate the homeserver hosters about
+the trade-offs and potentially give reasonable example values for those configurations.
 
 As described [above](#power-levels-are-evaluated-at-the-point-of-sending), the homeserver MUST evaluate and enforce the
 power levels at the time of the delayed event being sent (i.e. added to the DAG).
