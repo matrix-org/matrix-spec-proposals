@@ -518,8 +518,8 @@ Delayed events could be sent over federation immediately to then have the receiv
 
 Downsides of this approach that have been considered are that:
 
-- restarts ("heartbeats") would need to be distributed via federation, meaning more traffic and processing
-- if any homeservers missed the federated "heartbeat"/restart message, then they might decide that the event is visible
+- Restarts ("heartbeats") would need to be distributed via federation, meaning more traffic and processing.
+- If any homeservers missed the federated "heartbeat"/restart message, then they might decide that the event is visible
   to clients whereas other homeservers might have received it and come to a different conclusion.
   If the event was later cancelled, then resolving the inconsistency feels more complex than if the event was never sent
   in the first place.
