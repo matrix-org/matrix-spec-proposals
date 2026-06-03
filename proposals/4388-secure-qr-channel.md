@@ -648,15 +648,11 @@ At this point Device S should check that the received intent matches what the us
 
 4. **Device S sends the initial payload**
 
-Device S performs an ECDH operation using **Ss** and **Gp** to compute the shared secret **SharedSecret**.
+Device S performs an ECDH operation using **Ss** and **Gp** to compute the shared secret **SharedSecret**. It then discards **Ss**.
 
-The **SharedSecret** is then used to initialize an
+The **SharedSecret** is used to initialise an
 [HPKE encryption context](https://www.rfc-editor.org/rfc/rfc9180.html#name-encryption-and-decryption)
-**Context_DeviceS_Send** using the `KeySchedule<ROLE>()` function.
-
-After this step, **Ss** is discarded.
-
-**Context_DeviceS_Send**
+**Context_DeviceS_Send** using the `KeySchedule<ROLE>()` function, as follows:
 
 ```
 SharedSecret := ECDH(Ss, Gp)
@@ -700,9 +696,7 @@ Device G receives **LoginInitiateMessage** (potentially coming from Device S) fr
 polling with `GET` requests.
 
 It then does the reverse of the previous step, obtaining **Sp**, deriving the shared secret using ECDH on **Gs** and **Sp**,
-discarding **Gs**, deriving an HPKE context `Context_DeviceG_Receive`:
-
-**Context_DeviceG_Receive**
+discarding **Gs**, deriving an HPKE context **Context_DeviceG_Receive** as follows:
 
 ```
 (Sp, TaggedCiphertext) := Unpack(LoginInitiateMessage)
@@ -730,9 +724,7 @@ unless Plaintext == "MATRIX_QR_CODE_LOGIN_INITIATE":
 
 It then derives its own HPKE context **Context_DeviceG_Send** for sending based on the scheme from the
 [Oblivious HTTP](https://www.rfc-editor.org/rfc/rfc9458#name-encapsulation-of-responses) RFC, using a secret exported
-from **Context_DeviceG_Receive**:
-
-**Context_DeviceG_Send**
+from **Context_DeviceG_Receive**, and a dummy exporter secret, as follows:
 
 ```
 Secret := Context_DeviceG_Receive.Export("MATRIX_QR_CODE_LOGIN response", 32)
@@ -785,10 +777,8 @@ Device G sends **LoginOkMessage** as the `data` payload via a `PUT` request to t
 Device S receives a response over the insecure rendezvous session by polling with `GET` requests, potentially from
 Device G.
 
-It proceeds to derive the response context by unpacking the base response nonce from the **LoginOkMessage** and
-creating a response context on its own.
-
-**Context_DeviceS_Receive**
+It proceeds to derive the HPKE response context by unpacking the base response nonce from the **LoginOkMessage** and
+creating the **Context_DeviceS_Receive** response context as follows:
 
 ```
 (ResponseNonce, TaggedCiphertext) := Unpack(LoginOkMessage)
