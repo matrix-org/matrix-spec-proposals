@@ -1,7 +1,8 @@
 # MSC4481: Use Matrix URI-style type segments in matrix.to
 
 The spec defines [matrix.to navigation](https://spec.matrix.org/v1.18/appendices/#matrixto-navigation) NOT as a service
-on the web, but instead as a namespace URI effectively piggybacking on HTTP before the `matrix:` schema was registered.
+on the web, but instead as a namespace URI piggybacking on the `https:` scheme before the `matrix:` scheme was
+registered.
 The intention is to have a clearly defined format to link to Matrix room aliases, room IDs, messages within rooms, and
 user IDs. Clients are supposed to parse and handle this format internally to navigate between the aforementioned Matrix
 entities similarly to links between pages on the web.
@@ -53,8 +54,8 @@ well as incompletely encoded fragments for backwards compatibility. Clients SHOU
 the now-deprecated format when generating such URLs fully automatically, and reasonably convert URLs in the
 now-deprecated format to the new format under circumstances not undermining user intention, e.g. when auto-completing.
 It would generally be reasonable for clients to handle matrix.to URLs they cannot interpret correctly as regular HTTP
-URLs instead, so users automatically fall back to the <https://matrix.to> web service, regardless of its official stance
-wrt the spec.
+URLs instead, so users automatically fall back to the <https://matrix.to> web service, regardless of its official
+relationship regarding the spec.
 
 ## Potential issues
 
