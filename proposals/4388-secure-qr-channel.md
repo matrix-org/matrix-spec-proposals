@@ -87,7 +87,7 @@ a _rendezvous ID_ which, along with the server [base URL], should be shared out-
 The rendezvous ID points to an arbitrary data resource (the "payload") on the homeserver, which is initially populated
 using data from A's initial `POST` request. The payload is a string which the homeserver must enforce a maximum length on.
 
-The maximum length of a rendezvous ID is 65,535 bytes.
+The rendezvous ID must comply with the [opaque identifier grammar].
 
 Note that the rendezvous session is not a channel that two clients can use to send a sequence of messages between them,
 but rather a single shared mutable spot whose contents can be inspected and overwritten by either party. Each new write
@@ -119,7 +119,7 @@ request were being acknowledged again. Any other mismatch of `sequence_token` MU
 
 n.b. Once a new payload has been sent there is no mechanism to retrieve previous payloads.
 
-The maximum length of a `sequence_token` is 65,535 bytes.
+The `sequence_token` must comply with the [opaque identifier grammar].
 
 ### Expiry
 
@@ -199,8 +199,8 @@ Response body for `200 OK` is `application/json` with contents:
 
 |Field|Type||
 |-|-|-|
-|`id`|required `string`|Opaque identifier for the rendezvous session. Maximum length 65,535 bytes|
-|`sequence_token`|required `string`|The opaque token to identify if the payload has changed. Maximum length 65,535 bytes|
+|`id`|required `string`|Opaque identifier for the rendezvous session. Must comply with the [opaque identifier grammar]|
+|`sequence_token`|required `string`|The opaque token to identify if the payload has changed. Must comply with the [opaque identifier grammar]
 |`expires_in_ms`|required `integer`|The number of milliseconds remaining until the rendezvous session expires|
 
 Example response:
@@ -275,7 +275,7 @@ The response body for `200 OK` is `application/json` with contents:
 
 |Field|Type||
 |-|-|-|
-|`sequence_token`|required `string`|The opaque token to identify if the payload has changed. Maximum length 65,535 bytes|
+|`sequence_token`|required `string`|The opaque token to identify if the payload has changed. Must comply with the [opaque identifier grammar]|
 
 For example:
 
@@ -504,8 +504,7 @@ The QR codes to be displayed and scanned using this format will encode binary st
   - `0x01` an existing device wishing to facilitate the login of a new device and self-verify that other device
 - the ephemeral Curve25519 public key that will be used for [secure channel establishment](#establishment), as 32 bytes
 - the rendezvous session ID encoded as:
-  - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session ID as a UTF-8
-  string
+  - one byte indicating the length in bytes of the rendezvous session ID as a UTF-8 string
   - the rendezvous session ID as a UTF-8 string
 - the [base URL] of the homeserver for client-server connections encoded as:
   - two bytes in network byte order (big-endian) indicating the length in bytes of the base URL as a UTF-8 string
@@ -526,7 +525,7 @@ encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on home
 4D 41 54 52 49 58
 03 00
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
+24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67
@@ -539,7 +538,7 @@ Generated with:
 nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
 03 00
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
+24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4388-qr-intent00.png'
@@ -556,7 +555,7 @@ encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on hom
 4D 41 54 52 49 58
 03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
+24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67
@@ -569,7 +568,7 @@ Generated with:
 nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
 03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
+24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4388-qr-intent01.png'
@@ -683,7 +682,7 @@ We define the result of `EncodeStringAsBytes(StringInput)` to be a sequence of b
 
 e.g. `EncodeStringAsBytes("abcdef")` returns `[0x00, 0x06, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66]`
 
-n.b. Because this proposal restricts the length of `RendezvousId` and `SequenceToken` to 65535 bytes, and that a
+n.b. Because this proposal restricts the length of `RendezvousId` and `SequenceToken` to 255 bytes (according to [opaque identifier grammar]), and that a
 `BaseUrl` longer than 65535 bytes will have failed at the point of encoding a QR, we don't specify a handling for
 `StringInput` of length greater than 65535 bytes.
 
@@ -1120,7 +1119,7 @@ encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on hom
 49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 33 38 38
 03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
+24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67
@@ -1133,7 +1132,7 @@ Generated with:
 nix-shell -p qrencode --run 'echo "49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 33 38 38
 03 01
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
+24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4388-qr-intent01-unstable.png'
@@ -1152,3 +1151,4 @@ None.
 
 [base URL]: https://spec.matrix.org/v1.16/client-server-api/#getwell-knownmatrixclient
 [MSC4108]: https://github.com/matrix-org/matrix-spec-proposals/pull/4108
+[opaque identifier grammar]: https://spec.matrix.org/v1.18/appendices/#opaque-identifiers
