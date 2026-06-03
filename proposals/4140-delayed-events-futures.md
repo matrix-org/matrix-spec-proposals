@@ -528,9 +528,8 @@ Downsides of this approach that have been considered are that:
 and there is an extensive analysis of the pros and cons of this MSC vs MSC3277
 [in this discussion](https://github.com/matrix-org/matrix-spec-proposals/pull/4140#discussion_r1653083566).
 
-If it's not needed to allow modification of a delayed event after it has been scheduled, there is a benefit in
-federating the scheduled event (adding it to the DAG immediately). It increases resilience: the sender's homeserver can
-disconnect and the delayed message still will enter non-soft-failed state (will be sent).
+If modifying scheduled delayed events is not required, there is a benefit in federating them. It increases
+resilience because the sender's homeserver can disconnect and the delayed event will still be delivered to receiving clients by their own homeservers.
 
 However, for the MatrixRTC use case it's required to be able to modify the event after it has been scheduled. As such,
 this approach has been discounted.
