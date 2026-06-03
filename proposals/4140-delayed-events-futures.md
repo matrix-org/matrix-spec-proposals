@@ -514,8 +514,7 @@ solution proposed above.
 
 ### Federated delayed events
 
-Delayed events could be sent over federation immediately and then have the receiving homeservers process
-(sent down to clients) them at the appropriate time.
+Delayed events could be sent over federation immediately to then have the receiving homeservers send them down to clients at the appropriate time.
 
 Downsides of this approach that have been considered are that:
 
