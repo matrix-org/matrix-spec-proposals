@@ -741,7 +741,7 @@ ResponseNonce := random(32)
 Salt := Sp || ResponseNonce
 
 AeadKey := HKDF_SHA256(Secret, "key", salt=Salt, size=32)
-AeadNonce := HKDF_SHA256(Secret, "key", salt=Salt, size=12)
+AeadNonce := HKDF_SHA256(Secret, "nonce", salt=Salt, size=12)
 ExporterSecret := [0; 32]
 
 Context_DeviceG_Send := Context<S>(AeadKey, AeadNonce, 0, ExporterSecret)
