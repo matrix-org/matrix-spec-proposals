@@ -45,9 +45,9 @@ Instead, the homeserver allocates a `delay_id` to the scheduled event which is u
 
 ### Scheduling a delayed event
 
-A new authenticated Client-Server API endpoint is introduced for scheduling the sending of a message or state event:
-
-`PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}`
+A new authenticated Client-Server API endpoint at
+`PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` allows clients to
+schedule the sending of a message or state event.
 
 The path parameters of this endpoint are the same as for the existing
 [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](
@@ -234,7 +234,8 @@ and can be used to slow down the homeserver.
 
 #### Getting a single delayed event
 
-The new authenticated Client-Server API endpoint `GET /_matrix/client/v1/delayed_events/{delay_id}` responds with
+A new authenticated Client-Server API endpoint at
+`GET /_matrix/client/v1/delayed_events/{delay_id}` responds with
 details on the delayed event with the specified `delay_id` owned by the requesting user.
 
 If no such delayed event can be found, the homeserver will respond with HTTP 404
@@ -273,7 +274,8 @@ can be determined by examining which of the optional fields are present in the r
 
 #### Getting a list of delayed events
 
-The new authenticated Client-Server API endpoint `GET /_matrix/client/v1/delayed_events` responds with
+A new authenticated Client-Server API endpoint at
+`GET /_matrix/client/v1/delayed_events` responds with
 a list of details about scheduled delayed events owned by the requesting user.
 
 Delayed events are returned in chronological order of their intended send time, which is `running_since` + `delay`.
