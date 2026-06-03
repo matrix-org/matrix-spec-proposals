@@ -55,10 +55,9 @@ rooms will need some consideration.
 If you want to implement this MSC before its merged you're free to use the unstable type of
 `support.feline.policy.lists.msc.v1`.
 
-After this MSC gets merged if a stakeholder has elected to remove its support for the unstable prefix if any
-Because the room type is immutable, rooms which use the unstable room type might
-find themselves "unsupported" when/if implementations drop support for the unstable
-type when this proposal becomes stable.
+After this MSC is merged, implementations may stop recognizing the unstable room type.
+Since room types are immutable, rooms created using the unstable type could become "unsupported"
+if support for the unstable prefix is removed after the proposal is merged.
 
 ## Dependencies
 
