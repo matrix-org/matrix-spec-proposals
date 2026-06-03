@@ -337,7 +337,8 @@ Requires authentication: No
 HTTP response codes:
 
 - `200 OK` - rendezvous session cancelled
-- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired,
+  or been cancelled by a previous `DELETE` request).
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
@@ -622,7 +623,8 @@ other device is then the new device (one seeking to be signed in).
 2. **Create rendezvous session**
 
 Device G creates a rendezvous session by making a `POST` request (as described previously) to the nominated homeserver
-with an empty payload. It parses the **ID** received and **sequence token**.
+with an empty payload. It parses the response from the homeserver to extract the rendezvous session **ID**
+and **sequence token**.
 
 3. **Initial key exchange**
 
@@ -662,8 +664,8 @@ SharedSecret := ECDH(Ss, Gp)
 Context_DeviceS_Send := KeySchedule<S>(mode=0x00, shared_secret=SharedSecret, info="MATRIX_QR_CODE_LOGIN")
 ```
 
-With this, Device S has established its sending side of the secure channel. Device S then derives a confirmation payload
-that Device G can use to confirm that the channel is secure. It contains:
+With this, Device S has established its sending side of the secure channel. It then derives a confirmation
+payload, **LoginInitiateMessage**, that Device G can use to confirm that the channel is secure. It contains:
 
 - The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305 using
   the `ContextS.Seal()` function of context **Context_DeviceS_Send** with additional authentication data:
@@ -703,7 +705,7 @@ discarding **Gs**, deriving an HPKE context `Context_DeviceG_Receive`:
 **Context_DeviceG_Receive**
 
 ```
-(TaggedCiphertext, Sp) := Unpack(LoginInitiateMessage)
+(Sp, TaggedCiphertext) := Unpack(LoginInitiateMessage)
 
 SharedSecret := ECDH(Gs, Sp)
 
@@ -749,7 +751,7 @@ Context_DeviceG_Send := Context<S>(AeadKey, AeadNonce, 0, ExporterSecret)
 with a dummy exporter secret. Aside from this limitation, the response context supports encryption and decryption in the
 same manner as the primary context, enabling bidirectional use of HPKE.
 
-Following the creation of the response context **Context_DeviceG_Send**, it responds with a dummy payload containing the
+Device G then responds with a dummy payload, **LoginOkMessage**, containing the
 string `MATRIX_QR_CODE_LOGIN_OK` that is sealed with the additional authentication data similar to before, but the
 **sequence token** is the one that was received with the `GET` request that returned **LoginInitiateMessage**:
 
@@ -789,7 +791,7 @@ creating a response context on its own.
 **Context_DeviceS_Receive**
 
 ```
-(TaggedCiphertext, ResponseNonce) := Unpack(LoginOkMessage)
+(ResponseNonce, TaggedCiphertext) := Unpack(LoginOkMessage)
 
 Secret := Context_DeviceS_Send.Export("MATRIX_QR_CODE_LOGIN response", 32)
 Salt := Sp || ResponseNonce
@@ -801,7 +803,7 @@ ExporterSecret := [0; 32]
 Context_DeviceS_Receive := Context<R>(AeadKey, AeadNonce, 0, ExporterSecret)
 ```
 
-It decrypts (and authenticates) the response using the **Context_DeviceS_Receive** context, which will succeed provided
+It then decrypts (and authenticates) the tagged ciphertext from the `LoginOkMessage` using the **Context_DeviceS_Receive** context, which will succeed provided
 the payload was indeed sent by Device G. The additional authentication data is as before with the **sequence token**
 being the one that was received when the `PUT` was made for **LoginInitiateMessage**.
 It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing
@@ -815,7 +817,7 @@ unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
      FAIL
 ```
 
-If the above was successful, Device S then calculates a two digit **CheckCode** code using the [HPKE export
+If the above was successful, Device S then calculates a two digit **CheckCode** code in the range [10, 99] using the [HPKE export
 interface](https://www.rfc-editor.org/rfc/rfc9180.html#hpke-export) of context **Context_DeviceS_Send**. **Gp** and
 **Sp** are used as inputs for the export interface:
 
