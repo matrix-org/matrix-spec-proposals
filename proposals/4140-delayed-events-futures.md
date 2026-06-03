@@ -271,45 +271,15 @@ can be determined by examining which of the optional fields are present in the r
 #### Getting a list of delayed events
 
 The new authenticated Client-Server API endpoint `GET /_matrix/client/v1/delayed_events` responds with
-a list of details of delayed events owned by the requesting user.
+a list of details about scheduled delayed events owned by the requesting user.
 
 Delayed events are returned in chronological order of their intended send time, which is `running_since` + `delay`.
 
-To filter results to include only delayed events with a scheduled send time within a specific time range,
-the endpoint supports query parameters of `from_ts` and `to_ts`, which are Unix timestamps that specify this time range.
-If either parameter is unspecified, its respective end of the time range is unbounded.
-
-To return results in reverse chronological order, the endpoint supports a query parameter of `dir=b`.
-Providing a query parameter of `dir=f` uses the default of increasing chronological order.
-
-The endpoint accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events
-as per the [pagination convention](https://spec.matrix.org/v1.18/appendices/#pagination).
-The homeserver can choose a suitable page size.
-
-To filter results on delayed events with certain properties, the endpoint accepts any of the following query parameters:
-- `room_id` - Return only delayed events that were scheduled to be sent into the room with this ID.
-- `type` - Return only delayed events of the specified event type.
-- `status`: `"scheduled"|"sent"|"cancelled"|"failed"` - Return only delayed events that are still scheduled to be sent, or
-  only finalised delayed events that were either sent successfully, cancelled by user action, or cancelled by an error.
-
-If any query parameter is set to an unsupported value,
-the homeserver will respond with HTTP 400
-and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
-with an `errcode` of `M_INVALID_PARAM`.
-
 On success, the response is HTTP 200 and a JSON object containing the following fields:
 
-- `delayed_events` - An array of objects describing delayed events owned by the requesting user
-  that match the filters provided in the request, in the order specified by `dir`.
+- `delayed_events` - An array of objects describing delayed events owned by the requesting user.
   These objects contain the same fields as the object returned by
   [the single-item lookup](#getting-a-single-delayed-event).
-- `next_batch` - A token that can be passed into a subsequent call to the endpoint to retrieve the next page of results.
-  Absent when there is no next page of results.
-
-For example,
-`GET /_matrix/client/v1/delayed_events?dir=b&to_ts=1721732858785`
-returns all of the requesting user's delayed events that had been scheduled to be sent no later than the specified time,
-starting from the one that had been scheduled to be sent last, and including ones that were already sent or cancelled:
 
 ```http
 200 OK
@@ -318,7 +288,7 @@ Content-Type: application/json
 {
   "delayed_events": [
     {
-      "delay_id": "the-latest-scheduled-event",
+      "delay_id": "...",
       "room_id": "!roomid:example.com",
       "type": "m.room.message",
       "delay": 5500,
@@ -328,172 +298,10 @@ Content-Type: application/json
         "body": "I am now offline"
       }
     },
-    {
-      "delay_id": "an-earlier-scheduled-event",
-      "room_id": "!roomid:example.com",
-      "type": "m.rtc.member",
-      "state_key": "@user:example.com_DEVICEID",
-      "delay": 5000,
-      "running_since": 1721732853284,
-      "content": {
-        "application": "m.call",
-        "call_id": "",
-        ...
-      }
-    },
-    {
-      "delay_id": "an-event-sent-manually-before-scheduled-send-time",
-      "room_id": "!another-roomid:example.com",
-      "type": "m.room.message",
-      "delay": 5000,
-      "running_since": 1721732853280,
-      "finalised_ts": 1721732854280,
-      "event_id": "$abcabca",
-      "content": {
-        "body": "I have something important to say",
-        "msgtype": "m.text"
-      }
-    },
-    {
-      "delay_id": "an-event-sent-as-scheduled",
-      "room_id": "!another-roomid:example.com",
-      "type": "m.room.message",
-      "delay": 2000,
-      "running_since": 1721732854280,
-      "finalised_ts": 1721732856280,
-      "event_id": "$xyzyxyz",
-      "content": {
-        "body": "Hello, everyone!",
-        "msgtype": "m.text"
-      }
-    },
-    {
-      "delay_id": "a-cancelled-event",
-      "room_id": "!another-roomid:example.com",
-      "type": "m.room.message",
-      "delay": 2000,
-      "running_since": 1721732853280,
-      "content": {
-        "body": "hello, every body!",
-        "msgtype": "m.text"
-      },
-      "finalised_ts": 1721732853780,
-    }
-  ],
-  "next_batch": "b12345"
-}
-```
-
-As another example,
-`GET /_matrix/client/v1/delayed_events?status=scheduled&room_id=!room:example.org&type=m.room.topic`
-returns all of the requesting user's scheduled topic changes to `!room:example.org`, from earliest to latest:
-
-```http
-200 OK
-Content-Type: application/json
-
-{
-  "delayed_events": [
-    {
-      "delay_id": "d0",
-      "room_id": "!roomid:example.com",
-      "type": "m.room.topic",
-      "state_key": "",
-      "delay": 5000,
-      "running_since": 1721732853280,
-      "content": {
-        "topic": "This is a brand new room"
-      }
-    },
-    {
-      "delay_id": "d1",
-      "room_id": "!roomid:example.com",
-      "type": "m.room.topic",
-      "state_key": "",
-      "delay": 15000,
-      "running_since": 1721732853280,
-      "content": {
-        "topic": "This room is not as new"
-      }
-    },
-    {
-      "delay_id": "d2",
-      "room_id": "!roomid:example.com",
-      "type": "m.room.topic",
-      "state_key": "",
-      "delay": 20000,
-      "running_since": 1721732853280,
-      "content": {
-        "topic": "What an old room this is"
-      }
-    },
+    ...
   ]
 }
 ```
-
-As yet another example,
-`GET /_matrix/client/v1/delayed_events?status=error&type=m.room.member`
-returns all of the requesting user's failed attempts to schedule the invitation/removal/banning of a user:
-
-```http
-200 OK
-Content-Type: application/json
-
-{
-  "delayed_events": [
-    {
-      "delay_id": "d1",
-      "room_id": "!room1:example.com",
-      "type": "m.room.member",
-      "state_key": "@new-user:example.com",
-      "delay": 5000,
-      "running_since": 1721732853280,
-      "content": {
-        "membership": "invite",
-        "reason": "You should be in this room by now"
-      },
-      "error": {
-        "errcode": "M_LIMIT_EXCEEDED",
-        "error": "Too many requests",
-        "retry_after_ms": 2000
-      }
-    },
-    {
-      "delay_id": "d2",
-      "room_id": "!room2:example.com",
-      "type": "m.room.member",
-      "state_key": "@wanted-user:example.com",
-      "delay": 5000,
-      "running_since": 1721732854280,
-      "content": {
-        "membership": "join",
-        "reason": "You just have to be in this room"
-      },
-      "error": {
-        "errcode": "M_FORBIDDEN",
-        "error": "Cannot force another user to join."
-      }
-    },
-    {
-      "delay_id": "d2",
-      "room_id": "!room3:example.com",
-      "type": "m.room.topic",
-      "state_key": "@temporary-user:example.com",
-      "delay": 5000,
-      "running_since": 1721732855280,
-      "content": {
-        "membership": "leave",
-        "reason": "Your time is up"
-      },
-      "error": {
-        "errcode": "M_FORBIDDEN",
-        "error": "You do not have a high enough power level to kick from this room."
-      }
-    },
-  ]
-}
-```
-
 
 #### Retention of finalised delayed events
 
@@ -597,6 +405,15 @@ manages delayed events for a large number of users.
 [^call-rate-limit]: See also https://github.com/element-hq/element-call/issues/3985.
 
 To mitigate this, the server SHOULD rate limit the management endpoints based on the `delay_id`.
+
+### Inability to filter and paginate delayed events
+
+`GET /_matrix/client/v1/delayed_events` lacks request parameters for filtering and pagination. It also
+doesn't allow querying finalised delayed events. This could be limiting in some cases. A future proposal
+such as [MSC4486] may extend the endpoint to support those use cases.
+
+[MSC4486]: https://github.com/matrix-org/matrix-spec-proposals/pull/4486
+
 ## Alternatives
 
 ### OAuth 2.0 scope for management endpoints
