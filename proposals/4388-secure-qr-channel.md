@@ -667,12 +667,12 @@ Context_DeviceS_Send := KeySchedule<S>(mode=0x00, shared_secret=SharedSecret, in
 With this, Device S has established its sending side of the secure channel. It then derives a confirmation
 payload, **LoginInitiateMessage**, that Device G can use to confirm that the channel is secure. It contains:
 
+- Its public ephemeral key **Sp**.
 - The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305 using
   the `ContextS.Seal()` function of context **Context_DeviceS_Send** with additional authentication data:
   - the homeserver **base URL** from the QR code
   - the rendezvous session **ID** from the QR code
   - the **sequence token** returned by the homeserver when calling `GET` on the rendezvous session
-- Its public ephemeral key **Sp**.
 
 ```
 Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
