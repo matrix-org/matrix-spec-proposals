@@ -1,4 +1,4 @@
-# MSC0000: Deprecate internal use of matrix.to navigation
+# MSC4487: Deprecate internal use of matrix.to navigation
 
 The spec defines [matrix.to navigation](https://spec.matrix.org/v1.18/appendices/#matrixto-navigation) NOT as a service
 on the web, but instead as a namespace URI piggybacking on the `https:` scheme before the `matrix:` scheme
