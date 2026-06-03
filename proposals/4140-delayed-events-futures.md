@@ -207,7 +207,7 @@ It is useful for external services to also interact with scheduled delayed event
 If a client disconnects, an external service can be the best source to send the delayed event/"last will".
 
 To permit this, the `delay_id` that uniquely identifies a delayed event also behaves as a scoped access token
-that only allows to interact with the `POST /delayed_events` endpoints on that specific `delay_id`.
+that only allows to interact with the `POST /delayed_events/{delay_id}/{action}` endpoints on that specific `delay_id`.
 
 With this, an SFU that tracks the current client connection state could be given the power to control the delayed event.
 The client would share the `delay_id` and the required details, so that the SFU can call the
