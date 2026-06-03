@@ -320,7 +320,7 @@ The recommended values are:
 There is no guarantee for a client that events will be available
 if they exceed the limits of their homeserver.
 Additionally, a homeserver MAY discard finalised delayed events that have been returned by a
-`GET /_matrix/client/v1/delayed_events(/{delay_id})?` response.
+`GET /_matrix/client/v1/delayed_events/{delay_id}` response.
 
 ### Additional homeserver behaviour
 
