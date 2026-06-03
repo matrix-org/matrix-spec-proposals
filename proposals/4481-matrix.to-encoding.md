@@ -1,13 +1,32 @@
 # MSC4481: Use Matrix URI-style type segments in matrix.to
 
-The spec defines matrix.to navigation as a web-compatible way to link to Matrix room aliases, room ids, messages within
-rooms, and user ids at <https://spec.matrix.org/v1.18/appendices/#matrixto-navigation>.
+The spec defines [matrix.to navigation](https://spec.matrix.org/v1.18/appendices/#matrixto-navigation) NOT as a service
+on the web, but instead as a namespace URI effectively piggybacking on HTTP before the `matrix:` schema was registered.
+The intention is to have a clearly defined format to link to Matrix room aliases, room IDs, messages within rooms, and
+user IDs. Clients are supposed to parse and handle this format internally to navigate between the aforementioned Matrix
+entities similarly to links between pages on the web.
 
-The spec prescribes proper URL encoding for them, which applies particularly to the special characters
-("sigils") in the URL fragment.
-At the same time, unencoded ones should also be supported for compatibility to the more "human readable form".
+Since it is based on HTTP URLs, the spec explicitly defines matrix.to as based on RFC 3986, including URL encoding.
+For the purpose of this MSC, note this applies particularly to the special characters ("sigils" of the [different types
+of Matrix IDs](https://spec.matrix.org/latest/appendices/#common-identifier-format)) in the URL fragment.
+At the same time, the spec recommends clients also support matrix.to URLs "which are not fully encoded" for
+compatibility to the more "human readable form" that some clients produced historically and continue to do today.
+This includes the <https://matrix.to> web service provided by the Foundation, which coincidentally sits at and can
+resolve URLs in the matrix.to shape as a kind of fallback functionality on the web.
 
-This has some issues as noted e.g. at <https://github.com/matrix-org/matrix.to/issues/251>.
+Besides being technically incorrect, the unencoded fragments are known to cause practical issues, which are documented
+and discussed across numerous issues in the ecosystem:
+
+- <https://github.com/matrix-org/matrix.to/issues/251>
+- <https://github.com/element-hq/element-web/issues/32611>
+- <https://github.com/NixOS/org/pull/52>
+
+Issues commonly center around URI parsing libraries failing to interpret URLs as intended by the user sharing links
+outside of Matrix due to incorrect encoding. This is particularly prevalent where the `#` character has another assigned
+meaning, such as across most social media. For example, the Foundation's own YouTube video descriptions used to
+unwittingly contain improperly encoded matrix.to links copied from common client implementations, which broke when
+YouTube introduced hashtags to the platform, including a parser that prefers to detect the second `#` as start of a
+hashtag rather than the technically incorrect contents of the URL fragment.
 
 ## Proposal
 
