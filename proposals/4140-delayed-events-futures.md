@@ -495,34 +495,22 @@ However, this could be negated by the complexity of having to support multiple r
 This approach also requires using a query parameter for a purpose other than filtering,
 which defies the usual semantics of a URI query.
 
-### MSC4018 (use client sync loop)
+### Sync-loop based heartbeats
 
-[MSC4018: Reliable call membership](https://github.com/matrix-org/matrix-spec-proposals/pull/4018) also
-proposes a way to make call memberships reliable. It uses the client sync loop as
-an indicator to determine if the event is expired, instead of letting the SFU
-inform about the call termination or using the call app ping/refresh loop as proposed earlier in this MSC.
-Conceptually, this is similar to [MQTT](https://mqtt.org/)'s "Will Message" that is published by the server
-when a client disconnects.
+[MSC4018: Reliable call membership] was an earlier attempt at making call membership more reliable.
+It used the client's sync loop as an indicator to determine if the call membership event is expired.
+Conceptually, this is similar to [MQTT]'s "Will Message" that is published by the server when a client
+disconnects.
 
-The advantage is that this does not require introducing a new ping system
-(as is proposed here by using the `/delayed_events/{delay_id}/restart` endpoint).
-Though with cryptographic identities, the client needs to create the leave event.
+[MSC4018: Reliable call membership]: https://github.com/matrix-org/matrix-spec-proposals/pull/4018
+[MQTT]: https://mqtt.org/
 
-The timeout for syncs are much slower than what would be desirable (30s vs 5s).
+The advantage of this approach is that it doesn't require a new system for emitting heartbeats. An API
+for letting clients store the leave event to be sent would still be required due to encryption, however.
 
-With a widget implementation for calls, it cannot be guaranteed that the widget is running during the sync loop.
-So one either has to move the hangup logic to the hosting client or let the widget run all the time.
-
-A dedicated ping (independent to the sync loop) is more flexible and allows for the widget to
-execute the timer restart.
-If the widget dies, the call membership will disconnect.
-
-Additionally, the specification should not include specific
-custom server rules if possible.
-Sending an event on behalf of a user based on the client sync loop if there is an event with a specific type and
-specific content is quite a server-specific behaviour, and also would not work well with encrypted state events and
-cryptographic identities.
-This proposal is a general behaviour valid for all event types.
+On the downside, the common timeouts for syncs are much larger than what would be desirable for
+call membership (30s vs. 5s). Overall this alternative feels overly implicit and less flexible than the
+solution proposed above.
 
 ### Federated delayed events
 
