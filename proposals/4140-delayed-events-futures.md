@@ -284,7 +284,8 @@ On success, the response is HTTP 200 and a JSON object containing the following 
 
 - `delayed_events` - An array of objects describing delayed events owned by the requesting user.
   These objects contain the same fields as the object returned by
-  [the single-item lookup](#getting-a-single-delayed-event).
+  [the single-item lookup](#getting-a-single-delayed-event),
+  except for the fields exclusive to finalised delayed events (`error`, `event_id`, and `finalised_ts`).
 
 ```http
 200 OK
