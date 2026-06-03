@@ -38,8 +38,8 @@ which uses a different format to differentiate between the different types of ID
 - `$` -> `e/`
 - `@` -> `u/`
 
-This MSC proposes to deprecate the current use of sigils in matrix.to's fragment.
-Instead, the same `type` `segment-nz` is used.
+This MSC proposes to deprecate the current use of sigils in matrix.to's fragment, entirely eliminating the question
+around encoding. Instead, the same `type` `segment-nz` as defined for `matrix:` (see the list above) SHALL be used.
 
 For example:
 
@@ -47,6 +47,14 @@ For example:
 - <https://matrix.to/#/roomid/L58ME6ufiP49v97UIOBIpvWKEgj4912JmECPuDzlvCI?via=matrix.org&via=mozilla.org&via=unredacted.org>
 - <https://matrix.to/#/roomid/L58ME6ufiP49v97UIOBIpvWKEgj4912JmECPuDzlvCI/e/99HwZ8FhMP_ATTGBKK80JM0wzYOfDYdSxCmLt-Fj0nk?via=matrix.org&via=mozilla.org&via=unredacted.org>
 - <https://matrix.to/#/u/stammfisch:matrix.org>
+
+Additionally, clients are advised to continue to support parsing the now-deprecated format using URL percent encoding as
+well as incompletely encoded fragments for backwards compatibility. Clients SHOULD further prefer the new format over
+the now-deprecated format when generating such URLs fully automatically, and reasonably convert URLs in the
+now-deprecated format to the new format under circumstances not undermining user intention, e.g. when auto-completing.
+It would generally be reasonable for clients to handle matrix.to URLs they cannot interpret correctly as regular HTTP
+URLs instead, so users automatically fall back to the <https://matrix.to> web service, regardless of its official stance
+wrt the spec.
 
 ## Potential issues
 
