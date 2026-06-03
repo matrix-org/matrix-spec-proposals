@@ -313,8 +313,8 @@ The recommended values are:
 - batch size: 10
 - `finalised` retention: up to 7 days or 1000 events per user, whichever occurs first
 
-There is no guarantee for a client that all events will be available in the
-finalised events list if they exceed the limits of their homeserver.
+There is no guarantee for a client that events will be available
+if they exceed the limits of their homeserver.
 Additionally, a homeserver MAY discard finalised delayed events that have been returned by a
 `GET /_matrix/client/v1/delayed_events(/{delay_id})?` response.
 
