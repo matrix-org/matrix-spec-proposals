@@ -670,21 +670,30 @@ payload, **LoginInitiateMessage**, that Device G can use to confirm that the cha
   - the **sequence token** returned by the homeserver when calling `GET` on the rendezvous session
 
 ```
-Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
+Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 TaggedCiphertext := Context_DeviceS_Send.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", Aad)
 LoginInitiateMessage := UnpaddedBase64(Sp || TaggedCiphertext)
 ```
 
-We define the result of `EncodeStringAsBytes(StringInput)` to be a sequence of bytes:
+We define the result of `EncodeStringAsBytes16(StringInput)` to be a sequence of bytes:
 
 - two bytes in network byte order (big-endian) indicating the length in bytes of the `StringInput` as a UTF-8 string
 - the `StringInput` as a UTF-8 string
 
-e.g. `EncodeStringAsBytes("abcdef")` returns `[0x00, 0x06, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66]`
+e.g. `EncodeStringAsBytes16("abcdef")` returns `[0x00, 0x06, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66]`
 
-n.b. Because this proposal restricts the length of `RendezvousId` and `SequenceToken` to 255 bytes (according to [opaque identifier grammar]), and that a
-`BaseUrl` longer than 65535 bytes will have failed at the point of encoding a QR, we don't specify a handling for
+n.b. Because a `BaseUrl` longer than 65535 bytes will have failed at the point of encoding a QR, we don't specify a handling for
 `StringInput` of length greater than 65535 bytes.
+
+We define the result of `EncodeStringAsBytes8(StringInput)` to be a sequence of bytes:
+
+- one byte indicating the length in bytes of the `StringInput` as a UTF-8 string
+- the `StringInput` as a UTF-8 string
+
+e.g. `EncodeStringAsBytes8("abcdef")` returns `[0x06, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66]`
+
+n.b. Because this proposal restricts the length of `RendezvousId` and `SequenceToken` to 255 bytes (according to the
+[opaque identifier grammar]) we don't specify a handling for `StringInput` of length greater than 266 bytes.
 
 Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request
 and noting the new **sequence token**.
@@ -714,7 +723,7 @@ with the additional authentication data:
 It checks that the plaintext matches the string `MATRIX_QR_CODE_LOGIN_INITIATE`, failing and aborting if not.
 
 ```
-Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
+Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 Plaintext := Context_DeviceG_Receive.Open(TaggedCiphertext, Aad)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_INITIATE":
@@ -747,7 +756,7 @@ string `MATRIX_QR_CODE_LOGIN_OK` that is sealed with the additional authenticati
 **sequence token** is the one that was received with the `GET` request that returned **LoginInitiateMessage**:
 
 ```
-Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
+Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 TaggedCiphertext := Context_DeviceG_Send.Seal("MATRIX_QR_CODE_LOGIN_OK", Aad)
 LoginOkMessage := UnpaddedBase64Encode(ResponseNonce || TaggedCiphertext)
 ```
@@ -799,7 +808,7 @@ It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing
 otherwise.
 
 ```
-Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
+Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 Plaintext := Context_DeviceS_Receive.Open(TaggedCiphertext, Aad)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
@@ -850,7 +859,7 @@ sent from S should be encrypted with **Context_DeviceS_Send**. Each call to the 
 additional authentication data of the form where the **sequence token** is from the last `GET` that the device received:
 
 ```
-Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
+Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 ```
 
 Similarly, payloads received by G should be decrypted using the context **Context_DeviceG_Receive**, while payloads received by S
@@ -858,7 +867,7 @@ should be decrypted using the context **Context_DeviceG_Receive**. Each call to 
 additional authentication data of the form where the **sequence token** is from the last `PUT` that the device made:
 
 ```
-Aad := EncodeStringAsBytes(BaseUrl) || EncodeStringAsBytes(RendezvousId) || EncodeStringAsBytes(SequenceToken)
+Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 ```
 
 ### Sequence diagram
