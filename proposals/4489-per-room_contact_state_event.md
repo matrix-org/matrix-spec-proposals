@@ -1,4 +1,4 @@
-# MSCXXXX: Per-room contact state event
+# MSC4489: Per-room contact state event
 
 A room currently has no standard, machine-readable way to say *who to contact
 about it*. If you are confused about a room's rules, want to reach a moderator,
@@ -202,7 +202,7 @@ consumers to treat it as such.
 
 | Proposed (stable)            | Unstable                            |
 |------------------------------|-------------------------------------|
-| `m.room.contact` (event type) | `net.codestorm.mscXXXX.contact`    |
+| `m.room.contact` (event type) | `net.codestorm.msc4489.contact`    |
 
 The `role` values reuse the existing stable `m.role.*` identifiers from MSC1929
 and are unaffected by this proposal's unstable prefix.
