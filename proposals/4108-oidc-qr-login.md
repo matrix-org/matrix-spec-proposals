@@ -878,6 +878,17 @@ Against:
   chance of other devices seeing the new device as unverified, incorrectly prompting the user to verify the device that
   will soon be verified.
 
+### Support users without cross-signing set up
+
+The proposal is opinionated that the user must have end-to-end encryption cross-signing set up before they can use this
+feature.
+
+The motivation for this is to focus on tackling the UX pain point around device verification, and not expanding the
+scope of this MSC. It is already very big already.
+
+A future MSC could propose a "login protocol" variant that works without secret sharing. For example a
+`device_authorization_grant_without_secrets` protocol being offered in `m.login.protocols`.
+
 ## Security considerations
 
 ### Malicious session spawning
