@@ -1,4 +1,4 @@
-# MSCXXXX: Surfacing room contacts when a join or knock does not succeed
+# MSC4490: Surfacing room contacts when a join or knock does not succeed
 
 When a user's attempt to join or knock on a room is rejected — because they are
 banned, because their server is denied, or for any other reason — they typically
@@ -7,7 +7,7 @@ server is not permitted to join this room". They are given no path to contest
 the decision, even when the room has explicitly published a contact for exactly
 this purpose.
 
-[MSCXXXX](https://github.com/matrix-org/matrix-spec-proposals/pull/XXXX)
+[MSC4489](https://github.com/matrix-org/matrix-spec-proposals/pull/4489)
 introduces the `m.room.contact` state event, which lets a room advertise
 responsible contacts. However, a user who is banned or whose server is blocked
 generally cannot read room state, so they cannot read that event through normal
@@ -17,9 +17,10 @@ it to the user's client for display.
 
 ## Proposal
 
-This builds on MSCXXXX and changes only the *delivery* of already-published
-information on a failed join or knock; it introduces no new place for a room to
-declare contacts and defines no new error conditions.
+This builds on [MSC4489](https://github.com/matrix-org/matrix-spec-proposals/pull/4489) 
+and changes only the *delivery* of already-published information on a failed 
+join or knock; it introduces no new place for a room to declare contacts and 
+defines no new error conditions.
 
 ### Federation response
 
@@ -79,8 +80,9 @@ A client that receives a rejection containing `contact` SHOULD, instead of (or
 in addition to) the generic rejection message, present the contact information
 so the user can seek help or appeal — for example, "You have been banned from
 this room. To appeal, contact @alice:example.org or visit \<support_page\>."
-Clients MUST apply the same security treatment defined in MSCXXXX: the data is
-an unverified claim by the room, contacts MUST NOT be shown as verified
+Clients MUST apply the same security treatment defined in 
+[MSC4489](https://github.com/matrix-org/matrix-spec-proposals/pull/4489): the 
+data is an unverified claim by the room, contacts MUST NOT be shown as verified
 identities, and `support_page` MUST be handled with the client's normal
 untrusted-URL safety measures.
 
@@ -104,15 +106,17 @@ untrusted-URL safety measures.
   endpoint (with its own auth, rate-limiting, abuse, and enumeration concerns)
   to deliver data the rejection response can already carry inline. Inlining is
   simpler and leaks no more than the rejection itself.
-- **Folding this into MSCXXXX.** Kept separate deliberately so that the state
-  event (useful to existing members and in-room bots on its own) is not blocked
+- **Folding this into [MSC4489](https://github.com/matrix-org/matrix-spec-proposals/pull/4489).**
+- Kept separate deliberately so that the state event (useful to existing members
+  and in-room bots on its own) is not blocked
   on federation and client changes.
 
 ## Security considerations
 
-In addition to the considerations inherited from MSCXXXX (impersonation, email
-harvesting, `support_page` phishing, and the no-authorisation-signal rule, all
-of which apply unchanged to the forwarded copy):
+In addition to the considerations inherited from 
+[MSC4489](https://github.com/matrix-org/matrix-spec-proposals/pull/4489) 
+(impersonation, email harvesting, `support_page` phishing, and the 
+no-authorisation-signal rule, all of which apply unchanged to the forwarded copy):
 
 - **Disclosure scope.** The `contact` field MUST contain only the `content` of
   the room's `m.room.contact` event; a resident server MUST NOT place any other
@@ -137,15 +141,16 @@ of which apply unchanged to the forwarded copy):
 ## Unstable prefix
 
 Until this proposal is accepted, the response field uses
-`net.codestorm.mscXXXX.contact` (rather than the bare `contact`), in both the
+`net.codestorm.msc4490.contact` (rather than the bare `contact`), in both the
 Server-Server and Client-Server rejection responses:
 
 | Proposed (this MSC)        | Unstable form                   |
 |----------------------------|---------------------------------|
-| `contact` (response field) | `net.codestorm.mscXXXX.contact` |
+| `contact` (response field) | `net.codestorm.msc4490.contact` |
 
-The embedded object reuses the event content defined by MSCXXXX and follows that
-proposal's own unstable-prefix rules for its inner fields.
+The embedded object reuses the event content defined by 
+[MSC4489](https://github.com/matrix-org/matrix-spec-proposals/pull/4489) 
+and follows that proposal's own unstable-prefix rules for its inner fields.
 
 ## Dependencies
 
