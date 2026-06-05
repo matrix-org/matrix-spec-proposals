@@ -138,21 +138,21 @@ The steps are as follows:
 
 - checks that the homeserver has the OAuth 2.0 API available by [`GET /_matrix/client/v1/auth_metadata`](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery) on the homeserver [base URL]
 
-*New device => Homeserver via HTTP*
+  *New device => Homeserver via HTTP*
 
-```http
-GET /_matrix/client/v1/auth_metadata HTTP/1.1
-Host: synapse-oidc.lab.element.dev
-Accept: application/json
-```
+  ```http
+  GET /_matrix/client/v1/auth_metadata HTTP/1.1
+  Host: synapse-oidc.lab.element.dev
+  Accept: application/json
+  ```
 
-With response like:
+  With response like:
 
-```http
-200 OK
-Content-Type: application/json
-
-{
+  ```http
+  200 OK
+  Content-Type: application/json
+  
+  {
     "issuer": "https://auth-oidc.lab.element.dev/",
     "authorization_endpoint": "https://auth-oidc.lab.element.dev/authorize",
     "token_endpoint": "https://auth-oidc.lab.element.dev/oauth2/token",
@@ -169,42 +169,41 @@ Content-Type: application/json
     ],
     ...
     "device_authorization_endpoint": "https://auth-oidc.lab.element.dev/oauth2/device"
-}
-```
+  }
+  ```
 
 - either does Dynamic Client Registration as per the existing [spec](https://spec.matrix.org/v1.15/client-server-api/#client-registration)
-or uses a static `client_id`. We will use `my_client_id` as an example `client_id`.
+  or uses a static `client_id`. We will use `my_client_id` as an example `client_id`.
 
 - sends a [RFC8628 Device Authorization Request](https://datatracker.ietf.org/doc/html/rfc8628#section-3.1) to the homeserver
-using the `device_authorization_endpoint` as described by [MSC4341]:
+  using the `device_authorization_endpoint` as described by [MSC4341]:
 
-*New device => Homeserver via HTTP*
+  *New device => Homeserver via HTTP*
 
-```http
-POST /oauth2/device HTTP/1.1
-Host: auth-oidc.lab.element.dev
-Content-Type: application/x-www-form-urlencoded
+  ```http
+  POST /oauth2/device HTTP/1.1
+  Host: auth-oidc.lab.element.dev
+  Content-Type: application/x-www-form-urlencoded
+  
+  client_id=my_client_id&scope=openid%20urn%3Amatrix%3Aclient%3Aapi%3A%2A%20urn%3Amatrix%3Aclient%3Adevice%3AABCDEGH
+  ```
 
-client_id=my_client_id&scope=openid%20urn%3Amatrix%3Aclient%3Aapi%3A%2A%20urn%3Amatrix%3Aclient%3Adevice%3AABCDEGH
-```
+  With response like:
+  ```http
+  200 OK
+  Content-Type: application/json
 
-With response like:
+  {
+      "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
+      "user_code": "123456",
+      "verification_uri": "https://auth-oidc.lab.element.dev/link",
+      "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456",
+      "expires_in": 1800,
+      "interval": 5
+  }
+  ```
 
-```http
-200 OK
-Content-Type: application/json
-
-{
-    "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
-    "user_code": "123456",
-    "verification_uri": "https://auth-oidc.lab.element.dev/link",
-    "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456",
-    "expires_in": 1800,
-    "interval": 5
-}
-```
-
-- parses the [Device Authorization Response](https://datatracker.ietf.org/doc/html/rfc8628#section-3.2) above
+- parses the [Device Authorization Response] above
 
 At this point the new device knows that, subject to the user consenting, it should be able to complete the login.
 
@@ -436,24 +435,24 @@ Note that the existing device does not see the new access token. This is one of 
 In parallel to step 5, on receipt of the `m.login.protocol_accepted` message the new device:
 
 - In accordance with [RFC8628](https://datatracker.ietf.org/doc/html/rfc8628#section-3.3.1) the new device must display
-the `user_code` in order that the user can confirm it on the homeserver if required.
+  the `user_code` (from the [Device Authorization Response]) in order that the user can confirm it on the homeserver if required.
 - The new device then starts to poll the homeserver by making
-[Device Access Token Requests](https://datatracker.ietf.org/doc/html/rfc8628#section-3.4) using the interval and bounded
-by `expires_in`.
+  [Device Access Token Requests](https://datatracker.ietf.org/doc/html/rfc8628#section-3.4) using the `interval` and bounded
+  by `expires_in` (both taken from the [Device Authorization Response]).
 
-The above is as per [MSC4341].
+  The above is as per [MSC4341].
 
-*New device => Homeserver via HTTP*
+  *New device => Homeserver via HTTP*
 
-```http
-POST /oauth2/token HTTP/1.1
-Host: auth-oidc.lab.element.dev
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
-      &device_code=GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS
-      &client_id=my_client_id
-```
+  ```http
+  POST /oauth2/token HTTP/1.1
+  Host: auth-oidc.lab.element.dev
+  Content-Type: application/x-www-form-urlencoded
+  
+  grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
+        &device_code=GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS
+        &client_id=my_client_id
+  ```
 
 - It then parses the [Device Access Token Response](https://datatracker.ietf.org/doc/html/rfc8628#section-3.5) and
 handles the different responses
@@ -676,6 +675,8 @@ Fields:
 |`protocols`|required `string[]`|Array of: one of: `device_authorization_grant` |
 |`base_url`|required `string`|The [base URL] of the Matrix homeserver for client-server connections|
 
+Example:
+
 ```json
 {
     "type": "m.login.protocols",
@@ -867,10 +868,10 @@ Against:
 - The existing device needs to wait for the new device to upload the device keys for it to sign the new device.
 - Takes several round-trips for the secrets to be be shared which will add latency to the overall flow.
 - The backup cannot be immediately enabled since we received the backup version as well, something the `m.secret.send`
-mechanism does not offer.
+  mechanism does not offer.
 - The new device cannot upload the cross-signing signature with the device keys in a single request. This introduces a
-chance of other devices seeing the new device as unverified, incorrectly prompting the user to verify the device that
-will soon be verified.
+  chance of other devices seeing the new device as unverified, incorrectly prompting the user to verify the device that
+  will soon be verified.
 
 ## Security considerations
 
@@ -917,3 +918,4 @@ This MSC builds on:
 [server name]: https://spec.matrix.org/v1.16/appendices/#server-name
 [base URL]: https://spec.matrix.org/v1.16/client-server-api/#getwell-knownmatrixclient
 [MSC4388]: https://github.com/matrix-org/matrix-spec-proposals/pull/4388 "MSC4388 Secure out-of-band channel for sign in with QR"
+[Device Authorization Response]: https://datatracker.ietf.org/doc/html/rfc8628#section-3.2
