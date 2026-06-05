@@ -6,7 +6,7 @@ or have been banned by a policy list and want to appeal, there is nowhere to
 look: you are left guessing from the member list and power levels, neither of
 which was designed to answer the question "who do I talk to?". Matrix already
 solves the equivalent problem at the *homeserver* level with
-[`/.well-known/matrix/support`](https://spec.matrix.org/latest/client-server-api/#getwell-knownmatrixsupport)
+[`/.well-known/matrix/support`](https://spec.matrix.org/v1.18/client-server-api/#getwell-knownmatrixsupport)
 (originally [MSC1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929)),
 which lets a server advertise its administrative and security contacts. This
 proposal brings the same idea to rooms.
