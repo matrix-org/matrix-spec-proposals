@@ -123,7 +123,7 @@ If that grant type is not supported then the existing device can inform the new 
 }
 ```
 
-However, it is recommended that that existing device check for the availability of the grant type ahead of time so that
+However, it is recommended that the existing device check for the availability of the grant type ahead of time so that
 it can inform the user that the feature is not available before any QR is generated/scanned.
 
 #### 2. New device checks if it can use an available protocol
@@ -368,7 +368,8 @@ existing device asserts that there is no existing device corresponding to the `d
 [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
 and expecting to receive an HTTP 404 response.
 
-If the device already exists then the login request should be rejected with an `m.login.failure` and reason `device_already_exists`:
+If the device already exists then the login request should be rejected with an `m.login.failure` with reason
+`device_already_exists`:
 
 *Existing device => New device via secure channel*
 
@@ -393,7 +394,8 @@ device know that the consent process is in progress:
 }
 ```
 
-If the URI could not be opened (e.g. unsupported URI scheme, no browser available) then instead the existing device sends an `m.login.failure` with reason `unable_to_open_verification_uri`:
+If the URI could not be opened (e.g. unsupported URI scheme, no browser available) then the existing device sends an
+`m.login.failure` with reason `unable_to_open_verification_uri`:
 
 *Existing device => New device via secure channel*
 
@@ -404,8 +406,8 @@ If the URI could not be opened (e.g. unsupported URI scheme, no browser availabl
 }
 ```
 
-If the user denied permission to open the browser then instead the existing device sends an `m.login.failure` with
-reason `user_cancelled`:
+If the user denies permission to open the browser then the existing device sends an `m.login.failure` with reason
+`user_cancelled`:
 
 *Existing device => New device via secure channel*
 
@@ -524,7 +526,7 @@ If the check succeeds, the existing device sends the following secrets to the ne
 - The private cross-signing key triplet: MSK, SSK, USK
 - The backup recovery key and the currently used backup version.
 
-This is achieved as following:
+This is achieved as follows:
 
 #### 1. Existing device confirms that the new device has indeed logged in successfully
 
@@ -561,8 +563,8 @@ cross-signing signature for itself. It then uses a single request to upload the 
 signature together, which avoids other devices seeing the new device as unverified and incorrectly prompting the
 user to verify it.
 
-The request would look just like any other `/keys/upload` request; it would just include one additional signature, the
-one from the self-signing key. The request would look like follows:
+The request looks just like any other `/keys/upload` request, but with one additional signature from the self-signing
+key, as follows:
 
 ```http
 POST /_matrix/client/v3/keys/upload HTTP/1.1
@@ -834,8 +836,8 @@ proposal. Please also see the potential issues from the dependent MSCs.
 
 ### Alternative method of secret sharing
 
-Instead of the existing device sharing the secrets bundle instead the existing device could cross-sign the new device
-and then use to-device messaging for sharing the secrets.
+Instead of sharing a secrets bundle directly, the existing device could cross-sign the new device and then use
+to-device messaging for sharing the secrets.
 
 For:
 
