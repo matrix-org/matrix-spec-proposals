@@ -135,7 +135,8 @@ members form a MatrixRTC session. Each slot is identified by a unique `slot_id`,
 `application` type, and represented by the `m.rtc.slot` state event with the `slot_id` as the state
 key. 
 
-> [!NOTE] Conceptually, a slot is like a virtual meeting room: MatrixRTC sessions occur within
+> [!NOTE]
+> Conceptually, a slot is like a virtual meeting room: MatrixRTC sessions occur within
 > slots, and multiple sessions may occur consecutively without changing the slot’s configuration.
 
 Slots are part of the shared room state and can only be created or modified by authorized users with
