@@ -90,16 +90,12 @@ We use the `SecureSend` and `SecureReceive` operations from [MSC4388] which are 
 
 #### 1. Homeserver discovery
 
-The new device needs to know which homeserver it will be authenticating with.
+The new device needs to know which homeserver it will be authenticating with. If the new device scanned the QR code,
+the [base URL] of the Matrix homeserver can be taken from the QR code and the new device proceeds to step 2
+immediately. Otherwise, the new device waits to receive an `m.login.protocols` message from the existing device.
 
-In the case that the new device scanned the QR code then the [base URL]
-of the Matrix homeserver can be taken from the QR code and the new device proceeds to step 2 immediately.
-
-Otherwise the new device waits to be informed by receiving an `m.login.protocols` message from the existing device.
-
-The existing device would need to determine which "login protocols" are available for the new device to use.
-
-Currently this could only be `device_authorization_grant` meaning the homeserver supports the
+The existing device determines which "login protocols" are available for the new device to use. Currently this can
+only be `device_authorization_grant`, meaning the homeserver supports the
 `urn:ietf:params:oauth:grant-type:device_code` grant type.
 
 If that grant type is available, then the existing device informs the new device by sending the `m.login.protocols` message with the
@@ -366,11 +362,10 @@ Then we continue with the actual login:
 
 #### 4. Existing device checks device_id and accepts protocol to use
 
-On receipt of the `m.login.protocol` message above, and having completed step 7 of the secure channel establishment, the
-existing device then asserts that there is no existing device corresponding to the `device_id` from the
-`m.login.protocol` message.
-
-It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
+On receipt of the `m.login.protocol` message, and having completed step 7 of the secure channel establishment, the
+existing device asserts that there is no existing device corresponding to the `device_id` from the
+`m.login.protocol` message. It does so by calling
+[GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
 and expecting to receive an HTTP 404 response.
 
 If the device already exists then the login request should be rejected with an `m.login.failure` and reason `device_already_exists`:
@@ -384,13 +379,11 @@ If the device already exists then the login request should be rejected with an `
 }
 ```
 
-If no existing device was found then the existing device opens the `verification_uri_complete` - falling back to the
-`verification_uri`, if `verification_uri_complete` isn't present - in a system browser.
-
-Ideally this is in a trusted/secure environment where the cookie jar and password manager features are available. e.g.
-on iOS this could be a `ASWebAuthenticationSession`.
-
-The existing device then sends an acknowledgement message to let the other device know that the consent process is in progress:
+If no existing device was found, the existing device opens the `verification_uri_complete` — falling back to
+`verification_uri` if `verification_uri_complete` isn't present — in a system browser. Ideally this is in a
+trusted/secure environment where the cookie jar and password manager features are available (e.g. on iOS this could
+be an `ASWebAuthenticationSession`). The existing device then sends an acknowledgement message to let the other
+device know that the consent process is in progress:
 
 *Existing device => New device via secure channel*
 
@@ -425,10 +418,9 @@ reason `user_cancelled`:
 
 #### 5. User is asked by homeserver to consent on existing device
 
-The user is then prompted to consent by the homeserver. They may be prompted to undertake additional actions by the
-homeserver such as 2FA, but this is all handled within the browser.
-
-Note that the existing device does not see the new access token. This is one of the benefits of the OAuth 2.0 API.
+The user is then prompted to consent by the homeserver; they may be prompted to undertake additional actions such as
+2FA, but this is all handled within the browser. Note that the existing device does not see the new access token —
+this is one of the benefits of the OAuth 2.0 API.
 
 #### 6. New device waits for approval from homeserver
 
@@ -522,14 +514,12 @@ sequenceDiagram
 
 ### Secret sharing and device verification
 
-Once the new device has logged in and obtained an access token it will want to obtain the secrets necessary to set up
-end-to-end encryption on the device and make itself cross-signed.
+Once the new device has logged in and obtained an access token, it will want to obtain the secrets necessary to set
+up end-to-end encryption and make itself cross-signed. Before sharing these secrets, the existing device should
+validate that the new device has successfully obtained an access token from the homeserver, so that secrets are not
+leaked if the login was disallowed by the user or homeserver.
 
-Before sharing the end-to-end encryption secrets the existing device should validate that the new device has
-successfully obtained an access token from the homeserver. The purpose of this is so that, if the user or homeserver
-has disallowed the login, the secrets are not leaked.
-
-If checked successfully then the existing device sends the following secrets to the new device:
+If the check succeeds, the existing device sends the following secrets to the new device:
 
 - The private cross-signing key triplet: MSK, SSK, USK
 - The backup recovery key and the currently used backup version.
@@ -538,16 +528,11 @@ This is achieved as following:
 
 #### 1. Existing device confirms that the new device has indeed logged in successfully
 
-On receipt of an `m.login.success` message the existing device queries the homeserver to check that there is a device online
-
-with the corresponding device_id (from the `m.login.protocol` message).
-
-It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
-and expecting to receive an HTTP 200 response.
-
-If the device isn't immediately visible it can repeat the `GET` request for up to, say, 10 seconds to allow for any latency.
-
-If no device is found then the process should be stopped.
+On receipt of an `m.login.success` message, the existing device queries the homeserver to check that there is a
+device online with the corresponding `device_id` (from the `m.login.protocol` message). It does so by calling
+[GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
+and expecting to receive an HTTP 200 response. If the device isn't immediately visible, it can repeat the `GET`
+request for up to 10 seconds to allow for any latency, and if no device is found the process should be stopped.
 
 #### 2. Existing device shares secrets with new device
 
@@ -571,12 +556,10 @@ The existing device sends a `m.login.secrets` message via the secure channel:
 
 #### 3. New device cross-signs itself and uploads device keys
 
-On receipt of the `m.login.secrets` message the new device can store the secrets locally.
-
-The new device can then generate the cross-signing signature for itself.
-
-It can then use a single request to upload the device keys and cross signing signature. This removes the chance of other
-devices seeing the new device as unverified, incorrectly prompting the user to verify the already verified device.
+On receipt of the `m.login.secrets` message, the new device stores the secrets locally and generates the
+cross-signing signature for itself. It then uses a single request to upload the device keys and cross-signing
+signature together, which avoids other devices seeing the new device as unverified and incorrectly prompting the
+user to verify it.
 
 The request would look just like any other `/keys/upload` request; it would just include one additional signature, the
 one from the self-signing key. The request would look like follows:
@@ -830,27 +813,22 @@ Where the homeserver is known:
 1. Check if the homeserver has a rendezvous session API available by attempting a POST to the create rendezvous endpoint
    from [MSC4388].
 
-For a new device it would need to know the homeserver ahead of time in order to do these checks.
+For a new device, it would need to know the homeserver ahead of time to perform these checks. Additionally, the new
+device needs either a static OAuth 2.0 client already registered with the homeserver, or the homeserver must support
+and allow dynamic client registration, as described in the
+[spec](https://spec.matrix.org/v1.15/client-server-api/#client-registration).
 
-Additionally the new device needs to either have an existing (i.e. static) OAuth 2.0 client registered with the homeserver
-already, or the homeserver must support and allow dynamic client registration as described in the [spec](https://spec.matrix.org/v1.15/client-server-api/#client-registration).
-
-The feature is also only available where a user has cross-signing set up and the existing device to be used has the
-Master Signing Key, Self Signing Key and User Signing Key stored locally so that they can be shared with the new device.
+The feature is also only available where the user has cross-signing set up and the existing device has the Master
+Signing Key, Self Signing Key, and User Signing Key stored locally so that they can be shared with the new device.
 
 ## Potential issues
 
-This proposal adds new functionality it is not anticipated that it would conflict with other existing features.
+This proposal adds new functionality and is not anticipated to conflict with other existing features. Although it
+provides a new authentication mechanism, it builds on the well-established OAuth Device Authorization Grant.
 
-Although this is providing a new authentication mechanism to Matrix it builds on top of the well established OAuth
-Device Authorization Grant.
-
-Because the cryptograpgic identity that is used for end-to-end encryption is being shared it is particularly important
-to ensure that new attack vectors are not opened up.
-
-A possible source of issues is the size and complexity of the proposal.
-
-Please also see the potential issues from the dependent MSCs.
+Because the cryptographic identity used for end-to-end encryption is being shared, it is particularly important to
+ensure that new attack vectors are not opened up. A possible source of issues is the size and complexity of the
+proposal. Please also see the potential issues from the dependent MSCs.
 
 ## Alternatives
 
