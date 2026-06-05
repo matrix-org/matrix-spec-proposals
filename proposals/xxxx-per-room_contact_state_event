@@ -1,0 +1,212 @@
+# MSCXXXX: Per-room contact state event
+
+A room currently has no standard, machine-readable way to say *who to contact
+about it*. If you are confused about a room's rules, want to reach a moderator,
+or have been banned by a policy list and want to appeal, there is nowhere to
+look: you are left guessing from the member list and power levels, neither of
+which was designed to answer the question "who do I talk to?". Matrix already
+solves the equivalent problem at the *homeserver* level with
+[`/.well-known/matrix/support`](https://spec.matrix.org/latest/client-server-api/#getwell-knownmatrixsupport)
+(originally [MSC1929](https://github.com/matrix-org/matrix-spec-proposals/pull/1929)),
+which lets a server advertise its administrative and security contacts. This
+proposal brings the same idea to rooms.
+
+This proposal introduces an `m.room.contact` state event that lets a room
+advertise its responsible contacts and an optional support page, reusing the
+data shape of the homeserver support document so that existing tooling can be
+adapted with minimal effort.
+
+## Proposal
+
+The set of people responsible for a room and/or a policy list is not reliably
+discoverable from the information available today (usually power levels):
+
+- Moderators frequently act through shared **moderation bot accounts** (e.g.
+  Draupnir, Meowlnir) rather than their personal accounts. The bot may hold a
+  high power level, but it is not a "support contact" — a user might naively
+  try to DM the moderation bot account and receive no response, especially
+  since bot accounts are often not distinguishable from regular user accounts.
+- Conversely, a high power level does not imply willingness to be contacted.
+  Room creators, automation accounts, and dormant admins all appear identical
+  to the people actually fielding moderation requests.
+
+This is especially acute for
+**[moderation policy lists](https://spec.matrix.org/latest/client-server-api/#moderation-policy-lists)**.
+A user banned by a subscribed policy list often has no idea which room published
+the rule, let alone who to ask about an appeal. The ban propagates through
+subscribing rooms, but the appeal path does not propagate with it. Surfacing a
+contact as room state means it travels with the list itself and can be resolved
+by any client or bot that has seen the room. The responsible parties may also
+differ by function: the entity that handles *appeals* may not be the same entity
+that *curates* the list or *moderates* the policy list room itself, which is why
+contacts carry an explicit role rather than being a single field.
+
+A machine-readable, room-scoped contact event lets:
+
+- Clients render a "who runs this room / who do I contact for X" affordance,
+  independent of the member list and of the power levels event.
+- Bots consuming policy lists (Mjolnir/Draupnir/Meowlnir, ban-list aggregators,
+  etc.) programmatically resolve a contact without out-of-band coordination or
+  guessing from the room topic.
+
+### Event definition
+
+A new state event type `m.room.contact` is defined. It uses the empty string
+`""` as its state key; a room has at most one such event. It is ordinary room
+state and requires no new room version.
+
+Its `content` reuses the `contacts` and `support_page` fields, with the same
+meanings, from the response body of
+[`/.well-known/matrix/support`](https://spec.matrix.org/latest/client-server-api/#getwell-knownmatrixsupport).
+Extensions to those two fields by other proposals (for example additional
+contact fields, or new `m.role.*` values) apply here without requiring changes
+to this event.
+
+```json
+{
+  "contacts": [
+    {
+      "matrix_id": "@alice:example.org",
+      "email_address": "security@example.org",
+      "role": "m.role.security"
+    },
+    {
+      "matrix_id": "@bob:example.org",
+      "role": "m.role.admin"
+    }
+  ],
+  "support_page": "https://example.org/room-support-page"
+}
+```
+
+A moderation policy list with a single contact would simply publish:
+
+```json
+{
+  "contacts": [
+    {
+      "matrix_id": "@alice:example.org",
+      "email_address": "appeals@example.org",
+      "role": "m.role.admin"
+    }
+  ]
+}
+```
+
+The following constraints apply:
+
+- At least one of `contacts` or `support_page` SHOULD be present.
+- Within a contact, at least one of `matrix_id` or `email_address` MUST be
+  present; a contact with neither MUST be ignored by consumers.
+
+#### Roles
+
+A contact's `role` is a value from the same `m.role.*` set used by
+[`/.well-known/matrix/support`](https://spec.matrix.org/latest/client-server-api/#getwell-knownmatrixsupport);
+this proposal does not define its own roles. The set is open: consumers MUST
+gracefully handle role values they do not recognise (for example, by displaying
+the contact with no role label), and new `m.role.*` values defined by other
+proposals are usable here automatically. A contact carries at most one `role`;
+to list one party under two roles, include two contact entries.
+
+### Client behaviour
+
+Clients MAY surface the contents of this event in room info / room settings UI,
+presented distinctly from the member list so that a moderation bot holding a
+high power level is not mistaken for a support contact. When this event is
+present, clients SHOULD treat its listed contacts as the canonical "who to
+contact" set rather than inferring contacts from power levels. Clients MAY still
+present power levels separately as an authority/permission view; the two answer
+different questions.
+
+Clients MUST treat the contents as an unverified claim made by the room (see
+"Security considerations") and MUST NOT present a listed contact as a verified
+identity.
+
+### Bot / consumer behaviour
+
+Bots and other automated consumers MAY read this event to resolve a contact for
+a given purpose. A consumer SHOULD prefer a contact whose role matches its
+purpose, then fall back to `m.role.admin` as the general-purpose contact, then
+to any listed contact, then to `support_page`.
+
+Consumers MUST treat the event as advisory and MUST NOT grant any privilege,
+trust, or authorisation on the basis of a user appearing in it.
+
+## Potential issues
+
+- **Duplication with power levels.** This event intentionally restates *some*
+  information inferable from power levels. This is by design: power levels
+  express authority, this event expresses contactability, and they frequently
+  diverge (notably bot accounts).
+- **Staleness.** Like all room state, the event can become outdated (e.g. a
+  listed moderator leaves the room or an email mailbox is decommissioned). This
+  is no worse than the status quo, where the information does not exist at all,
+  and is an operational rather than a protocol concern.
+- **Limited role vocabulary.** The roles currently defined for
+  `/.well-known/matrix/support` are coarse, so distinct functions such as
+  appeals or moderation may collapse onto `m.role.admin` until more roles exist.
+  This is acceptable: the event inherits the `m.role.*` set by reference, so
+  granularity improves automatically as that set grows, with no change to this
+  event.
+- **Discoverability before joining.** A user who cannot read room state (e.g.
+  has been banned, or has never been a member) cannot read this event through
+  normal means. Exposing it on a failed join or to non-members is deliberately
+  out of scope for this MSC and is left to a follow-up proposal, so that the
+  state event — which is independently useful to existing members and to bots
+  that are in the room — is not blocked on federation/client changes.
+
+## Alternatives
+
+- **Non-empty state keys per context.** The state key could carry a context
+  (e.g. `m.room.contact` with state key `appeals` vs `general`), giving one
+  event per contact context. This is more flexible but diverges from the
+  singleton shape of `/.well-known/matrix/support`, complicates consumers, and
+  is unnecessary because `role`-tagged entries in a single event already express
+  multiple contexts. A future MSC could add keyed variants if a concrete need
+  emerges. The singleton form is proposed as the simpler default.
+- **A single free-form contact string or topic convention.** Encoding contacts
+  in the room topic (as some rooms do today) is not machine-readable, not
+  role-aware, and collides with the topic's actual purpose.
+- **Account data or a new well-known document.** Neither travels with the room
+  over federation nor propagates alongside a policy list, which is the core
+  requirement here.
+
+## Security considerations
+
+The contents of this event are an **unverified claim by the room**, not a
+verified statement of identity, and the proposal's normative text requires
+consumers to treat it as such.
+
+- **Impersonation / misdirection.** Anyone with sufficient power level can list
+  an arbitrary `matrix_id` or `email_address`, including a third party's address
+  or a lookalike, potentially directing appeals or reports to an attacker.
+  Consumers MUST NOT treat a listing as proof that the named party consents to
+  or is aware of the role. This mirrors the trust posture of
+  `/.well-known/matrix/support`, where the homeserver similarly self-asserts its
+  contacts.
+- **Email address harvesting.** Any `email_address` becomes readable by every
+  server and user that can see room state, including over federation. Room
+  operators SHOULD list addresses intended to be public (e.g. a role mailbox
+  such as `appeals@`), never personal addresses, and clients MAY warn when a
+  personal-looking address is about to be published.
+- **Phishing via `support_page`.** The `support_page` URL is attacker-controlled
+  room state. Clients SHOULD display the URL plainly (not as an opaque "Get
+  support" button that hides the destination) and SHOULD apply the same
+  link-safety treatment they use for other user-provided URLs.
+- **No authorisation signal.** Because the event is unverified, consumers MUST
+  NOT use presence in it to grant trust, elevated permissions, or exemption from
+  moderation. It is purely informational.
+
+## Unstable prefix
+
+| Proposed (stable)            | Unstable                            |
+|------------------------------|-------------------------------------|
+| `m.room.contact` (event type) | `net.codestorm.mscXXXX.contact`    |
+
+The `role` values reuse the existing stable `m.role.*` identifiers from MSC1929
+and are unaffected by this proposal's unstable prefix.
+
+## Dependencies
+
+None.
