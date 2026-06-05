@@ -140,7 +140,7 @@ key.
 > slots, and multiple sessions may occur consecutively without changing the slot’s configuration.
 
 Slots are part of the shared room state and can only be created or modified by authorized users with
-sufficient `power_level`. Clients MUST react on and respect latest `m.rtc.slot` definitions as
+sufficient power level. Clients MUST react on and respect latest `m.rtc.slot` definitions as
 defined by the Matrix room state at all times. The ability to open and close slots with different
 patterns enables a wide variety of use cases, from always-on shared spaces to short lived scheduled
 meetings.
