@@ -102,7 +102,7 @@ The existing device would need to determine which "login protocols" are availabl
 Currently this could only be `device_authorization_grant` meaning the homeserver supports the
 `urn:ietf:params:oauth:grant-type:device_code` grant type.
 
-If it is available then the existing device informs the new device by sending the `m.login.protocols` message with the
+If that grant type is available, then the existing device informs the new device by sending the `m.login.protocols` message with the
 homeserver specified:
 
 *Existing device => New device via secure channel*
@@ -114,6 +114,21 @@ homeserver specified:
     "base_url": "https://synapse-oidc.lab.element.dev"
 }
 ```
+
+If that grant type is not supported then the existing device can inform the new device as follows:
+
+*Existing device => New device via secure channel*
+
+```json
+{
+    "type": "m.login.protocols",
+    "protocols": [],
+    "base_url": "https://synapse-oidc.lab.element.dev"
+}
+```
+
+However, it is recommended that that existing device check for the availability of the grant type ahead of time so that
+it can inform the user that the feature is not available before any QR is generated/scanned.
 
 #### 2. New device checks if it can use an available protocol
 
