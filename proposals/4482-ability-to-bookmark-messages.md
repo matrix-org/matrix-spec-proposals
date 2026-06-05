@@ -16,7 +16,7 @@ This proposal leverages extensible timeline events and the fact that unknown roo
 ### New room type
 
 This MSC introduces a new room type called `m.bookmarks`.
-This kind of room SHOULD hold some `m.bookmark` events defined below. 
+This kind of room SHOULD only hold some `m.bookmark` events defined below. 
 
 ### Event structure
 
@@ -33,7 +33,8 @@ The pointer is provided as is: it may not be "valid" (i.e. the user does not hav
         "body": "You bookmarked matrix:r/matrix-dev:matrix.org in Matrix Dev"
       },
       {
-        { "body": "You bookmarked <a href='matrix:r/matrix-dev:matrix.org'>matrix:r/matrix-dev:matrix.org</a> in Matrix Dev", "mimetype": "text/html" },
+        "body": "You bookmarked <a href='matrix:r/matrix-dev:matrix.org'>matrix:r/matrix-dev:matrix.org</a> in Matrix Dev",
+        "mimetype": "text/html"
       }
     ],
     "m.pointer": {
