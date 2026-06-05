@@ -6,8 +6,8 @@ to attach arbitrary data to their public user information. This can be anything
 from a timezone (`m.tz`) to whether the user is currently in the office (e.g.
 [MSC4426](https://github.com/matrix-org/matrix-spec-proposals/pull/4426)).
 
-Clients may wish to display without user interaction. For example, the `emoji`
-field from
+Clients may wish to display these fields without user interaction. For example,
+the `emoji` field from
 [MSC4426](https://github.com/matrix-org/matrix-spec-proposals/pull/4426) could
 be shown next to each user's display name in the timeline of a room. This would
 be similar to features in other messaging apps, such as Slack:
@@ -105,7 +105,7 @@ of these real-time updates.
 
 Controlling what information is returned by `/sync` is done via
 [Filtering](https://spec.matrix.org/v1.17/client-server-api/#filtering). A new
-possible field, `profile_fields`, is added to filters. It has a single key,
+optional field, `profile_fields`, is added to filters. It has a single key,
 `ids`, that is a list of strings representing profile field IDs. For
 example:
 
@@ -134,14 +134,35 @@ further by default. Homeservers SHOULD NOT send profile updates for users who do
 not share at least one room (lest you receive updates for the entire
 federation).
 
-Filtering updates by user or room ID is left out of scope for this
-proposal (and would be better served by sliding sync).
-
 Updates made since the last `since` token MUST be returned to clients. If
 multiple updates have happened since the provided `since` token, only the latest
 update should be returned. A `/sync` request with no `since` token MUST have all
 *current* profile field values sent to the client (in line with the `ids` they
 requested).
+
+### Displaying profile information initially
+
+When a client builds a timeline of users and events to display to the user, it
+should be able to show relevant profile information for every user. However, if
+the homeserver only ever communicates profile *updates* down `/sync`, then a
+client wouldn't show any information for a given user until they update their
+profile.
+
+To bridge this gap, homeservers MAY communicate fields from a user's profiles to
+a client using the `users.<user_id>.profile_fields` `/sync` entry; even if those
+fields have not been updated recently. This may be useful if, for instance, a
+user has just joined a room with users that it hasn't seen before. The client
+should be able to display appropriate profile field information immediately
+without having to query the homeserver for each new user's profile.
+
+### Lazy-loading user profiles
+
+To help reduce the number of user profiles that would be returned in a `/sync`
+response, homeservers MAY send a reduced set of profile information to clients
+when [lazy-loading room
+members](https://spec.matrix.org/v1.18/client-server-api/#lazy-loading-room-members)
+is enabled. The rationale is that there's little point in sending profile
+information about a user if a client won't actually display them yet.
 
 ## Implementation notes
 
@@ -152,29 +173,47 @@ The following are implementation-specific recommendations.
 Legacy sync works by having the client provide the `next_batch` token as the
 `since` query parameter in the next request. This allows the homeserver to track
 which changes the client has yet to see. This does not mean homeservers now need
-to track historical values of profiles - users will typically only ever care
+to track the history of profiles - users will typically only ever care
 about the latest profile information for another user.
 
 Homeservers may instead assign every profile update an incrementing identifier,
 and compare that against an identifier stored within the provided `since` token
 to know whether a client has yet to receive a given profile update.
 
+Ensuring that clients have a coherent copy of all other user profiles is
+especially nuanced. One implementation path is to include profiles (filtered to
+only the fields the client asks for) of users during an initial sync, so that
+the client has access to profile information without needing to wait for an
+update to occur. But returning these profiles, especially on an initial sync,
+can lead to a lot of data being returned.
+
+Homeservers should encourage clients to enable lazy-loading, on initial and
+incremental syncs, and then only send down profile information for relevant
+users (i.e. the `senders` of events in the sync response, room heroes, etc.).
+This is similar to how lazy-loading memberships work; sending the membership of
+every user in every room to the client is unnecessary if the client will only
+display the last X events in the room.
+
+Even then, a DM with a given user will result in multiple incremental syncs with
+events from a single user; and thus their profile being returned over and over
+again. This can be alleviated by the homeserver maintaining a lossy cache of
+which user profile fields it has already communicated to a given user_id/device_id
+combination. This lessens the number of redundant user profiles that are
+communicated. It's OK if the cache is lossy (evicted based on size/time/etc.) as
+the worst that will happen is a redundant profile is sent to the client.
+
+These injections of *current* user profiles allows a client to always display
+the profile information for a user, even if it hasn't changed recently.
+
+Profile *updates*/diffs should *always* be sent in an incremental sync response.
+They're naturally infrequent enough that there's little need to filter them with
+the currently defined use cases.
+
 ### Clients
 
-Upon login, clients will make a single legacy `/sync` request with no `since`
-parameter - fetching *all* initial client state. This is colloquially known as
-an "initial sync".
-
-A client could naively fetch all profile field values it's interested in for all
-other users on startup. However, this could potentially include a huge amount of
-data - that the user may not even see. Fetching that information would also
-extend the already long waiting times for an initial sync to complete.
-
-Instead, it may be more efficient for a client to use the one-off [`GET
-/_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3profileuseridkeyname)
-endpoint to get the initial state of a user's profile field the first time it's
-seen, while waiting for updates to come down via incremental (non-initial)
-syncs.
+Clients are recommended to enable lazy-loading in their `/sync` requests to
+limit the profile information to only those users that are initially relevant
+(i.e. senders of events that are initially returned to the client).
 
 ## Potential issues
 
