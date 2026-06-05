@@ -76,6 +76,50 @@ sequenceDiagram
     end
 ```
 
+### Discoverability of the capability
+
+Before offering this feature to a user, the devices should check that the feature is available to use. If it isn't
+available then it is recommended that the client "fails fast" and informs the user sooner rather than later.
+
+The checks that can be done vary depending on which device is generating the QR as follows:
+
+#### Existing device scanning the QR code
+
+The existing device can perform these checks:
+
+1. That the homeserver is using the OAuth 2.0 API using [server metadata
+discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery)
+1. That the Device Authorization Grant is available as per [device authorization flow] for the new device to use
+1. That the user has [end-to-end encryption](https://spec.matrix.org/v1.18/client-server-api/#end-to-end-encryption)
+   cross-signing set up and the existing device has the Master Signing Key, Self Signing Key, and User Signing Key
+   stored locally so that they can be shared with the new device.
+
+Note the we do not check for the availability of the rendezvous session API because the new device will be choosing
+the homeserver for the rendezvous which might be different from the actual homeserver.
+
+#### Existing device generating the QR code
+
+The three checks from above are performed, along with an additional check:
+
+4. That the homeserver has a rendezvous session API available by attempting a POST to the create rendezvous endpoint
+   from [MSC4388].
+
+#### New device generating the QR code
+
+Since the homeserver is not yet known at QR generation time, the only check the new device can perform ahead of time is
+confirming that the rendezvous server is available by attempting a POST to the create rendezvous endpoint from
+[MSC4388].
+
+#### New device scanning the QR code
+
+The homeserver URL is encoded in the QR code, so the new device can do these checks after scanning:
+
+1. That the homeserver is using the OAuth 2.0 API using [server metadata
+   discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery)
+1. That the Device Authorization Grant is available as per [device authorization flow] for the new device to use
+1. That the device either has a static OAuth 2.0 `client_id` or [dynamic client registration] is supported by the
+   homeserver.
+
 ### Login via OAuth 2.0 device authorization flow
 
 In this section the sequence of steps depends on whether the new device generated or scanned the QR code from [MSC4388].
@@ -168,8 +212,8 @@ The steps are as follows:
   }
   ```
 
-- either does Dynamic Client Registration as per the existing [spec](https://spec.matrix.org/v1.15/client-server-api/#client-registration)
-  or uses a static `client_id`. We will use `my_client_id` as an example `client_id`.
+- either does [dynamic client registration] or uses a static `client_id`. We will use `my_client_id`
+  as an example `client_id`.
 
 - sends a [RFC8628 Device Authorization Request](https://datatracker.ietf.org/doc/html/rfc8628#section-3.1) to the homeserver
   using the `device_authorization_endpoint` as described by the [device authorization grant]:
@@ -804,25 +848,6 @@ Example:
 }
 ```
 
-## Discoverability of the capability
-
-Before offering this capability it would make sense that the device can check the availability of the feature.
-
-Where the homeserver is known:
-
-1. Check that the homeserver is using the OAuth 2.0 API using [server metadata discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery)
-1. Check that the Device Authorization Grant is available as per [device authorization flow]
-1. Check if the homeserver has a rendezvous session API available by attempting a POST to the create rendezvous endpoint
-   from [MSC4388].
-
-For a new device, it would need to know the homeserver ahead of time to perform these checks. Additionally, the new
-device needs either a static OAuth 2.0 client already registered with the homeserver, or the homeserver must support
-and allow dynamic client registration, as described in the
-[spec](https://spec.matrix.org/v1.15/client-server-api/#client-registration).
-
-The feature is also only available where the user has cross-signing set up and the existing device has the Master
-Signing Key, Self Signing Key, and User Signing Key stored locally so that they can be shared with the new device.
-
 ## Potential issues
 
 This proposal adds new functionality and is not anticipated to conflict with other existing features. Although it
@@ -898,3 +923,4 @@ This MSC builds on:
 [base URL]: https://spec.matrix.org/v1.16/client-server-api/#getwell-knownmatrixclient
 [MSC4388]: https://github.com/matrix-org/matrix-spec-proposals/pull/4388 "MSC4388 Secure out-of-band channel for sign in with QR"
 [Device Authorization Response]: https://datatracker.ietf.org/doc/html/rfc8628#section-3.2
+[dynamic client registration]: https://spec.matrix.org/v1.15/client-server-api/#client-registration
