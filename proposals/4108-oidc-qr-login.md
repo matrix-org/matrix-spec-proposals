@@ -88,7 +88,7 @@ the steps are described.
 
 We use the `SecureSend` and `SecureReceive` operations from [MSC4388] which are sent via the out-of-band channel.
 
-1. **Homeserver discovery**
+#### 1. Homeserver discovery
 
 The new device needs to know which homeserver it will be authenticating with.
 
@@ -115,7 +115,7 @@ homeserver specified:
 }
 ```
 
-2. **New device checks if it can use an available protocol**
+#### 2. New device checks if it can use an available protocol
 
 The existing device then undertakes steps to determine if it is able to work with the homeserver.
 
@@ -193,7 +193,7 @@ Content-Type: application/json
 
 At this point the new device knows that, subject to the user consenting, it should be able to complete the login
 
-3. **New device informs existing device that it wants to use the `device_authorization_grant`**
+#### 3. New device informs existing device that it wants to use the `device_authorization_grant`
 
 The new device sends the `verification_uri` and, if present, the `verification_uri_complete` over to the existing device and
 indicates that it wants to use protocol `device_authorization_grant` and that it will be authenticating as the Matrix
@@ -350,7 +350,7 @@ sequenceDiagram
 
 Then we continue with the actual login:
 
-4. **Existing device checks device_id and accepts protocol to use**
+#### 4. Existing device checks device_id and accepts protocol to use
 
 On receipt of the `m.login.protocol` message above, and having completed step 7 of the secure channel establishment, the
 existing device then asserts that there is no existing device corresponding to the `device_id` from the
@@ -409,14 +409,14 @@ reason `user_cancelled`:
 }
 ```
 
-5. **User is asked by homeserver to consent on existing device**
+#### 5. User is asked by homeserver to consent on existing device
 
 The user is then prompted to consent by the homeserver. They may be prompted to undertake additional actions by the
 homeserver such as 2FA, but this is all handled within the browser.
 
 Note that the existing device does not see the new access token. This is one of the benefits of the OAuth 2.0 API.
 
-6. **New device waits for approval from homeserver**
+#### 6. New device waits for approval from homeserver
 
 In parallel to step 5, on receipt of the `m.login.protocol_accepted` message the new device:
 
@@ -522,7 +522,7 @@ If checked successfully then the existing device sends the following secrets to 
 
 This is achieved as following:
 
-1. **Existing device confirms that the new device has indeed logged in successfully**
+#### 1. Existing device confirms that the new device has indeed logged in successfully
 
 On receipt of an `m.login.success` message the existing device queries the homeserver to check that there is a device online
 
@@ -535,7 +535,7 @@ If the device isn't immediately visible it can repeat the `GET` request for up t
 
 If no device is found then the process should be stopped.
 
-2. **Existing device shares secrets with new device**
+#### 2. Existing device shares secrets with new device
 
 The existing device sends a `m.login.secrets` message via the secure channel:
 
@@ -555,7 +555,7 @@ The existing device sends a `m.login.secrets` message via the secure channel:
 }
 ```
 
-3. **New device cross-signs itself and uploads device keys**
+#### 3. New device cross-signs itself and uploads device keys
 
 On receipt of the `m.login.secrets` message the new device can store the secrets locally
 
