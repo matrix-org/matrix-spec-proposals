@@ -76,7 +76,7 @@ sequenceDiagram
     end
 ```
 
-### Login via OAuth 2.0 Device Authorization Grant from MSC4341
+### Login via OAuth 2.0 device authorization flow
 
 In this section the sequence of steps depends on whether the new device generated or scanned the QR code from [MSC4388].
 
@@ -172,7 +172,7 @@ The steps are as follows:
   or uses a static `client_id`. We will use `my_client_id` as an example `client_id`.
 
 - sends a [RFC8628 Device Authorization Request](https://datatracker.ietf.org/doc/html/rfc8628#section-3.1) to the homeserver
-  using the `device_authorization_endpoint` as described by [MSC4341]:
+  using the `device_authorization_endpoint` as described by the [device authorization grant]:
 
   *New device => Homeserver via HTTP*
 
@@ -432,7 +432,7 @@ In parallel to step 5, on receipt of the `m.login.protocol_accepted` message the
   [Device Access Token Requests](https://datatracker.ietf.org/doc/html/rfc8628#section-3.4) using the `interval` and bounded
   by `expires_in` (both taken from the [Device Authorization Response]).
 
-  The above is as per [MSC4341].
+  The above is as per [device authorization flow].
 
   *New device => Homeserver via HTTP*
 
@@ -449,7 +449,7 @@ In parallel to step 5, on receipt of the `m.login.protocol_accepted` message the
 - It then parses the [Device Access Token Response](https://datatracker.ietf.org/doc/html/rfc8628#section-3.5) and
 handles the different responses
 - If the user consents in the next step then the new device will receive an `access_token` and `refresh_token` etc. as
-normal as per [MSC4341].
+normal as per [device authorization flow].
 
 The sequence diagram for steps 4, 5 and 6 is as follows:
 
@@ -491,7 +491,7 @@ sequenceDiagram
             Note over UA: User closes browser
         and
             HS->>N: SecureReceive({"type":"m.login.protocol_accepted"})
-        note over N: 6) New device polls the homeserver awaiting the outcome as per RFC 8628 / MSC4341
+        note over N: 6) New device polls the homeserver awaiting the outcome as per RFC 8628 / device authorization flow
             loop Poll for result at interval <interval> seconds
                 N->>HS: POST /token client_id=xyz<br>&grant_type=urn:ietf:params:oauth:grant-type:device_code<br>&device_code=XYZ
                 alt pending
@@ -809,7 +809,7 @@ Before offering this capability it would make sense that the device can check th
 Where the homeserver is known:
 
 1. Check that the homeserver is using the OAuth 2.0 API using [server metadata discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery)
-1. Check that the Device Authorization Grant is available as per [MSC4341]
+1. Check that the Device Authorization Grant is available as per [device authorization flow]
 1. Check if the homeserver has a rendezvous session API available by attempting a POST to the create rendezvous endpoint
    from [MSC4388].
 
@@ -890,9 +890,8 @@ This proposal does not have an unstable prefix itself, but instead relies on the
 This MSC builds on:
 
 - [MSC4388] which provides the secure out-of-band channel for the devices to communicate via.
-- [MSC4341] which proposes support for RFC 8628 Device Authorization Grant in Matrix.
 
-[MSC4341]: https://github.com/matrix-org/matrix-spec-proposals/pull/4341 "MSC4341 Support for RFC 8628 Device Authorization Grant"
+[device authorization flow]: https://spec.matrix.org/v1.18/client-server-api/#device-authorization-flow
 [server name]: https://spec.matrix.org/v1.16/appendices/#server-name
 [base URL]: https://spec.matrix.org/v1.16/client-server-api/#getwell-knownmatrixclient
 [MSC4388]: https://github.com/matrix-org/matrix-spec-proposals/pull/4388 "MSC4388 Secure out-of-band channel for sign in with QR"
