@@ -1,4 +1,4 @@
-# MSCXXXX: Surfacing room contacts on failed joins
+# MSCXXXX: Surfacing room contacts when a join or knock does not succeed
 
 When a user's attempt to join or knock on a room is rejected — because they are
 banned, because their server is denied, or for any other reason — they typically
