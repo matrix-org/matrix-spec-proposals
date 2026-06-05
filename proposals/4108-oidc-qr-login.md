@@ -97,7 +97,7 @@ of the Matrix homeserver can be taken from the QR code and the new device procee
 
 Otherwise the new device waits to be informed by receiving an `m.login.protocols` message from the existing device.
 
-The existing device would need to determine which "protocols" are available for the new device to use.
+The existing device would need to determine which "login protocols" are available for the new device to use.
 
 Currently this could only be `device_authorization_grant` meaning the homeserver supports the
 `urn:ietf:params:oauth:grant-type:device_code` grant type.
@@ -117,7 +117,7 @@ homeserver specified:
 
 2. **New device checks if it can use an available protocol**
 
-The existing device then undertakes steps to determine if it is able to work with the homeserver.
+The new device then undertakes steps to determine if it is able to work with the homeserver.
 
 The steps are as follows:
 
@@ -191,7 +191,7 @@ Content-Type: application/json
 
 - parses the [Device Authorization Response](https://datatracker.ietf.org/doc/html/rfc8628#section-3.2) above
 
-At this point the new device knows that, subject to the user consenting, it should be able to complete the login
+At this point the new device knows that, subject to the user consenting, it should be able to complete the login.
 
 3. **New device informs existing device that it wants to use the `device_authorization_grant`**
 
@@ -549,7 +549,7 @@ The existing device sends a `m.login.secrets` message via the secure channel:
     },
     "backup": {
         "algorithm": "foobar",
-        "key": "$base64_of_the_backup_recovery_key",
+        "key": "$base64_of_the_backup_decryption_key",
         "backup_version": "version_string"
     }
 }
@@ -557,14 +557,14 @@ The existing device sends a `m.login.secrets` message via the secure channel:
 
 3. **New device cross-signs itself and uploads device keys**
 
-On receipt of the `m.login.secrets` message the new device can store the secrets locally
+On receipt of the `m.login.secrets` message the new device can store the secrets locally.
 
 The new device can then generate the cross-signing signature for itself.
 
 It can then use a single request to upload the device keys and cross signing signature. This removes the chance of other
 devices seeing the new device as unverified, incorrectly prompting the user to verify the already verified device.
 
-The request would look just like any other `/keys/upload` request, it would just include one additional signature, the
+The request would look just like any other `/keys/upload` request; it would just include one additional signature, the
 one from the self-signing key. The request would look like follows:
 
 ```http
@@ -850,7 +850,7 @@ For:
 Against:
 
 - The existing device needs to wait for the new device to upload the device keys for it to sign the new device.
-- Takes several round-trips for the secrets to be be shared which will add latency to the overall flow
+- Takes several round-trips for the secrets to be be shared which will add latency to the overall flow.
 - The backup cannot be immediately enabled since we received the backup version as well, something the `m.secret.send`
 mechanism does not offer.
 - The new device cannot upload the cross-signing signature with the device keys in a single request. This introduces a
