@@ -30,7 +30,7 @@ The pointer is provided as is: it may not be "valid" (i.e. the user does not hav
   "content": {
     "m.text": [
       {
-        "body": "You bookmarked an image from "Alice" in Matrix Dev"
+        "body": "You bookmarked an image from Alice in Matrix Dev"
       },
       {
         "body": "You bookmarked an <a href='matrix:roomid/$ROOM_ID/e/$EVENT_ID?via=$SERVER_NAME'>image</a> from <a href='matrix:u/alice:example.org'>Alice</a> in Matrix Dev",
