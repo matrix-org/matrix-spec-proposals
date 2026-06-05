@@ -136,10 +136,10 @@ An example of a pack object:
 An image object consists of the following keys:
 
 - `url`: **Required, String**. The MXC URL for this image.
-- `body`: **Optional, String**. A textual representation or associated 
+- `body`: **Optional, String**. A textual representation or associated
     description of the image.
 - `info`: **Optional, ImageInfo**. The already specified
-    [`ImageInfo`](https://spec.matrix.org/v1.18/client-server-api/#msticker_imageinfo) 
+    [`ImageInfo`](https://spec.matrix.org/v1.18/client-server-api/#msticker_imageinfo)
     object (from `m.sticker`).
 
 An example of an image object:
@@ -393,7 +393,7 @@ their own messages.
 The `height` attribute MUST be present. This maintains backwards-compatibility
 with clients that do not support custom emotes.
 
-Clents SHOULD set `height` to "32px". This is a default intended to look good on
+Clents SHOULD set `height` to "32" (pixels). This is a default intended to look good on
 most devices, and is for the benefit of legacy clients that do not treat custom
 emotes differently from other inline images.
 
@@ -567,7 +567,7 @@ tangentially touch custom emotes. Each warrant an MSC for themselves.
 - For stickers: Recommend rendering sizes / resolutions
 - Loading placeholders for emotes and stickers (i.e. via blurhashes
     [MSC2448](https://github.com/matrix-org/matrix-spec-proposals/pull/2448) or
-    vector paths) 
+    vector paths)
 
 ## Dependencies
 
