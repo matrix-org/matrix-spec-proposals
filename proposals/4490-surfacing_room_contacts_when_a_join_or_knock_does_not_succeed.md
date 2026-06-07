@@ -107,7 +107,7 @@ untrusted-URL safety measures.
   to deliver data the rejection response can already carry inline. Inlining is
   simpler and leaks no more than the rejection itself.
 - **Folding this into [MSC4489](https://github.com/matrix-org/matrix-spec-proposals/pull/4489).**
-- Kept separate deliberately so that the state event (useful to existing members
+  Kept separate deliberately so that the state event (useful to existing members
   and in-room bots on its own) is not blocked
   on federation and client changes.
 
