@@ -707,7 +707,7 @@ Concrete example for a `livekit` transport:
 * `rtc_transports` — array of transport-description representing the available RTC transports
   offered by the homeserver.  
 * Each object in the array MUST conform to the JSON schema defined for its `type` (e.g.
-  `livekit` in MSC4195).
+  `livekit` in [MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195)).
 
 Clients SHOULD use this list to determine which RTC transports to connect to and may advertise their
 selected transports according to the respective MSC in the `rtc_transports` field of their
