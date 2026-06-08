@@ -144,7 +144,7 @@ Field Descriptions:
 LiveKit SFUs require a JWT `access_token` to be provided when 
 [connecting to the WebSocket](https://docs.livekit.io/reference/internals/client-protocol/#WebSocket-Parameters).  
 This section standardises the method by which a MatrixRTC application obtains the LiveKit JWT
-token. A high level overview is depicted int he following diagram
+token. A high level overview is depicted in the following diagram
 
 ```mermaid
 sequenceDiagram
