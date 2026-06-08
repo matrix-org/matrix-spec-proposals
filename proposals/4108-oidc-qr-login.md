@@ -509,7 +509,6 @@ sequenceDiagram
     participant N as New device <br>wanting to sign in
     participant HS as Homeserver
 
-    rect rgba(0,255,0, 0.1)
         note over E: 4) Existing device checks device_id from m.login.protocol message
         E->>HS: GET /_matrix/client/v3/devices/{device_id}
         alt device already exists
@@ -555,7 +554,6 @@ sequenceDiagram
                 end
             end
         end
-    end
 ```
 
 ### Secret sharing and device verification
@@ -648,12 +646,7 @@ sequenceDiagram
     participant N as New device <br>wanting to sign in
     participant HS as Homeserver
 
-    rect rgba(0,255,0, 0.1)
-            rect rgb(191, 223, 255)
-note over N,E: This step is duplicated from the previous section for readability
-              N-->>+E: SecureSendReceive({ "type": "m.login.success" })
-            end
-
+    activate E
             Note over E: 1) Existing device checks that the device is actually online
             E->>HS: GET /_matrix/client/v3/devices/{device_id}
 activate HS
@@ -683,7 +676,6 @@ end
 note over N: All done!
               deactivate N
             end
-    end
 ```
 
 ## Message reference
