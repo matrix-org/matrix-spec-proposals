@@ -414,7 +414,7 @@ The server MUST enforce a maximum `data` field size of 4096 bytes.
 
 #### `sequence_token` values
 
-The `sequence_token` values should be unique to the rendezvous session and the last modified time so that two clients can
+The `sequence_token` values should be unique to the last modified time so that two clients can
 distinguish between identical payloads sent by either client.
 
 #### Maximum duration of a rendezvous
