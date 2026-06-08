@@ -234,7 +234,7 @@ Time                                   ─────────────�
 
 #### Recommended User Experience
 
-The lifecycle of a slot follows four distinct states:
+The lifecycle of a slot follows three distinct states:
 
 ```
 Closed
