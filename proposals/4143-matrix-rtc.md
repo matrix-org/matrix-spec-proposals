@@ -141,12 +141,6 @@ defined by the Matrix room state at all times. The ability to open and close slo
 patterns enables a wide variety of use cases, from always-on shared spaces to short lived scheduled
 meetings.
 
-Slots are named by the RTC app, but are expected to typically be ordinals (e.g. equivalent to line 1
-or line 2 on a telephone). If the app needs to define its slots out of band (e.g. mapping them to
-widget IDs) then it can use those IDs as names. However, given a slot is the mechanism around which
-sessions converge, it must have a predictable name. Unpredictable IDs such as session IDs should
-never be used to name a slot.
-
 #### Opening a MatrixRTC Slot
 
 A slot is opened by sending an `m.rtc.slot` state event with `state_key = slot_id`. This event
@@ -188,9 +182,11 @@ Where
 
 * `application.type` is the `type` field in the application JSON object  
 * The `#` character MUST NOT be used in either `application.type` or `application_slot_id`  
-* `application_slot_id` is the application-specific slot ID. Each application MSC defines its own
+* `application_slot_id` is the application-specific slot ID. Each application defines its own
   schema (e.g., `ROOM`, `1`, `2`) to allow multiple parallel slots of the same type according to the
-  application requirements.
+  application requirements. If the application needs to define its slots out of band (e.g. mapping them to
+  widget IDs) then it can use those IDs as `application_slot_id`. However, given a slot is the mechanism
+  around which sessions converge, it MUST have a predictable `application_slot_id`.
 
 This grammar MUST never be used to parse `slot_ids`; it exists only to namespace the `state_key`.
 
