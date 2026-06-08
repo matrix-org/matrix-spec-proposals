@@ -206,7 +206,8 @@ Content-Type: application/json
     "claimed_user_id": "@user:matrix.example.com"
   },
   "delay_id": "1234567890",   // optional 
-  "delay_timeout": "7200000"  // optional (2 hours)
+  "delay_timeout": "7200000",  // optional (2 hours)
+  "delay_cs_api_url": "https://matrix-client.matrix.org/" // optional
 }
 ```
 
