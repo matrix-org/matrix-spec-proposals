@@ -1012,8 +1012,7 @@ This introduces two problems:
 
 - Potential inconsistency where one user device overwrites the state of another device during a
   concurrent update.  
-- When handling client disconnects, 
-- [MSC4140 delayed events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) **cannot
+- When handling client disconnects, [MSC4140 delayed events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) **cannot
   reliably maintain an accurate membership state**. This is because, at the time a delayed event is
   scheduled, the current membership array may change before the event is actually emitted, making it
   impossible to predict the correct state in advance.
