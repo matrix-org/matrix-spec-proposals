@@ -150,7 +150,7 @@ token. A high level overview is depicted in the following diagram
 sequenceDiagram
     participant U as 🧑 User
     participant M as 🏢 Matrix Homeserver
-    participant A as 🔐 MatrixRTC Authorisation Service
+    participant A as 🔐 LiveKit Authorisation Service
     participant L as 📡 LiveKit SFU
 
     U->>M: Requests OpenID token
