@@ -747,7 +747,7 @@ When joining a MatrixRTC slot, each participant shares a generated E2EE key with
 (`m.rtc.member`) of the same slot by sending an **encrypted** [Matrix to-device
 message](https://spec.matrix.org/v1.11/client-server-api/#send-to-device-messaging). The key is
 transmitted via an event of type `m.rtc.encryption_key`. The **target device ID** is taken from the
-`member`.`device_id` field of the recipient’s `m.rtc.member` event. The event follows the following
+`member.claimed_device_id` field of the recipient’s `m.rtc.member` event. The event follows the following
 schema:
 
 ```json5
