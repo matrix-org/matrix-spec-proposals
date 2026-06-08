@@ -246,22 +246,14 @@ Open
 Slots may transition between these states as a slot is opened or closed, or as users connect or disconnect.
 
 While **participation** in a MatrixRTC session is possible if a **slot is open**, **management** of
-slots depends on the user’s **power level**. Clients MUST respect these distinctions in the user
-experience.
+slots depends on the user’s **power level**. Clients should be aware of this distinction when constructing
+their user interfaces.
 
-For **open** slots in a room, clients SHOULD clearly represent the current slot’s activity state:
-
-* **Active:** clients SHOULD indicate which slots are currently active in a room (e.g., by showing
-  participant count, showing an icon, list entry, or join button).   
-* **Inactive:** clients SHOULD indicate that the slot is available and provide a way for a user to
-  join as the first member (e.g., via a “Call” button or placeholder icon).
-
-**Slot management** UX SHOULD only exposed to users who have sufficient power level to manage slots:
-
-* **Closed slot:** The UX SHOULD provide controls to manage the slot (e.g., opening or modifying the
-  slot)  
-* **Open slot:** The UX SHOULD provide controls to perform management (e.g., closing or modifying
-  the slot)
+For **open** and **active** slots, for instance, clients could display the participant count, an icon,
+a list entry, or join button. For **open** but **inactive** slots, in turn, clients could indicate that the
+slot is available and provide a way for a user to join as the first member (e.g., via a “Call” button or
+placeholder icon). Finally, for users who have sufficient power level to manage slots, clients could
+display a slot management UI with controls to open, close or modify slots.
 
 Multiple active slots may exist in the same room if the application type supports them.
 
