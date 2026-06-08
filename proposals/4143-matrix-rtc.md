@@ -172,8 +172,9 @@ state_key: "m.call#ROOM"         // slot_id
   as the slot name.  
 * `application` An application JSON object, which **MUST** specify the application type and MAY
   include additional fields which **constrain** the application (e.g., restricting a call to be
-  voice-only). **Note** those additional fields can be used in combination with MatrixRTC member
-  ones subject to the application specific MSC.
+  voice-only). **Note** those additional fields may be extended through fields in the `application`
+  content block of `m.rtc.member` events. If a field occurs in both, the value from the `m.rtc.slot` event
+  takes precedence.
 
 The `slot_id` of an open slot acts like a virtual address where participants are allowed to meet.
 The grammar for the `slot_id` is a well formed state key confined such that members of different
