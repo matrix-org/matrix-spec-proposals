@@ -575,9 +575,6 @@ In general, all required information is present as part of the Matrix DAG:
 * **`m.rtc.slot` state event transitions**, even when affected by state resolution, are visible as
   part of the timeline.
 
-Counterintuitively, **state resolution is not a problem** — RTC sessions occurred in real life, and
-their existence remains valid regardless of how the room state later resolves.
-
 However, for this reconstruction process to work **reliably and deterministically**, the Matrix 
 protocol requires **consistent message ordering (on a homeserver basis)** across both state and 
 timeline events. This remains an open problem and is discussed further in the 
