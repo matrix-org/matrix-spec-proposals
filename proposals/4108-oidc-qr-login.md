@@ -268,7 +268,8 @@ containing the specified device ID):
 }
 ```
 
-The sequence for steps 1 to 3 is as follows: (the sequence depending on which device  has scanned the code varies for readability)
+The sequence for steps 1 to 3 is as follows: (the sequence depending on which device  has scanned the code varies for
+readability. The steps that are the same have a green background, the steps that are different have a red background)
 
 _New device scanned QR code:_
 
@@ -351,7 +352,7 @@ sequenceDiagram
     #    note over N: New device completes checks from secure channel establishment step 6 - it now trusts the channel
     #    note over N: 1) New device got server base URL from the QR code
 
-    rect rgba(0,0,255, 0.1)
+    rect rgba(255,0,0, 0.1)
     #else if Existing device scanned QR code
         note over E: Existing device completes MSC4388 step 6
         note over E: Existing device displays checkmark and CheckCode from MSC4388
