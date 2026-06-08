@@ -117,8 +117,9 @@ The `type` field MUST be a string that does not contain the `#` character. The t
 follow the [*Common Namespaced Identifier
 Grammar*](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar).
 
-Each application type MUST have its own MSC, which specifies the additional fields and defines how
-communication with the corresponding transport is handled. For example:
+Each application type specifies the additional fields and defines how communication with the
+corresponding transport is handled. Concrete applications types are introduced in separate proposals
+such as:
 
 * `m.call` — voice and video calling, as defined in
   [MSC4196](https://github.com/matrix-org/matrix-spec-proposals/pull/4196).
