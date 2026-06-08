@@ -124,11 +124,6 @@ such as:
 * `m.call` — voice and video calling, as defined in
   [MSC4196](https://github.com/matrix-org/matrix-spec-proposals/pull/4196).
 
-To facilitate interoperability, ideally each application type should provide a Matrix widget that
-can serve as a reference implementation for clients. This allows client developers to support new
-application types by embedding or integrating the widget, without having to implement the full
-application logic themselves.
-
 ### MatrixRTC Slot and Constraining Slots
 
 A **MatrixRTC slot** is the container for MatrixRTC members and temporal overlapping MatrixRTC
