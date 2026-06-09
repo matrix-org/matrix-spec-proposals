@@ -612,7 +612,8 @@ The homeserver restriction could be applied by checking the `matrix_server_name`
 token before validating the token.
 
 The Matrix `room_id` could be validated too, and checking that the Matrix user from the OpenID token
-is a member of the room.
+is a member of the room. This would require a dedicated way for the LiveKit Authorisation Service to
+perform these checks via the homeserver though.
 
 ### Pseudonymity
 
