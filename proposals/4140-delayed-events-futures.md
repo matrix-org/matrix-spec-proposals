@@ -315,11 +315,9 @@ Content-Type: application/json
 
 #### Retention of finalised delayed events
 
-The batch size and the amount of finalised events that stay on the homeserver can be chosen by the homeserver.
-The recommended values are:
-
-- batch size: 10
-- `finalised` retention: up to 7 days or 1000 events per user, whichever occurs first
+The amount of finalised events that stay on the homeserver can be chosen by the homeserver.
+The recommended strategy is to retain finalised events for up to 7 days or 1000 events per user,
+whichever occurs first.
 
 There is no guarantee for a client that events will be available
 if they exceed the limits of their homeserver.
