@@ -143,6 +143,54 @@ Field Descriptions:
 
 ### LiveKit SFU Authorisation Service
 
+This section describes endpoints on the SFU Authorisation Service.
+
+#### General requirements for all endpoints
+
+##### Prerequisites
+
+* The `livekit_service_url` for the MatrixRTC backend has been discovered from one of the methods above.  
+* The Matrix client has obtained an OpenID token from the [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#openid).
+
+##### Error responses
+
+The LiveKit authorisation service MUST respond with appropriate HTTP status codes and structured
+JSON bodies when an error occurs. All error responses MUST include a top-level `"errcode"` string
+and a human-readable `"error"` description, following the conventions used in the 
+[Matrix Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#error-codes).
+
+Common error responses:
+
+| HTTP Status | `errcode` | Meaning / Recommended handling |
+|--------------|------------|--------------------------------|
+| `400 Bad Request` | `M_BAD_JSON` | The request body was malformed, missing required fields, or contained invalid values (e.g. missing `room_id`, `slot_id`, or `openid_token`). |
+| `401 Unauthorized` | `M_UNAUTHORIZED` | The request could not be authorised. This response is used for all cases where the OpenID token is invalid, expired, could not be verified, or where the requested room or slot is unknown or inaccessible. Clients may attempt to refresh their OpenID token and retry. |
+| `429 Too Many Requests` | `M_LIMIT_EXCEEDED` | The client or homeserver has exceeded rate limits. Please refer to the existing [spec](https://spec.matrix.org/v1.18/client-server-api/#common-error-codes) for further details.|
+| `403 Forbidden` | `M_USER_LIMIT_EXCEEDED` | The user has exceeded a configured quota or usage limit. Please refer to the existing [spec](https://spec.matrix.org/v1.18/client-server-api/#common-error-codes) for further details.|
+| `500 Internal Server Error` | `M_UNKNOWN` | An unexpected internal error occurred while generating the token. The client may retry after a short delay. |
+
+Example Error Response:
+
+```http
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+
+{
+  "errcode": "M_UNAUTHORIZED",
+  "error": "The request could not be authorised."
+}
+```
+For privacy reasons, the authorisation service does not distinguish between invalid credentials,
+unknown resources, or insufficient permissions. All such conditions result in a 401 Unauthorized
+response with `M_UNAUTHORIZED`. This prevents clients from inferring the existence of specific
+rooms, users, or slots based on error responses.
+
+The LiveKit authorisation service MAY include additional fields (such as
+`reason`) for diagnostic purposes, but clients MUST be prepared to ignore unknown fields.
+Implementations SHOULD NOT disclose sensitive information in the `"error"` field.
+
+#### Acquiring a token for the SFU
+
 LiveKit SFUs require a JWT `access_token` to be provided when 
 [connecting to the WebSocket](https://docs.livekit.io/reference/internals/client-protocol/#WebSocket-Parameters).  
 This section standardises the method by which a MatrixRTC application obtains the LiveKit JWT
@@ -166,12 +214,7 @@ sequenceDiagram
     U->>L: Connects to room using JWT
 ```
 
-#### Prerequisites
-
-* The `livekit_service_url` for the MatrixRTC backend has been discovered from one of the methods above.  
-* The Matrix client has obtained an OpenID token from the [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#openid).
-
-#### Request
+##### Request
 
 The JWT token is obtained by making a `POST` request to the `/get_token` endpoint of the LiveKit service.
 
@@ -182,10 +225,6 @@ fields:
   * `openid_token` — required `object`: the verbatim OpenID token response obtained from the 
     [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3useruseridopenidrequest_token).  
   * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
-  * `delay_id` — optional `string`: the delayed event id of the MatrixRTC member leave event.
-  * `delay_timeout` — optional `string`: number of positive non-zero milliseconds the homeserver
-    should wait before sending the MatrixRTC member leave event
-  * `delay_cs_api_url` — optional `string`: The Matrix client-server API as used by the client
 
 Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
 ```http
@@ -206,14 +245,11 @@ Content-Type: application/json
     "id": "xyzABCDEF10123",
     "claimed_device_id": "DEVICEID",
     "claimed_user_id": "@user:matrix.example.com"
-  },
-  "delay_id": "1234567890",   // optional 
-  "delay_timeout": "7200000",  // optional (2 hours)
-  "delay_cs_api_url": "https://matrix-client.matrix.org/" // optional
+  }
 }
 ```
 
-#### Successful response
+##### Successful response
 
 If the request is successful, an HTTP `200 OK` response is returned with
 `Content-Type: application/json`. The response body contains:
@@ -231,42 +267,6 @@ Content-Type: application/json
 }
 ```
 
-#### Error responses
-
-The LiveKit authorisation service MUST respond with appropriate HTTP status codes and structured
-JSON bodies when an error occurs. All error responses MUST include a top-level `"errcode"` string
-and a human-readable `"error"` description, following the conventions used in the 
-[Matrix Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#error-codes).
-
-Common error responses:
-
-| HTTP Status | `errcode` | Meaning / Recommended handling |
-|--------------|------------|--------------------------------|
-| `400 Bad Request` | `M_BAD_JSON` | The request body was malformed, missing required fields, or contained invalid values (e.g. missing `room_id`, `slot_id`, or `openid_token`). |
-| `401 Unauthorized` | `M_UNAUTHORIZED` | The request could not be authorised. This response is used for all cases where the OpenID token is invalid, expired, could not be verified, or where the requested room or slot is unknown or inaccessible. Clients may attempt to refresh their OpenID token and retry. |
-| `429 Too Many Requests` | `M_LIMIT_EXCEEDED` | The client or homeserver has exceeded rate limits for LiveKit token requests. Please refer to the existing [spec](https://spec.matrix.org/v1.18/client-server-api/#common-error-codes) for further details.|
-| `403 Forbidden` | `M_USER_LIMIT_EXCEEDED` | The user has exceeded a configured quota or usage limit. Please refer to the existing [spec](https://spec.matrix.org/v1.18/client-server-api/#common-error-codes) for further details.|
-| `500 Internal Server Error` | `M_UNKNOWN` | An unexpected internal error occurred while generating the token. The client may retry after a short delay. |
-
-Example Error Response:
-```http
-HTTP/1.1 401 Unauthorized
-Content-Type: application/json
-
-{
-  "errcode": "M_UNAUTHORIZED",
-  "error": "The request could not be authorised."
-}
-```
-For privacy reasons, the authorisation service does not distinguish between invalid credentials,
-unknown resources, or insufficient permissions. All such conditions result in a 401 Unauthorized
-response with `M_UNAUTHORIZED`. This prevents clients from inferring the existence of specific
-rooms, users, or slots based on error responses.
-
-The LiveKit authorisation service MAY include additional fields (such as
-`reason`) for diagnostic purposes, but clients MUST be prepared to ignore unknown fields.
-Implementations SHOULD NOT disclose sensitive information in the `"error"` field.
-
 #### Optional Delegated MatrixRTC Membership Lifecycle Tracking using Cancellable Delayed Events
 
 As described in [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), clients
@@ -283,15 +283,90 @@ Since the LiveKit SFU already maintains authoritative knowledge of each particip
 state, the management of cancellable delayed events MAY be delegated to the LiveKit SFU
 Authorisation Service. This delegation allows the RTC transport layer to accurately manage and
 maintain MatrixRTC membership lifecycles across transient disconnects, ensuring a consistent and
-reliable view of session state. A prerequisite for this delegation is that the client includes the
-following fields: `delay_id`, `delay_timeout` and `delay_cs_api_url` as part of the authorisation
-request.
+reliable view of session state.
 
-Upon successful issuance of a JWT token and once the LiveKit SFU Authorisation Service observes the
-client's SFU connection, identified by the LiveKit room `livekit_alias` and the LiveKit identity
-as specified in the next section (`base64(SHA256(JSON.serialize([user_id, claimed_device_id, member.id])))`),
-it SHOULD issue a `reset` of the delayed event by sending the following POST request to the 
-homeserver of that client:
+```mermaid
+sequenceDiagram
+    participant U as 🧑 User
+    participant M as 🏢 Matrix Homeserver
+    participant A as 🔐 LiveKit Authorisation Service
+    participant L as 📡 LiveKit SFU
+
+    U->>M: Schedules delayed disconnect event
+    M-->>U: Returns delay ID
+    U->>A: Delegates management of delayed disconnect event
+    A->>M: Renews delayed disconnect event
+    U->>U: Looses connection
+    L->>A: Notifies about participant disconnect
+    A->>M: Triggers sending of disconnect event
+```
+
+##### Request
+
+The delegation is carried out by making a `POST` request to the `/delegate_delayed_leave` endpoint
+of the LiveKit service.
+
+The `Content-Type` of the request is `application/json` and the JSON body contains the following
+fields:
+  * `room_id` — required `string`: the Matrix room ID where the `m.rtc.member` event is present.  
+  * `slot_id` — required `string`: the slot ID from the `m.rtc.member` event.  
+  * `openid_token` — required `object`: the verbatim OpenID token response obtained from the 
+    [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3useruseridopenidrequest_token).  
+  * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
+  * `delay_id` — required `string`: the delayed event id of the MatrixRTC member leave event.
+  * `delay_timeout` — required `string`: number of positive non-zero milliseconds the homeserver
+    should wait before sending the MatrixRTC member leave event
+  * `delay_cs_api_url` — required `string`: The Matrix client-server API as used by the client. This
+    is required because publishing the [.well-known document](https://spec.matrix.org/v1.18/client-server-api/#well-known-uris)
+    for auto-discovery is not mandatory. Hence, there is, in general, no way to know how to access a
+    server's CS-API given its server name.
+
+Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
+```http
+POST /livekit/jwt/delegate_delayed_leave HTTP/1.1
+Host: matrix-rtc.example.com
+Content-Type: application/json
+
+{
+  "room_id": "!tDLCaLXijNtYcJZEey:example.com",
+  "slot_id": "the_id",
+  "openid_token": {
+    "access_token": "FPkexLLvKbAHKclQhpvgfWxx",
+    "expires_in": 3600,
+    "matrix_server_name": "matrix.example.com",
+    "token_type": "Bearer"
+  },
+  "member": {
+    "id": "xyzABCDEF10123",
+    "claimed_device_id": "DEVICEID",
+    "claimed_user_id": "@user:matrix.example.com"
+  },
+  "delay_id": "1234567890",
+  "delay_timeout": "7200000",
+  "delay_cs_api_url": "https://matrix-client.matrix.org/"
+}
+```
+
+##### Successful response
+
+If the request is successful, an HTTP `200 OK` response is returned with
+`Content-Type: application/json`. The response body contains an empty
+JSON object for future extension.
+
+Example response:
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{}
+```
+
+Once the LiveKit SFU Authorisation Service observes the client's SFU connection, identified by
+the LiveKit room `livekit_alias` and the LiveKit identity as specified in the next section
+(`base64(SHA256(JSON.serialize([user_id, claimed_device_id, member.id])))`), it SHOULD issue
+a `reset` of the delayed event by sending the following POST request to the  homeserver of
+that client:
+
 ```http
 POST /_matrix/client/v1/delayed_events/{delay_id}/restart HTTP/1.1
 Host: matrix-rtc.example.com
@@ -305,6 +380,7 @@ reset while the client remains connected with sufficient headroom (e.g., 80% of 
  ensure the reset occurs well before `delay_timeout` expires. If the SFU detects that the client has
 disconnected before the timer is reset, the Authorisation Service MUST trigger the `disconnect`
 event by sending the following request to the homeserver:
+
 ```http
 POST /_matrix/client/v1/delayed_events/{delay_id}/send HTTP/1.1
 Host: matrix-rtc.example.com
