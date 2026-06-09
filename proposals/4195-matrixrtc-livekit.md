@@ -292,9 +292,14 @@ sequenceDiagram
     participant A as 🔐 LiveKit Authorisation Service
     participant L as 📡 LiveKit SFU
 
+    U->>M: Requests OpenID token
+    M-->>U: Returns OpenID token
     U->>M: Schedules delayed disconnect event
     M-->>U: Returns delay ID
-    U->>A: Delegates management of delayed disconnect event
+    U->>A: Sends OpenID token & delegation parameters
+    A->>M: Validates token via OpenID API
+    M-->>A: Confirms user identity
+    A-->>U: Confirms delegation
     A->>M: Renews delayed disconnect event
     U->>U: Looses connection
     L->>A: Notifies about participant disconnect
