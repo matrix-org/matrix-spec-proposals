@@ -44,13 +44,15 @@ offered by a homeserver and being used as transport by clients.
 
 ### Canonical JSON Serialization
 
-All uses of `JSON.serialize(...)` in this specification MUST use the canonical JSON encoding as 
+This proposal uses JSON arrays and Canonical JSON encoding to ensure stable hashing inputs.
+All uses of `JSON.serialize(...)` in the following text MUST use the Canonical JSON encoding as
 defined by the [Matrix specification](https://spec.matrix.org/v1.18/appendices/#canonical-json).
 
-Since this MSC exclusively serializes arrays for hashing inputs, implementations MUST ensure:
-* The array elements appear in the exact specified order
-* Each element is encoded as a JSON string
-* The resulting byte sequence used for hashing is the UTF-8 encoding of the canonical JSON output
+Additionally, implementations MUST ensure that:
+
+* The array elements appear in the exact specified order.
+* Each element is encoded as a JSON string.
+* The resulting byte sequence used for hashing is the UTF-8 encoding of the canonical JSON output.
 
 For example:
 ```json5
@@ -483,6 +485,21 @@ long-term commitment to a specific third-party protocol. The current design rema
 evolution toward a Matrix-native or jointly standardized MatrixRTC transport.
 
 ## Alternatives
+
+### String concatenation of hashing inputs
+
+Instead of using canonical JSON, the hashing inputs could be concatenated with a suitable delimiter
+such as `|`. This is prone to delimiter injection, however. As an example, the inputs `("a|b", "c")`
+and `("a", "b|c")` both produce the concatenation `"a|b|c"` and, hence, the same hash. Using JSON
+arrays and Canonical JSON serialisation avoids this problem. Since the Canonical JSON serialisation
+of string arrays is trivial, this doesn't meaningfully increase implementation complexity.
+
+### JSON objects as hashing inputs
+
+Instead of JSON arrays, JSON objects could be used for the hashing inputs. This would reduce the
+chances of accidentally using the wrong order of array elements. On the downside, however, the
+Canonical JSON serialisation of objects is significantly more complex than for arrays. Overall,
+this would likely result in a higher chance of implementation errors.
 
 ## Security considerations
 
