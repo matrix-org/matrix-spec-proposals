@@ -565,6 +565,13 @@ In summary, this MSC’s reliance on LiveKit represents a practical implementati
 long-term commitment to a specific third-party protocol. The current design remains open to future
 evolution toward a Matrix-native or jointly standardized MatrixRTC transport.
 
+### Lack of HKDF support in some LiveKit client SDKs
+
+Some LiveKit SDKs currently only support PBKDF2 but don't allow using HKDF. One example of this is
+the Flutter SDK (see [livekit/client-sdk-flutter#974](https://github.com/livekit/client-sdk-flutter/issues/974)).
+Upstream implementation efforts such as [livekit/rust-sdks#796](https://github.com/livekit/rust-sdks/issues/796)
+will be required to close these gaps.
+
 ## Alternatives
 
 ### String concatenation of hashing inputs
