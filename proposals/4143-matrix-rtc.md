@@ -162,8 +162,7 @@ state_key: "m.call#ROOM"         // slot_id
 
 **Field description:**
 
-* **state key**: The state key of the `m.rtc.slot` state event, referred to as the `slot_id`, serves
-  as the slot name.  
+* **state key**: The state key of the `m.rtc.slot` state event, referred to as the `slot_id`.
 * `application` An application JSON object, which **MUST** specify the application type and MAY
   include additional fields which **constrain** the application (e.g., restricting a call to be
   voice-only). **Note** those additional fields may be extended through fields in the `application`
