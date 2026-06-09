@@ -582,6 +582,17 @@ chances of accidentally using the wrong order of array elements. On the downside
 Canonical JSON serialisation of objects is significantly more complex than for arrays. Overall,
 this would likely result in a higher chance of implementation errors.
 
+### Combination of token request and delegation
+
+Instead of using separate endpoints, the token request and the delegation of the delayed disconnect
+event could be combined in a single endpoint. This creates a race condition, however. As per
+[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), the disconnect event
+carries a relation to the associated join event. This means a client would have to send its join
+event before requesting an SFU token. The associated Livekit room will only be created when the
+token is requested though. As a result, a client on another homeserver could attempt to connect to
+the SFU in the meantime. Since the Livekit room doesn't yet exist, this would result in an error.
+Separating the endpoints avoids this issue.
+
 ## Security considerations
 
 ### Resource usage
