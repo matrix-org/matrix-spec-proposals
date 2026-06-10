@@ -192,4 +192,4 @@ The `m.call` application type is already within unstable prefixed entries (i.e.
 ## Dependencies
 
 This MSC builds on [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) and
-[MSC4075](https://github.com/matrix-org/matrix-spec-proposals/pull/4075).
+[MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354).
