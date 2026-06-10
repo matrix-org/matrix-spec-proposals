@@ -7,8 +7,8 @@ example one would not want to render a full video player within a scrollable tim
 for performance reasons. The clients are still able to choose the original source if the situation warrants it e.g. animating
 GIFs.
 
-Historically homeservers would come to the clients' help by providing an [endpoint to do so](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv1mediathumbnailservernamemediaid). 
-The [Thumbnails](https://spec.matrix.org/latest/client-server-api/#thumbnails) section of the Spec's client behavior 
+Historically homeservers would come to the clients' help by providing an [endpoint to do so](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1mediathumbnailservernamemediaid). 
+The [Thumbnails](https://spec.matrix.org/v1.18/client-server-api/#thumbnails) section of the Spec's client behavior 
 states that homeserver provided thumbnails are available for certain media formats, in a fixed number of resolutions and
 following rules like no upscaling and returning the original if the thumbnail is smaller than the original (for supported
 formats).
@@ -21,7 +21,7 @@ The spec does not however clarify how the 2 should be handled in mixed encrypted
 
 ## Proposal
 
-The proposal is to introduce new language in the [Thumbnails](https://spec.matrix.org/latest/client-server-api/#thumbnails)
+The proposal is to introduce new language in the [Thumbnails](https://spec.matrix.org/v1.18/client-server-api/#thumbnails)
 section that does address this as follows:
 
 E2EE aware clients are expected to provide thumbnail resources next to the original media they're uploading as close 
