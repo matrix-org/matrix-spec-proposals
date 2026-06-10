@@ -353,8 +353,6 @@ Content-Type: application/json
 }
 ```
 
-
-
 ##### Successful response
 
 The service MUST only maintain a single delegated event per `room_id`, `slot_id`,
