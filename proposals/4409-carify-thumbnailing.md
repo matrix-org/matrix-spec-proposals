@@ -34,11 +34,13 @@ The sending client should provide thumbnails for both encrypted and non-encrypte
 flexibility in thumbnail choice, reduce backend strain and improve format compatibility.
 
 Rendering clients are expected to choose the thumbnail resources (if available) when rendering media previews.
-Calling the thumbnailing homeserver endpoint on a thumbnail resource is allowed, similar to any other resource, but will 
-return the original resource for encrypted media, where backend support isn't available.
+Calling the thumbnailing homeserver endpoint on an availlable encrypted thumbnail resource is allowed, similar to any 
+other resource, and will result in the original media, with backend support not being available to generate other 
+thumbnail variants.
 
-Client SDKs are encouraged to apply post network request processing to original thumbnails to have them fit 
-the final client's request size if necessary but that's an optimization left to the implementer.
+Client SDKs are encouraged to apply post download checks and processing to the thumbnails received from the homeserver as
+resolution limits cannot be enforced on encrypted media. The result should fit the caller requested size but that's 
+an optimization left to the implementer.
 
 ## Security concerns
 
