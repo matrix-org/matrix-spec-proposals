@@ -327,6 +327,7 @@ fields:
     server's CS-API given its server name.
 
 Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
+
 ```http
 POST /livekit/jwt/delegate_delayed_leave HTTP/1.1
 Host: matrix-rtc.example.com
@@ -352,11 +353,17 @@ Content-Type: application/json
 }
 ```
 
+
+
 ##### Successful response
 
-If the request is successful, an HTTP `200 OK` response is returned with
-`Content-Type: application/json`. The response body contains an empty
-JSON object for future extension.
+The service MUST only maintain a single delegated event per `room_id`, `slot_id`,
+`member` and MXID (as determined by verifyng the OpenID token). Requests to delegate
+a different `delay_id` MUST invalidate earlier delegations for the same parameters.
+
+If the delegation request is successful, an HTTP `200 OK` response is returned with
+`Content-Type: application/json`. The response body contains an empty JSON object
+for future extension.
 
 Example response:
 ```http
