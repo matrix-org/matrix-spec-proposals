@@ -688,6 +688,6 @@ https://spec.matrix.org/v1.18/appendices/#canonical-json
 
 | Case | Input (logical) | Canonical JSON | SHA-256 (hex) | Base64 (unpadded) |
 |------|------------------|----------------|---------------|-------------------|
-| LiveKit alias (no random bits) | `["!roomid:example.com", "slot123"]` | `["!roomid:example.com","slot123"]` | `0140e634342254799661113eaca06f89e597f00512cdea5e9ee8fabbe77f9fd7` | `AUDmNDQiVHmWYRE+rKBvieWX8AUSzepenuj6u+d/n9c` |
+| LiveKit alias (no random bits) | `["!roomid:example.com", "slot1234"]` | `["!roomid:example.com","slot1234"]` | `3bce37ed6dfe8e6ccc563a083f7b4dc1b9be5f11d093688aa4e03b6aac37a927` | `O8437W3+jmzMVjoIP3tNwbm+XxHQk2iKpOA7aqw3qSc` |
 | LiveKit alias (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
 | Participant identity | `["@alice:example.com", "DEVICE123", "memberABC"]` | `["@alice:example.com","DEVICE123","memberABC"]` | `27e4f8e6d1abbb173e1eb50ea89265c90495df79bbdbc0a67b8fafb7cfd25ab5` | `J+T45tGruxc+HrUOqJJlyQSV33m728Cme4+vt8/SWrU` |
