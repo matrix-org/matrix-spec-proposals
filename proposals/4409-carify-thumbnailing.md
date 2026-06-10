@@ -17,7 +17,7 @@ With the advent of E2EE aware clients server support is no longer possible. Clie
 upload their own thumbnail resources and attach them to newly introduced (at the time) `thumbnail_url`/`thumbnail_info` 
 fields on various events.
 
-The spec does not however clarify how the 2 should be handled in mixed encrypted and non-encrypted environments.
+The spec does not however clarify how the two should be handled in mixed encrypted and non-encrypted environments.
 
 ## Proposal
 
@@ -30,8 +30,8 @@ in resolution to what the maximum backend endpoints would provide (800x600 at th
 For image media smaller than that no thumbnail should be provided. Uploading clients can provide thumbnails larger than 
 800x600 for non-image media.
 
-Providing thumbnails should happen for both encrypted and non-encrypted rooms in order to provide maximum flexibility in 
-thumbnail choice, reduce backend strain and improve format compatibility.
+The sending client should provide thumbnails for both encrypted and non-encrypted rooms in order to provide maximum 
+flexibility in thumbnail choice, reduce backend strain and improve format compatibility.
 
 Rendering clients are expected to choose the thumbnail resources (if available) when rendering media previews.
 Calling the thumbnailing homeserver endpoint on a thumbnail resource is allowed, similar to any other resource, but will 
