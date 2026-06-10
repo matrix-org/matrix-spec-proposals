@@ -30,12 +30,12 @@ in resolution to what the maximum backend endpoints would provide (800x600 at th
 For image media smaller than that no thumbnail should be provided. Uploading clients can provide thumbnails larger than 
 800x600 for non-image media.
 
-The sending client should provide thumbnails for both encrypted and non-encrypted rooms in order to provide maximum 
+The sending client should provide thumbnails for both encrypted and non-encrypted media in order to provide maximum 
 flexibility in thumbnail choice, reduce backend strain and improve format compatibility.
 
 Rendering clients are expected to choose the thumbnail resources (if available) when rendering media previews.
 Calling the thumbnailing homeserver endpoint on a thumbnail resource is allowed, similar to any other resource, but will 
-return the original resource in encrypted rooms, where backend support isn't available.
+return the original resource for encrypted media, where backend support isn't available.
 
 Client SDKs are encouraged to apply post network request processing to original thumbnails to have them fit 
 the final client's request size if necessary but that's an optimization left to the implementer.
