@@ -15,7 +15,7 @@ the following use cases:
 For voice and video calling, MatrixRTC defines **a room-level slot model** to represent calls that
 are scoped to a Matrix room and shared among its participants:
 
-* **`m.call#ROOM` — Room-level call slot**  
+* **`slot_id`: `m.call#ROOM` — Room-level call slot**  
   Represents a call instance associated with the entire room. This slot is **managed by a user with
   sufficient power level** and is intended for calls where **any room member is welcome to join**.
   Ownership of the call is **shared** — it does not depend on who initiated it. This slot type is
