@@ -320,7 +320,9 @@ fields:
   * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
   * `delay_id` — required `string`: the delayed event id of the MatrixRTC member leave event.
   * `delay_timeout` — required `string`: number of positive non-zero milliseconds the homeserver
-    should wait before sending the MatrixRTC member leave event
+    should wait before sending the MatrixRTC member leave event. Clients SHOULD not use values smaller
+    than 1 hour to avoid unnecessarily frequent `/reset`s of the delayed event. Service implementations
+    MAY reject requests with a timeout below 1 hour with `M_BAD_JSON`.
   * `delay_cs_api_url` — required `string`: The Matrix client-server API as used by the client. This
     is required because publishing the [.well-known document](https://spec.matrix.org/v1.18/client-server-api/#well-known-uris)
     for auto-discovery is not mandatory. Hence, there is, in general, no way to know how to access a
