@@ -408,9 +408,14 @@ the SFU authorisation request MUST be rejected with the error code `M_UNSUPPORTE
 `MatrixRTC membership lifecycle delegation failed: homeserver does not support delayed events.`.
 
 Implementations MAY retry failed delayed event POST requests using an exponential backoff strategy
-in the event of transient network failures. However, retry attempts MUST cease once either the
-configured `delay_timeout` has elapsed or the maximum sticky duration of one hour for the delayed
-event has been reached, whichever occurs first.
+in the event of transient network failures. However, retry attempts MUST cease once the configured
+`delay_timeout` has elapsed.
+
+As per [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), participants are
+considered disconnected once their member event becomes unsticky. Therefore, as a heuristic,
+implementations SHOULD also stop retries once the maximum sticky duration of one hour has elapsed.
+The underlying thought here is that if the authorisation service cannot reach the homeserver,
+the participant likely cannot reach it either and, thus, cannot update their sticky member event.
 
 ### Pseudonymous LiveKit Participant Identity
 
