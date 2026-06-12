@@ -612,6 +612,9 @@ token is requested though. As a result, a client on another homeserver could att
 the SFU in the meantime. Since the Livekit room doesn't yet exist, this would result in an error.
 Separating the endpoints avoids this issue.
 
+Additionally, a joint endpoint introduces the problem of having to handle the case where one of
+the two operations succeeds but the other fails.
+
 ## Security considerations
 
 ### Resource usage
