@@ -6,74 +6,65 @@ The Matrix client-server API has several endpoints which handle pagination over 
 * [`/sync`][sync]
 * [`/relations`][relations]
 * [`/context`][context]
-* [`/search`][search]
+* [`/search`][search]'s `context` field for each result
 
-Each returns tokens that can be used for further pagination, though over time the
-specification has accumulated inconsistencies around which tokens can be used with
-which endpoints.
+Each returns tokens that can be used for further pagination, though the specification is
+vague around which tokens can be used with which endpoints.
 
-There is a [spec PR](spec2357) which attempts
-to fix an inconsistency in the `/relations` endpoint: the `from` parameter currently lists
-`next_batch` from `/sync` as an acceptable value, but this was likely meant to be
-`prev_batch`.
+There is a [spec PR](spec2357) which attempts to fix an inconsistency in the `/relations`
+endpoint: the `from` parameter currently lists `next_batch` from `/sync` as an acceptable
+value, but this was likely meant to be `prev_batch`. This has raised a broader question:
+are pagination tokens directional, or do they represent an opaque position in the event
+stream without inherent direction?
 
-From discussions, this has raised a broader question: are tokens directional or are they
-just opaque positions in the timeline?
+Synapse has always treated tokens as opaque positions — a [`StreamToken`][synapse-streamtoken]
+can be used for both forward and backward pagination depending on the `dir` parameter.
+(Internally it embeds a [`RoomStreamToken`][synapse-roomstreamtoken] with stream (`s`)
+and topological (`t`) variants, but this is an implementation detail — the API-visible
+type is the same everywhere.)
 
-Synapse has always used a single [`StreamToken`][synapse-streamtoken] type at the API
-level across `/sync`, `/messages`, and `/relations`. These tokens are accepted and returned
-interchangeably between endpoints — the same `StreamToken.from_string()` parses
-them regardless of which endpoint produced or consumes them. This makes
-directionless tokens the de facto behavior, though it has never been explicitly
-documented.
-
-Note that Synapse internally embeds a [`RoomStreamToken`][synapse-roomstreamtoken]
-within `StreamToken` which can represent either a stream position (`s` prefix) or a
-topological position (`t` prefix). This distinction is an internal implementation
-detail — the API-visible `StreamToken` envelope is the same type everywhere.
-
-This MSC aims to codify that understanding and clean up the
-inconsistencies across endpoints.
+This MSC aims to codify that understanding: pagination tokens do not have an
+inherent direction, even if they happen to be labelled `next_batch` or
+`prev_batch`. The direction is always determined by the `dir` parameter.
 
 ## Proposal
 
-Pagination tokens returned by any of the pagination endpoints ([`/messages`][messages],
-[`/sync`][sync], [`/relations`][relations], [`/context`][context], [`/search`][search])
-represent opaque positions in the event timeline and are interchangeable between endpoints.
-The direction of pagination is determined solely by the `dir` parameter where present,
-not by the type of token.
+Pagination tokens produced by `/messages`, `/relations`, `/context`, and `/search`'s
+`context` field represent a position in the event stream and MUST be indistinguisable.
+Tokens SHOULD
+only be used within the context of a single room. (E.g. a request for `/messages` in
+room #test:matrix.org does not make sense to re-use for #foo:matrix.org.)
 
-The following updates are made to the spec text.
+A token produced by `/messages`, `/relations`, or `/context` is tied to the room it
+was produced and clients MUST NOT be used for another room. There are no guarnatees
+using one in a different room will produce the correct results, servers MAY throw
+an error in this case.
 
-### [`/relations`][relations] endpoint
+Tokens produced by [`/sync` `since` parameter][sync] resolve against the server's
+global event stream and is safe to use across rooms for `/messages`, `/relations`,
+and `/context`. `/sync` only accepts tokens produced by `/sync`.
 
-The `from` and `to` parameter descriptions are updated to note they can accept a token
-from any pagination endpoint, rather than the narrow list currently specified.
+The following table summarises which tokens each endpoint currently accepts and proposed changes:
 
-### [`/messages`][messages] endpoint
+| Endpoint | Input | Currently accepts | Output | Change |
+|---|---|---|---|---|
+| `/sync` | `since` | Its own `next_batch` | `next_batch`, `prev_batch` | None |
+| `/messages` | `from` | `/sync` (`prev_batch`/`next_batch`), itself (`end`), optionally itself (`start`) | `start`, `end` | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context |
+| `/messages` | `to` | `/sync` (`prev_batch`/`next_batch`), itself (`end`) | — | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context |
+| `/relations` | `from` | Itself, `/messages` (`start`), `/sync` (`next_batch`) | `next_batch`, `prev_batch` | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context |
+| `/relations` | `to` | Itself, `/messages`, `/sync` (vague) | — | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context |
+| `/context` | (none) | Output only | `start` ("backwards"), `end` ("forwards") | Remove directional language |
+| `/search` result | (none) | Output only | `start`, `end` (no directional language) | None |
 
-The `from` and `to` parameter descriptions are updated to note they can accept a token
-from [`/context`][context] or [`/search`][search], and the "not required to support" caveat
-on `start` tokens is removed.
+Note that this does not modify the pagination of `/search` results itself, which are
+only usable within `/search`.
 
-### [`/context`][context] endpoint
-
-The `/context` endpoint returns `start` and `end` tokens in its response, currently
-described with directional language ("A token that can be used to paginate backwards
-with" / "A token that can be used to paginate forwards with"). These descriptions are
-updated to remove the directional language.
-
-### [`/search`][search] endpoint
-
-The `/search` endpoint returns a `next_batch` token. Its description is sufficient
-as-is, but it is noted that this token can be used with other pagination endpoints
-as well.
+Open question: should `/threads` also be part of this list?
 
 ## Potential issues
 
-Implementations which perform validation on the shape or format of pagination
-tokens might reject tokens from other endpoints. The extent to which tokens are
-interchangeable varies by implementation.
+Homeserver implementations differ in how they structure pagination tokens. The rules
+above may drastically break how a homeserver generates pagination tokens.
 
 ### Synapse
 
@@ -88,23 +79,21 @@ represent a stream or topological position, but this is an implementation detail
 
 These implementations use a [`PduCount`][conduit-pducount] type (a signed integer
 with `Normal(u64)` / `Backfilled(i64)` variants) across `/messages`, `/relations`,
-`/threads`, and `/context`. Tokens from these endpoints are interchangeable.
+and `/context`. Tokens from these endpoints do not encode direction.
 
-However, `/sync` parses its `since` parameter as a `u64` — it accepts **only**
+`/sync` parses its `since` parameter as a `u64` — it accepts **only**
 non-negative integers. A `PduCount::Backfilled` (negative) token from `/relations`
 or `/messages` would fail to parse in `/sync`. The reverse direction works: sync
 tokens are always non-negative and parse cleanly as `PduCount::Normal`.
 
-**Changes needed:** `/sync` should accept `PduCount` (signed) instead of `u64` to
-fully interoperate with other endpoints.
-
 ### Dendrite lineage (Dendrite / Zendrite)
 
-These implementations use **three separate token types** with strict prefix-based
-validation:
+These implementations use **three separate token types** where each type is tied to
+a specific endpoint, encoding both direction and origin in the token format:
 
 * [`StreamingToken`][dendrite-streaming] (`s{...}`) — used by `/sync`.
-* [`TopologyToken`][dendrite-topology] (`t{...}`) — used by `/messages` and `/context`.
+* [`TopologyToken`][dendrite-topology] (`t{...}`) — used by `/messages`, `/context`,
+  and `/search`'s `context`.
 * [`StreamPosition`][dendrite-streampos] (bare integer) — used by `/relations`.
 
 `/relations` parses its tokens via `strconv.Atoi`, which rejects both `s`- and
@@ -113,15 +102,9 @@ rejects bare integers and `t`-prefixed strings. Only `/messages` has dual-parsin
 logic that tries `TopologyToken` first and falls back to `StreamingToken`,
 converting server-side.
 
-**Tokens are not interchangeable** across `/sync`, `/relations`, `/messages`, and
-`/context` in these implementations. This MSC would call for them to become more
-permissive.
-
-**Changes needed:** At minimum, `/relations` should accept `StreamingToken` and
-`TopologyToken` formats (or their underlying values), and `/sync` should accept
-`TopologyToken` and bare integers. A pattern like `/messages` already uses
-(try one format, fall back to another, converting server-side) could be applied
-to the other endpoints.
+**Changes needed:** At minimum, `/relations` should accept any token format (not
+just bare integers). A pattern like `/messages` already uses (try one format,
+fall back to another, converting server-side) could be applied to the other endpoints.
 
 ## Alternatives
 
@@ -129,11 +112,8 @@ The main alternative is to leave the current inconsistencies as-is. The [spec PR
 could land its minimal fix, though the review discussion showed it is unclear which
 direction is correct without addressing the broader question of interchangeability.
 
-Another alternative is to acknowledge the divergence: declare that tokens are specific
-to each endpoint and not interchangeable. This would match Dendrite's current design
-but would be a departure from Synapse's long-standing behavior and is inconsistent
-with how developers use these tokens in practice (e.g. using a `/sync` `prev_batch`
-token as the `from` parameter to `/messages`).
+Another alternative is to leave each endpoint describing its own accepted token
+types independently, with no general principle. This is the status quo.
 
 ## Security considerations
 
