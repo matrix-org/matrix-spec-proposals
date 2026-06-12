@@ -49,10 +49,10 @@ The following table summarises which tokens each endpoint currently accepts and 
 | Endpoint | Input | Currently accepts | Output | Change |
 |---|---|---|---|---|
 | `/sync` | `since` | Its own `next_batch` | `next_batch`, `prev_batch` | None |
-| `/messages` | `from` | `/sync` (`prev_batch`/`next_batch`), itself (`end`), optionally itself (`start`) | `start`, `end` | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context |
-| `/messages` | `to` | `/sync` (`prev_batch`/`next_batch`), itself (`end`) | — | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context |
-| `/relations` | `from` | Itself, `/messages` (`start`), `/sync` (`next_batch`) | `next_batch`, `prev_batch` | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context |
-| `/relations` | `to` | Itself, `/messages`, `/sync` (vague) | — | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context |
+| `/messages` | `from` | `/sync` (`prev_batch`/`next_batch`), itself (`end`), optionally itself (`start`) | `start`, `end` | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context` |
+| `/messages` | `to` | `/sync` (`prev_batch`/`next_batch`), itself (`end`) | — | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context` |
+| `/relations` | `from` | Itself, `/messages` (`start`), `/sync` (`next_batch`) | `next_batch`, `prev_batch` | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context` |
+| `/relations` | `to` | Itself, `/messages`, `/sync` (vague) | — | `/sync`, `/messages`, `/relations`, `/context`, and `/search`'s `context` |
 | `/context` | (none) | Output only | `start` ("backwards"), `end` ("forwards") | Remove directional language |
 | `/search` result | (none) | Output only | `start`, `end` (no directional language) | None |
 
