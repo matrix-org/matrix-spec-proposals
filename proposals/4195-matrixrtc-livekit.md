@@ -152,6 +152,13 @@ This section describes endpoints on the SFU Authorisation Service.
 * The `livekit_service_url` for the MatrixRTC backend has been discovered from one of the methods above.  
 * The Matrix client has obtained an OpenID token from the [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#openid).
 
+##### OpenID token verification
+
+An all endpoints listed below, the service MUST validate the supplied OpenID token with the
+homeserver using [`/_matrix/federation/v1/openid/userinfo`](https://spec.matrix.org/v1.18/server-server-api/#get_matrixfederationv1openiduserinfo).
+Additionally, it MUST verify that the returned user ID matches `claimed_user_id`. If either
+check fails, the service MUST reject the request with `M_UNAUTHORIZED`.
+
 ##### Error responses
 
 The LiveKit authorisation service MUST respond with appropriate HTTP status codes and structured
