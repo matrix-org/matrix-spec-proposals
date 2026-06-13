@@ -10,7 +10,7 @@ However, this `is_direct` flag [cannot be set after room creation][spec-is_direc
 manually sending the invite membership state event (see [Alternatives](#alternatives)).
 This means that inviting a recipient after the room is created (in order to include a `reason`)
 will not tell the recipient that the invite is to a direct message, which again results in confusion
-and poor UI[^gomuks#731].
+and poor UX[^gomuks#731].
 
 [spec-createRoom]: https://spec.matrix.org/v1.18/client-server-api/#post_matrixclientv3createroom
 [spec-is_direct-sb]: https://spec.matrix.org/v1.18/client-server-api/#server-behaviour-16
@@ -81,14 +81,20 @@ presenting the user with a UI to include an invite reason when creating a room.
 
 ## Alternatives
 
-[`POST /_matrix/client/v3/rooms/{roomId}/invite`][spec-invite] could be modified to accept
-`is_direct` as a body parameter, but this might allow clients to incorrectly mark rooms as direct
-and indirect when issuing an invite, and preventing that would require the server tracks the flag
-for the room (at which point, the server might as well issue the invites anyway).
+* [`POST /_matrix/client/v3/rooms/{roomId}/invite`][spec-invite] could be modified to accept
+  `is_direct` as a body parameter, but this might allow clients to incorrectly mark rooms as direct
+  and indirect when issuing an invite, and preventing that would require the server tracks the flag
+  for the room (at which point, the server might as well issue the invites anyway).
 
-Sending the `m.room.member` state event manually has also been considered, but the author deemed
-this non-idiomatic, and also relies upon the server supporting creating (typically federated)
-invites on-the-fly while handling new events, which is not guaranteed behaviour.
+* Sending the `m.room.member` state event manually has also been considered, but the author deemed
+  this non-idiomatic, and also relies upon the server supporting creating (typically federated)
+  invites on-the-fly while handling new events, which is not guaranteed behaviour.
+
+* A new endpoint that replaces `invite` with a new mapping, which would allow
+  `is_direct` and/or `reason` to be supplied atomically, may be worth consideration, but would
+  require an endpoint version bump, has more complex implementation shapes, and is otherwise
+  something the author is not interested in pursuing unless there is expressed interest in this
+  more demanding change.
 
 ## Security considerations
 
