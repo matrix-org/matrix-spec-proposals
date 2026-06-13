@@ -18,50 +18,15 @@ and poor UX[^gomuks#731].
 
 ## Proposal
 
-This proposal introduces two new optional fields in the `/createRoom` payload: `invite_reasons` and
-`invite_reason`.
+This proposal introduces a new optional field in the `/createRoom` payload: `invite_reason`.
 
-`invite_reason` is an optional string that, if provided, should be the default `reason` included
+`invite_reason` is an optional string that, if provided, should be the `reason` included
 in each `m.room.member` invite state event sent by the server resulting from the `invite` array.
+If the field is empty or omitted, no reason is attached to the implied invites.
 
-`invite_reasons` is an optional mapping of `{user_id: string}`.
-Each key should be a user ID that is already present in `invite`.
-The value of each key should be the `reason` to set in each invite dispatched as a result of
-`invite`.
-
-Or, as a nicely presented table:
-
-| Key              | Type                | Description |
-| ---------------- | ------------------- | ----------- |
-| `invite_reason`  | `string` (optional) | The default invite reason to include in any implied `m.room.member` events. |
-| `invite_reasons` | `{string: string}` (optional) | Individual `reason`s to include in specific implied `m.room.member` events. |
-
-Clients SHOULD NOT include user IDs in `invite_reasons` that are not in `invite`, and SHOULD NOT
-make the value of any `invite_reasons` entry the same as `invite_reason`. Servers MUST ignore any
-entries which appear in `invite_reasons` that do not also appear in `invite`.
-
-For each user ID in `invite`:
-
-1. If a user ID appears in `invite_reasons`, the value provided in that mapping should be used as
-   the `reason` field, even if it is empty (which is akin to removing the reason for that specific
-   invite, in which case the server may omit the reason field entirely).
-2. If `invite_reason` is provided AND not empty, that value should populate the reason field.
-3. Otherwise, no reason is attached to the invite.
-
-An example usage of this two-field mechanism may be:
-
-1. A client wishes to invite everyone in a
-   predecessor room after an upgrade. It can include every joined member in `invite`, and provide
-   `{"invite_reason": "This room was replaced, please join the new one."}`. Then, every user who
-   receives an invite to that room knows exactly why they were invited, and is more likely to
-   accept.
-2. A client wishes to start a DM with a user, and would like to provide them with a reason before
-   inviting them. In this case, if there's only one user to invite to the DM, `invite_reason`
-   *could* suitably be used, but the client may instead opt to omit `invite_reason` and explicitly
-   name the user in `invite_reasons`: `{"invite_reasons": {"@alice:example.com": "Hi Alice!"}}`.
-3. A client wishes to start a group with a few users and wishes to preemptively explain why they
-   were invited (via `invite_reason`), but modify the reason for
-   certain members(via `invite_reasons`).
+An example of this in practice could be a client informing a user why they are being invited to a
+DM ahead of time, or a client upgrading a room attaching a "this room was upgraded" so members
+aren't surprised by a random invite to a room they may not have used in a long time.
 
 Another use-case could be safety related: clients may opt to reject any invites that lack a reason,
 especially from users they do not share a room with or have no non-public mutual rooms with. This
@@ -71,7 +36,7 @@ would also open the possibility for a future extension to [invite blocking][spec
 
 ## Potential issues
 
-Servers which do not understand these new parameters will not be able to include reasons, which may
+Servers which do not understand the new parameter will not be able to include reasons, which may
 result in users unexpectedly issuing invites on room creation which lack a reason. To alleviate
 this, clients MAY check [`GET /_matrix/clients/versions`][spec-versions] for an applicable spec
 version (if merged), or the unstable prefix in [Unstable prefix](#unstable-prefix), before
@@ -124,7 +89,6 @@ None.
 | Stable | Unstable |
 | ------ | -------- |
 | `invite_reason` | `uk.timedout.msc4491.invite_reason` |
-| `invite_reasons` | `uk.timedout.msc4491.invite_reasons` |
 
 `uk.timedout.msc4491.create_room_invite_reasons` SHOULD be present in the `unstable_features` of
 [`GET /_matrix/client/versions`][spec-versions] until this proposal is merged, to indicate
