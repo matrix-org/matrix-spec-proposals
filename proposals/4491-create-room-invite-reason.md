@@ -96,6 +96,8 @@ presenting the user with a UI to include an invite reason when creating a room.
   something the author is not interested in pursuing unless there is expressed interest in this
   more demanding change.
 
+[spec-invite]: https://spec.matrix.org/v1.18/client-server-api/#post_matrixclientv3roomsroomidinvite
+
 ## Security considerations
 
 A malicious actor could use this to distribute invite spam with abusive reasons even faster than
