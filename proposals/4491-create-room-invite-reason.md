@@ -77,6 +77,21 @@ this, clients MAY check [`GET /_matrix/clients/versions`][spec-versions] for an 
 version (if merged), or the unstable prefix in [Unstable prefix](#unstable-prefix), before
 presenting the user with a UI to include an invite reason when creating a room.
 
+### Abuse
+
+Unsolicited invites are a known abuse vector in Matrix, with ongoing efforts to reduce the area.
+As such, concerns regarding abuse are explicitly called out here:
+
+A malicious actor could use this to distribute invite spam with abusive reasons even faster than
+prior to this proposal if the homeserver does not implement sufficient rate-limiting technologies on
+room-creation invites. Prior, actors would be limited either by the rate-limit applied to the
+individual invite endpoint, or at least by the rate at which they could create individual requests.
+
+Server implementations MAY also wish to refuse to create rooms where an invite reason is too long
+or otherwise is flagged by a spam filter in order to prevent malicious users mass-distributing
+abusive messages in invite reasons. Implementations may already have implemented this on the
+[invite endpoint][spec-invite], although this is not explicitly specified behaviour.
+
 [spec-versions]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientversions
 
 ## Alternatives
@@ -100,10 +115,7 @@ presenting the user with a UI to include an invite reason when creating a room.
 
 ## Security considerations
 
-A malicious actor could use this to distribute invite spam with abusive reasons even faster than
-prior to this proposal if the homeserver does not implement sufficient rate-limiting technologies on
-room-creation invites. Prior, actors would be limited either by the rate-limit applied to the
-individual invite endpoint, or at least by the rate at which they could create individual requests.
+None.
 
 ## Unstable prefix
 
