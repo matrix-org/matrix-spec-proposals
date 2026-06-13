@@ -1,18 +1,20 @@
 # MSC4491: Invite reasons in room creation
 
 [`POST /_matrix/client/v3/createRoom`][spec-createRoom] allows you to specify a list of user IDs to
-invite (via `invite`) and any third party invites (via `invite_3pid`). It further allows you to mark
-these invites as "direct", via `is_direct`, indicating to the recipient(s) that this room is
-intended to be a DM room. However, there current lacks a mechanism within which to specify an
-invitation *reason*, which can leave recipients confused as to why they received an invite, and may
-lead them to mistake the invite for spam.
+invite (via `invite`). It further allows you to mark these invites as "direct", via `is_direct`,
+indicating to the recipient(s) that this room is intended to be a DM room. However, there is
+currently no mechanism within which to specify an invitation *reason*, which can leave recipients
+confused as to why they received an invite, and may lead them to mistake the invite for spam.
 
-However, this `is_direct` flag cannot be set after room creation, without manually sending the
-invite membership state event. This means that inviting a recipient after the room is created (in
-order to include a `reason`) will not tell the recipient that the invite is to a direct message,
-which again results in confusion and poor UI.
+However, this `is_direct` flag [cannot be set after room creation][spec-is_direct-sb], without
+manually sending the invite membership state event (see [Alternatives](#alternatives)).
+This means that inviting a recipient after the room is created (in order to include a `reason`)
+will not tell the recipient that the invite is to a direct message, which again results in confusion
+and poor UI[^gomuks#731].
 
 [spec-createRoom]: https://spec.matrix.org/v1.18/client-server-api/#post_matrixclientv3createroom
+[spec-is_direct-sb]: https://spec.matrix.org/v1.18/client-server-api/#server-behaviour-16
+[^gomuks#731]: See the demo video in <https://github.com/gomuks/gomuks/pull/731>
 
 ## Proposal
 
@@ -26,6 +28,13 @@ in each `m.room.member` invite state event sent by the server resulting from the
 Each key should be a user ID that is already present in `invite`.
 The value of each key should be the `reason` to set in each invite dispatched as a result of
 `invite`.
+
+Or, as a nicely presented table:
+
+| Key              | Type                | Description |
+| ---------------- | ------------------- | ----------- |
+| `invite_reason`  | `string` (optional) | The default invite reason to include in any implied `m.room.member` events. |
+| `invite_reasons` | `{string: string}` (optional) | Individual `reason`s to include in specific implied `m.room.member` events. |
 
 Clients SHOULD NOT include user IDs in `invite_reasons` that are not in `invite`, and SHOULD NOT
 make the value of any `invite_reasons` entry the same as `invite_reason`. Servers MUST ignore any
