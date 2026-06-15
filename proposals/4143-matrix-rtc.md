@@ -277,9 +277,13 @@ An `m.rtc.member` sticky event can be either **Connected** or **Disconnected**
   * **Slot open**: the `sticky_key` of the event needs to match the `member.id` AND the `slot_id`
     matches the state\_key of the slot event.  
   * **Content:** MUST match the JSON content schema for connecting to a slot (see below).  
-  * The sender is still a member of the room (not kicked / left)  
+  * The sender is still a member of the room (not kicked / left).
   * **Event is sticky**: The sticky event needs not to be expired as described in [MSC4354 Sticky
-    Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354)  
+    Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354). This is to ensure
+    that the membership view is as consistent as possible across all participants. When a member
+    event's stickyness expires, the associated delivery guarantee vanishes. As a result, some
+    participants might not have received the event while others did resulting in inconsistent
+    call memberships.
 * **Disconnected**, if  
   * **Not Connected:** any of the required conditions to be connected are not met.  
   * **Content:** SHOULD match the JSON content schema for disconnecting from a slot (see below). If
