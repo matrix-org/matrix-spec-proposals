@@ -113,8 +113,7 @@ The minimum Application definition consists of a simple JSON object
 }
 ```
 
-The `type` field MUST be a string that does not contain the `#` character. The type field SHOULD
-follow the [*Common Namespaced Identifier
+The `type` is a unique identifier for the application and MUST follow the [*Common Namespaced Identifier
 Grammar*](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar).
 
 Each application type specifies the additional fields and defines how communication with the
@@ -163,7 +162,7 @@ state_key: "m.call#ROOM"         // slot_id
 **Field description:**
 
 * **state key**: The state key of the `m.rtc.slot` state event, referred to as the `slot_id`.
-* `application` An application JSON object, which **MUST** specify the application type and MAY
+* `application` An application JSON object, which **MUST** specify the application `type` and MAY
   include additional fields which **constrain** the application (e.g., restricting a call to be
   voice-only). **Note** those additional fields may be extended through fields in the `application`
   content block of `m.rtc.member` events. If a field occurs in both, the value from the `m.rtc.slot` event
@@ -180,12 +179,16 @@ MatrixRTC applications never occupy the same slot according to:
 Where
 
 * `application.type` is the `type` field in the application JSON object  
-* The `#` character MUST NOT be used in either `application.type` or `application_slot_id`  
-* `application_slot_id` is the application-specific slot ID. Each application defines its own
-  schema (e.g., `ROOM`, `1`, `2`) to allow multiple parallel slots of the same type according to the
+* `application_slot_id` is the application-specific slot ID. The value MUST follow the
+  [*Common Namespaced Identifier Grammar*](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar)
+  but without the namespacing requirements. Each application defines its own
+  schema (e.g., `ROOM`, `line1`, `line2`) to allow multiple parallel slots of the same type according to the
   application requirements. If the application needs to define its slots out of band (e.g. mapping them to
   widget IDs) then it can use those IDs as `application_slot_id`. However, given a slot is the mechanism
   around which sessions converge, it MUST have a predictable `application_slot_id`.
+
+Note that due the use of the [*Common Namespaced Identifier Grammar*](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar),
+neither `application.type` nor `application_slot_id` can contain the `#` character.
 
 This grammar MUST never be used to parse `slot_ids`; it exists only to namespace the `state_key`.
 
