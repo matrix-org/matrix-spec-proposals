@@ -589,6 +589,10 @@ and grow that until the range covers all the rooms. After some threshold of the 
 range back down and incrementally grow it again. This allows for ensuring that a limited amount of data is requested at
 once, to improve response times.
 
+There is no specific way of detecting if there have been updates to more rooms than in the requested range. Clients can
+use the heuristic of "is the number of rooms returned in the list the same as the requested range?", if yes then it's
+likely that there are updates in rooms outside of the range.
+
 ## Example usage
 
 This section gives an example of how a client can use this API (roughly based on how Element X currently uses the API).
