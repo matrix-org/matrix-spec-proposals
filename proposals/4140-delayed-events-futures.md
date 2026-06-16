@@ -86,6 +86,11 @@ The homeserver MUST NOT send the event before the scheduled time.
 To support batch sending, homeservers MAY add up to 30 seconds to the scheduled send time.
 Note: clients might find that their events are delayed further due to server load and similar conditions.
 
+The homeserver MUST persist scheduled delayed events such that they will not be lost by the homeserver being restarted.
+Moreover, when a homeserver restarts, it MUST scan for all scheduled delayed events whose send time has already passed
+(i.e. delayed events that were scheduled to be sent while the homeserver was offline),
+and send those delayed events as soon as possible, in chronological order of their scheduled send times.
+
 The homeserver MAY enforce a maximum allowed delay for delayed events.
 If a requested delay exceeds this maximum, the homeserver will respond with HTTP 400
 and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
