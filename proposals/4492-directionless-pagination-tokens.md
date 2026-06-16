@@ -1,4 +1,4 @@
-# MSCXXXX: Clarify that pagination tokens are directionless
+# MSC4492: Clarify that pagination tokens are directionless
 
 The Matrix client-server API has several endpoints which handle pagination over events:
 
