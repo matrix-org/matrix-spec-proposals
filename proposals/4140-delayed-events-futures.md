@@ -520,7 +520,8 @@ solution proposed above.
 
 ### Federated delayed events
 
-Delayed events could be sent over federation immediately to then have the receiving homeservers send them down to clients at the appropriate time.
+Delayed events could be sent over federation immediately to then have the receiving homeservers send them down to
+clients at the appropriate time.
 
 Downsides of this approach that have been considered are that:
 
@@ -535,7 +536,8 @@ and there is an extensive analysis of the pros and cons of this MSC vs MSC3277
 [in this discussion](https://github.com/matrix-org/matrix-spec-proposals/pull/4140#discussion_r1653083566).
 
 If modifying scheduled delayed events is not required, there is a benefit in federating them. It increases
-resilience because the sender's homeserver can disconnect and the delayed event will still be delivered to receiving clients by their own homeservers.
+resilience because the sender's homeserver can disconnect and the delayed event will still be delivered to receiving
+clients by their own homeservers.
 
 However, for the MatrixRTC use case it's required to be able to modify the event after it has been scheduled. As such,
 this approach has been discounted.
