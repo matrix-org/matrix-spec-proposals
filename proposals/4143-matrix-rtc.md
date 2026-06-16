@@ -49,6 +49,9 @@ This MSC focuses on the three aspects above, the other modules are defined by ac
     * What streams to connect to  
     * What data to send over RTC channels and in which format  
     * Which MatrixRTC transports are supported
+* **MatrixRTC Notifications**
+  * How clients can inform each other about the existence of MatrixRTC sessions
+  * Covered in [MSC4075](https://github.com/matrix-org/matrix-spec-proposals/pull/4075/changes): MatrixRTC notifications & call ringing
 
 ## Proposal
 
