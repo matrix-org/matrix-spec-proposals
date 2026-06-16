@@ -281,7 +281,7 @@ An `m.rtc.member` sticky event can be either **Connected** or **Disconnected**
   * **Event is sticky**: The sticky event needs not to be expired as described in [MSC4354 Sticky
     Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354). This is to ensure
     that the membership view is as consistent as possible across all participants. When a member
-    event's stickyness expires, the associated delivery guarantee vanishes. As a result, some
+    event's stickiness expires, the associated delivery guarantee vanishes. As a result, some
     participants might not have received the event while others did resulting in inconsistent
     call memberships.
 * **Disconnected**, if  
