@@ -1128,15 +1128,20 @@ that was sent in the three seconds after leaving the session.
 
 ## Unstable prefix
 
-Use `org.matrix.msc4143.rtc.member` as the sticky event type in place of `m.rtc.member`.
-Use `org.matrix.msc4143.rtc.slot` as the state event type in place of `m.rtc.slot`.
+| Stable identifier | Purpose | Unstable identifier |
+| ----------------- | ------- | --------------------|
+| `m.rtc.slot` | Event type | `org.matrix.msc4143.rtc.slot` |
+| `m.rtc.member` | Event type | `org.matrix.msc4143.rtc.member` |
+| `m.rtc.shared_encryption_key` | Event type | `org.matrix.msc4143.rtc.shared_encryption_key` |
+| `m.rtc.encryption_key` | To-device message event type | `org.matrix.msc4143.rtc.encryption_key` |
+| `/_matrix/client/v1/rtc/transports` | Endpoint | `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` |
 
-For MatrixRTC Transport discovery via  `GET` endpoint use
-`/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` instead of
-`/_matrix/client/v1/rtc/transports`
+Servers may advertise support for the feature by listing `org.matrix.msc4143` in the `unstable_features`
+section of the response to [`GET /_matrix/client/versions`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientversions).
 
-Use `org.matrix.msc4143.rtc.encryption_key` in place of the `m.rtc.encryption_key` room event and
-to-device event types.
+Once this proposal completes FCP, servers may advertise support for the _stable_ identifiers by listing
+`org.matrix.msc4143.stable` in `unstable_features`. Clients may use this while they are waiting for the
+server to adopt a version of the spec that includes it.
 
 ## Dependencies
 
