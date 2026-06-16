@@ -486,6 +486,11 @@ timer expires due to a missing reset, the leave event is automatically emitted, 
 participant as disconnected and ensuring accurate session state even in cases of sudden
 disconnection, crashes, or network failures.
 
+For increased accuracy, some MatrixRTC transports may offer the ability to delegate management
+of a user's delayed disconnect event to an external service with high visibility on the connection
+state (such as a Selective Forwarding Unit / SFU). An example of this is the LiveKit transport
+from [MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195).
+
 ### MatrixRTC Session
 
 A **MatrixRTC Session** is defined as the period of overlapping, **Connected** `m.rtc.member` events
@@ -929,15 +934,6 @@ From this we conclude: both approaches are valid within MatrixRTC:
   the **context** itself (the slot), we can have a conflict-free session concept but a centrally
   managed context with potential state rollbacks that do not necessarily interfere with the session
   itself.
-
-### MatrixRTC Membership Heartbeat Keep Alive
-
-If an RTC Transport is involved like a SFU then per definition the SFU has a very good understanding
-of the connectivity of the individual participants. In that case it would be nice to be able to
-delegate the ownership of the delayed leave event to that infrastructure component. However,
-practical implementation has so far proven that the current implementation of delayed events are
-also sufficient in adverse network conditions. So for now it's good enough and considered as an
-optimisation for a future MSC.
 
 ### Discovery and Negotiation of Application Types
 
