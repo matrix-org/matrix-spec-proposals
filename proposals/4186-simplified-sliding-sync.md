@@ -121,6 +121,10 @@ ordering is determined by the server implementation. (Typically, this would be e
 received the last event in the room, however the precise definition depends on the server architecture, especially for
 servers that are "distributed").
 
+This makes it simpler for clients to track what rooms are up-to-date when using a range like `[0,19]`, since all events
+will cause the room to bubble to the top of the list. If it was based on e.g. `bump_stamp` then clients would need to
+fetch the full room list before being able to determine updates.
+
 > [!Important]
 > Rooms are ***not*** ordered by "`bump_stamp`", a field returned in the room response.
 
