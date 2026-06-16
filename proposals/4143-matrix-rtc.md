@@ -413,7 +413,7 @@ The following values are defined for `class`:
 - `client_error`: The client experienced a failure.
 - `server_error`: The server experienced a failure.
 - `redirection`: The connection was moved somewhere else (e.g. to a different slot).
-- `permanent_failure`: An unrecoverable failure occured.
+- `permanent_failure`: An unrecoverable failure occurred.
 
 Values for `reason` are application-specific and are defined by each particular MatrixRTC
 application type.
