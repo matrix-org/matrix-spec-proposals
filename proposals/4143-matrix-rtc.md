@@ -768,12 +768,12 @@ schema:
   `member.id` is globally unique per member instance, it is sufficient to disambiguate multiple key
   events for the same device, even if they use the same `media_key.index` value.  
 * `media_key` The media key to use to decrypt  the participant media:  
-  * `key` required string: The base64 encoded key material.  
+  * `key` required string: The key material encoded using unpadded base64.
   * `index` required int: The index of the key to distinguish it from other keys. This must be
     between 0 and 255 inclusive. In some implementations of MatrixRTC this may correspond to the
     `keyID` field of the WebRTC [SFrame](https://www.w3.org/TR/webrtc-encoded-transform/#sframe)
     header.  
-* `format` the key export format, `0` for the raw bytes base64 encoded.  
+* `format` the key export format, `0` for the raw bytes encoded using unpadded base64.
 * Depending on the RTC application, additional fields may be added to this event.
 
 Upon receipt, any `m.rtc.encryption_key` to-device event sent in cleartext SHOULD be discarded. The
