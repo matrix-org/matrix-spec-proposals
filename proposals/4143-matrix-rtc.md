@@ -401,28 +401,26 @@ A valid `m.rtc.member` event as a prerequisite for disconnecting from a slot has
 
 `disconnect_reason` **Field explanations:**
 
-| Field | Type | Required | Description |
-| ----- | ----- | ----- | ----- |
-| `class` | string | ✅ | High-level category of the disconnection or error. |
-| `reason` | string | ✅ | Machine-readable identifier of the specific cause. |
-| `description` | string | ⚪ | Optional human-readable explanation providing additional context. |
+| Field         | Type   | Required | Description |
+| ------------- | ------ | -------- | ----------- |
+| `class`       | string | Yes      | High-level category of the disconnection or error. |
+| `reason`      | string | Yes      | Machine-readable identifier of the specific cause. |
+| `description` | string | No       | Optional human-readable explanation providing additional context. |
 
-**Class categories and examples:**
+The following values are defined for `class`:
 
-| Class | Example Reason | Description / When Used |
-| ----- | ----- | ----- |
-| user\_action | `hangup` | Participant intentionally ended the call after joining. |
-|  | `switch_device` | User moved the session to another device mid-call. |
-| client\_error | `media_error` | Failed to capture or transmit audio/video after joining. |
-|  | `transport_failure` | Local ICE/DTLS setup failed despite a successful `m.rtc.member` event. |
-|  | `encryption_error` | Failed to set up E2EE for the media channel after connecting. |
-| server\_error | `ice_failed` | ICE negotiation could not complete due to network/server issues. |
-|  | `dtls_failed` | DTLS handshake failed. |
-|  | `network_error` | Temporary network outage caused the connection to drop. |
-| redirection | `call_transferred` | Call was redirected to another slot, device, or user. |
-|  | `moved_temporarily` | Session temporarily moved (e.g., server migration). |
-| permanent\_failure | `codec_mismatch` | Participant cannot decode/encode the call media. |
-|  | `unsupported_features` | Session requested unsupported capabilities. |
+- `user_action`: The disconnect was due to explicit user action (e.g. a hang up).
+- `client_error`: The client experienced a failure.
+- `server_error`: The server experienced a failure.
+- `redirection`: The connection was moved somewhere else (e.g. to a different slot).
+- `permanent_failure`: An unrecoverable failure occured.
+
+Values for `reason` are application-specific and are defined by each particular MatrixRTC
+application type.
+
+The structured design of `disconnect_reason` allows representing complex error situations
+such as found in e.g. [SIP](https://en.wikipedia.org/wiki/List_of_SIP_response_codes) in an
+accessible way.
 
 **Note: (Pre-join)** In situations where a client never successfully connects to a call (for
 example, if the user is busy or declines a MatrixRTC session), a dedicated **sticky event** is
