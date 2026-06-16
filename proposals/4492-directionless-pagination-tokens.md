@@ -30,13 +30,13 @@ inherent direction, even if they happen to be labelled `next_batch` or
 ## Proposal
 
 Pagination tokens produced by `/messages`, `/relations`, `/context`, and `/search`'s
-`context` field represent a position in the event stream and MUST be indistinguisable.
+`context` field represent a position in the event stream and MUST be indistinguishable.
 Tokens SHOULD
 only be used within the context of a single room. (E.g. a request for `/messages` in
 room #test:matrix.org does not make sense to re-use for #foo:matrix.org.)
 
 A token produced by `/messages`, `/relations`, or `/context` is tied to the room it
-was produced and clients MUST NOT be used for another room. There are no guarnatees
+was produced and clients MUST NOT be used for another room. There are no guarantees
 using one in a different room will produce the correct results, servers MAY throw
 an error in this case.
 
