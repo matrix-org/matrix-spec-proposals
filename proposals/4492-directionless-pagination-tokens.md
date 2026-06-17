@@ -35,9 +35,9 @@ Tokens SHOULD
 only be used within the context of a single room. (E.g. a request for `/messages` in
 room #test:matrix.org does not make sense to re-use for #foo:matrix.org.)
 
-A token produced by `/messages`, `/relations`, or `/context` is tied to the room it
-was produced and clients MUST NOT be used for another room. There are no guarantees
-using one in a different room will produce the correct results, servers MAY throw
+A token produced by `/messages`, `/relations`, `/context`, the `context` response field of `/search`, or the `prev_batch` response field of `/sync`, is tied to the room it
+was produced for and clients MUST NOT use them for another room. There are no guarantees
+using one in a different room will produce the correct results; servers MAY throw
 an error in this case.
 
 Tokens produced by [`/sync` `since` parameter][sync] resolve against the server's
