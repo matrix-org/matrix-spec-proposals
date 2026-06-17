@@ -29,20 +29,22 @@ inherent direction, even if they happen to be labelled `next_batch` or
 
 ## Proposal
 
-Pagination tokens produced by `/messages`, `/relations`, `/context`, and `/search`'s
-`context` field represent a position in the event stream and MUST be indistinguishable.
-Tokens SHOULD
-only be used within the context of a single room. (E.g. a request for `/messages` in
-room #test:matrix.org does not make sense to re-use for #foo:matrix.org.)
+Pagination tokens produced by `/messages`, `/relations`, `/context`, the `context`
+response field of `/search`, and the `prev_batch` response field of `/sync` represent
+a posiiton in the event stream and MUST be indistinguishable. These tokens are referred
+to as "room event stream tokens" in the rest of the proposal text. (Although it is not
+proposed to use that term in the spec itself.)
 
-A token produced by `/messages`, `/relations`, `/context`, the `context` response field of `/search`, or the `prev_batch` response field of `/sync`, is tied to the room it
-was produced for and clients MUST NOT use them for another room. There are no guarantees
-using one in a different room will produce the correct results; servers MAY throw
-an error in this case.
+"Room event stream tokens" MUST only be used within the context of a single room.
+(E.g. a request for `/messages` in room `#test:matrix.org` does not make sense to re-use
+for `#foo:matrix.org`.) There are no guarantees using a "room event stream token" in a
+different room will produce sensible results; servers MAY throw an error if a client attempts
+to use one in the wrong room.
 
 `next_batch` tokens produced by [`/sync`][sync] resolve against the server's
-global event stream and is safe to use across rooms for `/messages`, `/relations`,
-and `/context`. `/sync` only accepts tokens produced by `/sync`.
+global event stream and are safe to use in any room for `/messages`, `/relations`,
+and `/context`. The `since` parameter of `/sync` only accepts `next_batch` tokens produced
+by `/sync`.
 
 The following table summarises which tokens each endpoint currently accepts and proposed changes:
 
@@ -59,7 +61,8 @@ The following table summarises which tokens each endpoint currently accepts and 
 Note that this does not modify the pagination of `/search` results itself, which are
 only usable within `/search`.
 
-Open question: should `/threads` also be part of this list?
+This does not affect the pagination of any other endpoints, such as `/threads` or
+[`/hierarchy`](hierarchy).
 
 ## Potential issues
 
@@ -127,11 +130,13 @@ N/A
 
 N/A
 
-[messages]: https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3roomsroomidmessages
-[sync]: https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3sync
-[relations]: https://spec.matrix.org/latest/client-server-api/#get_matrixclientv1roomsroomidrelationseventid
-[context]: https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3roomsroomidcontexteventid
-[search]: https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3search
+[messages]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3roomsroomidmessages
+[sync]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3sync
+[relations]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1roomsroomidrelationseventid
+[context]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3roomsroomidcontexteventid
+[search]: https://spec.matrix.org/v1.18/client-server-api/#post_matrixclientv3search
+[threads]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1roomsroomidthreads
+[hierarchy]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1roomsroomidhierarchy
 
 [spec2357]: https://github.com/matrix-org/matrix-spec/pull/2357
 
