@@ -798,14 +798,23 @@ then keys received from such devices MUST also be excluded.
 The corresponding  `m.rtc.member` is determined by matching its `member.id` with the one from
 `m.rtc.encryption_key`.
 
+The receiving MUST apply the following checks:
+
+- The `sender` property from the decryption result must match the `sender` of the `m.rtc.member`
+  event.
+- The `device_id` property from the decryption result must match the `device_id` of the `member.device_id`
+  of `m.rtc.member` event.
+
+Any `m.rtc.encryption_key` event that does not comply with these checks MUST be discarded.
+
 Clients SHOULD rotate their keys to ensure **confidentiality** whenever a participant joins or
 leaves the slot. The **key rotation** process is as follows:
 
-* The sending application generates the new key material for the local participant.  
-* The sending application sends the new key material to all other participants with a new `index` value.  
-* The receiving application stores the new key material for the specified `index`.  
-* The sending application continues to use the old/current key to encrypt media.  
-* After a short delay `delayBeforeUse,` default: 5 seconds), the sending application switches to the
+* The sending client generates the new key material for the local participant.  
+* The sending client sends the new key material to all other participants with a new `index` value.  
+* The receiving client stores the new key material for the specified `index`.  
+* The sending client continues to use the old/current key to encrypt media.  
+* After a short delay `delayBeforeUse,` default: 5 seconds), the sending client switches to the
   new key.  
   * It is possible to overwrite the default delay on a per application basis in case an application
     has specific requirements on security or wants to minimize missed stream data  
@@ -816,7 +825,7 @@ this is expensive. Clients SHOULD minimize key exchange traffic for rapid joiner
 
 For rapid new joiners: A key rotation grace period (`keyRotationGracePeriod`) is used, if a new
 member joins during the grace period, then the same key can be used and shared just to that new
-member..
+member.
 
 For rapid leavers: The `delayBeforeUse` period is used to coalesce any membership change occurring
 in that period and then a single key rotation is scheduled afterward.
@@ -1061,9 +1070,6 @@ MatrixRTC transport remains the most natural direction.
 Earlier iterations of this MSC used an encrypted `m.rtc.encryption_keys` room event to distribute
 the per-participant sender keys.
 
-Whilst reducing traffic by only needing to send one event per participant to the homeserver, this
-approach does not allow for perfect forward secrecy as the keys are persisted in the room history.
-
 The encrypted content of the `m.rtc.encryption_keys` event was as follows:
 
 ```json5
@@ -1085,6 +1091,21 @@ The encrypted content of the `m.rtc.encryption_keys` event was as follows:
     ],
 }
 ```
+
+#### Issues Encountered
+
+1. **Scalability Problems**
+   - Generated high volumes of message traffic in rooms
+   - Frequently hit rate limiting thresholds
+
+2. **Timeline Pollution**
+   - Introduced invisible events into the room timeline
+   - Created notification noise depending on user settings
+   - Negatively impacted backpagination experience
+
+3. **Security Concerns**
+   - Over-exposed call keys by sharing them with all room participants
+   - Failed to limit key distribution to active call participants only (impossibility to rotate key on leaver)
 
 ### Transport discovery via .well-known
 
@@ -1131,11 +1152,6 @@ infrastructure, which could potentially lead to unauthorized resource use. Howev
 infrastructure type defines its own authentication mechanisms, as detailed in its specific MSC.
 These mechanisms may involve a service interacting with the homeserver to determine whether a user
 is authorized to utilize the infrastructure.
-
-### Forward secrecy for end-to-end encryption of media streams
-
-The considerations to ensure forward secrecy are described in the [Key
-Distribution](#key-distribution) section above.
 
 ### End-to-end media encryption key rotation lag
 
