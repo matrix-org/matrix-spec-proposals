@@ -40,7 +40,7 @@ was produced for and clients MUST NOT use them for another room. There are no gu
 using one in a different room will produce the correct results; servers MAY throw
 an error in this case.
 
-Tokens produced by [`/sync` `since` parameter][sync] resolve against the server's
+`next_batch` tokens produced by [`/sync`][sync] resolve against the server's
 global event stream and is safe to use across rooms for `/messages`, `/relations`,
 and `/context`. `/sync` only accepts tokens produced by `/sync`.
 
