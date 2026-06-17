@@ -833,9 +833,6 @@ in that period and then a single key rotation is scheduled afterward.
 `keyRotationGracePeriod` must be greater than `delayBeforeUse` or it will have no effects (default
 10s and 5s)
 
-A future version of key exchange could introduce ratcheting, this would reduce the key traffic for
-new joiners (only sends the ratcheted key to the new joiners instead of rotating to all).
-
 #### Shared Key alternative
 
 For big calls in a room, it might be interesting to use a shared key system instead of a per-sender
@@ -995,6 +992,17 @@ real life, and their existence remains valid regardless of how room state later 
 important, however, is that each `m.rtc.slot` event, at its position in the DAG, **satisfies the
 applicable authorisation rules** at that point in time to ensure the reconstructed session history
 is consistent with valid room state transitions.
+
+### Excessive key traffic
+
+When using per-user encryption keys, keys are rotated and distributed to _all_ participants
+whenever a member joins or leaves the session. This could result in a large amount of to-device
+messages being exchanged. This is deemed acceptable for now given that it should usually only
+occur during session setup.
+
+To mitigate this, a future version of the key exchange mechanism could introduce ratcheting. Rather
+than rotating the key for all members, this would allow to ratchet the key and send it to the new
+joiner only.
 
 ## Alternatives
 
