@@ -1084,6 +1084,17 @@ The encrypted content of the `m.rtc.encryption_keys` event was as follows:
 }
 ```
 
+### Transport discovery via .well-known
+
+Rather than using a dedicated endpoint, homeservers could publish supported transports
+via a `.well-known` document. This exposes transports to unauthenticated users, however,
+which can be a security concern. Additionally, in enterprise deployments, `.well-known`
+files are often not served by the homeserver itself and it can be bureaucratically complicated
+to update entries under the top-level domain.
+
+`GET /_matrix/client/v1/rtc/transports` avoids these issues and offers more flexibility for
+future extensions such as user-specific transports.
+
 ## Extensibility considerations
 
 This MSC introduces a completely new concept to Matrix. The proposal is designed to be as abstract
