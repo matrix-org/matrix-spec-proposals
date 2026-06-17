@@ -345,8 +345,10 @@ A valid `m.rtc.member` event as a prerequisite for connecting to a slot has the 
   * `id` — Identifier to distinguish multiple participations, even for the same user and same device
     MUST be unique for each connect event. MatrixRTC transports MAY use `id` as the canonical identifier
     to help prevent leaking metadata such as the user ID or device ID to external services.
-  * `claimed_device_id` — Matrix device identifier.  
-  * `claimed_user_id` — Matrix user ID.  
+  * `claimed_device_id` — Matrix device identifier. This is "claimed" because without the encryption
+    envelope, a receiving device has no way to tell if the event actually came from this device ID.
+  * `claimed_user_id` — Matrix user ID. This is "claimed" because without the encryption envelope,
+    a receiving device has no way to tell if the event actually came from this user ID.
 * `rtc_transports` — List of objects describing how to access this participant’s media streams. See
   [MatrixRTC Transport](#matrixrtc-transport) for the correct object format.  
 * `sticky_key` — A unique key used to track this membership across updates. The key persists for the
