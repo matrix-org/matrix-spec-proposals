@@ -35,12 +35,10 @@ flexibility in thumbnail choice, reduce backend strain and improve format compat
 
 Rendering clients are expected to choose the thumbnail resources (if available) when rendering media previews.
 Calling the thumbnailing homeserver endpoint on an available encrypted thumbnail resource is allowed, similar to any 
-other resource, and will result in the original media, with backend support not being available to generate other 
-thumbnail variants.
+other resource, but will result in bad requests (400) as encrypted files cannot be thumbnailed.
 
-Client SDKs are encouraged to apply post download checks and processing to the thumbnails received from the homeserver as
-resolution limits cannot be enforced on encrypted media. The result should fit the caller requested size but that's 
-an optimization left to the implementer.
+Clients should not assume that images from thumbnail endpoints are the exact size requested, potentially downscaling on 
+the client if appropriate.
 
 ## Security concerns
 
