@@ -594,7 +594,7 @@ Some alternatives for the `running_since` field on the `GET` response are:
 - `delayed_since` - using past tense might better convey that this time is in the past
 - `delaying_since` - `since` might be a clearer suffix than `from`
 - `last_restart` - but this feels less clear than `running_since` for a delayed event that hasn't been restarted
-- `send_time` - with a value of `delay` + the start time of the timer
+- `send_ts` - with a value of `delay` + the start time of the timer
 
 ### Syncing failed delayed events
 
