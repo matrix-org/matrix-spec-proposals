@@ -1,57 +1,37 @@
-# MSC4143: MatrixRTC
+# MSC4143: MatrixRTC – Real-time communication over Matrix
 
-## Overview
+Matrix is a generalised protocol for decentralised communication. This includes chatting but also
+real-time communication (RTC) such as VoIP. While Matrix supports VoIP signalling for [1-to-1 calls],
+and [MSC3401] attempts to extend it to group calling, a unified system for RTC applications is
+currently missing.
 
-This MSC defines MatrixRTC: how to set up real-time communication sessions over Matrix.
-This is the base layer to build real-time systems on top of Matrix.
+[1-to-1 calls]: https://spec.matrix.org/v1.18/client-server-api/#voice-over-ip
+[MSC3401]: https://github.com/matrix-org/matrix-spec-proposals/pull/3401
 
-MatrixRTC specifies how a real-time session is described in a room and how Matrix users can connect
-to a session.
+The present proposal aims to close this gap by introducing "MatrixRTC", a generalised framework for
+reliably establishing and maintaining RTC sessions over Matrix. This MSC is concerned with the
+foundational protocol and covers:
 
-The MatrixRTC specification is separated into different modules:
+- RTC session state (including session configuration, membership and publishment of RTC media streams)
+- Discovering available modes for the actual RTC media transport (e.g. Selective Forwarding Units
+  (SFUs) or peer-to-peer assisted by STUN/TURN servers)
+- End-to-end encryption of RTC media
 
-* **The MatrixRTC State** — defines the state of a real-time session and serves as the source of
-  truth for:  
-  * Which participants are part of a session  
-  * Which RTC technology each participant is connected through  
-  * Which kind and how many sessions can take place in this room.  
-  * Per-device metadata used by other participants to decide whether streams from that source are of
-    interest and should be subscribed to.  
-* **Discovery of RTC Transports**  
-  * The actual transport for real-time data provided by the Matrix deployment (e.g. Selective
-    Forwarding Units (SFUs) or assisted by STUN/TURN)  
-  * Supports real-time communication exchange, with or without backend infrastructure  
-  * Works across topologies such as SFU, P2P, or MCU  
-* **The E2EE key Sharing for RTC Data**  
-  * Each participant requires a secret in order to publish encrypted real-time data  
-  * Every participant must hold a valid key for every other participant at all times during the
-    session to decrypt their media  
-  * Sessions may use multiple keys or a single shared key across all participants; keys may rotate
-    during the session  
-  * This MSC also specifies how E2EE keys are distributed
+This proposal is entirely agnostic of RTC applications or transport technologies and treats both
+as generic building blocks. As first concrete instances, a voice- and video conferencing application
+type and a transport mode based on the [LiveKit SFU] are proposed in
+[MSC4196: MatrixRTC voice and video calling application `m.call`] and
+[MSC4195: MatrixRTC Transport using LiveKit Backend]. Further applications and transports may be
+added in the future.
 
-This MSC focuses on the three aspects above, the other modules are defined by accompanying MSCs:
+[LiveKit SFU]: https://docs.livekit.io/reference/internals/livekit-sfu/
+[MSC4196: MatrixRTC voice and video calling application `m.call`]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
+[MSC4195: MatrixRTC Transport using LiveKit Backend]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195/changes
 
-* **MatrixRTC Transports**  
-  * Supports multiple transport implementations  
-  * Defines how to connect to peers or servers, update connections, and subscribe to streams  
-  * A LiveKit-based transport is the current standard proposal
-    ([MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195): MatrixRTC Transport using
-    LiveKit backend)  
-  * Another planned transport is a full-mesh WebRTC implementation based on
-    [MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401)  
-* **MatrixRTC Applications**  
-  * Each application type can have its own specification  
-  * Example: voice and video conferencing via an application of type `m.call`
-    * Defining finer-grained signalling UX, e.g., ringing, declining, stopping ringing  
-  * Specifies the full RTC experience, including:  
-    * How to interpret member event metadata  
-    * What streams to connect to  
-    * What data to send over RTC channels and in which format  
-    * Which MatrixRTC transports are supported
-* **MatrixRTC Notifications**
-  * How clients can inform each other about the existence of MatrixRTC sessions
-  * Covered in [MSC4075](https://github.com/matrix-org/matrix-spec-proposals/pull/4075/changes): MatrixRTC notifications & call ringing
+This proposal also doesn't cover notifications for RTC sessions. These are considered outside the core
+protocol and are described in [MSC4075: MatrixRTC notifications & call ringing].
+
+[MSC4075: MatrixRTC notifications & call ringing]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
 
 ## Proposal
 
@@ -875,39 +855,6 @@ keys call.
 
 Clients should detect when the slot is configured for a shared key, and then use the shared key
 instead of generating and sharing sender keys.
-
-### Scope and Responsibilities of MatrixRTC Applications
-
-This MSC defines the **foundational protocol for real-time communication (RTC)** in Matrix —
-establishing the primitives and data structures needed for RTC functionality. It deliberately **does
-not define a complete calling experience**, leaving that to specific MatrixRTC applications that
-build on top of this foundation. Each such application can define its own UX expectations,
-signalling behaviour, and feature set.
-
-Implementations, especially chat clients, are expected to support one or more of these applications
-as they are defined by future MSCs.  
-The first of these is expected to be the 
-**`m.call` application ([MSC4196](https://github.com/matrix-org/matrix-spec-proposals/pull/4196))**. 
-Clients SHOULD treat this application as a special case and present a familiar call experience that
-abstracts away the underlying slot and membership model.
-
-Common UX patterns include:
-
-* A “Call” button in the room header.  
-* Ongoing call information displayed in the room header.  
-* Moderation-style wording for slot management, e.g. *“Allow users to start a call.”*  
-* Permission-related messaging, e.g. *“You are not allowed to start a call in this room.”*
-
-This MSC’s goal is to define the **core RTC protocol**, not to specify every user-facing behaviour.
-It delegates **user experience, call control, and signalling flows** to individual RTC applications
-layered on top. For example, pre-call signalling (ringing, declining, etc.) is handled outside the
-RTC session itself, using membership and slot application data and other events (TODO: link related
-MSCs).
-
-Importantly, **MatrixRTC can be used by custom or experimental RTC applications** without those
-applications being merged into the Matrix specification. The only difference is that a *merged* RTC
-application may impose additional interoperability requirements on clients, whereas *non-merged*
-applications can still operate using the same MatrixRTC primitives.
 
 ## Potential issues
 
