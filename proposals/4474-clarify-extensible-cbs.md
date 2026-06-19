@@ -73,7 +73,7 @@ are content blocks already in the spec that are built upon and with the intentio
 This appears sufficient evidence to clarify that:
 
 - Content block names MUST always use CNIG to clearly identify them within event `content`.
-- Non content block properties defined in the spec MUST NOT use it, but use simple labels instead.
+- Properties defined in the spec that are not content blocks themselves MUST NOT use CNIG, but use simple labels instead.
 - Custom properties, i.e. those defined for additional non-standard behaviour in more use-case specific implementations
   based on Matrix, MUST use CNIG when inserted directly into standard content blocks.
 
