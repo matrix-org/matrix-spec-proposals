@@ -10,6 +10,8 @@ same siblings but not stated explicitly or obviously.
 
 ## Proposal
 
+### Uniqueness and Nesting of Content Blocks
+
 MSC1767 defines the concept of "content blocks".
 
 This MSC clarifies that content blocks MUST (not "can") be defined independently of events,
@@ -52,6 +54,57 @@ such as an event type or other content block definition.
 >   ]
 > }
 > ```
+
+### `m.` Namespacing for Content Blocks
+
+The possibility for nesting content blocks as clarified in the previous section means that there is no clearly defined
+way to distinguish content blocks from simple properties of the object type.
+
+Matrix defines the use of its
+[Common Namespaced Identifier Grammar (CNIG)](https://spec.matrix.org/v1.17/appendices/#common-namespaced-identifier-grammar)
+in certain cases to clearly handle its own extensibility.
+There is no such clear definition about the properties within the `content` of events,
+and indeed some of the official event definitions historically contain a mix of properties with and without namespacing,
+e.g. `m.federate` of `m.room.create`.
+
+At the same time, [`m.topic` and `m.text`](https://spec.matrix.org/v1.17/client-server-api/#mroomtopic)
+are content blocks already in the spec that are built upon and with the intention to be forward compatible with MSC1767.
+
+This appears sufficient evidence to clarify that:
+
+- Content block names MUST always use CNIG to clearly identify them within event `content`.
+- Non content block properties defined in the spec MUST NOT use it, but use simple labels instead.
+- Custom properties, i.e. those defined for additional non-standard behaviour in more use-case specific implementations
+  based on Matrix, MUST use CNIG when inserted directly into standard content blocks.
+
+An example of applying this correctly is:
+
+```jsonc
+{
+  // irrelevant properties removed
+  "content": {
+    "m.topic": {
+      "m.text": [
+        {
+          "body": "An <em>interesting</em> room topic",
+          "mimetype": "text/html"
+        },
+        {
+          "body": "An interesting room topic"
+        }
+      ],
+      "dev.fitko.neo.label.v1": {
+        "m.text": [
+          { "body": "Open Website" }
+        ]
+      },
+      "dev.fitko.neo.internal.v1": true
+    }
+  },
+  "state_key": "",
+  "type": "m.room.topic"
+}
+```
 
 [... maybe more]
 
