@@ -279,11 +279,11 @@ Content-Type: application/json
 As described in [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), clients
 SHOULD use cancellable delayed events to implement a "deadman switch" for precise MatrixRTC
 membership tracking. This involves sending a disconnect event ahead of the connect event as a
-delayed event with a reasonable timeout (e.g., 15--30 seconds), and periodically resetting the
-delayed event's timer. If the timer expires due to a missing reset, the disconnect event is
+delayed event with a reasonable timeout (e.g., 15--30 seconds), and periodically restart the
+delayed event's timer. If the timer expires due to a missing restart, the disconnect event is
 automatically emitted, marking the participant as disconnected and ensuring accurate session state
 even in cases of sudden disconnection, crashes, or network failures. However, relying on clients to
-reset the delayed event timer can be error-prone in adverse network conditions, particularly due to
+restart the delayed event timer can be error-prone in adverse network conditions, particularly due to
 TCP connection instability.
 
 Since the LiveKit SFU already maintains authoritative knowledge of each participant's connection
@@ -328,7 +328,7 @@ fields:
   * `delay_id` — required `string`: the delayed event id of the MatrixRTC member leave event.
   * `delay_timeout` — required `string`: number of positive non-zero milliseconds the homeserver
     should wait before sending the MatrixRTC member leave event. Clients SHOULD not use values smaller
-    than 1 hour to avoid unnecessarily frequent `/reset`s of the delayed event. Service implementations
+    than 1 hour to avoid unnecessarily frequent `/restart`s of the delayed event. Service implementations
     MAY reject requests with a timeout below 1 hour with `M_BAD_JSON`.
   * `delay_cs_api_url` — required `string`: The Matrix client-server API as used by the client. This
     is required because publishing the [.well-known document](https://spec.matrix.org/v1.18/client-server-api/#well-known-uris)
@@ -383,7 +383,7 @@ Content-Type: application/json
 Once the LiveKit SFU Authorisation Service observes the client's SFU connection, identified by
 the LiveKit room `livekit_alias` and the LiveKit identity as specified in the next section
 (`base64(SHA256(JSON.serialize([user_id, claimed_device_id, member.id])))`), it SHOULD issue
-a `reset` of the delayed event by sending the following POST request to the  homeserver of
+a `/restart` of the delayed event by sending the following POST request to the  homeserver of
 that client:
 
 ```http
@@ -395,9 +395,9 @@ Content-Type: application/json
 ```
 
 It then starts a timer corresponding to the specified `delay_timeout`. The timer is periodically
-reset while the client remains connected with sufficient headroom (e.g., 80% of `delay_timeout`) to
- ensure the reset occurs well before `delay_timeout` expires. If the SFU detects that the client has
-disconnected before the timer is reset, the Authorisation Service MUST trigger the `disconnect`
+restarted while the client remains connected with sufficient headroom (e.g., 80% of `delay_timeout`) to
+ ensure the restart occurs well before `delay_timeout` expires. If the SFU detects that the client has
+disconnected before the timer is restarted, the Authorisation Service MUST trigger the `disconnect`
 event by sending the following request to the homeserver:
 
 ```http
