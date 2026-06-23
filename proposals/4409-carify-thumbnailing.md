@@ -24,7 +24,7 @@ The spec does not however clarify how the two should be handled in mixed encrypt
 The proposal is to introduce new language in the [Thumbnails](https://spec.matrix.org/v1.18/client-server-api/#thumbnails)
 section that does address this as follows:
 
-E2EE aware clients are expected to provide thumbnail resources next to the original media they're uploading as close 
+Clients are expected to provide thumbnail resources next to the original media they're uploading as close 
 in resolution to what the maximum backend endpoints would provide (800x600 at the time of writing).
 
 For image media smaller than that no thumbnail should be provided. Uploading clients can provide thumbnails larger than 
