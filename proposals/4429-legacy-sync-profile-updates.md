@@ -43,7 +43,7 @@ A new top-level key is added to the response body of [`GET
 /_matrix/client/v3/sync`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3sync)
 named `users`. It features the following implied schema:
 
-```json
+```jsonc
 {
   "users": {
     "@user:example.org": {
@@ -71,6 +71,23 @@ ID in the future if desired.
 Each entry in `profile_updates` represents a profile field and any changes to
 its value. If its value is `null`, the field is treated as having been removed
 from the user's profile (rather than literally being set to `null`).
+
+The `profile_updates` field MAY optionally be set to `null` itself. A homeserver
+MAY do this in order to inform a client that it should stop tracking the profile
+of a given user; such as when a user no longer shares any room with another
+user. For example:
+
+```jsonc
+{
+  "users": {
+    "@user:example.org": {
+      // The client may stop tracking and optionally wipe local profile data for
+      // `@user:example.com`.
+      "profile_updates": null
+    }
+  }
+}
+```
 
 The value of a profile field change MUST entirely override the existing value
 for that profile field. For example, if the local state of another user's
