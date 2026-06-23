@@ -232,11 +232,6 @@ Clients are recommended to enable lazy-loading in their `/sync` requests to
 limit the profile information to only those users that are initially relevant
 (i.e. senders of events that are initially returned to the client).
 
-Client MAY clear their local cache of another user's profile upon a
-`m.room.member` event of type `leave` appearing down `/sync`. The client can
-calculate which users it no longer shares a room with and remove the local cache
-for those user(s) profiles.
-
 ## Potential issues
 
 None identified.
