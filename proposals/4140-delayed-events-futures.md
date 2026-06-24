@@ -258,7 +258,7 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
 - `type` - Required. The event type of the delayed event.
 - `state_key` - The state key of the delayed event if it is a state event; absent otherwise.
 - `delay_ms` - Required. The delay in milliseconds after the point of scheduling that the event is/was to be sent at.
-- `running_since` - Required. The timestamp (as Unix time in milliseconds) when the delayed event was scheduled or
+- `scheduled_at` - Required. The timestamp (as Unix time in milliseconds) when the delayed event was scheduled or
   last restarted.
 - `content` - Required. The content of the delayed event.
   This is the body of the original `PUT` request, not a preview of the full event after sending.
@@ -276,7 +276,7 @@ can be determined by examining which of the optional fields are present in the r
 
 - If `finalised_ts` is absent, then the delayed event is still scheduled.
 - Otherwise, if `event_id` is present, then the delayed event has been sent.
-  - If `finalised_ts` < `running_since` + `delay_ms`, then the event was sent manually by
+  - If `finalised_ts` < `scheduled_at` + `delay_ms`, then the event was sent manually by
     [the `/send` endpoint](#managing-scheduled-delayed-events); otherwise, it was sent on its scheduled send time.
 - Otherwise, if `error` is present, then the delayed event failed to be sent (and was descheduled) due to an error.
 - Otherwise, the delayed event was cancelled by [the `/cancel` endpoint](#managing-scheduled-delayed-events).
@@ -287,7 +287,7 @@ A new authenticated Client-Server API endpoint at
 `GET /_matrix/client/v1/delayed_events` responds with
 a list of details about scheduled delayed events owned by the requesting user.
 
-Delayed events are returned in chronological order of their intended send time, which is `running_since` + `delay_ms`.
+Delayed events are returned in chronological order of their intended send time, which is `scheduled_at` + `delay_ms`.
 
 On success, the response is HTTP 200 and a JSON object containing the following fields:
 
@@ -307,7 +307,7 @@ Content-Type: application/json
       "room_id": "!roomid:example.com",
       "type": "m.room.message",
       "delay_ms": 5500,
-      "running_since": 1721732853284,
+      "scheduled_at": 1721732853284,
       "content": {
         "msgtype": "m.text",
         "body": "I am now offline"
@@ -583,18 +583,24 @@ This feels more elegant, but it doesn't feel like a good suggestion for how the 
 Also, `DELETE` suggests that the target resource will be truly deleted, but this is at odds with how
 cancelling a delayed event has it retained as a finalised event for later lookup.
 
-### Alternative to `running_since` field
+### Alternative to `scheduled_at` field
 
-Some alternatives for the `running_since` field on the `GET` response are:
+Some alternative names for the `scheduled_at` field on the `GET` response are:
 
+- `running_since` - clearly indicates the purpose of the field, but
+  no other part of this proposal uses the term `running` to describe a scheduled delayed event, and
+  no other part of the spec uses a suffix of `since` for the name of a timestamp-valued field
 - `scheduled_ts` - clearly designates the field as a timestamp due to its suffix of `ts`,
-  but might be interpreted as the scheduled send time
-- `created_ts` - also clearly a timestamp, but no other part of this proposal uses the term "created"
-- `delaying_from` - `delaying` might be clearer than `running`, and `from` might be clearer than `since`
+  but might be misinterpreted as the scheduled send time instead of when the delayed event had been scheduled/restarted
+- `created_ts` - also clearly a timestamp, but no other part of this proposal uses the term `created`
+- `delaying_from` - `delaying` might be clearer than `scheduled`/`running`, and `from` might be clearer than `at`/`since`
 - `delayed_since` - using past tense might better convey that this time is in the past
 - `delaying_since` - `since` might be a clearer suffix than `from`
-- `last_restart` - but this feels less clear than `running_since` for a delayed event that hasn't been restarted
-- `send_ts` - with a value of `delay_ms` + the start time of the timer
+- `last_restart` - but this feels less clear than other names for a delayed event that hasn't been restarted
+
+An alternative field altogether is `send_ts`, with a value of `delay_ms` + the start time of the timer.
+However, explicitly returning the scheduled send time suggests a strong guarantee of exactly when a delayed event will
+be sent, despite this proposal allowing homeservers to adjust the scheduled send time to support batch sending.
 
 ### Syncing failed delayed events
 
