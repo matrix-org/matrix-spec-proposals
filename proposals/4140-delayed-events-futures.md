@@ -59,7 +59,7 @@ when called by an application service.
 
 The body for requests to this endpoint is a JSON object containing the following fields:
 
-- `delay` - Required. A positive non-zero number of milliseconds the homeserver should wait before sending the event.
+- `delay_ms` - Required. A positive non-zero number of milliseconds the homeserver should wait before sending the event.
 - `state_key` - The state key for the event to be sent, if it is to be a state event; absent otherwise.
 - `content` - Required. The content of the event to be sent.
 
@@ -128,7 +128,7 @@ to event scheduling requests with HTTP 400 and a standard error response with an
 
 The values of both the maximum allowed delay and the maximum allowed number of scheduled events are advertised as a
 [capability](https://spec.matrix.org/v1.18/client-server-api/#capabilities-negotiation) named `m.delayed_events`, via
-the values of fields named `max_delay` and `max_scheduled` respectively.
+the values of fields named `max_delay_ms` and `max_scheduled` respectively.
 If the server doesn't enforce one of these limits, its representative field MUST be absent from the capability.
 If the server enforces none of these limits, the capability MAY be omitted entirely instead of having an empty body.
 
@@ -138,7 +138,7 @@ For example, the following specifies a maximum allowed delay of 24 hours and a p
 {
   "capabilities": {
     "m.delayed_events": {
-      "max_delay": 86400000,
+      "max_delay_ms": 86400000,
       "max_scheduled": 10
     }
   }
@@ -156,7 +156,7 @@ The supported `action`s are the following:
 
 - `send` - Send the delayed event immediately instead of waiting for its scheduled send time.
 - `cancel` - Cancel the delayed event so that it is never sent.
-- `restart` - Reset the delayed event's scheduled send time to be the current time + its original `delay`.
+- `restart` - Reset the delayed event's scheduled send time to be the current time + its original `delay_ms`.
 
 For example, the following would send the delayed event with `delay_id` `1234567890` immediately:
 
@@ -257,7 +257,7 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
 - `room_id` - Required. The ID of the room that the delayed event was scheduled to be sent in.
 - `type` - Required. The event type of the delayed event.
 - `state_key` - The state key of the delayed event if it is a state event; absent otherwise.
-- `delay` - Required. The delay in milliseconds after the point of scheduling that the event is/was to be sent at.
+- `delay_ms` - Required. The delay in milliseconds after the point of scheduling that the event is/was to be sent at.
 - `running_since` - Required. The timestamp (as Unix time in milliseconds) when the delayed event was scheduled or
   last restarted.
 - `content` - Required. The content of the delayed event.
@@ -276,7 +276,7 @@ can be determined by examining which of the optional fields are present in the r
 
 - If `finalised_ts` is absent, then the delayed event is still scheduled.
 - Otherwise, if `event_id` is present, then the delayed event has been sent.
-  - If `finalised_ts` < `running_since` + `delay`, then the event was sent manually by
+  - If `finalised_ts` < `running_since` + `delay_ms`, then the event was sent manually by
     [the `/send` endpoint](#managing-scheduled-delayed-events); otherwise, it was sent on its scheduled send time.
 - Otherwise, if `error` is present, then the delayed event failed to be sent (and was descheduled) due to an error.
 - Otherwise, the delayed event was cancelled by [the `/cancel` endpoint](#managing-scheduled-delayed-events).
@@ -287,7 +287,7 @@ A new authenticated Client-Server API endpoint at
 `GET /_matrix/client/v1/delayed_events` responds with
 a list of details about scheduled delayed events owned by the requesting user.
 
-Delayed events are returned in chronological order of their intended send time, which is `running_since` + `delay`.
+Delayed events are returned in chronological order of their intended send time, which is `running_since` + `delay_ms`.
 
 On success, the response is HTTP 200 and a JSON object containing the following fields:
 
@@ -306,7 +306,7 @@ Content-Type: application/json
       "delay_id": "...",
       "room_id": "!roomid:example.com",
       "type": "m.room.message",
-      "delay": 5500,
+      "delay_ms": 5500,
       "running_since": 1721732853284,
       "content": {
         "msgtype": "m.text",
@@ -351,7 +351,7 @@ of delayed messages at the point that they are inserted into the DAG.
 This is to provide mitigation against the [High Volume of Messages](
 https://spec.matrix.org/v1.18/appendices/#threat-high-volume-of-messages) threat where a malicious actor
 could schedule a large volume of events ahead of time without exceeding a rate limit on the initial `PUT` request,
-but has specified a `delay` that corresponds to a common point of time in the future.
+but has specified a `delay_ms` that corresponds to a common point of time in the future.
 
 If a delayed event fails to be sent at its scheduled send time due to a rate limit failure,
 the homeserver SHOULD NOT retry sending the event. Instead, the event will be stored as a finalised delayed event
@@ -594,7 +594,7 @@ Some alternatives for the `running_since` field on the `GET` response are:
 - `delayed_since` - using past tense might better convey that this time is in the past
 - `delaying_since` - `since` might be a clearer suffix than `from`
 - `last_restart` - but this feels less clear than `running_since` for a delayed event that hasn't been restarted
-- `send_ts` - with a value of `delay` + the start time of the timer
+- `send_ts` - with a value of `delay_ms` + the start time of the timer
 
 ### Syncing failed delayed events
 
