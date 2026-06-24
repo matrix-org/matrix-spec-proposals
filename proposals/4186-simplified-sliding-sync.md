@@ -55,11 +55,11 @@ previous request. Clients can have multiple connections with the server, so long
 `conn_id` set in the request. The `conn_id` is scoped to that user and device.
 
 Clients must only have a single active request in-flight at any time per connection. If a client needs to send another
-request before receiving a response to an in-flight request (e.g. for retries or to change parameters) the client *must*
-cancel the in-flight request (at the HTTP level) and *not* process any response it receives for it. Clients MAY change
+request before receiving a response to an in-flight request (e.g. for retries or to change parameters) the client MUST
+cancel the in-flight request (at the HTTP level) and MUST NOT process any response it receives for it. Clients MAY change
 the request body if they cancel a request and send a new one with the same `pos`.
 
-In particular, a client must use the returned `pos` value from the last *processed* response as the `pos` parameter in
+In particular, a client MUST use the returned `pos` value from the last *processed* response as the `pos` parameter in
 the next request. A `pos` from an older response MUST NOT be used again. Doing so may either result in missed data or
 result in a fatal error response from the server.
 
@@ -99,7 +99,7 @@ for the user that the server maintains. This server list is, for each user, the 
 joined, been invited, knocked on, left, or been kicked or banned from, sorted by recent activity (see below for exact
 ordering semantics).
 
-Note that for rooms the user has been banned from, but never joined, should not be part of the list.
+Note that rooms the user has been banned from, but never joined, should not be part of the list.
 
 Rooms that the user has been in but left are only included if the room was previously sent to the client in that
 connection. Rooms the user has been kicked or banned from will always be included in the server list. We do not include
@@ -111,7 +111,7 @@ A "list" is then a set of filters (e.g. only match invites, or DM rooms, etc) pl
 *filtered* list of rooms. For example, a common list config would be no filters (i.e. all rooms) plus the range
 `[0,19]`, which would cause the server to return the top 20 rooms (by activity).
 
-Specifically, a room matches a given list if after filtering the server-maintained list of rooms by the list's filters,
+Specifically, a room matches a given list if, after filtering the server-maintained list of rooms by the list's filters,
 the room's index in the filtered list is within the list's range.
 
 #### Activity ordering
@@ -208,7 +208,7 @@ If the server does return events that predate the last time the room was sent to
 
 > [!IMPORTANT]
 > The server should return rooms that have expanded timelines immediately, rather than waiting for the next update to
-the room.
+> the room.
 
 This behaviour is useful to reduce bandwidth in various cases. For example, a client may specify a list with range
 `[0,99]` and a `timeline_limit` of 10, plus a list with range `[100, <MAX>]` and `timeline_limit` of `1`. This would
@@ -343,7 +343,7 @@ like:
     }
 ```
 
-This can be used to always include the user's own `membership event.
+This can be used to always include the user's own membership event.
 
 
 > [!Note]
@@ -357,7 +357,7 @@ decision as there aren't any known use cases for either filtering or not filteri
 
 When combining room configs with different `required_state` fields the result must be the superset of them all. There
 are two approaches server-side for handling this: a) keep the `required_state` separate and return any state that
-matches any of them, orb) merge the fields together, taking care to correctly account for configs that match against all
+matches any of them, or b) merge the fields together, taking care to correctly account for configs that match against all
 types and/or all state keys (i.e. "wildcard matches").
 
 #### Examples
@@ -399,7 +399,7 @@ An example that returns all the state except the create event:
 | `room_types` | `[string \| null]` | No | If specified, only rooms where the `m.room.create` event has a `type` matching one of the strings in this array will be returned. <br/><br/> If this field is unset, all rooms are returned regardless of type. This can be used to get the initial set of spaces for an account. For rooms which do not have a room type, use `null` to include them. |
 | `not_room_types` | `[string \| null]` | No | Same as `room_types` but inverted.<br/><br/> This can be used to filter out spaces from the room list. If a type is in both `room_types` and `not_room_types`, then `not_room_types` wins and they are not included in the result. |
 | `tags` | `[string]` | No | Filter the room based on its room tags.<br/><br/> If multiple tags are  present, a room can have any one of the listed tags (OR'd). |
-| `not_tags` | `[string]` | No | Filter the room based on its [room tags](https://spec.matrix.org/v1.16/client-server-api/#room-tagging).<br/><br/> Takes priority over `tags`. For example, a room with tags A and B with filters `tags: [A]` `not_tags: [B]` would NOT be included because `not_tags` takes priority over `tags`. This filter is useful if your rooms list does NOT include the list of favourite rooms again. |
+| `not_tags` | `[string]` | No | Filter the room based on its [room tags](https://spec.matrix.org/v1.16/client-server-api/#room-tagging).<br/><br/> Takes priority over `tags`. For example, a room with tags A and B with filters `tags: [A]` `not_tags: [B]` would NOT be included because `not_tags` takes priority over `tags`. This filter is useful so a client's general room list does NOT include the list of favourite rooms again. |
 
 
 ### Example request
