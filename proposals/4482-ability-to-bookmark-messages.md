@@ -22,7 +22,7 @@ This kind of room SHOULD only hold some `m.bookmark` events defined below.
 
 This MSC introduces a new kind of event which is a timeline event that uses extensible events blocks.
 It introduces a new `m.pointer` block that references a particular event sitting in a given room.
-The pointer is provided as is: it may not be "valid" (i.e. the user does not have access / permission to view the referenced event).
+The pointer is provided as is: it may not be "valid" (i.e. the user does not have access / permission to view the referenced event). However, in case the bookmarked / referenced event has a `m.replace` relation, the sending client should use the original event_id of the relation chain. This assumes that a `m.bookmark` event references an event and all its "versions", not a particular version of this event. 
 
 ```json5
 {
@@ -41,8 +41,7 @@ The pointer is provided as is: it may not be "valid" (i.e. the user does not hav
       "room_id": "$ROOM_ID",
       "event_id": "$EVENT_ID",
       "via": ["$SERVER_NAME"]
-    
-  } 
+    }
 }
 ```
 
@@ -50,16 +49,32 @@ The fallback text block of this event should contain at least the [Matrix URI](h
 
 ## Client implementation recommendations 
 
-## General
+### General
 
-If the client support the `m.bookmarks` room type, it should'nt be displayed as a normal room in the regular room list. Instead the client could display bookmarks in dedicated sections of the client. 
-The client should ensure that only one `m.bookmarks` room is existing at once.
-If there are multiple `m.bookmarks` rooms, we leave this as an implementation detail.
+If the client support the `m.bookmarks` room type, it shouldn't be displayed as a normal room in the regular room list. Instead the client could display bookmarks in dedicated sections of the client. 
+The client should ensure that only one `m.bookmarks` room is existing at once. 
+To enforce this, the client MUST use the `m.bookmarks_room` global account data event that contains a single `active_bookmarks_room_id` parameter with the Room ID of the bookmarks room. 
 
-## Room creation
+### Room creation
 
-The room should be created upon first bookmark creation.
-The client should check if a `m.bookmarks` room already exists before creating a new one.
+The room should be created upon first bookmark creation, and only if the global account data `m.bookmarks_room` event isn't set. When creating the room, the client must set the
+`m.bookmarks_room` account data event with the newly defined room ID.
+
+### Unbookmarking a message
+
+A message that is not bookmarked is a message that doesn't have a `m.bookmark` event referencing it in the `m.bookmarks` room. Thus, redacting a `m.bookmark` event is equivalent to not having its referenced event bookmarked.
+
+### Bookmark unicity
+
+The client should ensure that only one bookmark at the time exists for a given event and its versions. This assures that each message has a clean binary state: either bookmarked or not. This may be achieved by redacting the bookmark event. A message may be bookmarked again after being unbookmarked, by creating a new `m.bookmark` event referencing it.
+
+### Original message redaction / edition
+
+A bookmarked message may be redacted or edited by its sender. It is up to the client to respect the redaction of the referenced message, or resolve its latest version.
+
+### Bookmark event editions
+
+As all timeline events, the `m.bookmark` event may be replaced / edited through a `m.replace` relation. The client must use the latest version of the bookmark event, notably the referenced event of the `m.pointer` block.
 
 ## Potential issues
 
