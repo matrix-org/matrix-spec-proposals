@@ -36,11 +36,13 @@ would also open the possibility for a future extension to [invite blocking][spec
 
 ## Potential issues
 
-Servers which do not understand the new parameter will not be able to include reasons, which may
-result in users unexpectedly issuing invites on room creation which lack a reason. To alleviate
-this, clients MAY check [`GET /_matrix/clients/versions`][spec-versions] for an applicable spec
-version (if merged), or the unstable prefix in [Unstable prefix](#unstable-prefix), before
-presenting the user with a UI to include an invite reason when creating a room.
+`/createRoom` is already a complex endpoint, and this proposal adds yet another (albeit minor)
+feature to it. A future proposal may wish to tackle the complexity of `/createRoom`.
+
+`invite_reason` is unencrypted - inconsiderate UI choices may result in the user believing their
+invitation reasons are also encrypted (especially when creating DMs). Clients should take additional
+precautions to ensure users are aware that their invitations will not be encrypted, perhaps with a
+red shield in the input box, or some other familiar mechanism.
 
 ### Abuse
 
