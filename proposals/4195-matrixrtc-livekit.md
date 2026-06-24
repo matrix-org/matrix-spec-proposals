@@ -330,10 +330,6 @@ fields:
     should wait before sending the MatrixRTC member leave event. Clients SHOULD not use values smaller
     than 1 hour to avoid unnecessarily frequent `/restart`s of the delayed event. Service implementations
     MAY reject requests with a timeout below 1 hour with `M_BAD_JSON`.
-  * `delay_cs_api_url` — required `string`: The Matrix client-server API as used by the client. This
-    is required because publishing the [.well-known document](https://spec.matrix.org/v1.18/client-server-api/#well-known-uris)
-    for auto-discovery is not mandatory. Hence, there is, in general, no way to know how to access a
-    server's CS-API given its server name.
 
 Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
 
@@ -357,8 +353,7 @@ Content-Type: application/json
     "claimed_user_id": "@user:matrix.example.com"
   },
   "delay_id": "1234567890",
-  "delay_timeout": "7200000",
-  "delay_cs_api_url": "https://matrix-client.matrix.org/"
+  "delay_timeout": "7200000"
 }
 ```
 
@@ -411,7 +406,10 @@ Content-Type: application/json
 This ensures that the MatrixRTC membership state remains accurate and consistent, even in the
 presence of network interruptions or client crashes.
 
-Implementations SHOULD verify support for delayed events by querying the client’s homeserver
+Implementations SHOULD resolve the location of the client-server API by using [.well-known discovery]
+for the `matrix_server_name` supplied in the OpenID token.
+
+Additionally, implementations SHOULD verify support for delayed events by querying the homeserver's
 `_matrix/client/versions` endpoint. If the homeserver does not advertise support for delayed events,
 the SFU authorisation request MUST be rejected with the error code `M_UNSUPPORTED` and error message
 `MatrixRTC membership lifecycle delegation failed: homeserver does not support delayed events.`.
@@ -590,6 +588,13 @@ Some LiveKit SDKs currently only support PBKDF2 but don't allow using HKDF. One 
 the Flutter SDK (see [livekit/client-sdk-flutter#974](https://github.com/livekit/client-sdk-flutter/issues/974)).
 Upstream implementation efforts such as [livekit/rust-sdks#796](https://github.com/livekit/rust-sdks/issues/796)
 will be required to close these gaps.
+
+### Missing .well-known documents
+
+As per the current spec, publishing the location of the client-server API in a .well-known document is
+not mandatory. Consequently, resolving the URL using .well-known discovery can fail. This should usually
+only occur in corporate setups and private federations though. Implementations MAY allow hardcoding the
+mapping from server name to client-server API URL to address these cases.
 
 ## Alternatives
 
