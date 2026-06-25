@@ -121,18 +121,18 @@ They MUST NOT prompt the user to share presence in a room with a `presence_shari
 ### Modifications to the [`m.presence` EDU]
 
 The federation [User Presence Update] type is modified to include:
-* An optional map, `recipients`, containing two populated arrays of [User IDs][mxid-format] belonging to the
-  destination server, `add` and `del`.
+* An optional map, `recipients`, containing two arrays of [User IDs][mxid-format] belonging to the destination
+  server, `add` and `del`.
 * A pair of integer identifiers, `stream_id` and `prev_id`, which are unique per `user_id`. These values do not need to
   be sequential or in any particular order, only unique.
 
 `stream_id` and `prev_id` form a sequence representing the state of the user's recipient user set, similar to the
 behaviour of the [Device List Update] type. `recipients` may only be present if `prev_id` is present. If a user's
-`stream_id` is incremented but no changes are relevant to the receiving homeserver, the sending server uses empty `add`
+`stream_id` is replaced but no changes are relevant to the receiving homeserver, the sending server uses empty `add`
 and `del` lists.
 
-A server MUST NOT send updates lacking `add` to a destination homeserver after their last user is updated out of the
-recipient set.
+A server MUST NOT send updates lacking a populated `add` to a destination homeserver after their last user is
+updated out of the recipient set.
 
 `m.presence` EDU (as received by `example.com`):
 ```json
@@ -191,17 +191,17 @@ change over both `/sync` and `/_matrix/client/v3/presence/{userId}/status`:
 * **`recipients` present, `prev_id` present:** Servers MUST apply the delta to the set corresponding to `prev_id`
   and only distribute the presence change to users in the resulting set, superseding `prev_id` in the process.
 
-For cases where `prev_id` is present but is not the previous `stream_id`, or `stream_id` is present on its own but
-unrecognised, servers SHOULD query the `GET /_matrix/federation/v1/query/presence_recipients` endpoint on the origin
-server.
+If `prev_id` is present but differs from the previous `stream_id`, or `stream_id` is present on its own but
+unrecognised, servers SHOULD query the `GET /_matrix/federation/v1/query/presence_recipients` endpoint on the
+origin server.
 
 ### Server-Server Endpoint `GET /_matrix/federation/v1/query/presence_recipients`
 
 Servers that do not recognise a `stream_id` or `prev_id` in an incoming `m.presence` EDU need a way to ask the
 origin server for the user's latest `stream_id` and a snapshot of its recipient user set. This proposal introduces
-a new federation endpoint to address this need. If a server is unable to determine the proper recipient user set
-(for example, if this endpoint returns an error), servers SHOULD treat it as the empty set, `[]` until it is able
-to fetch the full list.
+a new federation endpoint to address this need. If a server cannot determine the proper recipient user set \- for
+example, if this endpoint returns an error \- it SHOULD be assumed to be empty (`[]`) until the server can fetch
+the full set.
 
 <table>
   <tbody>
