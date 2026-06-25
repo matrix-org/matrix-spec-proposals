@@ -1,4 +1,4 @@
-# MSCXXXX: Selective Presence
+# MSC4495: Selective Presence
 
 Presence is widely known to be one of the most expensive features in the Matrix specification. Even with continued
 efforts to improve server implementations[^1][^2], large public deployments still disable outbound federated
@@ -382,21 +382,21 @@ The following complementary proposals are planned:
 
 | Stable identifier         | Purpose                                                            | Unstable identifier                                          |
 | ------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
-| `recipients`              | Recipient users to add and delete in federation presence EDU       | `org.continuwuity.presence_v2.mscXXXX.recipients`            |
-| `stream_id`               | Current recipient user set identifier federation presence EDU      | `org.continuwuity.presence_v2.mscXXXX.stream_id`             |
-| `prev_id`                 | Previous recipient user set identifier in federation presence EDU  | `org.continuwuity.presence_v2.mscXXXX.prev_id`               |
-| `m.presence.sharing`      | `account_data` entry for presence sharing config                   | `org.continuwuity.presence_v2.mscXXXX.presence.sharing`      |
-| `m.presence.prompted`     | `account_data` entry for persisting presence hint prompt responses | `org.continuwuity.presence_v2.mscXXXX.presence.prompted`     |
-| `m.room.presence_sharing` | Room state event for presence sharing hint                         | `org.continuwuity.presence_v2.mscXXXX.room.presence_sharing` |
+| `recipients`              | Recipient users to add and delete in federation presence EDU       | `org.continuwuity.presence_v2.msc4495.recipients`            |
+| `stream_id`               | Current recipient user set identifier federation presence EDU      | `org.continuwuity.presence_v2.msc4495.stream_id`             |
+| `prev_id`                 | Previous recipient user set identifier in federation presence EDU  | `org.continuwuity.presence_v2.msc4495.prev_id`               |
+| `m.presence.sharing`      | `account_data` entry for presence sharing config                   | `org.continuwuity.presence_v2.msc4495.presence.sharing`      |
+| `m.presence.prompted`     | `account_data` entry for persisting presence hint prompt responses | `org.continuwuity.presence_v2.msc4495.presence.prompted`     |
+| `m.room.presence_sharing` | Room state event for presence sharing hint                         | `org.continuwuity.presence_v2.msc4495.room.presence_sharing` |
 
-Servers may advertise support for Selective Presence by listing `org.continuwuity.presence_v2.mscXXXX` in the
+Servers may advertise support for Selective Presence by listing `org.continuwuity.presence_v2.msc4495` in the
 `unstable_features` section of the response to [`GET /_matrix/client/versions`][cs-versions].
 
 The stable endpoint `/_matrix/federation/v1/query/presence_recipients` will use the unstable identifier
-`/_matrix/federation/unstable/org.continuwuity.presence_v2.mscXXXX/query/presence_recipients`.
+`/_matrix/federation/unstable/org.continuwuity.presence_v2.msc4495/query/presence_recipients`.
 
 Once this proposal completes FCP, servers may advertise support for the stable identifiers by listing
-`org.continuwuity.presence_v2.mscXXXX.stable` in `unstable_features`; clients may use this while they
+`org.continuwuity.presence_v2.msc4495.stable` in `unstable_features`; clients may use this while they
 are waiting for the server to adopt a version of the spec that includes it.
 
 ## Dependencies
