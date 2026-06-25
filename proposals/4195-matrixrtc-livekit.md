@@ -407,7 +407,9 @@ This ensures that the MatrixRTC membership state remains accurate and consistent
 presence of network interruptions or client crashes.
 
 Implementations SHOULD resolve the location of the client-server API by using [.well-known discovery]
-for the `matrix_server_name` supplied in the OpenID token.
+for the `matrix_server_name` supplied in the OpenID token. If the resolution is performed when processing
+the `/delegate_delayed_leave` request, resolution failures MUST result in the request being rejected
+with 400 / `M_BAD_JSON`.
 
 Additionally, implementations SHOULD verify support for delayed events by querying the homeserver's
 `_matrix/client/versions` endpoint. If the homeserver does not advertise support for delayed events,
