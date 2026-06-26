@@ -76,6 +76,8 @@ a 400 HTTP status and an error code of `M_UNKNOWN_POS`.
 A `pos` token can be used in `/messages` and `/relations` APIs, in the same way as a `next_batch` from `/v3/sync`
 response.
 
+Servers MUST reject a `pos` that was not issued to the requesting user and device, responding with `M_UNKNOWN_POS`.
+
 
 ## Lists and subscriptions
 
@@ -669,6 +671,12 @@ connections that get persisted to the database.
 
 Servers MAY decide to expire the sync connection if the generated response on an incremental request is likely very
 large or expensive to compute.
+
+Since the `pos` is a stateful token, but not considered secret, care must be taken by the server to ensure that
+possession of the token does not grant any extra capabilities to the requester. For example, it is easy to imagine an
+implementation that assumes that if a room has been sent down a connection before the connection is allowed to see
+further updates. This would allow attackers that manage to get a `pos` token to read rooms they were not in. To mitigate
+this, the MSC requires the server to check that the given `pos` is owned by the authenticated user.
 
 
 # Other notes
