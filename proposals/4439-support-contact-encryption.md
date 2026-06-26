@@ -16,9 +16,9 @@ response from [`/.well-known/matrix/support`]. This field indicates a PGP key th
 communication to that particular contact. If the field is used, the `email_address` field SHOULD also be present.
 
 The value of this field MUST be a URI pointing to a location where the key may be retrieved. Raw key material MUST
-NOT appear as the value of this field. If a key fingerprint is to be used as this field, it MUST be prefixed with
-the `openpgp4fpr:` URI scheme. As with [RFC 9116], it is always the responsibility of the sender to ensure they
-trust the key provided.
+NOT appear as the value of this field. If this field indicates a web URI, then it MUST begin with `https://`. If a
+key fingerprint is to be used as this field, it MUST begin with the  `openpgp4fpr:` URI scheme. As with [RFC9116], it
+is always the responsibility of the sender to ensure they trust the key provided.
 
 Example of an OpenPGP key available from a web URI:
 
@@ -64,3 +64,4 @@ While this proposal is unstable, `pgp_key` should be referred to as `dev.zirco.m
   [`Contact`]: https://spec.matrix.org/unstable/client-server-api/#getwell-knownmatrixsupport_response-200_contact
   [RFC 9116]: https://www.rfc-editor.org/info/rfc9116
   [RFC 7929]: https://www.rfc-editor.org/info/rfc7929
+
