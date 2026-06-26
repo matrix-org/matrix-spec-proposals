@@ -1,7 +1,7 @@
 # MSC4439: Encryption key URIs in `/.well-known/matrix/support`
 
 The [`/.well-known/matrix/support`] endpoint provides an [`email_address`] property for reaching server contacts,
-including those intended for sensitive security disclosures (the `m.role.security` role). [RFC9116] \(commonly known
+including those intended for sensitive security disclosures (the `m.role.security` role). [RFC 9116] \(commonly known
 as `security.txt`\) serves a similar purpose and defines an `Encryption` field (&sect;2.5.4) allowing operators to
 advertise a key URI for encrypted communication with security researchers.
 
@@ -17,7 +17,7 @@ communication to that particular contact. If the field is used, the `email_addre
 
 The value of this field MUST be a URI pointing to a location where the key may be retrieved. Raw key material MUST
 NOT appear as the value of this field. If a key fingerprint is to be used as this field, it MUST be prefixed with
-the `openpgp4fpr:` URI scheme. As with [RFC9116], it is always the responsibility of the sender to ensure they
+the `openpgp4fpr:` URI scheme. As with [RFC 9116], it is always the responsibility of the sender to ensure they
 trust the key provided.
 
 Example of an OpenPGP key available from a web URI:
@@ -36,7 +36,7 @@ Example of an OpenPGP key available from a web URI:
 
 Other URI schemes other than `https` may also be used, common examples include, but are not limited to:
 - `openpgp4fpr:67FAAA655DBD691E7957E0951594E544D8F8F21E` (key fingerprint)
-- `dns:HASH._openpgpkey.zirco.dev?type=OPENPGPKEY` (`OPENPGPKEY` DNS record) ([RFC7929])
+- `dns:HASH._openpgpkey.zirco.dev?type=OPENPGPKEY` (`OPENPGPKEY` DNS record) ([RFC 7929])
 
 ## Potential issues
 
@@ -62,5 +62,5 @@ While this proposal is unstable, `pgp_key` should be referred to as `dev.zirco.m
   [`/.well-known/matrix/support`]: https://spec.matrix.org/unstable/client-server-api/#getwell-knownmatrixsupport
   [`email_address`]: https://spec.matrix.org/unstable/client-server-api/#getwell-knownmatrixsupport_response-200_contact
   [`Contact`]: https://spec.matrix.org/unstable/client-server-api/#getwell-knownmatrixsupport_response-200_contact
-  [RFC9116]: https://www.rfc-editor.org/info/rfc9116
-  [RFC7929]: https://www.rfc-editor.org/info/rfc7929
+  [RFC 9116]: https://www.rfc-editor.org/info/rfc9116
+  [RFC 7929]: https://www.rfc-editor.org/info/rfc7929
