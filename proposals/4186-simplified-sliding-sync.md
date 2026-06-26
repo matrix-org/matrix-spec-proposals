@@ -319,9 +319,9 @@ can send the following:
 This is (almost) the same as [lazy loaded
 memberships](https://spec.matrix.org/v1.16/client-server-api/#lazy-loading-room-members) in `/v3/sync`. When specified,
 the server will return the membership events for:
-1. All the `senders` of events in `timeline_events`, excluding membership events that were previously returned. This
+1. All the `senders` of events in `timeline`, excluding membership events that were previously returned. This
    ensures that the client can render all the timeline events without having to fetch more events from the server.
-1. The target (i.e. `state_key`) of all membership events in `timeline_events`, excluding membership events previously
+1. The target (i.e. `state_key`) of all membership events in `timeline`, excluding membership events previously
    returned.
 1. All membership updates since the last sync when `limited` is false (i.e. non-gappy syncs). This allows the client to
    cache the membership list without requiring the server to send all membership updates for large gaps. Caching is
@@ -491,9 +491,9 @@ When a user is or has been in the room, the following field are also returned:
 | `initial` | `bool` | No | Flag which is set when this is the first time the server is sending this data on this connection, or if the client should replace all room data with what is returned. Clients can use this flag to replace or update their local state. The absence of this flag means `false`. |
 | `expanded_timeline` | `bool` | No | Flag which is set if we're returning more historic events due to the timeline limit having increased. See "Changing room configs" section. |
 | `required_state` | `[Event\|StateStub]` | No | Changes in the current state of the room. <br/><br/> To handle state being deleted, the list may include a `StateStub` type (c.f. schema below) that only has `type` and `state_key` fields. The presence or absence of `content` field can be used to differentiate between the two cases. |
-| `timeline_events` | `[Event]` | No | The latest events in the room. May not include all events if e.g. there were more events than the configured `timeline_limit`, c.f. the `limited` field. <br/><br/> If `limited` is true then we include bundled aggregations for the event, as per `/v3/sync`. <br/><br/> The last event in the list is the most recent. |
+| `timeline` | `[Event]` | No | The latest events in the room. May not include all events if e.g. there were more events than the configured `timeline_limit`, c.f. the `limited` field. <br/><br/> If `limited` is true then we include bundled aggregations for the event, as per `/v3/sync`. <br/><br/> The last event in the list is the most recent. |
 | `prev_batch` | `string` | No | A token that can be passed as a start parameter to the `/rooms/<room_id>/messages` API to retrieve earlier messages. |
-| `limited` | `bool` | No | True if there are more events since the previous sync than were included in the `timeline_events` field, or that the client should paginate to fetch more events.<br/><br/> Note that server may return fewer than the requested number of events and still set `limited` to true, e.g. because there is a gap in the history the server has for the room. <br/><br/>Absence means `false` |
+| `limited` | `bool` | No | True if there are more events since the previous sync than were included in the `timeline` field, or that the client should paginate to fetch more events.<br/><br/> Note that server may return fewer than the requested number of events and still set `limited` to true, e.g. because there is a gap in the history the server has for the room. <br/><br/>Absence means `false` |
 | `num_live` | `int` | No | The number of timeline events which have "just occurred" and are not historical, i.e. that have happened since the previous sync request. The last `N` events are 'live' and should be treated as such.<br/><br/> This is mostly useful to e.g. determine whether a given `@mention` event should make a noise or not. Clients cannot rely solely on the absence of `initial: true` to determine live events because if a room not in the sliding window bumps into the window because of an `@mention` it will have `initial: true` yet contain a single live event (with potentially other old events in the timeline). |
 | `joined_count` | `int` | No | The number of users with membership of join, including the client's own user ID. (same as `/v3/sync` `m.joined_member_count`) |
 | `invited_count` | `int` | No |  The number of users with membership of invite. (same as `/v3/sync` `m.invited_member_count`) |
