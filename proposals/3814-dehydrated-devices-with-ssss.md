@@ -158,17 +158,19 @@ If no dehydrated device is available, the server responds with an error code of
 
 If the client is able to decrypt the data and wants to use the dehydrated
 device, the client retrieves the to-device messages sent to the dehydrated
-device by calling `POST /dehydrated_device/{device_id}/events`, where
+device by calling `GET /dehydrated_device/{device_id}/events`, where
 `{device_id}` is the ID of the dehydrated device.  Since there may be many
 messages, the response can be sent in batches: the response must include a
-`next_batch` parameter, which can be used in a subsequent call to `POST
-/dehydrated_device/{device_id}/events` to obtain the next batch.
+`next_batch` parameter, which can be passed as a query parameter in a
+subsequent call to `GET /dehydrated_device/{device_id}/events` to obtain the
+next batch.
 
 ```
-POST /dehydrated_device/{device_id}/events
-{
-  "next_batch": "token from previous call" // (optional)
-}
+GET /dehydrated_device/{device_id}/events
+
+# the `next_batch` token from a previous call is passed as an optional query
+# parameter:
+GET /dehydrated_device/{device_id}/events?next_batch=token_from_previous_call
 ```
 
 Response:
@@ -183,7 +185,7 @@ Response:
 }
 ```
 
-Once a client calls `POST /dehydrated_device/{device_id}/events` with a
+Once a client calls `GET /dehydrated_device/{device_id}/events` with a
 `next_batch` token, unlike the `/sync` endpoint, the server should *not* delete
 any to-device messages delivered in previous batches. This should prevent the
 loss of messages in case the device performing the rehydration gets deleted. In
