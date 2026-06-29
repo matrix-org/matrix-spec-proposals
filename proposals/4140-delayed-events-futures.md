@@ -104,7 +104,7 @@ to provide mitigation against both the
 [High Volume of Messages](https://spec.matrix.org/v1.18/appendices/#threat-high-volume-of-messages) and
 [Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threats.
 If a user's request to schedule a delayed event would exceed this limit, the homeserver will respond with HTTP 429,
-a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
 with an `errcode` of `M_LIMIT_EXCEEDED`, and a `Retry-After` header whose value is set to the time of/until
 the scheduled send time of the next of the user's delayed events to be sent,
 rounded up to the nearest second.
