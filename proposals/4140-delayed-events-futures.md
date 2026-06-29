@@ -198,7 +198,7 @@ If the target delayed event is already finalised with an outcome that conflicts 
 if the `action` is `send` or `restart` and the delayed event has already been cancelled,
 or if the `action` is `cancel` and the delayed event has already been sent,
 the homeserver will respond with HTTP 409
-and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
 with an `errcode` of `M_UNKNOWN`.
 
 If the action is `send` and the delayed event is unable to be sent due to an error,
