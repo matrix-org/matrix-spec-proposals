@@ -368,30 +368,11 @@ This allows guest accounts to participate in MatrixRTC sessions.
 
 ### Compatibility with Cryptographic Identities
 
-Ideally, this proposal should be compatible with other proposals such as [MSC4080: Cryptographic Identities](
-https://github.com/matrix-org/matrix-spec-proposals/pull/4080) which introduce mechanisms
-to allow the recipient of an event to determine whether it was sent by a client as opposed to have been spoofed/injected
-by a malicious homeserver.
-
-In the context of this proposal, the delayed events should be signed with the same cryptographic identity as the client
-that scheduled them.
-
-This means that the content of the original scheduled event must be sent "as is" without modification by the homeserver.
-The consequence is an implementation detail that client developers must be aware of: if the content of the delayed
-event contains a timestamp, then it would be the timestamp of when the event was originally scheduled rather than
-anything later.
-
-However, the `origin_server_ts` of the delayed event should be the time that the event is actually sent
-by the homeserver.
-
-This is a general problem that arises with the introduction
-of [Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080).
-A user can intentionally, or caused by network conditions, delay the signing and sending of an event.
-A possible solution would be the introduction of a `signing_ts` (in the signed section) and keep the `origin_server_ts`
-in the unsigned section.
-Both are reasonable data points that clients might want to use.
-This would solve issues related to delayed events since
-it would make it transparent to clients, when an event was scheduled and when it was distributed over federation.
+Proposals like [MSC4080](https://github.com/matrix-org/matrix-spec-proposals/pull/4080)
+enable a client to verify that an event was *actually* sent by the sender's devices. This
+proposal shouldn't affect how that verification works because those other proposals will
+need to account for eventual consistency anyway, which may appear as a delayed event or
+attached to a disjointed part of the DAG.
 
 ### Conflicting delayed state events
 
