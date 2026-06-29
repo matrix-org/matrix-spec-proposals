@@ -485,9 +485,6 @@ as the usual response of the event ID is unavailable at the time of scheduling a
 The main benefit of reusing the endpoints as described is the potential for code reuse in homeserver implementations.
 However, this could be negated by the complexity of having to support multiple response body formats.
 
-This approach also requires using a query parameter for a purpose other than filtering,
-which defies the usual semantics of a URI query.
-
 ### Sync-loop based heartbeats
 
 [MSC4018: Reliable call membership] was an earlier attempt at making call membership more reliable.
