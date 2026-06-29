@@ -54,7 +54,7 @@ The path parameters of this endpoint are the same as for the existing
 https://spec.matrix.org/v1.18/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
 endpoint. It also makes use of [transaction identifiers](
 https://spec.matrix.org/v1.18/client-server-api/#transaction-identifiers),
-and supports [timestamp massaging](https://spec.matrix.org/latest/application-service-api/#timestamp-massaging)
+and supports [timestamp massaging](https://spec.matrix.org/v1.18/application-service-api/#timestamp-massaging)
 when called by an application service.
 
 The body for requests to this endpoint is a JSON object containing the following fields:
