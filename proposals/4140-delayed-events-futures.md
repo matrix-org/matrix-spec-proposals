@@ -492,11 +492,11 @@ which defies the usual semantics of a URI query.
 
 [MSC4018: Reliable call membership] was an earlier attempt at making call membership more reliable.
 It used the client's sync loop as an indicator to determine if the call membership event is expired.
-Conceptually, this is similar to [MQTT]'s "Will Message" that is published by the server when a client
+Conceptually, this is similar to [MQTT's "Will Message"] that is published by the server when a client
 disconnects.
 
 [MSC4018: Reliable call membership]: https://github.com/matrix-org/matrix-spec-proposals/pull/4018
-[MQTT]: https://mqtt.org/
+[MQTT's "Will Message"]: https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Toc3901040
 
 The advantage of this approach is that it doesn't require a new system for emitting heartbeats. An API
 for letting clients store the leave event to be sent would still be required due to encryption, however.
