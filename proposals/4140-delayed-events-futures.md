@@ -269,7 +269,7 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
 - `event_id` - The `event_id` this event got in case it was sent.
 - `finalised_ts` - The timestamp (as Unix time in milliseconds) when the event was finalised;
   absent if it is still scheduled.
-  Using [timestamp massaging](https://spec.matrix.org/latest/application-service-api/#timestamp-massaging)
+  Using [timestamp massaging](https://spec.matrix.org/v1.18/application-service-api/#timestamp-massaging)
   does not affect the value of this field.
 
 Whether a delayed event is still scheduled, or has been sent, failed to be sent due to an error, or was cancelled
