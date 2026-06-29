@@ -91,7 +91,8 @@ Moreover, when a homeserver restarts, it MUST scan for all scheduled delayed eve
 (i.e. delayed events that were scheduled to be sent while the homeserver was offline),
 and send those delayed events as soon as possible, in chronological order of their scheduled send times.
 
-The homeserver MAY enforce a maximum allowed delay for delayed events.
+The homeserver MAY enforce a maximum allowed delay for delayed events. This limit is
+communicated to the client in a capability (described later in this proposal).
 If a requested delay exceeds this maximum, the homeserver will respond with HTTP 400
 and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
 with an `errcode` of `M_INVALID_PARAM`.
