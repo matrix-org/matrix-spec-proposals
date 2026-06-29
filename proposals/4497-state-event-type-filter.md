@@ -38,7 +38,7 @@ GET /_matrix/client/v3/rooms/!roomid:example.org/state?types=%5B%22m.room.name%2
 ```
 As `m.room.name`, `m.room.topic` and `m.room.avatar` are all states that typically only have one key, they could have
 been fetched using the existing `GET /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}` endpoint. Using
-the types query parameter makes this task not require seperate requests.
+the types query parameter makes this task not require separate requests.
 
 Request all events in a namespace using wildcard:
 
