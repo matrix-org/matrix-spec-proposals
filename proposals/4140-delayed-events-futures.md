@@ -203,7 +203,7 @@ with an `errcode` of `M_UNKNOWN`.
 
 If the action is `send` and the delayed event is unable to be sent due to an error,
 the homeserver will respond with that error (e.g. HTTP 403
-and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
 with an `errcode` of `M_FORBIDDEN` if the user doesn't have permission to send the event at the time of sending,
 or HTTP 429 if the user has exceeded rate limits for sending room events at that time),
 as if the request had been to send the event as a non-delayed event with either the `/send` or `/state` endpoint.
