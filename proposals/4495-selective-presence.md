@@ -34,7 +34,7 @@ communities, private rooms, and DMs, while reducing the load from federating pre
 
 A new [`account_data`] entry, `m.presence.sharing`, is stored for modification by clients and use by homeservers.
 
-This event contains four fields:
+This event contains four properties:
 * The boolean `share_locally` enables sharing presence with all users with mutual rooms on the local homeserver
   (default `false`)
 * Three **presence sharing map** objects, mapping one of several entity types to presence sharing behaviour:
@@ -82,7 +82,7 @@ user set, even if the user `"allow"`s presence to be shared with the room.
 
 A new [`account_data`] entry, `m.presence.prompted`, is introduced to improve the user experience for clients with
 presence sharing prompts. To allow users to dismiss a prompt on one client and have this register across all of
-their clients, so that they do not have to answer the prompt several times, the following standard fields are
+their clients, so that they do not have to answer the prompt several times, the following standard properties are
 used:
 * `users`: An array of [User IDs][mxid-format] (default `[]`)
 * `rooms`: An array of [Room IDs][roomid-format] (default `[]`)
@@ -105,7 +105,8 @@ joined user or the room itself otherwise, in the following circumstances:
 * The relevant entity is not in the user's corresponding `m.presence.prompted` array or `m.presence.sharing` map
 
 Clients MAY wish to check room predecessor chains to avoid showing previously dismissed prompts in upgraded rooms.
-They MUST NOT prompt the user to share presence in a room with a `presence_sharing` value of `"forbid"`.
+They SHOULD carry settings over when starting and following a room upgrade. They MUST NOT prompt the user to share
+presence in a room with a `presence_sharing` value of `"forbid"`.
 
 #### Room Defaults
 
@@ -126,13 +127,14 @@ The federation [User Presence Update] type is modified to include:
 * A pair of integer identifiers, `stream_id` and `prev_id`, which are unique per `user_id`. These values do not need to
   be sequential or in any particular order, only unique.
 
+The `add` and `del` arrays of `recipients` represent an incremental update to a user's recipient user set, adding
+and removing users respectively. A server MUST NOT send updates lacking a populated `add` to a destination
+homeserver after their last user is updated out of the recipient set.
+
 `stream_id` and `prev_id` form a sequence representing the state of the user's recipient user set, similar to the
 behaviour of the [Device List Update] type. `recipients` may only be present if `prev_id` is present. If a user's
 `stream_id` is replaced but no changes are relevant to the receiving homeserver, the sending server uses empty `add`
 and `del` lists.
-
-A server MUST NOT send updates lacking a populated `add` to a destination homeserver after their last user is
-updated out of the recipient set.
 
 `m.presence` EDU (as received by `example.com`):
 ```json
@@ -173,10 +175,10 @@ The **recipient user set** of a user's presence transition is determined as foll
 5. Exclude any **users listed as `"deny"`** in the user's `m.presence.sharing` configuration.
 
 Determine the delta from the previous recipient user set. If there is no previous state, the entire set is an addition.
-If the recipient user set is left unchanged, emit a presence EDU using only the prior `stream_id` \- no `recipients`,
-no `prev_id`. Otherwise, generate a `stream_id` for the new state. For each server name represented in these updates,
-emit a presence EDU with `prev_id` set to the last `stream_id` sent to that destination if applicable, `stream_id` set
-according to the new state, and `recipients` populated with the updates.
+If the recipient user set is left unchanged, emit a presence EDU using only the prior `stream_id` \- no `recipients`, no
+`prev_id`. Otherwise, generate a `stream_id` for the new state. Emit a presence EDU for each destination of the
+recipients in these updates, with `prev_id` set to the last `stream_id` sent to the destination if applicable,
+`stream_id` set according to the new state, and `recipients` populated with the updates for the destination.
 
 #### Inbound Processing
 
