@@ -181,7 +181,7 @@ For all `action`s, the homeserver SHOULD apply rate limiting to provide mitigati
 
 If no delayed event with the specified `delay_id` can be found,
 the homeserver will respond with HTTP 404
-and a [standard error response](https://spec.matrix.org/latest/client-server-api/#standard-error-response)
+and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
 with an `errcode` of `M_NOT_FOUND`.
 
 On success, the homeserver will respond with HTTP 200
