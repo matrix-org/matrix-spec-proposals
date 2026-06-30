@@ -62,6 +62,9 @@ The avatar may refer to:
 
 In *all* cases where an avatar may be rendered for a room invite, the preview MUST be controlled by this setting.
 
+Note while this setting is effectively boolean, we've kept the enum form to have symmetry with `media_previews`
+and to allow for future extensions.
+
 ### Property value
 
 #### `off`
