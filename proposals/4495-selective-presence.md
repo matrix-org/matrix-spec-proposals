@@ -150,7 +150,7 @@ and `delete` lists.
                 "user_id": "@john:matrix.org",
                 "recipients": {
                     "add": ["@alice:example.com"],
-                    "del": ["@geoff:example.com"],
+                    "delete": ["@geoff:example.com"],
                 },
                 "stream_id": 1,
                 "prev_id": 0,
