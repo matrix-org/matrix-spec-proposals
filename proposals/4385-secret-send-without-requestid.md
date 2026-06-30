@@ -14,7 +14,7 @@ so that they can access the key backup.
 
 ## Proposal
 
-We introduce a new event type, `m.secret.push`, which is used to sharing a
+We introduce a new event type, `m.secret.push`, which is used to share a
 secret with other devices without waiting for a request.  It MUST always be sent
 encrypted.  It contains the properties:
 
