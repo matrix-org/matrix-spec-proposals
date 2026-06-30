@@ -83,7 +83,7 @@ Previews for media MAY be shown in "private" rooms without a prompt.
 A private room is any room where:
 
  - The `m.room.join_rules` state exists
- - The `join_rule` key of this state is `invite`, `knock`, `restricted`, or `knock_restricted`.
+ - The `join_rule` key of this state is `invite`, `knock`, `restricted`, `knock_restricted`.
 
 If any other `join_rule` is set, or cannot be determined by the client then the assumption MUST be that the
 room is public and previews MUST not be shown. Future join rules may be added to this list, but it's critical
@@ -93,7 +93,8 @@ Rooms without a `join_rule` are treated as "public". This is because such rooms 
 state may be due to a client or server bug. In those cases we want to fail safe, and refuse to display media in rooms
 where we cannot be sure of the join rule.
 
-The user MAY still opt-in to media if the room is "public", and opt-out if the room is "private".
+The user MAY still view specific media if the room is "public", and hide media if the room is "private". This could
+be provided via a button attached to the event, but is an implementation detail.
 
 Note that this setting has no effect for `invite_avatars`. Avatars can only be `off` or `on` for all invites. 
 Bad actors can easily send a DM to a user (which would pass the `private` check) containing unwanted
