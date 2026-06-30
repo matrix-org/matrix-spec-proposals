@@ -86,7 +86,7 @@ A private room is any room where:
  - The `join_rule` key of this state is `invite`, `knock`, `restricted`, `knock_restricted`.
 
 If any other `join_rule` is set, or cannot be determined by the client then the assumption MUST be that the
-room is public and previews MUST not be shown. Future join rules may be added to this list, but it's critical
+room is public and previews MUST NOT be shown. Future join rules may be added to this list, but it's critical
 that clients adopt a safety first approach here.
 
 Rooms without a `join_rule` are treated as "public". This is because such rooms are rare in practice, and missing
@@ -150,7 +150,7 @@ would resolve to:
 ### Notes
 
 Homeservers MAY specify a default value ahead of time for the user, by setting a default
-value internally for the account data. The user *must* be able to mutate this value, as it's
+value internally for the account data. The user MUST be able to mutate this value, as it's
 considered a safety feature.
 
 Not all clients will respect this configuration initially, and many clients will continue to support
