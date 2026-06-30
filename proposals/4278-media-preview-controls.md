@@ -110,7 +110,8 @@ This value is the **default** setting for both properties when no value is set, 
 
 ### Other values
 
-Clients MUST treat any unknown property value in either defined property as `off`, for safety reasons.
+Clients MUST treat any unknown property value in either defined property as `off`. This is to allow the feature
+to be extended in the future, without unsupported clients falling back to unsafe behaviours.
 
 ### Levels
 
