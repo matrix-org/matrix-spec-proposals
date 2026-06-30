@@ -42,8 +42,9 @@ This event contains four properties:
   2. `rooms` mapping [Room IDs][roomid-format] (default `{}`)
   3. `servers` mapping [Server Names][servername-format] (default `{}`)
 
-While homeservers SHOULD follow these defaults, operators and implementations MAY override them where appropriate.
-For example, an operator may default `share_locally` to `true` in an organisation environment.
+While homeservers SHOULD follow these defaults, operators and implementations MAY override them where appropriate;
+however, they MUST NOT overrule a user's wishes to deny presence sharing. For example, an operator may default
+`share_locally` to `true` in an organisation environment.
 
 No glob resolution is supported for any key in a presence sharing map.
 
