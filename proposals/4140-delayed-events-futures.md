@@ -93,9 +93,9 @@ and send those delayed events as soon as possible, in chronological order of the
 
 The homeserver MAY enforce a maximum allowed delay for delayed events. This limit is
 communicated to the client in a capability (described later in this proposal).
-If a requested delay exceeds this maximum, the homeserver will respond with HTTP 400
+If a requested delay exceeds this maximum, the homeserver will respond with HTTP 403
 and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
-with an `errcode` of `M_INVALID_PARAM`.
+with an `errcode` of `M_FORBIDDEN`.
 
 The homeserver SHOULD apply rate limiting to the scheduling of delayed events to provide mitigation against the
 [Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threat.
@@ -121,9 +121,8 @@ Retry-After: 1200
 }
 ```
 
-As a special case, if the homeserver has set either of these limits such that scheduling delayed events is disallowed
-(i.e. it sets the maximum allowed delay to 0 seconds, or a limit of 0 scheduled delayed events per user), it may respond
-to event scheduling requests with HTTP 403 and a standard error response with an `errcode` of `M_FORBIDDEN`.
+As a special case, if this limit has been set to 0 such that scheduling delayed events is disallowed entirely,
+the homeserver will instead respond with HTTP 403 and a standard error response with an `errcode` of `M_FORBIDDEN`.
 
 #### Delayed event limits as a capability
 
