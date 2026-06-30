@@ -79,6 +79,8 @@ present, the room is treated as though its value is `"forbid"` by default.
 Servers MUST NOT include rooms with a `presence_sharing` value of `"forbid"` when they calculate a user's recipient
 user set, even if the user `"allow"`s presence to be shared with the room.
 
+The `m.room.presence_sharing` hint SHOULD be [transferred upon room upgrade][room-upgrades].
+
 #### Presence Sharing Prompts
 
 A new [`account_data`] entry, `m.presence.prompted`, is introduced to improve the user experience for clients with
@@ -433,3 +435,4 @@ None.
 [cs-versions]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientversions
 [cs-createroom]: https://spec.matrix.org/v1.18/client-server-api/#post_matrixclientv3createroom
 [`m.ignored_user_list`]: https://spec.matrix.org/v1.18/client-server-api/#mignored_user_list
+[room-upgrades]: https://spec.matrix.org/v1.18/client-server-api/#server-behaviour-21
