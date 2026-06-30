@@ -255,6 +255,12 @@ The 404 response uses the same format as in the existing query endpoints.
 }
 ```
 
+### Client-Server Capability
+
+Servers implementing Selective Presence MUST include the capability `m.selective_presence` in their response to the `GET
+/_matrix/client/v3/capabilities` endpoint. This allows clients to identify servers using Selective Presence so they MAY
+avoid showing inapplicable UI on servers without it, or inform users when their servers are upgraded to use it.
+
 ## Potential issues
 
 ### Presence Access
@@ -397,6 +403,7 @@ The following complementary proposals are planned:
 | `m.presence.sharing`      | `account_data` entry for presence sharing config                   | `org.continuwuity.presence_v2.msc4495.presence.sharing`      |
 | `m.presence.prompted`     | `account_data` entry for persisting presence hint prompt responses | `org.continuwuity.presence_v2.msc4495.presence.prompted`     |
 | `m.room.presence_sharing` | Room state event for presence sharing hint                         | `org.continuwuity.presence_v2.msc4495.room.presence_sharing` |
+| `m.selective_presence`    | Capability to announce Selective Presence behaviour to clients     | `org.continuwuity.presence_v2.msc4495.selective_presence`    |
 
 Servers may advertise support for Selective Presence by listing `org.continuwuity.presence_v2.msc4495` in the
 `unstable_features` section of the response to [`GET /_matrix/client/versions`][cs-versions].
