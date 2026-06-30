@@ -161,7 +161,7 @@ Example of an `InvitedState` object:
 }
 ```
 
-### Dependencies
+### Changes to other MSCs
 
 Although it is not considered a dependency of this MSC, if this is accepted the new `/sync`
 endpoint introduced in [MSC4286: Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186)
