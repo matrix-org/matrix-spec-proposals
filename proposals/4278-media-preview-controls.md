@@ -118,6 +118,9 @@ to be extended in the future, without unsupported clients falling back to unsafe
 The account data may exist at both the global and room level. The global setting defines the preference for
 all rooms, unless a per-room setting overrides it.
 
+If the client doesn't have access to room level account data, such as for invites then it should just read
+from the global account data.
+
 If `m.media_preview_config` is set at both global and room levels, the client MUST prefer using a defined value
 over a default value. E.g. account data of:
 
