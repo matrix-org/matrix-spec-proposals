@@ -123,18 +123,18 @@ presence in a room with a `presence_sharing` value of `"forbid"`.
 
 The federation [User Presence Update] type is modified to include:
 * An optional map, `recipients`, containing two arrays of [User IDs][mxid-format] belonging to the destination
-  server, `add` and `del`.
+  server, `add` and `delete`.
 * A pair of integer identifiers, `stream_id` and `prev_id`, which are unique per `user_id`. These values do not need to
   be sequential or in any particular order, only unique.
 
-The `add` and `del` arrays of `recipients` represent an incremental update to a user's recipient user set, adding
-and removing users respectively. A server MUST NOT send updates lacking a populated `add` to a destination
+The `add` and `delete` arrays of `recipients` represent an incremental update to a user's recipient user set,
+adding and removing users respectively. A server MUST NOT send updates lacking a populated `add` to a destination
 homeserver after their last user is updated out of the recipient set.
 
 `stream_id` and `prev_id` form a sequence representing the state of the user's recipient user set, similar to the
 behaviour of the [Device List Update] type. `recipients` may only be present if `prev_id` is present. If a user's
 `stream_id` is replaced but no changes are relevant to the receiving homeserver, the sending server uses empty `add`
-and `del` lists.
+and `delete` lists.
 
 `m.presence` EDU (as received by `example.com`):
 ```json
