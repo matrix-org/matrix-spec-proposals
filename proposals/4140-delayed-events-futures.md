@@ -483,7 +483,13 @@ This would require the endpoints to give a different response body when sending 
 as the usual response of the event ID is unavailable at the time of scheduling a delayed event.
 
 The main benefit of reusing the endpoints as described is the potential for code reuse in homeserver implementations.
-However, this could be negated by the complexity of having to support multiple response body formats.
+However, as brought up [in this discussion](https://github.com/matrix-org/matrix-spec-proposals/pull/4140#discussion_r2447897582),
+this approach incurs the downside of adding complexity to clients, by forcing them to support two completely different
+response types to the endpoints depending on which query parameter they were requested with, as opposed to there being a
+type-safe API where each endpoint's response is of a distinct, pre-communicated shape.
+Additionally, having delayed and non-delayed event requests share the same endpoint path implies that the actions taken
+by each kind of request are similar, when in reality they are wholly different actions with different semantics and
+effects on the server, and would thus benefit from having different endpoint paths to better highlight this difference.
 
 ### Sync-loop based heartbeats
 
