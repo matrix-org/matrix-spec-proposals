@@ -68,6 +68,10 @@ accepted from cross-signed devices, so that the attacker cannot just create a
 new device and push out secrets.  Clients can also apply other mitigations such
 as prompting the user when a new secret is received.
 
+Clients may also apply mitigations specific to certain secrets.  For example, for
+`m.megolm_backup.v1`, the new backup version may need to have a valid signature
+by the user's master signing key before the client will use it.
+
 ## Unstable prefix
 
 Until this proposal is accepted, the name `io.element.msc4385.secret.push`
