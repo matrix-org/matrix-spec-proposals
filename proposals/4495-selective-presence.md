@@ -315,6 +315,10 @@ presence with an entire homeserver, users are almost certainly on the same local
 applies, or share a room with everyone in the organisation, which the users can set as `"allow"`. Excluding a room
 has no practical benefits as users can simply not include it in the configuration.
 
+Globs were prohibited in presence sharing maps to avoid introducing security issues for servers running glob parsing on
+arbitrary user-provided strings, and because users are not typically namespaced beyond servers in a way that would be
+suitable for glob selection.
+
 ### Entity Resolution Ordering
 
 The inclusion and exclusion lists could be applied in different orders; for example, if a user of a homeserver is set to
