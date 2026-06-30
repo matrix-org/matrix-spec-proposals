@@ -1,8 +1,16 @@
 # MSC4452: Preview URL capabilities API
 
-It's possible for server-side implementations to want to disallow users the [GET /_matrix/client/v1/media/preview_url](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1mediapreview_url) endpoint. This is often done to either reduce excess
-load on servers, for security reasons to avoid metadata leakage, or safety to prevent a
-homeserver from querying potentially untrusted services.
+It's possible for server admins / implementations to disable the [GET /_matrix/client/v1/media/preview_url](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1mediapreview_url) endpoint. This may be done for a variety of
+reasons ranging from IT policies to bandwidth conservation, but in practice
+this has been a feature for some time[^1].
+
+Clients need to know about the state of this feature as it allows them to show the
+state in the application's settings. Ultimately this means that users can know whether
+to expect previews to appear in their rooms. Without this capability, users have no
+knowledge of whether previews will work and will direct frustrations at the application
+for not supplying a preview they have asked for. Hence, having proper access to the
+state is useful.
+
 
 This proposal suggests informing clients of this configuration through the standard
 capabilities API.
@@ -62,6 +70,8 @@ It's just a flag indicating whether you can use an endpoint, so none.
 
 `io.element.msc4452.preview_url` should be used instead of `m.preview_url` while this MSC is considered
 unstable.
+
+[^1]: https://github.com/element-hq/synapse/commit/dafef5a688b8684232346a26a789a2da600ec58e
 
 ## Dependencies
 
