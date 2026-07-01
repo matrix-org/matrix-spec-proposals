@@ -1,6 +1,6 @@
 # MSC4452: Preview URL capabilities API
 
-It's possible for server admins / implementations to disable the [GET /_matrix/client/v1/media/preview_url](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1mediapreview_url) endpoint. This may be done for a variety of
+It's possible for server admins / implementations to disable the [GET /\_matrix/client/v1/media/preview_url](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1mediapreview_url) endpoint. This may be done for a variety of
 reasons ranging from IT policies to bandwidth conservation, but in practice
 this has been a feature for some time[^1].
 
@@ -11,13 +11,12 @@ knowledge of whether previews will work and will direct frustrations at the appl
 for not supplying a preview they have asked for. Hence, having proper access to the
 state is useful.
 
-
 This proposal suggests informing clients of this configuration through the standard
 capabilities API.
 
 ## Proposal
 
-The [GET /_matrix/client/v3/capabilities](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3capabilities)
+The [GET /\_matrix/client/v3/capabilities](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3capabilities)
 will include a new capability key, `m.preview_url` containing a single `enabled` flag.
 
 ```json
@@ -30,10 +29,10 @@ will include a new capability key, `m.preview_url` containing a single `enabled`
 }
 ```
 
-If `enabled` is `false`,  `GET /_matrix/client/v1/media/preview_url` SHOULD reject with
-a `403` `M_FORBIDDEN` error to avoid unnecessary traffic and information leakage.
+If `enabled` is `false`, `GET /_matrix/client/v1/media/preview_url` SHOULD reject with
+a `403` `M_FORBIDDEN` error.
 
-If `enabled` is `true` or not defined, then the client can make queries as normal. This means that the existing
+If `enabled` is `true` or not defined, then the endpoint should work as normal. This means that the existing
 behaviour is preserved so that servers who do not support this capability will not prevent clients from
 requesting previews.
 
