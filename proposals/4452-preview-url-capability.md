@@ -30,8 +30,8 @@ will include a new capability key, `m.preview_url` containing a single `enabled`
 }
 ```
 
-If `enabled` is `false`, any attempt to use `GET /_matrix/client/v1/media/preview_url` SHOULD be rejected with
-a `403` `M_FORBIDDEN` error.
+If `enabled` is `false`,  `GET /_matrix/client/v1/media/preview_url` SHOULD reject with
+a `403` `M_FORBIDDEN` error to avoid unnecessary traffic and information leakage.
 
 If `enabled` is `true` or not defined, then the client can make queries as normal. This means that the existing
 behaviour is preserved so that servers who do not support this capability will not prevent clients from
