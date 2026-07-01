@@ -161,15 +161,17 @@ device, the client retrieves the to-device messages sent to the dehydrated
 device by calling `GET /dehydrated_device/{device_id}/events`, where
 `{device_id}` is the ID of the dehydrated device.  Since there may be many
 messages, the response can be sent in batches: the response must include a
-`next_batch` parameter, which can be passed as a query parameter in a subsequent
-call to `GET /dehydrated_device/{device_id}/events` to obtain the next batch.
+`next_batch` property if and only if there are more messages to be retrieved.
+The `next_batch` value can can be passed to subsequent call to `GET
+/dehydrated_device/{device_id}/events` as a query parameter named `from`, to
+obtain the next batch.
 
 ```
 GET /dehydrated_device/{device_id}/events
 
-# the `next_batch` token from a previous call is passed as an optional query
+# the `next_batch` token from a previous call is passed as an optional `from`
 # parameter:
-GET /dehydrated_device/{device_id}/events?next_batch=token_from_previous_call
+GET /dehydrated_device/{device_id}/events?from=next_batch_from_previous_call
 ```
 
 Response:
@@ -178,7 +180,7 @@ Response:
 {
   "events": [
     // array of to-device messages, in the same format as in
-    // https://spec.matrix.org/unstable/client-server-api/#extensions-to-sync
+    // https://spec.matrix.org/v1.18/client-server-api/#extensions-to-sync
   ],
   "next_batch": "token to obtain next events"
 }
@@ -191,10 +193,13 @@ loss of messages in case the device performing the rehydration gets deleted. In
 the case the rehydration process gets aborted, another device will be able to
 restart the process.
 
-For the last batch of messages, the server will still send a
-`next_batch` token, and return an empty `events` array when called with that
-token, this signals to the client that it has received all to-device events and
+For the last batch of messages, the server will omit the `next_batch` token,
+which signals to the client that it has received all to-device events and
 it can delete the dehydrated device and create a new one.
+
+Note that an empty `events` array in the response does **not** necessarily mean
+that all to-device messages have been returned: clients must continue to call
+the endpoint until `next_batch` is omittted in the response.
 
 If the given `device_id` is not the dehydrated device ID, the server responds
 with an error code of `M_FORBIDDEN`, HTTP code 403.
