@@ -226,11 +226,11 @@ Response:
 ```
 
 The dehydrated can also be deleted by calling the existing [`POST
-/delete_devices`](https://spec.matrix.org/unstable/client-server-api/#post_matrixclientv3delete_devices),
+/delete_devices`](https://spec.matrix.org/v1.18/client-server-api/#post_matrixclientv3delete_devices),
 [`DELETE
-/devices/{deviceId}`](https://spec.matrix.org/unstable/client-server-api/#delete_matrixclientv3devicesdeviceid),
+/devices/{deviceId}`](https://spec.matrix.org/v1.18/client-server-api/#delete_matrixclientv3devicesdeviceid),
 and [`POST
-/logout/all`](https://spec.matrix.org/unstable/client-server-api/#post_matrixclientv3logoutall)
+/logout/all`](https://spec.matrix.org/v1.18/client-server-api/#post_matrixclientv3logoutall)
 endpoints.  In contrast with `POST /delete_devices` and `DELETE
 /devices/{deviceId}`, the new `DELETE /dehydrated_device` does not use
 User-Interactive Authentication, and does not require knowing the device ID of
@@ -294,7 +294,7 @@ The plain-text is encrypted with ChaCha20-Poly1305 as defined in
 key and nonce.
 
 The ciphertext and nonce are then encoded as [unpadded
-Base64](https://spec.matrix.org/v1.12/appendices/#unpadded-base64) and inserted
+Base64](https://spec.matrix.org/v1.18/appendices/#unpadded-base64) and inserted
 into the `device_pickle` and `nonce` properties, respectively, of the
 `device_data` JSON message.  The `algorithm` property is set to `m.dehydration.v2`.
 
@@ -329,7 +329,7 @@ devices; this also occurs when devices are offline for an extended period of
 time.
 
 This may be addressed by using [fallback
-keys](https://spec.matrix.org/v1.9/client-server-api/#one-time-and-fallback-keys),
+keys](https://spec.matrix.org/v1.18/client-server-api/#one-time-and-fallback-keys),
 and clients are recommended to create a fallback key for the dehydrated device.
 
 To reduce the chances of one-time key exhaustion, if the user has an active
@@ -420,8 +420,8 @@ None
 [Curve25519]: http://cr.yp.to/ecdh.html
 [identity key]: https://gitlab.matrix.org/matrix-org/olm/-/blob/master/docs/olm.md#initial-setup
 [Megolm]: https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md
-[SSSS]: https://spec.matrix.org/v1.7/client-server-api/#storage
+[SSSS]: https://spec.matrix.org/v1.18/client-server-api/#storage
 [MSC2697]: https://github.com/matrix-org/matrix-doc/pull/2697
-[`/keys/upload`]: https://spec.matrix.org/v1.7/client-server-api/#post_matrixclientv3keysupload
-[device keys]: https://spec.matrix.org/v1.7/client-server-api/#device-keys
+[`/keys/upload`]: https://spec.matrix.org/v1.18/client-server-api/#post_matrixclientv3keysupload
+[device keys]: https://spec.matrix.org/v1.18/client-server-api/#device-keys
 [HMAC-SHA-256]: https://datatracker.ietf.org/doc/html/rfc2104
