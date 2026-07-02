@@ -151,6 +151,9 @@ further by default. Homeservers SHOULD NOT send profile updates for users who do
 not share at least one room (lest you receive updates for the entire
 federation).
 
+Homeservers MUST include updates that the syncing user has made themselves to
+allow a user's other devices to be aware of the changes.
+
 Updates made since the last `since` token MUST be returned to clients. If
 multiple updates have happened since the provided `since` token, only the latest
 update should be returned. A `/sync` request with no `since` token MUST have all
