@@ -842,8 +842,6 @@ Because the actual value of the code is not significant from a cryptographic poi
 digits 6, 7, 8 and 9 are slightly less likely to appear. Furthermore we also ensure that the first digit of the code is
 not `0` to avoid confusion the user might have about whether to enter a leading zero.
 
-The exact points in the flow that the user is prompted for the **CheckCode** is described in [MSC4108].
-
 Device G compares the code that the user has entered with the **CheckCode** that it calculates using the same mechanism
 as before:
 
