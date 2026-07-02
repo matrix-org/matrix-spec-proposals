@@ -913,14 +913,14 @@ Recommendations to mitigate this are:
 
 Scenario:
 
-- The victim is wanting to sign in a new device.
+- The victim wants to sign in a new device.
 - The attacker is present for QR code generation/scanning ("shoulder-surfing") and can scan the code themselves.
 - The victim's new device generates and displays a QR.
-- The attacker scans the QR code and completes the login before the user's own existing device.
+- The attacker scans the QR code and completes the login before the victim's existing device.
 
 Result:
 
-- The victim is now signed in to the attacker's account not their own.
+- The victim is now signed in to the attacker's account, not their own.
 - If the victim sends new messages then they are exposed to the attacker.
 
 Mitigations:
@@ -928,7 +928,8 @@ Mitigations:
 - The secure channel establishment is designed so that the victim's new device MUST require the two digit check code
   from their existing device to be entered before proceeding. The existing device MUST only show the check code after it
   completes the secure channel establishment itself. If the attacker's device has already completed secure channel
-  establishment then the victim's device will fail to complete the establishment steps and so will not show the code.
+  establishment then the victim's existing device will fail to complete the establishment steps and so will not show the
+  code.
 - After the new device gets the access token it calls the `whoami` endpoint to determine what user was authenticated.
   The new device MAY then prompt the user to confirm that they wish to proceed before proceeding.
 
@@ -946,14 +947,14 @@ The following table is intended to provide an overview with links into the detai
 |**Pure Dolev-Yao attacker**|Attacker has control of the network but isn't present for QR scanning|secure channel|cryptographic|[MSC4388 Pure Dolev-Yao attacker](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#pure-dolev-yao-attacker)|
 |**Shoulder-surfing to sign in to attacker account**|Victim is signing in a new device. Attacker is present for QR code display/scanning. Victim's new device could be signed in as attacker|login protocol; secure channel|cryptographic; UX|[MSC4108 Shoulder-surfing to sign in to attacker account](#shoulder-surfing-to-sign-in-to-attacker-account)|
 |**Protocol confusion**|An attacker may attempt to use the secure channel for some other purpose|secure channel; rendezvous|binding of layers; protocol intent is explicit|[MSC4388 Choice of message prefix](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#choice-of-message-prefix); [MSC4388 Additional Authentication Data](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#secure-channel)|
-|**Replay attacks**|An attacker has visibility of the QR code and attempts to complete sign in on their own device. Or an attacker with visibility of the data sent via the rendezvous session could also attempt replay of the data|secure channel; rendezvous|cryptographic; per message binding to rendezvous|[MSC4388 Replay attacks](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#replay-protection)|
+|**Replay attacks**|An attacker has visibility of the QR code and attempts to complete sign in on their own device. Or an attacker with visibility of the data sent via the rendezvous session could also attempt replay of the data|secure channel; rendezvous|cryptographic; per message binding to rendezvous|[MSC4388 Replay protection](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#replay-protection)|
 |**Rendezvous sessions as Denial of Service attack surface**|Because the rendezvous API may allow for the creation of arbitrary channels and storage of arbitrary data, it is possible to use it as a denial of service attack surface|rendezvous|operational limits|[MSC4388 Denial of Service attack surface](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#denial-of-service-attack-surface)|
 |**Data exfiltration via rendezvous session**|The rendezvous session protocol allows for the storage of arbitrary string data, it is possible to use it to circumvent firewalls and other network security measures|rendezvous|network access control|[MSC4388 Data exfiltration](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#data-exfiltration)|
-|**Unsafe content**|Access to the rendezvous session may not be authenticated therefroe it may be possible for an attacker to use it to distribute malicious content|rendezvous|content restrictions|[MSC4388 Unsafe content](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#unsafe-content)|
+|**Unsafe content**|Access to the rendezvous session may not be authenticated therefore it may be possible for an attacker to use it to distribute malicious content|rendezvous|content restrictions|[MSC4388 Unsafe content](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#unsafe-content)|
 
 The layers referred to are:
 
-- **login protocol**: the [Login via OAuth 2.0 Device Authorization Flow](#login-via-oauth-20-device-authorization-flow) from this MSC
+- **login protocol**: the [Login via OAuth 2.0 device authorization flow](#login-via-oauth-20-device-authorization-flow) from this MSC
 - **grant**: the [device authorization flow] from the Matrix spec
 - **secure channel**: the [Secure channel](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#secure-channel) from [MSC4388]
 - **rendezvous**: the [Insecure rendezvous session](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#insecure-rendezvous-session) from [MSC4388]
