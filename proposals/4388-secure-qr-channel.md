@@ -612,20 +612,20 @@ Participants:
 Regardless of which device generates the QR code, either device can be the existing (already signed in) device. The
 other device is then the new device (one seeking to be signed in).
 
-1. **Ephemeral key pair generation**
+#### 1. Ephemeral key pair generation
 
   Both devices generate an _ephemeral_ Curve25519 key pair:
 
 - Device G generates **(Gp, Gs)**, where **Gp** is its public key and **Gs** the private (secret) key.
 - Device S generates **(Sp, Ss)**, where **Sp** is its public key and **Ss** the private (secret) key.
 
-2. **Create rendezvous session**
+#### 2. Create rendezvous session
 
 Device G creates a rendezvous session by making a `POST` request (as described previously) to the nominated homeserver
 with an empty payload. It parses the response from the homeserver to extract the rendezvous session **ID**
 and **sequence token**.
 
-3. **Initial key exchange**
+#### 3. Initial key exchange
 
 Device G displays a QR code containing sufficient information for the scanning device to locate the rendezvous session
 and establish the secure channel.
@@ -645,7 +645,7 @@ Device S scans and parses the QR code to obtain **Gp**, the rendezvous session *
 
 At this point Device S should check that the received intent matches what the user has asked to do on the device.
 
-4. **Device S sends the initial payload**
+#### 4. Device S sends the initial payload
 
 Device S performs an ECDH operation using **Ss** and **Gp** to compute the shared secret **SharedSecret**. It then discards **Ss**.
 
@@ -698,7 +698,7 @@ n.b. Because this proposal restricts the length of `RendezvousId` and `SequenceT
 Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request
 and noting the new **sequence token**.
 
-5. **Device G confirms**
+#### 5. Device G confirms
 
 Device G receives **LoginInitiateMessage** (potentially coming from Device S) from the insecure rendezvous session by
 polling with `GET` requests.
@@ -763,7 +763,7 @@ LoginOkMessage := UnpaddedBase64Encode(ResponseNonce || TaggedCiphertext)
 
 Device G sends **LoginOkMessage** as the `data` payload via a `PUT` request to the insecure rendezvous session.
 
-6. **Verification by Device S**
+#### 6. Verification by Device S
 
 > [!TIP]
 > _A helpful [note](https://github.com/matrix-org/matrix-spec-proposals/pull/4388/changes#r3025116401) from @uhoreg to
@@ -828,7 +828,7 @@ Device S then displays an indicator to the user that the secure channel has been
 should be entered on the other device when prompted. Example wording could say "Secure connection established. Enter the
 code XY on your other device."
 
-7. **Out-of-band confirmation**
+#### 7. Out-of-band confirmation
 
 **Warning**: *This step is crucial for the security of the scheme since it overcomes the aforementioned limitation of
 HPKE.*
