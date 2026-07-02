@@ -852,6 +852,11 @@ CheckCode := NumToString((CheckBytes[0] % 9) + 1) || NumToString(CheckBytes[1] %
 
 If the code that the user enters matches then the secure channel is established.
 
+### Secure operations
+
+Conceptually, once established, the secure channel offers two operations, `SecureSend` and `SecureReceive`, which wrap
+the `Send` and `Receive` operations offered by the rendezvous session API to securely send and receive data between two devices.
+
 Subsequent payloads sent from G should be encrypted using the context **Context_DeviceG_Send**, while payloads
 sent from S should be encrypted with **Context_DeviceS_Send**. Each call to the `Seal()` function should use the
 additional authentication data of the form where the **sequence token** is from the last `GET` that the device received:
@@ -930,11 +935,6 @@ sequenceDiagram
     note over G: 7) Device G asks the user to confirm that the other device is showing a green checkmark and enter the CheckCode
     note over G: If the user enters the correct CheckCode and confirms that a green checkmark is shown then Device G knows that the channel is secure
 ```
-
-### Secure operations
-
-Conceptually, once established, the secure channel offers two operations, `SecureSend` and `SecureReceive`, which wrap
-the `Send` and `Receive` operations offered by the rendezvous session API to securely send and receive data between two devices.
 
 ### Threat analysis
 
