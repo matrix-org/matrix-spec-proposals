@@ -59,7 +59,7 @@ named `users`. It features the following implied schema:
         "m.something_else": { /* ...fields defined elsewhere... */ }
       }
     }
-  }
+  },
   // Other `/sync` fields...
 }
 ```
@@ -82,7 +82,7 @@ user. For example:
   "users": {
     "@user:example.org": {
       // The client may stop tracking and optionally wipe local profile data for
-      // `@user:example.com`.
+      // `@user:example.org`.
       "profile_updates": null
     }
   }
@@ -166,7 +166,7 @@ client wouldn't show any information for a given user until they update their
 profile.
 
 To bridge this gap, homeservers MAY communicate fields from a user's profiles to
-a client using the `users.<user_id>.profile_fields` `/sync` entry; even if those
+a client using the `users.<user_id>.profile_updates` `/sync` entry; even if those
 fields have not been updated recently. This may be useful if, for instance, a
 user has just joined a room with users that it hasn't seen before. The client
 should be able to display appropriate profile field information immediately
@@ -219,7 +219,7 @@ combination. This lessens the number of redundant user profiles that are
 communicated. It's OK if the cache is lossy (evicted based on size/time/etc.) as
 the worst that will happen is a redundant profile is sent to the client.
 
-These injections of *current* user profiles allows a client to always display
+These injections of *current* user profiles allow a client to always display
 the profile information for a user, even if it hasn't changed recently.
 
 Profile *updates*/diffs should *always* be sent in an incremental sync response.
@@ -269,7 +269,7 @@ with the following format:
 ```json
 {
   // ...
-  org.matrix.msc4429: true
+  "org.matrix.msc4429": true
 }
 ```
 
