@@ -909,6 +909,29 @@ Recommendations to mitigate this are:
 - After the login, servers SHOULD send new device login notifications to the user (this could be to other Matrix devices or
   out of band such as by email).
 
+### Shoulder-surfing to sign in to attacker account
+
+Scenario:
+
+- The victim is wanting to sign in a new device.
+- The attacker is present for QR code generation/scanning ("shoulder-surfing") and can scan the code themselves.
+- The victim's new device generates and displays a QR.
+- The attacker scans the QR code and completes the login before the user's own existing device.
+
+Result:
+
+- The victim is now signed in to the attacker's account not their own.
+- If the victim sends new messages then they are exposed to the attacker.
+
+Mitigations:
+
+- The secure channel establishment is designed so that the victim's new device MUST require the two digit check code
+  from their existing device to be entered before proceeding. The existing device MUST only show the check code after it
+  completes the secure channel establishment itself. If the attacker's device has already completed secure channel
+  establishment then the victim's device will fail to complete the establishment steps and so will not show the code.
+- After the new device gets the access token it calls the `whoami` endpoint to determine what user was authenticated.
+  The new device MAY then prompt the user to confirm that they wish to proceed before proceeding.
+
 ## Threat modelling
 
 During the design of this proposal various security threats have been identified and considered. The details of these
@@ -921,6 +944,7 @@ The following table is intended to provide an overview with links into the detai
 |**Unattended devices**|The Sign in with QR mechanism could be used by an attacker who has gained temporary access to a client to escalate the attack to creation of a new client session that has ongoing access|login protocol; grant|biometrics; server policies|[MSC4108 Malicious session spawning](#malicious-session-spawning)|
 |**Shoulder-surfing attacker (Specter)**|Attacker has control of homeserver and network and is present for QR scanning and attempts to steal end-to-end encryption secrets|secure channel|cryptographic|[MSC4388 Shoulder-surfing attacker (Specter)](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#shoulder-surfing-attacker-specter)|
 |**Pure Dolev-Yao attacker**|Attacker has control of the network but isn't present for QR scanning|secure channel|cryptographic|[MSC4388 Pure Dolev-Yao attacker](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#pure-dolev-yao-attacker)|
+|**Shoulder-surfing to sign in to attacker account**|Victim is signing in a new device. Attacker is present for QR code display/scanning. Victim's new device could be signed in as attacker|login protocol; secure channel|cryptographic; UX|[MSC4108 Shoulder-surfing to sign in to attacker account](#shoulder-surfing-to-sign-in-to-attacker-account)|
 |**Protocol confusion**|An attacker may attempt to use the secure channel for some other purpose|secure channel; rendezvous|binding of layers; protocol intent is explicit|[MSC4388 Choice of message prefix](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#choice-of-message-prefix); [MSC4388 Additional Authentication Data](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#secure-channel)|
 |**Replay attacks**|An attacker has visibility of the QR code and attempts to complete sign in on their own device. Or an attacker with visibility of the data sent via the rendezvous session could also attempt replay of the data|secure channel; rendezvous|cryptographic; per message binding to rendezvous|[MSC4388 Replay attacks](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#replay-protection)|
 |**Rendezvous sessions as Denial of Service attack surface**|Because the rendezvous API may allow for the creation of arbitrary channels and storage of arbitrary data, it is possible to use it as a denial of service attack surface|rendezvous|operational limits|[MSC4388 Denial of Service attack surface](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#denial-of-service-attack-surface)|
