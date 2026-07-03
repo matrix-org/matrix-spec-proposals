@@ -268,8 +268,9 @@ containing the specified device ID):
 }
 ```
 
-The sequence for steps 1 to 3 is as follows: (the sequence depending on which device  has scanned the code varies for
-readability. The steps that are the same have a green background, the steps that are different have a red background)
+The sequence for steps 1 to 3 depends on which device scanned the QR code, so we have a diagram for each of the two
+variants: (The steps that are the same between the two variants have a green background, the steps that are different
+have a red background)
 
 _New device scanned QR code:_
 
