@@ -216,7 +216,7 @@ The steps are as follows:
   as an example `client_id`.
 
 - sends a [RFC8628 Device Authorization Request](https://datatracker.ietf.org/doc/html/rfc8628#section-3.1) to the homeserver
-  using the `device_authorization_endpoint` as described by the [device authorization grant]:
+  using the `device_authorization_endpoint` as described by the [device authorization flow]:
 
   *New device => Homeserver via HTTP*
 
