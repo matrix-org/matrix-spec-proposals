@@ -865,8 +865,7 @@ Against:
 
 - The existing device needs to wait for the new device to upload the device keys for it to sign the new device.
 - Takes several round-trips for the secrets to be be shared which will add latency to the overall flow.
-- The backup cannot be immediately enabled since we received the backup version as well, something the `m.secret.send`
-  mechanism does not offer.
+- Key backup upload cannot be enabled until we make a `GET /room_keys` request to the homeserver, in order to receive the receive the key backup version (though the `m.secret.send` mechanism could potentially be modified to provide this information).
 - The new device cannot upload the cross-signing signature with the device keys in a single request. This introduces a
   chance of other devices seeing the new device as unverified, incorrectly prompting the user to verify the device that
   will soon be verified.
