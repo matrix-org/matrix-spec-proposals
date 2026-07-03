@@ -13,10 +13,10 @@ Table of contents:
 
 - [Proposal](#proposal)
 - [Message reference](#message-reference)
-- [Discoverability of the capability](#discoverability-of-the-capability)
 - [Potential issues](#potential-issues)
 - [Alternatives](#alternatives)
 - [Security considerations](#security-considerations)
+- [Threat modelling](#threat-modelling)
 - [Unstable prefix](#unstable-prefix)
 - [Dependencies](#dependencies)
 
@@ -67,7 +67,7 @@ sequenceDiagram
 
         HS->>N: Once user consents, the homeserver returns an access token
         N->>E: New device informs existing device that it has completed authentication<br><= m.login.success
-        E->>HS: Existing device checks that new device has complete authentication
+        E->>HS: Existing device checks that new device has completed authentication
         HS-->>E: Homeserver confirms new device has completed authentication
         E->>N: Existing device sends new device the E2EE secrets<br>=>m.login.secrets
 
@@ -94,7 +94,7 @@ discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-disc
    cross-signing set up and the existing device has the Master Signing Key, Self Signing Key, and User Signing Key
    stored locally so that they can be shared with the new device.
 
-Note the we do not check for the availability of the rendezvous session API because the new device will be choosing
+Note that the we do not check for the availability of the rendezvous session API because the new device will be choosing
 the homeserver for the rendezvous which might be different from the actual homeserver.
 
 #### Existing device generating the QR code
@@ -225,7 +225,7 @@ The steps are as follows:
   Host: auth-oidc.lab.element.dev
   Content-Type: application/x-www-form-urlencoded
   
-  client_id=my_client_id&scope=openid%20urn%3Amatrix%3Aclient%3Aapi%3A%2A%20urn%3Amatrix%3Aclient%3Adevice%3AABCDEGH
+  client_id=my_client_id&scope=openid%20urn%3Amatrix%3Aclient%3Aapi%3A%2A%20urn%3Amatrix%3Aclient%3Adevice%3AABCDEFGH
   ```
 
   With response like:
@@ -290,9 +290,9 @@ sequenceDiagram
     #    note over E: Existing device completes step 6
     #    note over E: Existing device displays checkmark and CheckCode
     #    note over E: 1) Existing device sends m.login.protocols message
-    #    E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "base_url": "http://matrix-client.matrix.org"})
+    #    E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "http://matrix-client.matrix.org"})
     #    note over N: New device waits for user to confirm secure channel from step 7
-    #    HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "base_url": "https://matrix-client.matrix.org"}
+    #    HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"}
     #    note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
     end
 
@@ -304,8 +304,8 @@ sequenceDiagram
         HS->>-N: 200 OK {"device_authorization_endpoint":<br> "https://id.matrix.org/auth/device", ...}
         Note over N: New device checks that it can communicate with the homeserver. Completing dynamic registration if needed
         Note over N: Device now knows the device_authorization_endpoint, so then attempts to start the login
-        N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
-        HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
+        N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:client:api:*+urn:matrix:client:device:ABCDEFGH...
+        HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
         N->>HS: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
 
@@ -356,9 +356,9 @@ sequenceDiagram
         note over E: Existing device completes MSC4388 step 6
         note over E: Existing device displays checkmark and CheckCode from MSC4388
         note over E: 1) Existing device sends m.login.protocols message
-        E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "base_url": "https://matrix-client.matrix.org"})
+        E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"})
         note over N: New device waits for user to confirm secure channel from MSC4388 step 7
-        HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "base_url": "https://matrix-client.matrix.org"}
+        HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"}
         note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
     end
 
@@ -370,8 +370,8 @@ sequenceDiagram
         HS->>-N: 200 OK {"device_authorization_endpoint":<br> "https://id.matrix.org/auth/device", ...}
         Note over N: New device checks that it can communicate<br> with the homeserver. Completing dynamic registration if needed
         Note over N: Device now knows the device_authorization_endpoint, so then attempts to start the login
-        N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
-        HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
+        N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:client:api:*+urn:matrix:client:device:ABCDEFGH...
+        HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
         N->>HS: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
 
@@ -546,7 +546,7 @@ sequenceDiagram
                     N->>E: SecureSendReceive({ "type": "m.login.success" })
                     Note over N: Device now has an access_token and can start to talk to the homeserver
                 else denied
-                    HS-->>N: 400 Bad Request {"error": "authorization_declined"}
+                    HS-->>N: 400 Bad Request {"error": "access_denied"}
                     N->>E: SecureSendReceive({"type":"m.login.declined"})
                 else expired
                     HS-->>N: 400 Bad Request {"error": "expired_token"}
@@ -758,7 +758,7 @@ Fields:
 |Field|Type||
 |--- |--- |--- |
 |`type`|required `string`|`m.login.failure`|
-|`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol requested is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr><tr><td><code>unable_to_open_verification_uri</code></td><td>Sent by existing device to indicate that it was unable to open the `verification_uri_complete` (or `verification_uri`)</td></tr></table>|
+|`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr><tr><td><code>unable_to_open_verification_uri</code></td><td>Sent by existing device to indicate that it was unable to open the `verification_uri_complete` (or `verification_uri`)</td></tr></table>|
 |`homeserver`|`string`| When the existing device is sending this it can include the [server name] of the Matrix homeserver so that the new device can at least save the user the hassle of typing it in|
 
 Example:
@@ -820,7 +820,7 @@ Fields:
 |--- |--- |--- |
 |`type`|required `string`|`m.login.secrets`|
 |`cross_signing`|required `object`|<table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> <td> </td> </tr> <tr> <td><code>master_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>self_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>user_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr></table>|
-|`backup`|`object`|<table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private/secret key</td> </tr> <tr> <td><code>backup_version</code></td> <td>required <code>string</code></td> <td>The backup version as returned by [`POST /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3room_keysversion)</td> </tr></table>|
+|`backup`|`object`|<table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private/secret key</td> </tr> <tr> <td><code>backup_version</code></td> <td>required <code>string</code></td> <td>The backup version as returned by [`POST /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3room_keysversion) or [`GET /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3room_keysversion)</td> </tr></table>|
 
 Example:
 
@@ -863,7 +863,7 @@ For:
 Against:
 
 - The existing device needs to wait for the new device to upload the device keys for it to sign the new device.
-- Takes several round-trips for the secrets to be be shared which will add latency to the overall flow.
+- Takes several round-trips for the secrets to be shared which will add latency to the overall flow.
 - Key backup upload cannot be enabled until we make a `GET /room_keys` request to the homeserver, in order to receive
   the key backup version (though the `m.secret.send` mechanism could potentially be modified to provide this information).
 - The new device cannot upload the cross-signing signature with the device keys in a single request. This introduces a
@@ -876,7 +876,7 @@ The proposal is opinionated that the user must have end-to-end encryption cross-
 feature.
 
 The motivation for this is to focus on tackling the UX pain point around device verification, and not expanding the
-scope of this MSC. It is already very big already.
+scope of this MSC. It is already very big.
 
 A future MSC could propose a "login protocol" variant that works without secret sharing. For example a
 `device_authorization_grant_without_secrets` protocol being offered in `m.login.protocols`.
@@ -902,7 +902,7 @@ Recommendations to mitigate this are:
 
 - Before the login on the existing device, native clients SHOULD gate QR code login behind some form of extra protection,
   e.g. biometrics on mobile apps. These should be minimally invasive though as otherwise it heavily erodes the benefit of
-  using QR code login in the first place. We don't necessarily think this protection is worth while on web clients, as it is
+  using QR code login in the first place. We don't necessarily think this protection is worthwhile on web clients, as it is
   trivial to access the devtools to extract the secrets directly and/or bypass any extra protections.
 - During the login, servers MAY require additional factors of authentication (e.g. biometrics or smart card).
 - After the login, servers SHOULD send new device login notifications to the user (this could be to other Matrix devices or
