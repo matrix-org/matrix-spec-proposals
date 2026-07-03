@@ -119,7 +119,11 @@ request were being acknowledged again. Any other mismatch of `sequence_token` MU
 
 n.b. Once a new payload has been sent there is no mechanism to retrieve previous payloads.
 
-The `sequence_token` must comply with the [opaque identifier grammar].
+The `sequence_token` MUST:
+
+- comply with the [opaque identifier grammar]
+- change for every successful write (even if the `data` is the same as before) so that two clients can
+  distinguish between identical payloads sent by either client
 
 ### Expiry
 
@@ -414,8 +418,11 @@ The server MUST enforce a maximum `data` field size of 4096 bytes.
 
 #### `sequence_token` values
 
-The `sequence_token` values should be unique to the last modified time so that two clients can
-distinguish between identical payloads sent by either client.
+A recommended implementation is a hash/digest of:
+
+- the rendezvous ID
+- a monotonic counter incremented on each successful write
+- the last `data` value written
 
 #### Maximum duration of a rendezvous
 
