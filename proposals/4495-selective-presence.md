@@ -42,9 +42,10 @@ This event contains four properties:
   2. `rooms` mapping [Room IDs][roomid-format] (default `{}`)
   3. `servers` mapping [Server Names][servername-format] (default `{}`)
 
-While homeservers SHOULD follow these defaults, operators and implementations MAY override them where appropriate;
-however, they MUST NOT overrule a user's wishes to deny presence sharing. For example, an operator may default
-`share_locally` to `true` in an organisation environment.
+If the homeserver requires different defaults, for example setting `share_locally` to true in an organisation
+environment, the server MAY create a pre-populated `m.presence.sharing` event for a user when the user is created
+or if the user exists already but does not have an `m.presence.sharing` event. Otherwise, a missing property MUST
+be assumed to use its above default.
 
 No glob resolution is supported for any key in a presence sharing map.
 
@@ -53,9 +54,6 @@ The string values of these presence sharing maps may be any of the following:
   The `"deny"` state MUST NOT be specified for room IDs under the `"rooms"` object.
 * `"allow"`: Permit sharing presence with the entity  
   The `"allow"` state MUST NOT be specified for entire homeservers under the `"servers"` object.
-
-Servers MUST treat users without `m.presence.sharing` in their `account_data` as though the default values were
-specified.
 
 Sample `m.presence.sharing` account data event:
 ```json
