@@ -948,8 +948,9 @@ In an attack scenario, we add a participant called Specter with the following ca
 
 Due to use of ephemeral key pairs which are immediately discarded after use, each QR code login session derives a unique
 secret so payloads from earlier sessions cannot be replayed. Each payload in the session is unique and expected only
-once. Finally, replay of the initial message from S to G is prevented by the use of a randomly generated base nonce in
-the response from G to S, while deterministic per-message nonces prevent replay of any subsequent messages.
+once. Finally, replay of messages within a session is prevented by the sequence-number-derived nonces of the HPKE
+encryption contexts, while replay of the initial message from S to G is rendered useless by the randomly generated base
+nonce mixed into the response HPKE context derivation.
 
 #### Pure Dolev-Yao attacker
 
