@@ -275,7 +275,6 @@ _New device scanned QR code:_
 
 ```mermaid
 sequenceDiagram
-    title: Variant: New device scanned QR code
     participant E as Existing device <br>already signed in
     participant N as New device <br>wanting to sign in
     participant HS as Homeserver
@@ -342,7 +341,6 @@ _Existing device scanned QR code:_
 
 ```mermaid
 sequenceDiagram
-    title: Variant: Existing device scanned QR code
     participant E as Existing device <br>already signed in
     participant N as New device <br>wanting to sign in
     participant HS as Homeserver
