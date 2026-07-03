@@ -66,7 +66,7 @@ message to *all* of the sender's devices:
 {
   "type": "m.event_rejected",
   "content": {
-    "room_id": "!whereever",
+    "room_id": "!wherever",
     "event_id": "$whatever",
     "reason": { // this is a standard Matrix error contained in a field
       "errcode": "M_FORBIDDEN",
@@ -121,7 +121,7 @@ it didn't send, it SHOULD discard that event rather than soft fail, reject, or a
 
 Policy servers can detect if/when a server sends an event anyway despite being held by comparing the
 event's origin with the `/sign` request's origin. If the server calling `/sign` is different from the
-event `sender`, the event's origin server has sent the event anyway. Depending on implemenation, the
+event `sender`, the event's origin server has sent the event anyway. Depending on implementation, the
 event's origin server might also federate/fan out the event to the policy server normally via `/send`.
 If that happens, the event's origin server most likely is experiencing a bug rather than trying to be
 malicious, though the policy server might not make that distinction when deciding how to handle the
