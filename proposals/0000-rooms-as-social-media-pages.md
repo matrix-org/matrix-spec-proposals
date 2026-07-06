@@ -338,13 +338,16 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   `m.room.create` sender matches the profile's owner as a weak corroborating signal, though this
   proposal does not mandate any specific verification. This matches the existing trust model for
   `avatar_url`/`displayname`, which are equally self-asserted today.
-- **Reposts can misrepresent an already-edited or already-deleted original.** Because
+- **Reposts can misrepresent, or entirely fabricate, what the original said.** Because
   `m.social.repost_of.body` is a snapshot taken at repost time, a malicious or careless repost could
   keep an offensive or retracted statement circulating in others' feeds after the original author has
-  edited or redacted it, a "quote taken out of context after the fact" concern already familiar from
-  other social platforms. Clients SHOULD indicate when a live original event can no longer be found or
-  has been redacted, distinct from a repost whose original is unchanged, so viewers aren't misled into
-  thinking a still-live, unedited post says something it no longer says.
+  edited or redacted it. Nothing ties `body` to the actual content of the referenced `event_id`/
+  `room_id` at all: a malicious user can point those fields at a real post while writing any `body`
+  they want, fabricating something the original author never said. Clients SHOULD indicate when a live
+  original event can no longer be found or has been redacted, distinct from a repost whose original is
+  unchanged, and SHOULD verify the embedded `body` against the live original's actual content where
+  the original is accessible, flagging a mismatch as a fabricated or altered quote rather than
+  silently trusting the embedded copy.
 - **Public, joinable profile/group rooms carry the same abuse surface as any public Matrix room
   today** (spam, unwanted joins, abusive content). This proposal introduces no new attack surface
   beyond what already exists for public `m.room.message`-based rooms, and defers entirely to existing
