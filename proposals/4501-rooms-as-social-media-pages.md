@@ -166,16 +166,19 @@ the outer `body` holding either the reposting user's own commentary (a quote-pos
 the reposted event (a boost); see below for which.
 
 `m.social.repost_of` contains the `event_id` and `room_id` of the original post, and a copy of its
-`body` at the time of reposting.
+entire `content` at the time of reposting, not just `body`: `formatted_body`, `format`, media fields
+(`url`, `file`, `info`, etc.), and any other key present on the original event's `content` are all
+copied in as-is, so a repost of, say, an image or a rich-formatted post renders identically to how the
+original was authored, not just as a plain-text stand-in.
 
-The body is embedded (rather than requiring viewers to fetch the original event) because the person
+The content is embedded (rather than requiring viewers to fetch the original event) because the person
 viewing a repost in their feed may not share a room with the original poster at all, e.g., reposting a
 post from a public group into your own profile, seen by followers who aren't members of that group.
-Embedding the body guarantees the repost is renderable without the viewer's client needing to join or
-peek the original room. Clients SHOULD still attempt to resolve the live original event (via
-`event_id` + `room_id`) where accessible, to support "view original", live reaction counts, or
-detecting that the original has since been edited or redacted, falling back to the embedded body when
-the original isn't reachable.
+Embedding the content guarantees the repost is renderable, including any media it contains, without the
+viewer's client needing to join or peek the original room. Clients SHOULD still attempt to resolve the
+live original event (via `event_id` + `room_id`) where accessible, to support "view original", live
+reaction counts, or detecting that the original has since been edited or redacted, falling back to the
+embedded content when the original isn't reachable.
 
 **Quote-posting** is a repost with the reposting user's own added commentary in the *outer* post's
 `body`, with the quoted post held entirely inside `m.social.repost_of`:
@@ -189,7 +192,12 @@ the original isn't reachable.
     "m.social.repost_of": {
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
-      "body": "This is the original post being reposted"
+      "content": {
+        "msgtype": "m.text",
+        "body": "This is the original post being reposted",
+        "format": "org.matrix.custom.html",
+        "formatted_body": "This is the <b>original</b> post being reposted"
+      }
     }
   }
 }
@@ -211,7 +219,10 @@ pointing at the same event referenced by `m.social.repost_of`:
     "m.social.repost_of": {
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
-      "body": "This is the original post being reposted"
+      "content": {
+        "msgtype": "m.text",
+        "body": "This is the original post being reposted"
+      }
     }
   }
 }
@@ -300,10 +311,10 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
 
 ## Potential issues
 
-- **Repost body duplication.** Because `m.social.repost_of.body` is a copy taken at repost time, an
-  edit to the original post does not propagate to reposts that already copied the old body, the same
-  limitation any "forwarded message" feature already has. Clients can mitigate this by re-fetching the
-  live original where accessible (see Security considerations for the more serious version of this
+- **Repost content duplication.** Because `m.social.repost_of.content` is a copy taken at repost time,
+  an edit to the original post does not propagate to reposts that already copied the old content, the
+  same limitation any "forwarded message" feature already has. Clients can mitigate this by re-fetching
+  the live original where accessible (see Security considerations for the more serious version of this
   concern).
 - **Feed construction doesn't distinguish "my posts" from "posts I follow" beyond room
   type/membership.** This proposal only specifies which *rooms* feed into a feed, not how a client
@@ -348,7 +359,7 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   kind of container classification, so reusing it is the smaller addition to the protocol.
 - **Model reposts as an `m.relates_to` relation** (e.g. `rel_type: "m.social.repost"`) referencing the
   original event, instead of an `m.social.repost_of` content block. Considered, but rejected: the
-  embedded original body is still needed regardless (see Proposal, above, for why), and a relation
+  embedded original content is still needed regardless (see Proposal, above, for why), and a relation
   doesn't carry that payload any more naturally than a plain content field would, so the relation form
   adds an extra concept without removing anything.
 - **Separate event types for boosts versus quote-reposts** (e.g. `m.social.boost` and
@@ -374,15 +385,15 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   proposal does not mandate any specific verification. This matches the existing trust model for
   `avatar_url`/`displayname`, which are equally self-asserted today.
 - **Reposts can misrepresent, or entirely fabricate, what the original said.** Because
-  `m.social.repost_of.body` is a snapshot taken at repost time, a malicious or careless repost could
-  keep an offensive or retracted statement circulating in others' feeds after the original author has
-  edited or redacted it. Nothing ties `body` to the actual content of the referenced `event_id`/
-  `room_id` at all: a malicious user can point those fields at a real post while writing any `body`
-  they want, fabricating something the original author never said. Clients SHOULD indicate when a live
-  original event can no longer be found or has been redacted, distinct from a repost whose original is
-  unchanged, and SHOULD verify the embedded `body` against the live original's actual content where
-  the original is accessible, flagging a mismatch as a fabricated or altered quote rather than
-  silently trusting the embedded copy.
+  `m.social.repost_of.content` is a snapshot taken at repost time, a malicious or careless repost could
+  keep an offensive or retracted statement (or image, or other media) circulating in others' feeds
+  after the original author has edited or redacted it. Nothing ties `content` to the actual content of
+  the referenced `event_id`/`room_id` at all: a malicious user can point those fields at a real post
+  while embedding any `content` they want, fabricating something the original author never said or
+  posted. Clients SHOULD indicate when a live original event can no longer be found or has been
+  redacted, distinct from a repost whose original is unchanged, and SHOULD verify the embedded
+  `content` against the live original's actual content where the original is accessible, flagging a
+  mismatch as a fabricated or altered quote rather than silently trusting the embedded copy.
 - **Public, joinable profile/group rooms carry the same abuse surface as any public Matrix room
   today** (spam, unwanted joins, abusive content). This proposal introduces no new attack surface
   beyond what already exists for public `m.room.message`-based rooms, and defers entirely to existing
