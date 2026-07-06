@@ -1,4 +1,4 @@
-# MSCXXXX: Rooms as Social Media Pages
+# MSC4501: Rooms as Social Media Pages
 
 *Note: this proposal is a spiritual successor to
 [MSC3639: Matrix for the Social Media Use Case](https://github.com/Henri2h/matrix-doc/blob/henri2h-matrix-for-social-media/proposals/3639-matrix-for-the-social-media-use-case.md),
@@ -261,7 +261,7 @@ found in `m.social.profile`/`m.social.group` rooms:
   compliant or not, can already fully participate in a profile/group room's content as ordinary
   messages, while the new type is introduced.
 - **Phase 2 (majority adoption).** Once a majority of active Matrix users report using at least one
-  MSCXXXX-compliant client, compliant clients should switch their default posting behavior to send
+  MSC4501-compliant client, compliant clients should switch their default posting behavior to send
   `m.social.post`, with an option to fall back to `m.room.message`. Rendering in the feed is unchanged
   from Phase 1; both event types are still shown identically. (This proposal does not define how
   "majority of active users" is measured; that is left to the ecosystem and spec core team to judge,
