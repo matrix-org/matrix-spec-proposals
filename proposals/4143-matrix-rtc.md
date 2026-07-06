@@ -290,10 +290,6 @@ A valid `m.rtc.member` event as a prerequisite for connecting to a slot has the 
     "claimed_device_id": "DEVICEID"
     "claimed_user_id": "@user:matrix.domain"
   },
-  "m.relates_to":{                            // an updated m.rtc.member event MUST reference the first m.rtc.member
-    rel_type: "m.reference",                  // event you sent for this call. You should omit if this is the first event.
-    event_id: "$join_event_id"
-  },
   "rtc_transports": [
     {...TRANSPORT_1},
     {...TRANSPORT_2}
@@ -316,11 +312,6 @@ A valid `m.rtc.member` event as a prerequisite for connecting to a slot has the 
   allowing clients to avoid connecting to participants outside their area of interest.  
   **Note** application-specific metadata as part of the MatrixRTC slot `application` object have
   precedence over the MatrixRTC member ones.
-* `m.relates_to` —  The `m.relates_to` field optionally references the initial connect event,
-  distinguishing connect events from updates. Clients SHOULD include this field when sending updates
-  to an existing `m.rtc.member` event to ensure continuity in membership lifecycle tracking, enable
-  accurate historical reconstruction, and allow deriving the participant’s start time using the
-  `origin_server_ts` of the referenced event.  
 * `member` — Uniquely identifies this participation instance; includes:  
   * `id` — Identifier to distinguish multiple participations, even for the same user and same device
     MUST be unique for each connect event. MatrixRTC transports MAY use `id` as the canonical identifier
@@ -353,10 +344,6 @@ A valid `m.rtc.member` event as a prerequisite for disconnecting from a slot has
 // event type: "m.rtc.member"
 {
   "slot_id": "m.call#ROOM",              // MUST
-  "m.relates_to":{                       // SHOULD
-      rel_type: "m.reference",
-      event_id: "$join_event_id"
-  },
   "disconnect_reason": {                 // SHOULD
     "class": "server_error",
     "reason": "ice_failed",
@@ -373,10 +360,6 @@ A valid `m.rtc.member` event as a prerequisite for disconnecting from a slot has
 **Field explanations:**
 
 - `slot_id`: The slot this member belongs to.  
-- `m.relates_to`: Clients SHOULD include the `m.relates_to` field referencing the original
-  `m.rtc.member` join event when disconnecting. This facilitates accurate session history and
-  retrospective computations by fetching the relation to determine the participant’s original join
-  time or associated metadata.  
 - `sticky_key:` The sticky key from the disconnecting MatrixRTC member.  
 - `disconnect_reason`: The `disconnect_reason` object is **optional** and provides additional
   context when a participant disconnects from a call. It is only meaningful if the user has
@@ -431,12 +414,6 @@ The MatrixRTC membership is a collection of linked `m.rtc.member` events. With t
        (Connect)              (Update)                (Disconnect)
        
      m.rtc.member ───────► m.rtc.member ──── ... ───► m.rtc.member
-           ^                     |                          |
-           ├─────────────────────┘ m.relation               |
-           |                                                |
-           └────────────────────────────────────────────────┘ m.relation
-            References original join event
-
 
      [---------------- Connected ------- ... --------][--- Disconnected ...
 Time ───────────────────────────────────────────────────────────────────────►
@@ -1096,6 +1073,31 @@ These and other potential constraints are **not** part of this MSC and will be a
 follow-up proposal. However, this MSC has been designed to remain compatible with such extensions.
 Future constraint definitions would likely exist alongside the `"application"` key within the
 `m.rtc.slot` event structure.
+
+### Chaining member events with relations
+
+An earlier version of this proposal used `m.reference` relations to link updated `m.rtc.member`
+events to the initial connect event.
+
+```
+(Connect)        (Update)              (Disconnect)     (Reconnect)      (Update)
+
+m.rtc.member ──► m.rtc.member ─ ... ─► m.rtc.member     m.rtc.member ──► m.rtc.member ─ ...
+      ^                │                     │                ^                │
+      ├────────────────┘                     │                └────────────────┘
+      │      m.reference                     │                       m.reference
+      └──────────────────────────────────────┘
+                                  m.reference
+
+Time ─────────────────────────────────────────────────────────────────────────────────────►
+```
+
+This was meant to assist in reconstructing historical sessions accurately. However, the relations
+turned out to not be helpful because finding the slot as well as other participants' member events
+still required manual history traversal while employing timestamp overlap logic.
+
+A future proposal may tackle the problem of performant session history reconstruction, possibly
+by using relations. This proposal does not add relations in order not to preclude such later attempts.
 
 ## Security considerations
 
