@@ -161,22 +161,9 @@ event. This proposal does not define a separate "comment" event type, unlike MSC
 
 ### Reposting / Boosting / Retweeting / Quote Posting
 
-To mark a post as a repost of another post, its content includes an `m.social.repost_of` block:
-
-```json
-{
-  "type": "m.social.post",
-  "content": {
-    "msgtype": "m.text",
-    "body": "",
-    "m.social.repost_of": {
-      "event_id": "$original:example.org",
-      "room_id": "!originalroom:example.org",
-      "body": "This is the original post being reposted"
-    }
-  }
-}
-```
+To mark a post as a repost of another post, its content includes an `m.social.repost_of` block, with
+the outer `body` holding either the reposting user's own commentary (a quote-post) or a permalink to
+the reposted event (a boost); see below for which.
 
 `m.social.repost_of` contains the `event_id` and `room_id` of the original post, and a copy of its
 `body` at the time of reposting.
@@ -208,12 +195,47 @@ the original isn't reachable.
 }
 ```
 
-**Boosting/Retweeting** is the same structure with an empty (or absent) outer `body`, i.e., a repost
-with no added commentary. A boost and a quote-post are the same event shape; only whether the outer
-`body` is empty differs. Clients SHOULD render an empty-body repost distinctly in the UI (e.g. "Alice
-boosted this" rather than an empty comment bubble), but no new event type is needed to distinguish
-them. This deliberately avoids a combinatorial explosion of near-identical event types for what is
-fundamentally one relationship (this post reshares that post, with or without commentary).
+**Boosting/Retweeting** is the same structure with no added commentary. Rather than an empty (or
+absent) outer `body`, the outer `body` MUST contain only a permalink: a `matrix.to` URI
+([MSC1704](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1704-matrix.to-permalinks.md))
+or a `matrix:` URI
+([MSC2312](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/2312-matrix-uri.md)),
+pointing at the same event referenced by `m.social.repost_of`:
+
+```json
+{
+  "type": "m.social.post",
+  "content": {
+    "msgtype": "m.text",
+    "body": "https://matrix.to/#/!originalroom:example.org/$original:example.org",
+    "m.social.repost_of": {
+      "event_id": "$original:example.org",
+      "room_id": "!originalroom:example.org",
+      "body": "This is the original post being reposted"
+    }
+  }
+}
+```
+
+A permalink is used instead of an empty string so that a client with no support for this proposal at
+all (one simply rendering the event as a plain `m.room.message`, since `body` is always a valid
+message body) shows a normal, clickable link to the boosted post rather than a blank message bubble
+that looks like a sending failure or a malformed event. Clients MAY additionally send a
+`formatted_body` containing the same link as an HTML anchor, for nicer rendering in clients that
+support formatted bodies but not this proposal.
+
+A boost and a quote-post are therefore still the same event shape; what distinguishes them is whether
+the outer `body` is *only* a permalink to the reposted event, or contains anything else. A compliant
+client detects a boost by checking, for any post with an `m.social.repost_of` block, whether `body`
+(trimmed of surrounding whitespace) parses as a `matrix.to`/`matrix:` permalink whose room and event
+match `m.social.repost_of`'s `room_id`/`event_id` (a body that doesn't parse, or points elsewhere,
+means the sender meant it as actual commentary (a quote-post) even if that commentary happens to
+look like a URI). On a detected boost, the client SHOULD NOT render the literal `body` as commentary;
+instead it SHOULD render something like "Alice reposted Bob's post" above the embedded repost content,
+naming both the user who reposted and the original post's author. No new
+event type is needed to distinguish a boost from a quote-post; this deliberately avoids a combinatorial
+explosion of near-identical event types for what is fundamentally one relationship (this post reshares
+that post, with or without commentary).
 
 ### Liking
 
@@ -232,7 +254,8 @@ an entire new event type whose only job is to disambiguate an edge case most use
 Using the standard `m.reaction`/`m.annotation` relation also means a like sent by a compliant client is
 still a completely ordinary, renderable reaction to any non-compliant Matrix client, and a 👍 reaction
 sent by a non-compliant client is automatically recognized as a like by compliant ones, keeping the
-whole feature interoperable for free, the same rationale as reusing `m.room.message` for posts.
+whole feature interoperable for free, the same rationale as
+[reusing `m.room.message` for posts](#handling-mroommessage-in-social-rooms).
 
 ### Feeds
 
@@ -296,6 +319,13 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   MSC4133 stalls or changes shape significantly, this proposal's discoverability mechanism has no
   fallback (a profile-typed room a client happens to be a member of and was created by the target user
   remains usable as a weaker, best-effort substitute; see Profile/Group discoverability, above).
+- **A quote-post whose entire commentary happens to be a permalink to the same event is
+  indistinguishable from a boost.** Because a boost is detected purely by `body` being nothing but a
+  matching permalink (see Proposal, above), a user who deliberately quote-posts with no text other than
+  a copy-pasted link to that same event will have their post rendered as a plain boost instead. This
+  proposal considers that an acceptable, rare edge case (the rendered outcome, "a repost with no
+  commentary", is arguably correct anyway, since a bare link duplicating `m.social.repost_of` carries no
+  information a boost doesn't already convey).
 - **Phase transition timing is deliberately unmeasured.** "Majority of active users"/"majority of
   posts" in the phased rollout are not tied to any concrete, verifiable metric, since Matrix does not
   currently have a reliable mechanism for measuring client adoption share across the network. This is
@@ -322,9 +352,14 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   doesn't carry that payload any more naturally than a plain content field would, so the relation form
   adds an extra concept without removing anything.
 - **Separate event types for boosts versus quote-reposts** (e.g. `m.social.boost` and
-  `m.social.quote_post`). Rejected in favor of a single mechanism (empty vs. non-empty outer `body`)
-  to minimize the number of new event types and avoid clients needing to special-case several
-  near-identical shapes.
+  `m.social.quote_post`). Rejected in favor of a single mechanism (a `body` that is only a permalink
+  to the reposted event, versus one that isn't) to minimize the number of new event types and avoid
+  clients needing to special-case several near-identical shapes.
+- **Empty or absent outer `body` for boosts**, rather than an embedded permalink. This was the
+  original design, but was rejected: a blank `body` renders as an empty, confusing message bubble in
+  any client without support for this proposal, indistinguishable from a send failure or a malformed
+  event. A permalink-only `body` degrades gracefully instead, rendering as an ordinary clickable link
+  in a fully non-compliant client (see Proposal, above).
 - **A dedicated `m.social.like` event type.** Considered, but rejected for lack of value over reusing
   `m.reaction`: a like and a 👍 reaction are the same user intent for this proposal's purposes, and a
   new event type would only exist to disambiguate an edge case (someone reacting 👍 without "meaning"
