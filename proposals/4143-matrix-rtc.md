@@ -9,20 +9,29 @@ currently missing.
 [MSC3401]: https://github.com/matrix-org/matrix-spec-proposals/pull/3401
 
 The present proposal aims to close this gap by introducing "MatrixRTC", a generalised framework for
-reliably establishing and maintaining RTC sessions over Matrix. This MSC is concerned with the
-foundational protocol and covers:
+building RTC experiences on top of Matrix. At a high level, MatrixRTC consists of the following parts:
 
-- RTC session state (including session configuration, membership and publishment of RTC media streams)
-- Discovering available modes for the actual RTC media transport (e.g. Selective Forwarding Units
-  (SFUs) or peer-to-peer assisted by STUN/TURN servers)
-- End-to-end encryption of RTC media
+* **Applications** describe the type of RTC activity (e.g. a call, a shared document, or a real-time
+  game) and may define additional metadata and constraints.
+* **Slots** are represented in room state and govern what kind of applications may run, along with
+  any needed configuration.
+* **Transports** define how participants actually exchange media streams. This can, for instance, happen
+  peer-to-peer or through Selective Forwarding Unit (SFUs).
+* **Membership** is expressed via room events and provides a record of who is participating in a slot,
+  and under which transports.
+* **Sessions** are formed only indirectly through the temporal overlap of connected members within
+  a slot.
+* **End-to-end encryption** provides the basis for encrypted media exchange and reuses existing
+  Matrix primitives such as encrypted room and to-device messages.
 
-This proposal is entirely agnostic of RTC applications or transport technologies and treats both
-as generic building blocks. As first concrete instances, a voice- and video conferencing application
-type and a transport mode based on the [LiveKit SFU] are proposed in
-[MSC4196: MatrixRTC voice and video calling application `m.call`] and
-[MSC4195: MatrixRTC Transport using LiveKit Backend]. Further applications and transports may be
-added in the future.
+This MSC is concerned with the foundational MatrixRTC protocol and covers slots, membership, sessions and
+end-to-end encryption. Applications and transports are treated as generic building blocks only. The proposal
+defines how these components are plugged into the system while leaving the introduction of concrete applications
+and transports to other proposals.
+
+As first concrete instances, a voice- and video conferencing application and a transport based on the
+[LiveKit SFU] are proposed in [MSC4196: MatrixRTC voice and video calling application `m.call`] and
+[MSC4195: MatrixRTC Transport using LiveKit Backend], respectively.
 
 [LiveKit SFU]: https://docs.livekit.io/reference/internals/livekit-sfu/
 [MSC4196: MatrixRTC voice and video calling application `m.call`]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
@@ -34,38 +43,6 @@ protocol and are described in [MSC4075: MatrixRTC notifications & call ringing].
 [MSC4075: MatrixRTC notifications & call ringing]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
 
 ## Proposal
-
-MatrixRTC provides a framework for building real-time communication on top of Matrix. At its core,
-it introduces the concept of **applications**, which define the semantics of a real-time experience,
-and **slots**, which act as containers where those experiences take place within a room.
-Participants join as **members** within slots, and their overlap defines a **session**.
-
-This proposal defines how MatrixRTC slots are opened and closed, how MatrixRTC members join and
-leave, and how these interactions together form the lifecycle of a MatrixRTC session.
-
-The proposal also specifies how:
-
-* **Applications** describe the type of RTC activity (e.g. a call, a shared document, or a real-time
-  game) and may define additional metadata and constraints.  
-* **Slots** are represented in room state (`m.rtc.slot` identified by a unique `slot_id`) and govern
-  what kind of application may run, along with permissions and configuration.  
-* **Membership** (`m.rtc.member` [MSC4354 Sticky
-  Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354)) provides a precise record
-  of who is actively participating, and under which transports and devices.  
-* **Sessions** emerge from the overlap of active members within an open slot, with clear start and
-  end conditions.  
-* **Transports** define how participants exchange media, supporting multiple backends such as SFUs,
-  MCUs, or peer-to-peer.  
-* **End-to-end encryption** ensures secure media exchange, including mechanisms for key sharing and
-  rotation.
-
-This design deliberately separates **slot management** (opening/closing slots, requiring higher
-power levels) from **slot participation** (joining as a member, requiring lower power levels). This
-separation gives applications a robust surface for conflict resolution, clear ownership of events,
-and flexibility across use cases such as always-on spaces, scheduled meetings, or ephemeral
-conversations.
-
-The following sections specify these components in detail.
 
 ### MatrixRTC Application Types
 
@@ -122,6 +99,12 @@ sufficient power level. Clients MUST react on and respect latest `m.rtc.slot` de
 defined by the Matrix room state at all times. The ability to open and close slots with different
 patterns enables a wide variety of use cases, from always-on shared spaces to short lived scheduled
 meetings.
+
+This design deliberately separates **slot management** (opening/closing slots, requiring higher
+power levels) from **slot participation** (joining as a member, requiring lower power levels). This
+separation gives applications a robust surface for conflict resolution, clear ownership of events,
+and flexibility across use cases such as always-on spaces, scheduled meetings, or ephemeral
+conversations.
 
 #### Opening a MatrixRTC Slot
 
