@@ -65,15 +65,15 @@ filtering concept.
 
 ### Use /sync with a filter
 
-Clients could use `/sync` with a `RoomFilter` that specifies the desired `rooms` and a `StateFilter`
+Clients could use `/sync` with a `RoomFilter` that specifies the desired `rooms` and a `RoomEventFilter`
 with the desired `types`. However, the `/sync` response structure is significantly more complex than
 `/state`, and filtering to a single room requires either listing it explicitly or using a filter ID
 created via `POST /filter`.
 
-### Accept a full StateFilter
+### Accept a full RoomEventFilter
 
-Instead of just `types`, the endpoint could accept a full `StateFilter` object (with `types`,
-`not_types`, `senders`, `not_senders`, etc.). However, for most usecases `StateFilter` provides
+Instead of just `types`, the endpoint could accept a full `RoomEventFilter` object (with `types`,
+`not_types`, `senders`, `not_senders`, etc.). However, for most usecases `RoomEventFilter` provides
 a lot more than what is needed to read state.
 
 ### Add individual query parameters per type
