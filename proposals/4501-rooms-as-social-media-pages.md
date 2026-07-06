@@ -360,20 +360,19 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
 
 ## Unstable prefix
 
-While this proposal doesn't yet have an assigned MSC number, implementations should use the following
-placeholder identifiers, all under the `org.matrix.mscXXXX.social.` namespace:
+Until this proposal is accepted into the spec, implementations should use the following identifiers,
+all under the `org.matrix.msc4501.social.` namespace:
 
 | Stable (once accepted)          | Unstable (for now)                              |
 | -------------------------------- | ------------------------------------------------ |
-| `m.social.profile`                | `org.matrix.mscXXXX.social.profile`               |
-| `m.social.group`                  | `org.matrix.mscXXXX.social.group`                 |
-| `m.social.post`                   | `org.matrix.mscXXXX.social.post`                  |
-| `m.social.repost_of`              | `org.matrix.mscXXXX.social.repost_of`             |
-| `m.social.profile_room_id`        | `org.matrix.mscXXXX.social.profile_room_id`       |
+| `m.social.profile`                | `org.matrix.msc4501.social.profile`               |
+| `m.social.group`                  | `org.matrix.msc4501.social.group`                 |
+| `m.social.post`                   | `org.matrix.msc4501.social.post`                  |
+| `m.social.repost_of`              | `org.matrix.msc4501.social.repost_of`             |
+| `m.social.profile_room_id`        | `org.matrix.msc4501.social.profile_room_id`       |
 
-*(`mscXXXX` is a placeholder for this proposal's real MSC number, to be filled in once assigned;
-update every identifier above, and throughout this document, at that point. This mirrors how MSC3639
-itself moved from `org.matrix.msc3639.*` unstable identifiers to `m.social.*` on acceptance.)*
+*(This mirrors how MSC3639 itself moved from `org.matrix.msc3639.*` unstable identifiers to
+`m.social.*` on acceptance; the same rename will happen here if/when this proposal is accepted.)*
 
 The `m.social.profile_room_id` profile field additionally depends on whatever unstable identifier the
 implementing homeserver uses for MSC4133 support itself (e.g. some Synapse deployments currently
