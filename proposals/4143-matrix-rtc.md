@@ -11,18 +11,19 @@ currently missing.
 The present proposal aims to close this gap by introducing "MatrixRTC", a generalised framework for
 building RTC experiences on top of Matrix. At a high level, MatrixRTC consists of the following parts:
 
-* **Applications** describe the type of RTC activity (e.g. a call, a shared document, or a real-time
-  game) and may define additional metadata and constraints.
+* **End-to-end encryption** provides a generic basis for encrypted media exchange and reuses existing
+  Matrix primitives such as encrypted room and to-device messages.
+* **Transports** define how participants exchange media streams. This can, for instance, happen
+  peer-to-peer or through Selective Forwarding Unit (SFUs). Transports also determine how the generic
+  end-to-end encryption is used in transport-specific encryption.
+* **Applications** describe the type of RTC activity such as a call, a shared document, or a real-time
+  game. Applications also define what types of transports they can work with and how media streams are used.
 * **Slots** are represented in room state and govern what kind of applications may run, along with
   any needed configuration.
-* **Transports** define how participants actually exchange media streams. This can, for instance, happen
-  peer-to-peer or through Selective Forwarding Unit (SFUs).
 * **Membership** is expressed via room events and provides a record of who is participating in a slot,
   and under which transports.
 * **Sessions** are formed only indirectly through the temporal overlap of connected members within
   a slot.
-* **End-to-end encryption** provides the basis for encrypted media exchange and reuses existing
-  Matrix primitives such as encrypted room and to-device messages.
 
 This MSC is concerned with the foundational MatrixRTC protocol and covers slots, membership, sessions and
 end-to-end encryption. Applications and transports are treated as generic building blocks only. The proposal
@@ -44,188 +45,112 @@ protocol and are described in [MSC4075: MatrixRTC notifications & call ringing].
 
 ## Proposal
 
-### MatrixRTC Application Types
+### Slots
 
-An **application type** defines the semantics of a MatrixRTC session, such as a real-time game, a
-voice/video call, or a shared document. Each application type has its own specification describing:
+MatrixRTC slots act as containers for MatrixRTC applications to run in. Slots are represented by
+state events of type `m.rtc.slot` which means that they can only be created or modified by users
+with sufficient power level. As described [below], participants can connect to slots by sending
+`m.rtc.member` room events.
 
-* How different RTC streams are interpreted.  
-* Which MatrixRTC transport types are supported or required.
+[below]: #slot-membership
 
-For example, a [Third Room](https://thirdroom.io) like experience could include information about
-the virtual scene, e.g., a place, available objects or weather conditions.
+This design deliberately separates slot management, requiring higher power level, from slot
+participation, requiring lower power level. This separation gives applications a robust surface
+for conflict resolution, clear ownership of events, and flexibility across use cases such as
+always-on spaces, scheduled meetings, or ephemeral conversations.
 
-This modular design makes MatrixRTC flexible. For example, a Jitsi-based conference could be
-supported by defining a new application type and a corresponding RTC transport. While such a session
-would not be compatible with Matrix clients that do not implement the Jitsi transport, those clients
-would still be able to detect the presence of an unsupported application and transport type, and
-handle it with a sensible user interface.
+Slots are always tied to specific applications through their slot ID which acts as the `state_key`. 
+The slot ID is constructed as:
 
-The minimum Application definition consists of a simple JSON object
+```json5
+slot_id = {application_type}#{application_slot_id} (= state_key)
+```
+
+`application_type` is the application's globally unique identifier. This identifier is defined
+by the application's specification and MUST follow the [Common Namespaced Identifier Grammar][^nohash].
+
+`application_slot_id` is the application-specific slot ID and enables applications to support
+multiple parallel application instances per room. Again, the allowed values are defined by
+the application's specification and MUST follow the [Common Namespaced Identifier Grammar]
+but this time without the namespacing requirements[^nohash]. Additionally, the values should
+be predictable for clients given that slots act like a virtual addresses where participants
+are allowed to meet.
+
+As an example, the default slot ID for the calling applications from [MSC4196: MatrixRTC voice and video calling application `m.call`]
+is `m.call#ROOM`.
+
+The grammar for forming slot IDs MUST NOT be used to parse the components out of a slot ID.
+It exists only to namespace the `state_key`.
+
+[Common Namespaced Identifier Grammar]: https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar
+
+[^nohash]: Note that due the use of the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar),
+neither `application_type` nor `application_slot_id` can contain the `#` character.
+
+#### Opening a slot
+
+A slot is opened by sending an `m.rtc.slot` state event with `state_key = slot_id` and the
+following schema:
 
 ```json5
 {
-  "application": {
-    "type": "m.call", // The # character MUST NOT appear in a valid type string.
-    // Optional: application-specific metadata
-    "m.call.spatial_audio": true
-  }
+  "type": "m.rtc.slot",
+  "state_key": "{application_type}#{application_slot_id}", // = slot_id
+  "content": {
+    "application": {
+      "type": "{application_type}",
+      ... // Further application-specific properties (if required)
+    },
+    "encryption": {
+      "type": "{encryption_type}",
+      ... // Further encryption-specific properties (if required)
+    }
+  },
+  ...
 }
 ```
 
-The `type` is a unique identifier for the application and MUST follow the [*Common Namespaced Identifier
-Grammar*](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar).
+- `application` (required, object): Describes the application that can run in this slot.
+  - `type` (required, string): The globally unique application identifier. MUST follow the
+    [Common Namespaced Identifier Grammar].
+  - Optionally includes further properties for settings that are specific to the application
+    `type`. The concrete properties are defined by the application's specification. A calling
+    application, for instance, could include properties for constraining the call to be voice-only.
+- `encryption` (optional, object): Describes the encryption mechanism to use in this slot. Further,
+  details on the available mechanisms can be found in the [encryption section] below.
+  - `type` (required, string): The globally unique identifier of the encryption mechanism.
+  - Optionally includes further properties for settings that are specific to the encryption
+  `type`.
 
-Each application type specifies the additional fields and defines how communication with the
-corresponding transport is handled. Concrete applications types are introduced in separate proposals
-such as:
+[encryption section]: #end-to-end-encryption
 
-* `m.call` — voice and video calling, as defined in
-  [MSC4196](https://github.com/matrix-org/matrix-spec-proposals/pull/4196).
+#### Closing a slot
 
-### MatrixRTC Slot and Constraining Slots
-
-A **MatrixRTC slot** is the container for MatrixRTC members and temporal overlapping MatrixRTC
-members form a MatrixRTC session. Each slot is identified by a unique `slot_id`, tied to a specific
-`application` type, and represented by the `m.rtc.slot` state event with the `slot_id` as the state
-key. 
-
-> [!NOTE]
-> Conceptually, a slot is like a virtual meeting room: MatrixRTC sessions occur within
-> slots, and multiple sessions may occur consecutively without changing the slot’s configuration.
-
-Slots are part of the shared room state and can only be created or modified by authorized users with
-sufficient power level. Clients MUST react on and respect latest `m.rtc.slot` definitions as
-defined by the Matrix room state at all times. The ability to open and close slots with different
-patterns enables a wide variety of use cases, from always-on shared spaces to short lived scheduled
-meetings.
-
-This design deliberately separates **slot management** (opening/closing slots, requiring higher
-power levels) from **slot participation** (joining as a member, requiring lower power levels). This
-separation gives applications a robust surface for conflict resolution, clear ownership of events,
-and flexibility across use cases such as always-on spaces, scheduled meetings, or ephemeral
-conversations.
-
-#### Opening a MatrixRTC Slot
-
-A slot is opened by sending an `m.rtc.slot` state event with `state_key = slot_id`. This event
-authorises MatrixRTC members that intend to participate in the slot and follows the schema below:
+To close a slot, the corresponding `m.rtc.slot` state event is updated with empty content.
 
 ```json5
-// Example: an open slot with application-specific metadata
 {
-  "application": {
-    "type": "m.call",
-    // optional: app specific slot metadata
-    "m.call.id": UUID,           // Note your application must handle rollback due to state resolution
-    "m.call.voice_only": true
-  }
+  "type": "m.rtc.slot",
+  "state_key": "{application_type}#{application_slot_id}", // = slot_id
+  "content": {},
+  ...
 }
-
-state_key: "m.call#ROOM"         // slot_id
 ```
 
-**Field description:**
+The semantics of open and closed slots for slot participation are described in the membership
+event section [below].
 
-* **state key**: The state key of the `m.rtc.slot` state event, referred to as the `slot_id`.
-* `application` An application JSON object, which **MUST** specify the application `type` and MAY
-  include additional fields which **constrain** the application (e.g., restricting a call to be
-  voice-only). **Note** those additional fields may be extended through fields in the `application`
-  content block of `m.rtc.member` events. If a field occurs in both, the value from the `m.rtc.slot` event
-  takes precedence.
+#### Slot lifecycle
 
-The `slot_id` of an open slot acts like a virtual address where participants are allowed to meet.
-The grammar for the `slot_id` is a well formed state key confined such that members of different
-MatrixRTC applications never occupy the same slot according to: 
+Slots may follow different lifecycles depending on the use case. For instance, a long-lived slot
+that is kept open continually could power a Discord-style experience where participants can hop on
+and hop off as desired. Scheduled conference meetings, in turn, could benefit from a time-bounded
+slot that is only opened when the meeting starts and closed again afterwards.
 
-```json5
-{application.type}#{application_slot_id}
-```
+For the time being, slots will have to be created manually. A future proposal may change the
+defaults for newly created rooms to provide slots for standard RTC applications.
 
-Where
-
-* `application.type` is the `type` field in the application JSON object  
-* `application_slot_id` is the application-specific slot ID. The value MUST follow the
-  [*Common Namespaced Identifier Grammar*](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar)
-  but without the namespacing requirements. Each application defines its own
-  schema (e.g., `ROOM`, `line1`, `line2`) to allow multiple parallel slots of the same type according to the
-  application requirements. If the application needs to define its slots out of band (e.g. mapping them to
-  widget IDs) then it can use those IDs as `application_slot_id`. However, given a slot is the mechanism
-  around which sessions converge, it MUST have a predictable `application_slot_id`.
-
-Note that due the use of the [*Common Namespaced Identifier Grammar*](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar),
-neither `application.type` nor `application_slot_id` can contain the `#` character.
-
-This grammar MUST never be used to parse `slot_ids`; it exists only to namespace the `state_key`.
-
-#### Closing a MatrixRTC Slot
-
-To close a slot, the corresponding `m.rtc.slot` state event is updated with empty content which
-removes all remaining MatrixRTC members, for example:
-
-```json5
-// Empty content represents a closed slot
-{}
-
-state_key: "m.call#ROOM" // slot_id
-```
-
-#### Examples of MatrixRTC Slot Usage
-
-In the following example three different slot use-cases are depicted  
-
-```
-m.rtc.slot[id_1] {content_1}            ...████████████████████████████████████████████...
-m.rtc.slot[id_2] {content_2}                         ███████████████████
-
-m.rtc.slot[id_state_res] {content_ABC}         ████XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-m.rtc.slot[id_state_res] {content_XYZ}             █████████████████████████████
-                                                   |
-                                                   |
-                                                   Rollback due to Matrix state resolution
-
-
-Time                                   ────────────────────────────────────────────────────►
-```
-
-* `id_1` comprises a long-lived slot suited for a Discord-style experience or a shared whiteboard
-  where people can hop on and hop off as desired.  
-* `id_2` suited for a scheduled conference meeting, where the state event might be managed using
-  cancellable delayed events (MSC4140) or a bot.  
-* `id_state_res` This `m.rtc.slot` state event is subject to Matrix state resolution. Hence, it is
-  divided potentially into two intervals. If a rollback occurs during an active MatrixRTC session,
-  application logic MUST handle conflicts (e.g., a rolled-back UUID).
-
-#### Recommended User Experience
-
-The lifecycle of a slot follows three distinct states:
-
-```
-Closed
-Open
- ├─ Active   --- at least one m.rtc.member is connected
- └─ Inactive --- no member is connected
-```
-
-Slots may transition between these states as a slot is opened or closed, or as users connect or disconnect.
-
-While **participation** in a MatrixRTC session is possible if a **slot is open**, **management** of
-slots depends on the user’s **power level**. Clients should be aware of this distinction when constructing
-their user interfaces.
-
-For **open** and **active** slots, for instance, clients could display the participant count, an icon,
-a list entry, or join button. For **open** but **inactive** slots, in turn, clients could indicate that the
-slot is available and provide a way for a user to join as the first member (e.g., via a “Call” button or
-placeholder icon). Finally, for users who have sufficient power level to manage slots, clients could
-display a slot management UI with controls to open, close or modify slots.
-
-Multiple active slots may exist in the same room if the application type supports them.
-
-Clients MAY present an option to room administrators to enable specific applications in the room by
-adding a slot and a type to room state.  Future MSCs may change the defaults for new rooms to enable
-RTC applications by default.
-
-### MatrixRTC Membership
+### Slot membership
 
 A MatrixRTC membership is represented by a sticky `m.rtc.member` event
 ([MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354) Sticky Events). These
@@ -254,6 +179,11 @@ An `m.rtc.member` sticky event can be either **Connected** or **Disconnected**
   * **Not Connected:** any of the required conditions to be connected are not met.  
   * **Content:** SHOULD match the JSON content schema for disconnecting from a slot (see below). If
     it does not match, clients MUST handle the lack of information gracefully.
+
+Since `m.rtc.slot` events are subject to state resolution and may generally be changed at any
+time, clients MUST react to and respect the latest known `m.rtc.slot` event at all times.
+If a rollback occurs during an active MatrixRTC session, application logic MUST handle conflicts
+(e.g., a rolled-back UUID).
 
 #### Connecting to a MatrixRTC Slot
 
@@ -662,7 +592,7 @@ Clients SHOULD use this list to determine which RTC transports to connect to and
 selected transports according to the respective MSC in the `rtc_transports` field of their
 `m.rtc.member` events.
 
-### End-to-end Encryption of RTC Data
+### End-to-end encryption
 
 This section defines how key material is shared between participants in MatrixRTC to enable
 end-to-end encryption of RTC data.
