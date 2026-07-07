@@ -219,7 +219,7 @@ To permit this, the `delay_id` that uniquely identifies a delayed event also beh
 that only allows to interact with the `POST /delayed_events/{delay_id}/{action}` endpoints on that specific `delay_id`.
 
 With this, an SFU that tracks the current client connection state could be given the power to control the delayed event.
-The client would share the `delay_id` and the required details, so that the SFU can call the
+The client would share the `delay_id` and other possibly required details (such as its homeserver's server name), so that the SFU can call the
 `POST /delayed_events/{delay_id}/refresh` endpoint while a user is connected
 and can call the `POST /delayed_events/{delay_id}/send` endpoint once the user disconnects.
 This way, the SFU can be used as the source of truth for the call membership events without knowing anything about
