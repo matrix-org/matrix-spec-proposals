@@ -62,9 +62,62 @@ A profile room's display name, avatar, topic, and banner image are set with the 
 events, same as any other room. There is no new state event for "profile bio" or similar; the room's
 existing metadata *is* the profile's metadata.
 
-This proposal does not mandate how a client enforces "single ownership" of a profile room (e.g., via
-power levels restricting who can post); that is left to the creating client's own conventions, the
-same way it already is for any other room today.
+A profile room additionally carries a new state event, `m.social.profile_user_id`, identifying the single
+Matrix user the room is a profile *of*:
+
+```json
+{
+  "type": "m.social.profile_user_id",
+  "state_key": "",
+  "content": {
+    "user_id": "@alice:example.org"
+  }
+}
+```
+
+The event always uses an empty `state_key`. Matrix's state resolution rules mean a room has exactly one
+current event for a given `(type, state_key)` pair, so with a fixed, empty `state_key` a profile room
+can hold exactly one `m.social.profile_user_id` at a time, whichever was sent last (subject to the room's
+own power levels); it can never simultaneously claim to belong to two different users.
+
+Because `m.social.profile_user_id` is not one of the state events a default `m.room.power_levels` gives
+its own override for (unlike `m.room.name` or `m.room.avatar`, which default to requiring power level
+50), it falls back to that power levels event's `state_default`, which itself defaults to 50 ("Moderator"
+in most clients) when a room is created with no explicit overrides, not 100 ("Admin"). Left at that
+default, any user promoted to Moderator, not just the room's Admin/owner, would be able to send a new
+`m.social.profile_user_id` and reassign the profile away from its actual owner.
+
+Clients creating a profile room SHOULD therefore explicitly set a power level requirement for
+`m.social.profile_user_id` in the room's initial `m.room.power_levels` `events` override, at or above the
+level of the intended owner (typically 100), separately from `state_default`:
+
+```json
+{
+  "type": "m.room.power_levels",
+  "state_key": "",
+  "content": {
+    "events": {
+      "m.social.profile_user_id": 100
+    }
+  }
+}
+```
+
+This is what lets a profile have moderators (e.g. at power level 50, able to redact posts or ban
+abusive members) without those moderators being able to reassign or strip the profile's ownership out
+from under its actual owner.
+
+`m.social.profile_user_id` is the inverse of `m.social.profile_room_id` (see Profile/Group
+discoverability, below): that field lives on a user's own account and points at a room, while
+`m.social.profile_user_id` lives on the room and points back at a user. This matters because a profile
+room's `m.room.create` `creator` is not always the person the profile is *of*: a room created by a
+bridge or appservice on a user's behalf (e.g., a Matrix/ActivityPub federation bridge creating a local
+profile room for a fediverse account) will have the bridge's own bot as `creator`, not the person the
+profile represents. `m.social.profile_user_id` lets that room assert its true intended owner regardless
+of who technically created it, which `creator` alone cannot do.
+
+Like `m.social.profile_room_id`, `m.social.profile_user_id` is self-asserted; see Security considerations
+for how a client can corroborate it.
 
 ### Profile/Group discoverability
 
@@ -89,10 +142,12 @@ service, a room alias convention, or a shared space to find it. It also gives a 
   otherwise disrupting it) by clearing the field.
 
 A room being of type `m.social.profile` does **not** by itself mean it is "the" official profile of
-its creator. `m.social.profile_room_id` is the authoritative signal a client should use to decide
-"this is user X's current profile." A profile-typed room's own type and creator are only a secondary,
-best-effort fallback signal (useful for legacy clients, or while this field hasn't propagated yet), not
-a substitute for it.
+its creator. `m.social.profile_room_id` (set on the candidate user's own account) and
+`m.social.profile_user_id` (set on the room itself, see Profile rooms, above) are the authoritative
+signals a client should use to decide "this is user X's current profile," ideally checked together
+(see Security considerations). A profile-typed room's `type` and `m.room.create` `creator` are only a
+weaker, best-effort fallback signal (useful for legacy clients, or while neither of these fields has
+propagated yet), not a substitute for either.
 
 `m.social.profile_room_id` only helps discover *a specific person's* profile once you already know who
 you're looking for. To discover new profiles and groups more generally, this proposal relies on the
@@ -165,20 +220,25 @@ To mark a post as a repost of another post, its content includes an `m.social.re
 the outer `body` holding either the reposting user's own commentary (a quote-post) or a permalink to
 the reposted event (a boost); see below for which.
 
-`m.social.repost_of` contains the `event_id` and `room_id` of the original post, and a copy of its
-entire `content` at the time of reposting, not just `body`: `formatted_body`, `format`, media fields
-(`url`, `file`, `info`, etc.), and any other key present on the original event's `content` are all
-copied in as-is, so a repost of, say, an image or a rich-formatted post renders identically to how the
-original was authored, not just as a plain-text stand-in.
+`m.social.repost_of` contains the `event_id` and `room_id` of the original post, the `sender` (Matrix
+ID) of the original post's author, and a copy of its entire `content` at the time of reposting, not
+just `body`: `formatted_body`, `format`, media fields (`url`, `file`, `info`, etc.), and any other key
+present on the original event's `content` are all copied in as-is, so a repost of, say, an image or a
+rich-formatted post renders identically to how the original was authored, not just as a plain-text
+stand-in. `m.social.repost_of` MAY additionally include a `displayname`, snapshotting the original
+author's display name at repost time for a nicer default rendering; clients MUST NOT assume it is
+present and MUST fall back to rendering the bare `sender` Matrix ID when it is absent, the same as
+Matrix already does anywhere else a display name is unset.
 
-The content is embedded (rather than requiring viewers to fetch the original event) because the person
-viewing a repost in their feed may not share a room with the original poster at all, e.g., reposting a
-post from a public group into your own profile, seen by followers who aren't members of that group.
-Embedding the content guarantees the repost is renderable, including any media it contains, without the
-viewer's client needing to join or peek the original room. Clients SHOULD still attempt to resolve the
-live original event (via `event_id` + `room_id`) where accessible, to support "view original", live
-reaction counts, or detecting that the original has since been edited or redacted, falling back to the
-embedded content when the original isn't reachable.
+The content and sender are embedded (rather than requiring viewers to fetch the original event)
+because the person viewing a repost in their feed may not share a room with the original poster at
+all, e.g., reposting a post from a public group into your own profile, seen by followers who aren't
+members of that group. Embedding them guarantees the repost is renderable, including any media it
+contains and proper attribution of who originally posted it, without the viewer's client needing to
+join or peek the original room. Clients SHOULD still attempt to resolve the live original event (via
+`event_id` + `room_id`) where accessible, to support "view original", live reaction counts, or
+detecting that the original has since been edited or redacted, falling back to the embedded content
+and sender/displayname when the original isn't reachable.
 
 **Quote-posting** is a repost with the reposting user's own added commentary in the *outer* post's
 `body`, with the quoted post held entirely inside `m.social.repost_of`:
@@ -192,6 +252,8 @@ embedded content when the original isn't reachable.
     "m.social.repost_of": {
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
+      "sender": "@bob:example.org",
+      "displayname": "Bob",
       "content": {
         "msgtype": "m.text",
         "body": "This is the original post being reposted",
@@ -219,6 +281,7 @@ pointing at the same event referenced by `m.social.repost_of`:
     "m.social.repost_of": {
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
+      "sender": "@bob:example.org",
       "content": {
         "msgtype": "m.text",
         "body": "This is the original post being reposted"
@@ -243,7 +306,9 @@ match `m.social.repost_of`'s `room_id`/`event_id` (a body that doesn't parse, or
 means the sender meant it as actual commentary (a quote-post) even if that commentary happens to
 look like a URI). On a detected boost, the client SHOULD NOT render the literal `body` as commentary;
 instead it SHOULD render something like "Alice reposted Bob's post" above the embedded repost content,
-naming both the user who reposted and the original post's author. No new
+naming both the user who reposted (the outer event's own `sender`) and the original post's author
+(`m.social.repost_of`'s `sender`/`displayname`), without either name requiring a fetch to the
+original room. No new
 event type is needed to distinguish a boost from a quote-post; this deliberately avoids a combinatorial
 explosion of near-identical event types for what is fundamentally one relationship (this post reshares
 that post, with or without commentary).
@@ -375,25 +440,47 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   `m.reaction`: a like and a 👍 reaction are the same user intent for this proposal's purposes, and a
   new event type would only exist to disambiguate an edge case (someone reacting 👍 without "meaning"
   to like it) that most users will never notice or care about. See Liking, above.
+- **Relying solely on a profile room's `m.room.create` `creator` to identify its owner**, rather than
+  adding `m.social.profile_user_id`. Rejected because `creator` is not always the person a profile room
+  is of: a room created by a bridge or appservice on a user's behalf will have the bridge's own bot as
+  `creator`. A dedicated state event lets the room assert its true intended owner independent of who
+  technically created it. See Profile rooms, above.
 
 ## Security considerations
 
-- **`m.social.profile_room_id` is a self-asserted, unauthenticated claim.** Nothing stops a user from
-  pointing it at a room they don't own or aren't even a member of. Clients SHOULD treat the field as a
-  hint rather than proof of ownership, and MAY additionally check that the referenced room's own
-  `m.room.create` sender matches the profile's owner as a weak corroborating signal, though this
-  proposal does not mandate any specific verification. This matches the existing trust model for
-  `avatar_url`/`displayname`, which are equally self-asserted today.
-- **Reposts can misrepresent, or entirely fabricate, what the original said.** Because
-  `m.social.repost_of.content` is a snapshot taken at repost time, a malicious or careless repost could
-  keep an offensive or retracted statement (or image, or other media) circulating in others' feeds
-  after the original author has edited or redacted it. Nothing ties `content` to the actual content of
-  the referenced `event_id`/`room_id` at all: a malicious user can point those fields at a real post
-  while embedding any `content` they want, fabricating something the original author never said or
-  posted. Clients SHOULD indicate when a live original event can no longer be found or has been
-  redacted, distinct from a repost whose original is unchanged, and SHOULD verify the embedded
-  `content` against the live original's actual content where the original is accessible, flagging a
-  mismatch as a fabricated or altered quote rather than silently trusting the embedded copy.
+- **`m.social.profile_room_id` and `m.social.profile_user_id` are both self-asserted, unauthenticated
+  claims.** Nothing stops a user from pointing their `m.social.profile_room_id` at a room they don't
+  own or aren't even a member of, and nothing stops whoever holds sufficient power level in a room from
+  setting its `m.social.profile_user_id` to any user ID, including one who has never heard of the room.
+  Clients SHOULD treat either field alone as a hint rather than proof of ownership. The strongest
+  corroboration this proposal offers is checking that the two agree in both directions: the room's
+  `m.social.profile_user_id` names a user whose own `m.social.profile_room_id` points back at that same
+  room. Requiring agreement in both directions is harder to fake than either field alone, since it
+  needs control of both the claimed user's account and sufficient power level in the room, though it is
+  still not cryptographic proof. Clients MAY additionally fall back to checking the room's
+  `m.room.create` sender as a weaker signal still, though this proposal does not mandate any specific
+  verification. This matches the existing trust model for `avatar_url`/`displayname`, which are equally
+  self-asserted today.
+- **`m.social.profile_user_id` defaults to Moderator-level, not Admin-level, protection.** A room's
+  `m.room.power_levels` only overrides specific well-known state events; anything else, including a
+  custom event type like `m.social.profile_user_id`, falls back to `state_default`, which itself defaults
+  to 50 ("Moderator") rather than 100 ("Admin") when a room is created with no explicit overrides. A
+  profile room created without an explicit power level override for `m.social.profile_user_id` (see
+  Profile rooms, above) can therefore have its ownership reassigned by any Moderator, not only the
+  room's Admin/owner. Clients creating profile rooms SHOULD set this override at room-creation time.
+- **Reposts can misrepresent, or entirely fabricate, what the original said, or who said it.**
+  Because `m.social.repost_of.content`/`sender`/`displayname` are a snapshot taken at repost time, a
+  malicious or careless repost could keep an offensive or retracted statement (or image, or other
+  media) circulating in others' feeds after the original author has edited or redacted it, or
+  attribute real or fabricated content to a user who never posted it at all. Nothing ties `content`,
+  `sender`, or `displayname` to the actual content or author of the referenced `event_id`/`room_id`:
+  a malicious user can point those fields at a real post while embedding any `content`/`sender`/
+  `displayname` they want, fabricating something the original author never said, or attributing real
+  content to the wrong person entirely. Clients SHOULD indicate when a live original event can no
+  longer be found or has been redacted, distinct from a repost whose original is unchanged, and
+  SHOULD verify the embedded `content`/`sender` against the live original's actual content/sender
+  where the original is accessible, flagging a mismatch as a fabricated or altered quote (or a
+  misattributed one) rather than silently trusting the embedded copy.
 - **Public, joinable profile/group rooms carry the same abuse surface as any public Matrix room
   today** (spam, unwanted joins, abusive content). This proposal introduces no new attack surface
   beyond what already exists for public `m.room.message`-based rooms, and defers entirely to existing
@@ -416,6 +503,7 @@ all under the `org.matrix.msc4501.social.` namespace:
 | `m.social.post`                   | `org.matrix.msc4501.social.post`                  |
 | `m.social.repost_of`              | `org.matrix.msc4501.social.repost_of`             |
 | `m.social.profile_room_id`        | `org.matrix.msc4501.social.profile_room_id`       |
+| `m.social.profile_user_id`        | `org.matrix.msc4501.social.profile_user_id`       |
 
 *(This mirrors how MSC3639 itself moved from `org.matrix.msc3639.*` unstable identifiers to
 `m.social.*` on acceptance; the same rename will happen here if/when this proposal is accepted.)*
