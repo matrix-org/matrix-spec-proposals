@@ -221,11 +221,14 @@ your profile, below.
 
 A post can reference another post in a different room, whether it's reposting it or cross-posting a
 reply into the replying user's own profile so followers see it. Its content then includes an
-`m.social.relates_to` block, with a `kind` field naming the relationship. Its fields:
+`m.social.relates_to` block, with a `rel_type` field naming the relationship, the same field name
+Matrix's own `m.relates_to` uses for the same purpose. `m.social.relates_to` is its own, distinctly
+named block, though, not the real `m.relates_to`: it carries none of that mechanism's server-side
+aggregation, bundling, or thread-rollup behavior, only the identifier-naming convention. Its fields:
 
 **Mandatory**
 
-- `kind`: `m.social.repost` or `m.social.reply` (see Reposting/Boosting/Retweeting/Quote-posting and
+- `rel_type`: `m.social.repost` or `m.social.reply` (see Reposting/Boosting/Retweeting/Quote-posting and
   Cross-posting a reply to your profile, below, for what each means).
 - `event_id`: the referenced post's event ID.
 - `room_id`: the room the referenced post was sent in.
@@ -239,8 +242,8 @@ reply into the replying user's own profile so followers see it. Its content then
   bare placeholder linking to the event. MUST NOT be present alongside `content_inline: true` (see
   below), since that would duplicate the same content twice.
 - `content_inline` (boolean): set in place of `content`, when the outer event's own `content` is
-  already an identical duplicate of the referenced post. Only meaningful for `kind: "m.social.repost"`;
-  MUST NOT be set for `kind: "m.social.reply"`, whose outer `body` is always the replying user's own
+  already an identical duplicate of the referenced post. Only meaningful for `rel_type: "m.social.repost"`;
+  MUST NOT be set for `rel_type: "m.social.reply"`, whose outer `body` is always the replying user's own
   text, never a duplicate of what they're replying to. See Boosting with inline content, below.
 - `displayname`: snapshot of the referenced post's author's display name at reference time, for nicer
   default rendering. Clients MUST fall back to the bare `sender` Matrix ID when it is absent, the same
@@ -255,7 +258,7 @@ have never joined. Clients SHOULD still attempt to resolve the live referenced e
 since been edited or redacted, falling back to the embedded copy when it isn't reachable, or to a bare
 placeholder linking to the event when no embedded copy was sent either.
 
-**Reposting / Boosting / Retweeting / Quote-posting** uses `kind: "m.social.repost"`. The outer `body`
+**Reposting / Boosting / Retweeting / Quote-posting** uses `rel_type: "m.social.repost"`. The outer `body`
 then determines which of the two:
 
 **Quote-posting** is a repost with the reposting user's own added commentary in the *outer* post's
@@ -268,7 +271,7 @@ then determines which of the two:
     "msgtype": "m.text",
     "body": "This is exactly what I was talking about:",
     "m.social.relates_to": {
-      "kind": "m.social.repost",
+      "rel_type": "m.social.repost",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
       "sender": "@bob:example.org",
@@ -298,7 +301,7 @@ pointing at the same event referenced by `m.social.relates_to`:
     "msgtype": "m.text",
     "body": "https://matrix.to/#/!originalroom:example.org/$original:example.org",
     "m.social.relates_to": {
-      "kind": "m.social.repost",
+      "rel_type": "m.social.repost",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
       "sender": "@bob:example.org",
@@ -329,7 +332,7 @@ a bare link. Set `content_inline: true` and omit `relates_to.content`:
     "msgtype": "m.text",
     "body": "This is the original post being reposted",
     "m.social.relates_to": {
-      "kind": "m.social.repost",
+      "rel_type": "m.social.repost",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
       "sender": "@bob:example.org",
@@ -355,7 +358,7 @@ original author (`relates_to`'s `sender`/`displayname`).
 No new event type is needed to distinguish a boost from a quote-post, avoiding near-identical event
 types for what is fundamentally one relationship.
 
-**Repost/boost counts.** When sending a post with `m.social.relates_to` of `kind: "m.social.repost"`,
+**Repost/boost counts.** When sending a post with `m.social.relates_to` of `rel_type: "m.social.repost"`,
 in any of the forms above (quote-post, boost, or boost with inline content), clients SHOULD (but are
 not required to) additionally send an `m.reaction` with `key: "🔁"` annotating the referenced event.
 This is RECOMMENDED, not mandatory, but it lets any client compute a repost/boost count for a post
@@ -365,7 +368,7 @@ viewing client to understand `m.social.relates_to` itself, the same rationale as
 permission to react in the referenced event's room; where they don't, the reaction is simply not sent
 and the count isn't incremented from that repost.
 
-**Cross-posting a reply to your profile** uses `kind: "m.social.reply"`. A reply to a post already uses
+**Cross-posting a reply to your profile** uses `rel_type: "m.social.reply"`. A reply to a post already uses
 the ordinary `m.thread` relation within the room it's replying in (see Posts, above); this is a
 separate, additional mechanism for surfacing that same reply in the replying user's own profile feed,
 the same way replying to someone on other social platforms shows up on your own timeline, even though
@@ -384,7 +387,7 @@ has its own content:
     "msgtype": "m.text",
     "body": "Completely agree with this!",
     "m.social.relates_to": {
-      "kind": "m.social.reply",
+      "rel_type": "m.social.reply",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
       "sender": "@bob:example.org",
@@ -398,7 +401,7 @@ has its own content:
 }
 ```
 
-A client rendering a post with `m.social.relates_to` of `kind: "m.social.reply"` SHOULD show something
+A client rendering a post with `m.social.relates_to` of `rel_type: "m.social.reply"` SHOULD show something
 like "Alice replied to Bob's post" above the reply text, using `relates_to.content` for the referenced
 post the same way a quote-post does, and naming both the replying user (outer `sender`) and the
 original author (`relates_to`'s `sender`/`displayname`). This event is a copy posted purely for feed
@@ -491,13 +494,13 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   fallback (a profile-typed room a client happens to be a member of and was created by the target user
   remains usable as a weaker, best-effort substitute; see Profile/Group discoverability, above).
 - **A quote-post whose entire commentary happens to be a permalink to the same event is
-  indistinguishable from a boost.** Specific to `kind: "m.social.repost"`: because a boost is detected
+  indistinguishable from a boost.** Specific to `rel_type: "m.social.repost"`: because a boost is detected
   purely by `body` being nothing but a matching permalink (see Proposal, above), a user who deliberately
   quote-posts with no text other than a copy-pasted link to that same event will have their post
   rendered as a plain boost instead. This proposal considers that an acceptable, rare edge case (the
   rendered outcome, "a repost with no commentary", is arguably correct anyway, since a bare link
   duplicating `m.social.relates_to` carries no information a boost doesn't already convey). This does
-  not affect `kind: "m.social.reply"`, whose outer `body` is never used to distinguish sub-cases.
+  not affect `rel_type: "m.social.reply"`, whose outer `body` is never used to distinguish sub-cases.
 - **Phase transition timing is deliberately unmeasured.** "Majority of active users"/"majority of
   posts" in the phased rollout are not tied to any concrete, verifiable metric, since Matrix does not
   currently have a reliable mechanism for measuring client adoption share across the network. This is
@@ -518,16 +521,17 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   distinction in the UI, or to avoid accidentally treating a private DM as postable. Room types are
   also an existing, established Matrix mechanism (the same one `m.space` already uses) for exactly this
   kind of container classification, so reusing it is the smaller addition to the protocol.
-- **Reusing the real `m.relates_to`/`rel_type` mechanism** (e.g. `rel_type: "m.social.repost"`)
-  referencing the original event, instead of a separate `m.social.relates_to` content block. Considered,
-  but rejected: `m.relates_to`-based relations (bundled aggregations, the `/relations` endpoint, thread
-  rollups) are resolved by walking the *same room's* event graph, so a foreign `room_id` under `rel_type`
-  would be silently ignored by that machinery rather than doing anything useful, and reusing the same
-  key risks a client or server misreading a cross-room reference as an ordinary in-room relation. A
-  distinctly-named `m.social.relates_to` avoids colliding with that machinery while still borrowing its
-  "kind discriminator" idea. The embedded content is also still needed regardless (see Proposal, above,
-  for why), and a relation doesn't carry that payload any more naturally than a plain content field
-  would.
+- **Reusing the real `m.relates_to` key itself**, rather than a distinctly-named `m.social.relates_to`
+  block. Considered, but rejected: `m.relates_to`-based relations (bundled aggregations, the
+  `/relations` endpoint, thread rollups) are resolved by walking the *same room's* event graph, so a
+  foreign `room_id` alongside `rel_type` would be silently ignored by that machinery rather than doing
+  anything useful, and reusing the same top-level key risks a client or server misreading a cross-room
+  reference as an ordinary in-room relation. `m.social.relates_to` still borrows `rel_type` as its
+  discriminator field's name, matching existing Matrix convention, but living under a distinct key means
+  it carries none of `m.relates_to`'s aggregation/rollup semantics; implementations MUST NOT assume
+  `m.social.relates_to.rel_type` behaves like `m.relates_to.rel_type` beyond naming an identifier. The
+  embedded content is also still needed regardless (see Proposal, above, for why), and a relation
+  doesn't carry that payload any more naturally than a plain content field would.
 - **A bare pointer event carrying only `event_id`/`room_id`, with no content-embedding option at all.**
   Considered as the minimal possible mechanism, but rejected: a viewer who isn't joined to the referenced
   room, the common case for both reposts and cross-posted replies, since followers usually aren't
@@ -536,10 +540,10 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   optional-but-recommended already covers the minimal-pointer case for implementations that don't need
   it, without forcing every implementation into that failure mode.
 - **A separate `m.social.in_reply_to` block mirroring `m.social.repost_of`'s original shape**, instead
-  of unifying both into `m.social.relates_to` with a `kind` field. Rejected: reposts and cross-posted
+  of unifying both into `m.social.relates_to` with a `rel_type` field. Rejected: reposts and cross-posted
   replies need the exact same fields (`event_id`, `room_id`, `sender`, optional `content`/`displayname`)
   for the exact same reason, rendering a cross-room reference without requiring room membership; the
-  only real difference is what the relationship *means*, which a `kind` field captures far more cheaply
+  only real difference is what the relationship *means*, which a `rel_type` field captures far more cheaply
   than a second, near-identical block would.
 - **Separate event types for boosts versus quote-reposts** (e.g. `m.social.boost` and
   `m.social.quote_post`). Rejected in favor of a single mechanism (a `body` that is only a permalink
@@ -590,14 +594,14 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   Profile rooms, above) can therefore have its ownership reassigned by any Moderator, not only the
   room's Admin/owner. Clients creating profile rooms SHOULD set this override at room-creation time.
 - **Reposts and cross-posted replies can misrepresent, or entirely fabricate, what the referenced post
-  said, or who said it.** Because `m.social.relates_to.content`/`sender`/`displayname` (and `kind`
+  said, or who said it.** Because `m.social.relates_to.content`/`sender`/`displayname` (and `rel_type`
   itself) are a snapshot taken at reference time, a malicious or careless repost or reply could keep an
   offensive or retracted statement (or image, or other media) circulating in others' feeds after the
   original author has edited or redacted it, or attribute real or fabricated content to a user who never
   posted it at all. Nothing ties `content`, `sender`, or `displayname` to the actual content or author of
   the referenced `event_id`/`room_id`: a malicious user can point those fields at a real post while
   embedding any `content`/`sender`/`displayname` they want, fabricating something the original author
-  never said, or attributing real content to the wrong person entirely; a malicious `kind` can likewise
+  never said, or attributing real content to the wrong person entirely; a malicious `rel_type` can likewise
   mislabel a repost as a reply or vice versa, though this only misleads a viewer about the *nature* of
   the relationship, not its authenticity. Clients SHOULD indicate when a live referenced event can no
   longer be found or has been redacted, distinct from a reference whose original is unchanged, and
