@@ -220,7 +220,10 @@ without changing the rules handling server side. This alternative should be disc
 
 ## Security considerations
 
-None
+This MSC does not reveal encrypted event contents, but it does change the amount and shape of push
+traffic for encrypted rooms. Push gateways and application services involved in push delivery may
+observe more wakeups for encrypted rooms than before, which can expose additional metadata about
+encrypted-room activity.
 
 ## Future extensions
 
