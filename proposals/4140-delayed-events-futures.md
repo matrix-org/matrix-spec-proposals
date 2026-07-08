@@ -336,7 +336,7 @@ Additionally, a homeserver MAY discard finalised delayed events that have been r
 
 #### `delay_id` in `unsigned` event data
 The `delay_id` of a sent delayed event MUST be included in the resulting room event's `unsigned` data
-if, and only if, the client being given the event is authenticated as the event's sender.
+if, and only if, the client being given the event (e.g. over `/sync` or `/messages`) is authenticated as the event's sender.
 
 #### Power levels are evaluated at the point of sending
 
