@@ -19,7 +19,7 @@ room memberships on any room known to the homeserver.
 A new optional property `scopes` is added at the top level of the service [registration file].
 `scopes` is an array of strings. The only permitted value is `unrestricted_member_access`.
 
-``` yaml
+```yaml
 id: "My Service"
 url: null # No traffic required
 as_token: "..."
