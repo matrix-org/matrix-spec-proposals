@@ -246,9 +246,11 @@ and can be used to slow down the homeserver.
 
 A new authenticated Client-Server API endpoint at
 `GET /_matrix/client/v1/delayed_events/{delay_id}` responds with
-details on the delayed event with the specified `delay_id` owned by the requesting user.
+details on the delayed event with the specified `delay_id`.
 
-If no such delayed event can be found, the homeserver will respond with HTTP 404
+If no delayed event with the specified `delay_id` exists,
+or it does exist but had been scheduled by a user other than the one requesting this endpoint,
+the homeserver will respond with HTTP 404
 and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
 with an `errcode` of `M_NOT_FOUND`.
 
