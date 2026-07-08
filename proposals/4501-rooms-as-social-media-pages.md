@@ -216,29 +216,39 @@ event. This proposal does not define a separate "comment" event type, unlike MSC
 
 ### Reposting / Boosting / Retweeting / Quote Posting
 
-To mark a post as a repost of another post, its content includes an `m.social.repost_of` block, with
-the outer `body` holding either the reposting user's own commentary (a quote-post) or a permalink to
-the reposted event (a boost); see below for which.
+To mark a post as a repost of another post, its content includes an `m.social.repost_of` block. Its
+fields:
 
-`m.social.repost_of` contains the `event_id` and `room_id` of the original post, the `sender` (Matrix
-ID) of the original post's author, and a copy of its entire `content` at the time of reposting, not
-just `body`: `formatted_body`, `format`, media fields (`url`, `file`, `info`, etc.), and any other key
-present on the original event's `content` are all copied in as-is, so a repost of, say, an image or a
-rich-formatted post renders identically to how the original was authored, not just as a plain-text
-stand-in. `m.social.repost_of` MAY additionally include a `displayname`, snapshotting the original
-author's display name at repost time for a nicer default rendering; clients MUST NOT assume it is
-present and MUST fall back to rendering the bare `sender` Matrix ID when it is absent, the same as
-Matrix already does anywhere else a display name is unset.
+**Mandatory**
 
-The content and sender are embedded (rather than requiring viewers to fetch the original event)
-because the person viewing a repost in their feed may not share a room with the original poster at
-all, e.g., reposting a post from a public group into your own profile, seen by followers who aren't
-members of that group. Embedding them guarantees the repost is renderable, including any media it
-contains and proper attribution of who originally posted it, without the viewer's client needing to
-join or peek the original room. Clients SHOULD still attempt to resolve the live original event (via
-`event_id` + `room_id`) where accessible, to support "view original", live reaction counts, or
-detecting that the original has since been edited or redacted, falling back to the embedded content
-and sender/displayname when the original isn't reachable.
+- `event_id`: the original post's event ID.
+- `room_id`: the room the original post was sent in.
+- `sender`: Matrix ID of the original post's author.
+
+**Optional**
+
+- `content` (RECOMMENDED): a full copy of the original post's entire `content` at repost time. Without
+  it, a client has to either fetch the live original event to render the repost, which can fail if the
+  viewer lacks permission to see it or isn't joined to `room_id` at all, or fall back to a bare
+  placeholder linking to the event. MUST NOT be present alongside `content_inline: true` (see below),
+  since that would duplicate the same content twice.
+- `content_inline` (boolean): set in place of `content`, when the outer event's own `content` is
+  already an identical duplicate of the original post. See Boosting with inline content, below.
+- `displayname`: snapshot of the original author's display name at repost time, for nicer default
+  rendering. Clients MUST fall back to the bare `sender` Matrix ID when it is absent, the same as
+  Matrix already does anywhere else a display name is unset.
+
+`sender` is mandatory, and `content`/`displayname` are RECOMMENDED, precisely so a repost doesn't
+require viewers to fetch the original event to render or attribute it: the person viewing a repost in
+their feed may not share a room with the original poster at all, e.g., reposting a post from a public
+group into your own profile, seen by followers who aren't members of that group, and may not even have
+permission to read the original room at all. Clients SHOULD still attempt to resolve the live original
+event (via `event_id` + `room_id`) where accessible, to support "view original", live reaction counts,
+or detecting that the original has since been edited or redacted, falling back to the embedded copy
+when the original isn't reachable, or to a bare placeholder linking to the event when no embedded copy
+was sent either.
+
+The outer `body` then determines the kind of repost.
 
 **Quote-posting** is a repost with the reposting user's own added commentary in the *outer* post's
 `body`, with the quoted post held entirely inside `m.social.repost_of`:
@@ -291,27 +301,49 @@ pointing at the same event referenced by `m.social.repost_of`:
 }
 ```
 
-A permalink is used instead of an empty string so that a client with no support for this proposal at
-all (one simply rendering the event as a plain `m.room.message`, since `body` is always a valid
-message body) shows a normal, clickable link to the boosted post rather than a blank message bubble
-that looks like a sending failure or a malformed event. Clients MAY additionally send a
-`formatted_body` containing the same link as an HTML anchor, for nicer rendering in clients that
-support formatted bodies but not this proposal.
+A permalink, rather than an empty string, means a client with no support for this proposal (rendering
+the event as a plain `m.room.message`) shows a normal, clickable link to the boosted post instead of a
+blank bubble that looks like a send failure. Clients MAY additionally send a `formatted_body` with the
+same link as an HTML anchor, for nicer rendering in clients that support formatted bodies but not this
+proposal.
 
-A boost and a quote-post are therefore still the same event shape; what distinguishes them is whether
-the outer `body` is *only* a permalink to the reposted event, or contains anything else. A compliant
-client detects a boost by checking, for any post with an `m.social.repost_of` block, whether `body`
-(trimmed of surrounding whitespace) parses as a `matrix.to`/`matrix:` permalink whose room and event
-match `m.social.repost_of`'s `room_id`/`event_id` (a body that doesn't parse, or points elsewhere,
-means the sender meant it as actual commentary (a quote-post) even if that commentary happens to
-look like a URI). On a detected boost, the client SHOULD NOT render the literal `body` as commentary;
-instead it SHOULD render something like "Alice reposted Bob's post" above the embedded repost content,
-naming both the user who reposted (the outer event's own `sender`) and the original post's author
-(`m.social.repost_of`'s `sender`/`displayname`), without either name requiring a fetch to the
-original room. No new
-event type is needed to distinguish a boost from a quote-post; this deliberately avoids a combinatorial
-explosion of near-identical event types for what is fundamentally one relationship (this post reshares
-that post, with or without commentary).
+**Boosting with inline content** is an alternative to the permalink form, for implementations, such as
+a bridge mirroring reposts from another network, that already build one copy of the reposted content
+as the event's own `content` and would rather a non-compliant client render that content directly than
+a bare link. Set `content_inline: true` and omit `repost_of.content`:
+
+```json
+{
+  "type": "m.social.post",
+  "content": {
+    "msgtype": "m.text",
+    "body": "This is the original post being reposted",
+    "m.social.repost_of": {
+      "event_id": "$original:example.org",
+      "room_id": "!originalroom:example.org",
+      "sender": "@bob:example.org",
+      "content_inline": true
+    }
+  }
+}
+```
+
+This MUST NOT carry reposting-user commentary: once `content_inline` is set, there is no way to tell
+duplicated original content apart from genuine commentary, so a repost with its own added text MUST use
+the `content` copy instead (Quote-posting, above).
+
+A boost and a quote-post are therefore the same event shape; what distinguishes them is whether the
+outer `content` is *only* a duplicate of (or permalink to) the original, or contains anything else. A
+compliant client detects a boost by checking, for any post with `m.social.repost_of`, whether
+`content_inline` is `true`, or `body` (trimmed) parses as a permalink matching `repost_of`'s
+`room_id`/`event_id`; otherwise it's a quote-post, even if the commentary happens to look like a URI.
+On a detected boost, clients SHOULD NOT render the literal `body` as commentary; instead render
+something like "Alice reposted Bob's post" above the reposted content (from `repost_of.content`, or the
+outer `content` when `content_inline` is `true`), naming both the reposting user (outer `sender`) and
+the original author (`repost_of`'s `sender`/`displayname`), without either requiring a fetch to the
+original room. No new event type is needed to distinguish a boost from a quote-post, avoiding a
+combinatorial explosion of near-identical types for what is fundamentally one relationship (this post
+reshares that post, with or without commentary).
 
 ### Liking
 
@@ -376,11 +408,13 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
 
 ## Potential issues
 
-- **Repost content duplication.** Because `m.social.repost_of.content` is a copy taken at repost time,
-  an edit to the original post does not propagate to reposts that already copied the old content, the
-  same limitation any "forwarded message" feature already has. Clients can mitigate this by re-fetching
-  the live original where accessible (see Security considerations for the more serious version of this
-  concern).
+- **Repost content duplication.** Because `m.social.repost_of.content` (or, for a `content_inline`
+  boost, the outer event's own `content`) is a copy taken at repost time, an edit to the original post
+  does not propagate to reposts that already copied the old content, the same limitation any "forwarded
+  message" feature already has. Clients can mitigate this by re-fetching the live original where
+  accessible (see Security considerations for the more serious version of this concern).
+  `content_inline` avoids storing the duplicate twice within the repost event itself, but does not
+  change this staleness limitation either way.
 - **Feed construction doesn't distinguish "my posts" from "posts I follow" beyond room
   type/membership.** This proposal only specifies which *rooms* feed into a feed, not how a client
   should organize multiple joined profile/group rooms into, say, a "Home" feed versus an individual
@@ -445,6 +479,13 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   is of: a room created by a bridge or appservice on a user's behalf will have the bridge's own bot as
   `creator`. A dedicated state event lets the room assert its true intended owner independent of who
   technically created it. See Profile rooms, above.
+- **Always requiring the outer `content` to double as the duplicate, dropping `repost_of.content`
+  entirely**, rather than making `content_inline` an opt-in alongside it. Rejected because a
+  quote-post's outer `body` is the reposting user's own commentary, not a copy of the original; it
+  cannot double as the duplicate the way a boost's can. Keeping `repost_of.content` as the general-case
+  mechanism, with `content_inline` as an opt-in for boost implementations that already build the
+  outer content as a duplicate anyway, covers both cases without forcing every implementation to
+  special-case quote-posts.
 
 ## Security considerations
 
@@ -480,7 +521,10 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   longer be found or has been redacted, distinct from a repost whose original is unchanged, and
   SHOULD verify the embedded `content`/`sender` against the live original's actual content/sender
   where the original is accessible, flagging a mismatch as a fabricated or altered quote (or a
-  misattributed one) rather than silently trusting the embedded copy.
+  misattributed one) rather than silently trusting the embedded copy. This applies equally to a
+  `content_inline: true` boost: the outer event's own `content` is exactly as self-asserted and
+  unverified as a `repost_of.content` copy would have been, so it carries no additional trust just for
+  living at the top level of the event.
 - **Public, joinable profile/group rooms carry the same abuse surface as any public Matrix room
   today** (spam, unwanted joins, abusive content). This proposal introduces no new attack surface
   beyond what already exists for public `m.room.message`-based rooms, and defers entirely to existing
