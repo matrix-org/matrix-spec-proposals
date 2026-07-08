@@ -70,10 +70,10 @@ to mute rooms will be evaluated before this new one. The new rule will be evalua
 
 ### Receiving notifications
 
-When this push rule matches then homeserver would push the event to all registered clients, similar to how other rules
-work. Clients would
-[decrypt the event and re-run push rules](https://spec.matrix.org/v1.7/client-server-api/#receiving-notifications) as
-normal. If the decrypted event results in no notification, the push is discarded [^2]. If the decryption failed, the
+When this push rule matches, the homeserver would push the event to all registered clients, similar to
+how other rules work. This rule is intended to wake clients so they can
+[decrypt the event and re-run push rules](https://spec.matrix.org/v1.7/client-server-api/#receiving-notifications)
+locally. It is not by itself a reason to display a user-visible notification. If the decrypted event results in no notification, the push is discarded [^2]. If the decryption failed, the
 new `.m.rule.encrypted_event` rule will match on client side, but there is no reason to notify the end user, so the
 push is discarded [^2] too. Globally the client must discard the push when the event stays encrypted locally because
 this use case should not happen except if the event was not encrypted for the current session, or if we are in front
