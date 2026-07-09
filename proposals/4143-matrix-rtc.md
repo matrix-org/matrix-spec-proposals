@@ -367,75 +367,35 @@ Session lifetime           [***************************|    |*******************
 Time                 ───────────────────────────────────────────────────────────────────────►
 ```
 
-### MatrixRTC Transport
+### Discovery of transport infrastructure
 
-MatrixRTC, by design, supports multiple transport implementations, each defined in its own MSC.
-Transports describe how clients connect to peers or servers, manage connections, publish and
-subscribe to media streams. A transport can represent different RTC backends such as SFUs, MCUs, or
-full-mesh peer-to-peer topologies.
+Some transports require server-side infrastructure such as SFUs or TURN servers. Clients need
+a mechanism to discover the availability of such infrastructure and any potentially required
+connection details. To enable this, a new authenticated Client-Server endpoint
+`GET /_matrix/client/v1/rtc/transports` is introduced. The endpoint returns the available
+server-supported transport types:
 
-Currently, [MSC4195: MatrixRTC Transport using LiveKit backend](https://github.com/matrix-org/matrix-spec-proposals/pull/4195) 
-is the primary proposal, while a full-mesh transport based on 
-[MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) is also planned. 
-Each transport defines its connection model, supported topologies, and any additional requirements 
-for participating clients.
+```http
+200 OK
+Content-Type: application/json
 
-#### Discovery of RTC Transports
-
-MatrixRTC requires a mechanism for clients to discover which RTC transports — such as an SFU or TURN
-server — are available in their Matrix deployment. To support this, homeservers expose an 
-authenticated endpoint that returns a list of JSON objects. The endpoint is authenticated as the RTC
-transport information is only useful to local clients; remote clients obtain transport information 
-via `m.rtc.member` events. Each transport-description object represents an RTC transport as defined
-by the corresponding MSC.
-
-> [!NOTE]
-> RTC Transports in this context can be anything that can serve as the backend for a MatrixRTC
-> session. In most cases this is a SFU. But also a full mesh implementation could be a transport.
-> Not all kinds of RTC transports require a way of sourcing a backend resource (e.g. a
-> peer-to-peer-solution). In this MSC we only refer to transport where it is necessary to have
-> access to additional data to participate in the MatrixRTC session.
-
-The endpoint: `GET /_matrix/client/v1/rtc/transports` is used to expose a sorted (by priority) list
-of Transport description objects.
-
-Response format:
-
-```json5
 {
   "rtc_transports": [
     {
-      "type": "some-transport-type",
-      "additional-type-specific-field": "https://my_transport.domain",
-      "another-additional-type-specific-field": ["with", "Array", "type"]
+      "type": "{transport_type}",
+      ... // Further transport-specific properties (if required)
     }
   ]
 }
 ```
 
-Concrete example for a `livekit` transport:
-
-```json5
-{
-  "rtc_transports": [
-    {
-      "type": "livekit",
-      "livekit_service_url": "https://matrix-rtc.example.com/livekit/jwt"
-    }
-  ]
-}
-```
-
-**Fields:**
-
-* `rtc_transports` — array of transport-description representing the available RTC transports
-  offered by the homeserver.  
-* Each object in the array MUST conform to the JSON schema defined for its `type` (e.g.
-  `livekit` in [MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195)).
-
-Clients SHOULD use this list to determine which RTC transports to connect to and may advertise their
-selected transports according to the respective MSC in the `rtc_transports` field of their
-`m.rtc.member` events.
+- `rtc_transports` (required, array): Array of objects describing the transports the homeserver
+  supports. Elements in the array are sorted descendingly by preference.
+  - `type`: (required, string): The globally unique transport identifier. MUST follow the
+    [Common Namespaced Identifier Grammar] but without the namespacing requirements.
+  - Optionally includes further properties specific to the transport `type`. The concrete properties
+    are defined by the transport's specification. An SFU-based transport, for instance, could include
+    the URL on which to reach the SFU.
 
 ### End-to-end encryption
 
