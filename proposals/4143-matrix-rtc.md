@@ -258,7 +258,7 @@ schema:
   "type": "m.rtc.member",
   "content": {
     "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
-    "disconnect_reason": {                 // SHOULD
+    "disconnect_reason": {
       "class": "{class}",
       "reason": "{reason}",
       "description": "{description}",
@@ -271,7 +271,7 @@ schema:
 
 - `slot_id` (required, string): The `state_key` of the slot that is being disconnected from.
 - `disconnect_reason` (object): Optionally provides context on why the client disconnected[^disconnect].
-  This should only be used if the user has actually attempted to connect to the slot before.
+  This SHOULD only be used by clients if the user has actually attempted to connect to the slot before.
   This ensures that the `disconnect_reason` refers to a real connection lifecycle rather
   than pre-join cancellation.
   - `class` (required, string): High-level category of the disconnection or error. Must be on of:
