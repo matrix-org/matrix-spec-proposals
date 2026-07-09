@@ -167,5 +167,5 @@ new attack surface to other parties.
 
 Unstable implementations should use `com.beeper.allow_backward` in place of `allow_backward` in the request body.
 
-Servers can promote support for this MSC in `/_matrix/client/versions` by setting the flag `com.beeper.msc4446`.
+Servers can promote support for this MSC in `/_matrix/client/versions` by setting the flag `com.beeper.msc4446` to `true`.
 The feature flag should continue to be advertised after the MSC is accepted until the server advertises support for the stable spec release that includes this MSC.
