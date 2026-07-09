@@ -508,49 +508,6 @@ in that period and then a single key rotation is scheduled afterward.
 `keyRotationGracePeriod` must be greater than `delayBeforeUse` or it will have no effects (default
 10s and 5s)
 
-#### Shared Key alternative
-
-For big calls in a room, it might be interesting to use a shared key system instead of a per-sender
-key system.  
-In order to use a shared key, a new encrypted room event (`m.rtc.shared_encryption_key`) should be
-sent in the room, and the slot should be updated to include the `event_id` of the shared key event.
-
-```json5
-// Example: an open slot with shared key encryption
-{
-  "application": {
-    "type": "m.call",
-    // optional: app specific slot metadata
-    "m.call.id": UUID,    
-    "m.shared_key_event": "$000"
-  }
-}
-state_key: "m.call#ROOM" // slot_id
-```
-
-The shared key event:
-
-```json5
-  "event_id": "$000",
-  "origin_server_ts": 1759827668867,
-  "type": "m.rtc.shared_encryption_key"
-  "content": {
-     "key": "base64encodedkey"
-   },
-```
-
-**Pros**: Scales for big calls as there is no need to distribute n keys via to-device and to rotate
-keys on joiner/leavers  
-**Cons**: Less security, every room member (and future members) have the key materials even if they
-didn’t actively join the call. No automatic key rotation, so if the shared key is compromised past
-recording could be decrypted.
-
-Only users with enough power level (moderator, admin) can update the slot in order to enable shared
-keys call.
-
-Clients should detect when the slot is configured for a shared key, and then use the shared key
-instead of generating and sharing sender keys.
-
 ## Potential issues
 
 ### Shared State for a MatrixRTC Session using Matrix Primitives
@@ -766,6 +723,13 @@ to update entries under the top-level domain.
 
 `GET /_matrix/client/v1/rtc/transports` avoids these issues and offers more flexibility for
 future extensions such as user-specific transports.
+
+#### Shared key encryption
+
+For large calls an encryption scheme based on a shared key instead of a per-sender keys could
+be more efficient. However, this proposal prioritises security over performance. Therefore,
+defining a shared-key system by using a new encryption `type` is consciously left to a future
+proposal.
 
 ## Extensibility considerations
 
