@@ -50,6 +50,8 @@ If this flag is set to `false` or omitted, then servers should:
   [`/messages`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3roomsroomidmessages) endpoint.
 
 If `allow_backward` is set to `true`, servers should also accept event IDs that move the fully read marker back in time.
+Event IDs that match the current state should also be accepted with a `200` response code (just the same as when the
+`allow_backward` flag is `false` or omitted).
 
 When using the `/read_markers` endpoint, read receipts should still be checked for monotonicity even with
 `allow_backward` enabled, such that only the fully read marker is allowed to move backwards. The goal of this
@@ -169,3 +171,4 @@ Unstable implementations should use `com.beeper.allow_backward` in place of `all
 
 Servers can promote support for this MSC in `/_matrix/client/versions` by setting the flag `com.beeper.msc4446` to `true`.
 The feature flag should continue to be advertised after the MSC is accepted until the server advertises support for the stable spec release that includes this MSC.
+Clients should prefer the unstable prefix until their homeserver advertises stable support for these changes.
