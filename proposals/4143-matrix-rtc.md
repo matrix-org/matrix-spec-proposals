@@ -52,7 +52,7 @@ state events of type `m.rtc.slot` which means that they can only be created or m
 with sufficient power level. As described [below], participants can connect to slots by sending
 `m.rtc.member` room events.
 
-[below]: #slot-membership
+[below]: #membership
 
 This design deliberately separates slot management, requiring higher power level, from slot
 participation, requiring lower power level. This separation gives applications a robust surface
@@ -150,221 +150,184 @@ slot that is only opened when the meeting starts and closed again afterwards.
 For the time being, slots will have to be created manually. A future proposal may change the
 defaults for newly created rooms to provide slots for standard RTC applications.
 
-### Slot membership
+### Membership
 
-A MatrixRTC membership is represented by a sticky `m.rtc.member` event
-([MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354) Sticky Events). These
-events describe a participant’s presence in an MatrixRTC slot and provide sufficient metadata for
-other room members to detect and join the same slot. 
+Participation in slots is expressed via `m.rtc.member` room events. These events provide sufficient
+metadata for other room members to connect to the same slot and to exchange media streams via the
+chosen transports.
 
-The membership events are implemented as a key-value store according to the addendum section of
-[MSC4354 Sticky Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354) giving the
-same semantics as Matrix room state. If the room is encrypted `m.rtc.member` events are also
-encrypted and vice versa.
+`m.rtc.member` events MUST be sent as sticky events as per [MSC4354: Sticky Events][MSC4354]. This
+results in the same delivery guarantee that state events have which is highly desirable for RTC
+experiences. At the same time, it avoids the drawbacks associated with state events. Further details
+on this can be found in [MSC4354]. Clients MUST also implement the ephemeral map algorithm as defined
+in the addendum of [MSC4354] to construct a state-like store of membership events.
 
-An `m.rtc.member` sticky event can be either **Connected** or **Disconnected**
+[MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
 
-* **Connected**, if  
-  * **Slot open**: the `sticky_key` of the event needs to match the `member.id` AND the `slot_id`
-    matches the state\_key of the slot event.  
-  * **Content:** MUST match the JSON content schema for connecting to a slot (see below).  
-  * The sender is still a member of the room (not kicked / left).
-  * **Event is sticky**: The sticky event needs not to be expired as described in [MSC4354 Sticky
-    Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354). This is to ensure
-    that the membership view is as consistent as possible across all participants. When a member
-    event's stickiness expires, the associated delivery guarantee vanishes. As a result, some
-    participants might not have received the event while others did resulting in inconsistent
-    call memberships.
-* **Disconnected**, if  
-  * **Not Connected:** any of the required conditions to be connected are not met.  
-  * **Content:** SHOULD match the JSON content schema for disconnecting from a slot (see below). If
-    it does not match, clients MUST handle the lack of information gracefully.
+#### Connecting to a slot
 
-Since `m.rtc.slot` events are subject to state resolution and may generally be changed at any
-time, clients MUST react to and respect the latest known `m.rtc.slot` event at all times.
-If a rollback occurs during an active MatrixRTC session, application logic MUST handle conflicts
-(e.g., a rolled-back UUID).
-
-#### Connecting to a MatrixRTC Slot
-
-A valid `m.rtc.member` event as a prerequisite for connecting to a slot has the following schema:
+To connect to a slot, the client sends an `m.rtc.member` event with the following schema:
 
 ```json5
-// event type: "m.rtc.member"
 {
-  "slot_id": "m.call#ROOM",
-  "application": {
-    "type": "m.call",
-    // further fields for the application (optional)
-    "m.call.id": UUID
+  "type": "m.rtc.member",
+  "content": {
+    "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
+    "application": {
+      "type": "{application_type}",
+      ... // Further application-specific properties (if required)
+    },
+    "member": {
+      "id": "{member_id}",
+      "claimed_device_id": "{device_id}",
+      "claimed_user_id": "{user_id}"
+    },
+    "transports": {
+      "published": [
+        {
+          "type": "{transport_type}",
+          ... // Further transport-specific properties (if required)
+        },
+        ...
+      ],
+      "can_subscribe": [
+        "{transport_type}",
+        ...
+      ]
+    },
+    "sticky_key": "{member_id}" // = member.id
   },
-  "member": {
-    "id": "xyzABCDEF0123"                     // UUID random/anonymise/unique (external) service identifier
-    "claimed_device_id": "DEVICEID"
-    "claimed_user_id": "@user:matrix.domain"
-  },
-  "rtc_transports": [
-    {...TRANSPORT_1},
-    {...TRANSPORT_2}
-  ],
-  "sticky_key": "xyzABCDEF0123"               // same as member.id 
-  "versions": [
-    "v0",
-    "example.mscXXXX.asymmetric_encryption"
-  ],
+  ...
 }
 ```
 
-**Field explanations:**
+- `slot_id` (required, string): The `state_key` of the slot that is being connected to.
+- `application` (required, object): Describes the application that is running in the slot.
+  - `type` (required, string): The application's globally unique identifier; same as in `m.rtc.slot`.
+  - Optionally includes further properties for settings that are specific to the application
+    `type`. As in `m.rtc.slot`, the concrete properties are defined by the application's specification.
+    For example, a [Third Room](https://thirdroom.io) application could include approximate map positions,
+    allowing clients to avoid connecting to participants outside their area of interest.
+- `member` (required, object): Information to identify the member.
+  - `id` (required, string): Identifier to distinguish multiple participations, even for the same user
+    and device. MUST be unique for each connection. This means that clients need to use a different
+    identifier when disconnecting and then reconnecting to a slot. Transports can use `id` as the
+    canonical participant identifier to help prevent leaking metadata such as user or device IDs to
+    external services.
+  - `claimed_device_id` (required, string) — Matrix device identifier. This is "claimed" because a
+    receiving device has no way to tell if the event actually came from this device ID without the
+    encryption envelope. The device ID is used to exchange encryption keys as explained later in the
+    [encryption section].
+- `transports` (object): Details on the MatrixRTC transports of this member. Other clients use the
+  information in this object to determine how to connect to and exchange real-time data with this
+  participant. Client should be prepared to connect to as many transports as there are members
+  connected on a slot. The exact procedure for subscribing to and publishing real-time data is
+  defined in each transport's specification.
+  - `published` (array): An array of objects describing the transports on which the participant is
+    publishing media.
+    - `type`: (required, string): The globally unique transport identifier. MUST follow the
+      [Common Namespaced Identifier Grammar] but without the namespacing requirements.
+    - Optionally includes further properties specific to the transport `type`. The concrete properties
+      are defined by the transport's specification. An SFU-based transport, for instance, could include
+      a WebSocket URL.
+  - `can_subscribe` (array): An array of transport types that the participant is able to subscribe to.
+- `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
+  in the addendum of [MSC4354]. MUST have the same value as `member.id` field.
 
-* `slot_id` — The slot this member belongs to.  
-* `application` — Is a JSON object that identifies the MatrixRTC application type; Besides the
-  mandatory `type` field which needs to match the MatrixRTC slot identified by `slot_id` it **may**
-  include application-specific metadata (see MatrixRTC Application Types). For example, a [Third
-  Room](https://thirdroom.io) style experience could include approximate position data on a map,
-  allowing clients to avoid connecting to participants outside their area of interest.  
-  **Note** application-specific metadata as part of the MatrixRTC slot `application` object have
-  precedence over the MatrixRTC member ones.
-* `member` — Uniquely identifies this participation instance; includes:  
-  * `id` — Identifier to distinguish multiple participations, even for the same user and same device
-    MUST be unique for each connect event. MatrixRTC transports MAY use `id` as the canonical identifier
-    to help prevent leaking metadata such as the user ID or device ID to external services.
-  * `claimed_device_id` — Matrix device identifier. This is "claimed" because without the encryption
-    envelope, a receiving device has no way to tell if the event actually came from this device ID.
-  * `claimed_user_id` — Matrix user ID. This is "claimed" because without the encryption envelope,
-    a receiving device has no way to tell if the event actually came from this user ID.
-* `rtc_transports` — List of objects describing how to access this participant’s media streams. See
-  [MatrixRTC Transport](#matrixrtc-transport) for the correct object format.  
-* `sticky_key` — A unique key used to track this membership across updates. The key persists for the
-  lifetime of the MatrixRTC session and is a copy of the `member.id` field[^1]. 
-* `versions` — Protocol versions and capabilities supported by the client.
+Apart from having to match the above schema, an `m.rtc.member` event MUST only be considered to be
+connected if all of the following conditions apply:
 
-For the example above, user `@user:matrix.domain` with `member.id = xyzABCDEF0123` is part of the
-slot `m.call#ROOM`, using an application of type `m.call`, and connected over `TRANSPORT_1`. This
-information is sufficient for other room members to detect the running slot and join the session.
+- An open slot exists in the room as an `m.rtc.slot` state event with `state_key` equalling `slot_id`.
+- The sender is still a member of the room (i.e. not kicked or left).
+- The event is still sticky, meaning that its stickyness duration as per [MSC4354] has not expired.
+  This is to ensure that the membership view is as consistent as possible across all participants.
+  When a member event's stickiness expires, the associated delivery guarantee vanishes. As a result,
+  some participants might not have received the event while others did. Treating the participant as
+  connected in such cases would result in inconsistent views on the participating members.
 
-> [!NOTE]
-> to stay connected: The client MUST maintain participation by sending a new sticky event, before an
-`m.rtc.member` sticky event expires (i.e., `sticky.duration_ms <= 0`). **It is strongly
-recommended** that the update of the `m.rtc.member` sticky event is scheduled sufficiently ahead of
-the event timing out (e.g., 5 minutes) to minimize potential connection state “flipping effects”.
+If these conditions are not fulfilled, clients MUST treat the participant as disconnected and abort
+or refrain from consuming the participant's transports.
 
-#### Disconnect from a MatrixRTC Slot
+#### Disconnecting from a slot
 
-A valid `m.rtc.member` event as a prerequisite for disconnecting from a slot has the following schema:
+To consciously disconnect from a slot, the client sends an `m.rtc.member` event with the following
+schema:
 
 ```json5
-// event type: "m.rtc.member"
 {
-  "slot_id": "m.call#ROOM",              // MUST
-  "disconnect_reason": {                 // SHOULD
-    "class": "server_error",
-    "reason": "ice_failed",
-    "description": "Failed to establish peer-to-peer connection via ICE",
-  }
-  "sticky_key": "xyzABCDEF0123"
+  "type": "m.rtc.member",
+  "content": {
+    "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
+    "disconnect_reason": {                 // SHOULD
+      "class": "{class}",
+      "reason": "{reason}",
+      "description": "{description}",
+    },
+    "sticky_key": "{member_id}" // = member.id from previously connected m.rtc.member event
+  },
+  ...
 }
 ```
 
-> [!NOTE]
-> Any other content for the same `sticky_key` that is not a valid connect event is also treated as a
-> disconnect event. However, it is lacking important metadata useful for UX.
+- `slot_id` (required, string): The `state_key` of the slot that is being disconnected from.
+- `disconnect_reason` (object): Optionally provides context on why the client disconnected[^disconnect].
+  This should only be used if the user has actually attempted to connect to the slot before.
+  This ensures that the `disconnect_reason` refers to a real connection lifecycle rather
+  than pre-join cancellation.
+  - `class` (required, string): High-level category of the disconnection or error. Must be on of:
+    - `user_action`: The disconnect happened due to explicit user action (e.g. a hang up).
+    - `client_error`: The client experienced a failure.
+    - `server_error`: The server experienced a failure.
+    - `redirection`: The connection was moved somewhere else (e.g. to a different slot).
+    - `permanent_failure`: An unrecoverable failure occurred.
+  - `reason` (required, string): Identifier for the specific disconnection cause. MUST follow
+    the [Common Namespaced Identifier Grammar] but without the namespacing requirement. The
+    concrete values are defined by the application's specification.
+| `description` (string): Optional human-readable explanation of the disconnection reason.
+- `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
+  in the addendum of [MSC4354]. MUST have the same value as `member.id` field in the previously
+  connected `m.rtc.member` event.
 
-**Field explanations:**
-
-- `slot_id`: The slot this member belongs to.  
-- `sticky_key:` The sticky key from the disconnecting MatrixRTC member.  
-- `disconnect_reason`: The `disconnect_reason` object is **optional** and provides additional
-  context when a participant disconnects from a call. It is only meaningful if the user has
-  **previously attempted to connect** (i.e., has sent at least one valid `m.rtc.member` event for
-  the slot) This ensures that the disconnection reason refers to a real connection lifecycle rather
-  than a pre-join cancellation. 
-
-`disconnect_reason` **Field explanations:**
-
-| Field         | Type   | Required | Description |
-| ------------- | ------ | -------- | ----------- |
-| `class`       | string | Yes      | High-level category of the disconnection or error. |
-| `reason`      | string | Yes      | Machine-readable identifier of the specific cause. |
-| `description` | string | No       | Optional human-readable explanation providing additional context. |
-
-The following values are defined for `class`:
-
-- `user_action`: The disconnect was due to explicit user action (e.g. a hang up).
-- `client_error`: The client experienced a failure.
-- `server_error`: The server experienced a failure.
-- `redirection`: The connection was moved somewhere else (e.g. to a different slot).
-- `permanent_failure`: An unrecoverable failure occurred.
-
-Values for `reason` are application-specific and are defined by each particular MatrixRTC
-application type.
-
-The structured design of `disconnect_reason` allows representing complex error situations
+[^disconnect]: The structured design of `disconnect_reason` allows representing complex error situations
 such as found in e.g. [SIP](https://en.wikipedia.org/wiki/List_of_SIP_response_codes) in an
 accessible way.
 
-**Note: (Pre-join)** In situations where a client never successfully connects to a call (for
-example, if the user is busy or declines a MatrixRTC session), a dedicated **sticky event** is
-required to convey the participant’s status. 
+Again, once a participant has disconnected, clients MUST abort or refrain from consuming the
+participant's transports.
 
-#### Lifecycle of a MatrixRTC Membership
+#### Membership lifecycle
 
-The MatrixRTC membership is a collection of linked `m.rtc.member` events. With the definition of a
-**Connected** and a **Disconnected** MatrixRTC membership from above:
+The MatrixRTC membership lifecycle of a participant is a collection of subsequent `m.rtc.member` events.
 
-* The **connect transition** occurs when the `m.rtc.member` collection becomes Connected. Due to the
-  definition of Connected this happens at  `max(start_slot_ts, start_content_ts)` where:  
-  * `start_content_ts:` is the time the connect `m.rtc.member` event is sent.  
-  * `start_slot_ts:` is the time the slot is opened.  
-* The **disconnect transition** occurs when the `m.rtc.member` collection becomes Disconnected. Due
-  to the definition of Disconnected this happens at  `min(end_slot_ts, end_content_ts,
-  end_sticky_ts).` where:  
-  * `end_content_ts:` is the time the disconnect `m.rtc.member` event is sent.  
-  * `end_slot_ts:` is the time the slot is closed.  
-  * `end_sticky_ts` is the time the stickiness of the connected event expires.
+1. Participants first connect to a slot by sending an `m.rtc.member` event in its connected form.
+1. Afterwards, participants may update their membership, e.g. to change transports or modify
+   application-specific settings, by sending a new `m.rtc.member` event with the same `sticky_key`.
+   Since the actual connection state is constrained by the stickyness of the member event, clients
+   also need to send new `m.rtc.member` events if they want to stay connected longer than the stickyness
+   duration. It is RECOMMENDED that clients send these events sufficiently ahead of the stickyness
+   expiration to minimize potential connection state flickering.
+1. Finally, to disconnect from the slot, participants send an `m.rtc.member` event in its disconnected form.
 
-```
-       (Connect)              (Update)                (Disconnect)
-       
-     m.rtc.member ───────► m.rtc.member ──── ... ───► m.rtc.member
+As explained above, the resolved connection state is also constrained by the associated `m.rtc.slot`
+event existing and being open. Since `m.rtc.slot` events may generally be changed at any time, clients
+MUST constantly react to and respect the latest known `m.rtc.slot` event.
 
-     [---------------- Connected ------- ... --------][--- Disconnected ...
-Time ───────────────────────────────────────────────────────────────────────►
-```
+One problem with the membership lifecycle as listed above is that a client may not be able to
+send its disconnecting `m.rtc.member` event if it loses network connectivity. This would result
+in other participants considering the member as still connected, possibly for longer periods,
+even though no media can be exchanged. To mitigate the impact of this, clients SHOULD use
+delayed events as per [MSC4140: Cancellable delayed events][MSC4140] to implement a "dead man's switch".
+This means scheduling the `m.rtc.member` disconnection event as a delayed event with a reasonably
+short delay (e.g. 15-30 seconds). While being connected, the client can periodically restart
+the delayed event to push it into the future. If the client loses connectivity and the delay
+times out, the homeserver will send the disconnecting `m.rtc.member` event.
 
-> [!NOTE]
-> Updates are optional. They are only required if the participation lasts longer than the sticky
-event’s timeout (`sticky.duration_ms`) or the member changes their `m.rtc.member` event (for example
-to change transport). In such cases, participants MUST refresh their membership by sending a new
-sticky event update.
+Some transports may involve external services with high visibility on participants' connection state
+such as a Selective Forwarding Unit (SFU). Clients MAY delegate management of their delayed disconnect
+event to such services. How exactly the delegation is performed is defined by the transport's
+specification
 
-#### Reliability for Real-Time Applications
-
-For real-time applications, it is important to maintain an accurate view of which participants are
-connected and for how long. In particular:
-
-* **Precise membership tracking** — RTC applications rely on a high-resolution understanding of the
-  lifetime of each `m.rtc.member` object. Knowing exactly when a participant joins or leaves is
-  critical for computing session state.  
-* **Handling (unintentionally) disconnected clients** — A client that loses network connectivity
-  must not be treated as continuously connected. Otherwise, the session state may become
-  inconsistent or appear to include phantom participants.
-
-Clients MUST handle network disconnects or crashes by sending empty leave events once reconnection
-is possible, or by using cancellable delayed leave events
-([MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)).
-
-Clients SHOULD use cancellable delayed events to implement a “deadman switch” for MatrixRTC
-membership by sending a leave event ahead of the join event as a delayed event with a reasonable
-delay (e.g., 15–30 seconds). The client then periodically resets the delayed event’s timer. If the
-timer expires due to a missing reset, the leave event is automatically emitted, marking the
-participant as disconnected and ensuring accurate session state even in cases of sudden
-disconnection, crashes, or network failures.
-
-For increased accuracy, some MatrixRTC transports may offer the ability to delegate management
-of a user's delayed disconnect event to an external service with high visibility on the connection
-state (such as a Selective Forwarding Unit / SFU). An example of this is the LiveKit transport
-from [MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195).
+[MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 
 ### MatrixRTC Session
 
@@ -513,27 +476,6 @@ is the primary proposal, while a full-mesh transport based on
 [MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) is also planned. 
 Each transport defines its connection model, supported topologies, and any additional requirements 
 for participating clients.
-
-#### RTC Transports in `m.rtc.member` Events
-
-Each `m.rtc.member` event contains an `rtc_transports` array, which allows other clients to
-determine how to connect to, and exchange real-time data with that participant. This array includes
-at least one transport JSON object, each containing at least the following required field:
-
-* `type` (string) — Identifies the RTC transport.  
-* Additional fields may be present depending on the RTC transport `type`.
-
-The `versions` field of the `m.rtc.member` event SHOULD be used to determine which transports are
-supported by all participants. Clients SHOULD publish their RTC data using at least one transport
-supported by their application, constrained to the set of transports supported by all participants.
-Clients MAY additionally publish their media via multiple transports.
-
-To render a MatrixRTC session, a client MUST be prepared to connect to as many transports as there
-are members currently connected. For bandwidth efficiency, clients are recommended to subscribe to
-only one transport per member.
-
-The exact procedures for subscribing to and publishing real-time data are defined in the dedicated
-MSCs for each transport type.
 
 #### Discovery of RTC Transports
 
@@ -1054,7 +996,3 @@ semantics without the drawback of contributing to room state bloating.
 This proposal also depends on [MSC4140: Cancellable delayed
 events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) to provide a mechanism for
 clients to ensure that they can update the room state even if they lose connection.
-
-[^1]: Because `member.id` is generally unique, it serves as a reliable candidate for `sticky_key`,
-  preventing undesired collisions. Clients can use it to distinguish new member participation from
-  updates to existing RTC members.
