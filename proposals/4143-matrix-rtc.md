@@ -329,140 +329,43 @@ specification
 
 [MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 
-### MatrixRTC Session
+### Sessions
 
-A **MatrixRTC Session** is defined as the period of overlapping, **Connected** `m.rtc.member` events
-that share the same slot identified by `slot_id`. In other words, a session represents the span of
-time during which a potentially changing set of one or more participants is continuously connected
-to the same MatrixRTC slot.
+MatrixRTC sessions only exist indirectly through the temporal overlap of `m.rtc.member` events
+that are considered to be connected to the same `m.rtc.slot` event. In other words, a session
+represents the span of time during which a potentially changing set of one or more participants
+is continuously connected to the same slot.
 
-Note the Connected status of the m.rtc.member event is already bounded to an open slot
-
-Example of a MatrixRTC session: This diagram illustrates overlapping member intervals defining the
-MatrixRTC session lifetime, bounded by the slot being open.
+The examples below illustrate how different membership lifecycles and slot configurations
+lead to sessions.
 
 ```
-                       Session Start                                       Session End
-                           |                                                   |
-m.rtc.member[0]            |████████████████████████   ████████████████████████|████
-                           |^ connect   disconnect ^   ^ connect   disconnect ^|
-                           |                                                   |
-m.rtc.member[1]            |       ███████████████████████████████████████     |
-                           |       ^ connect                  disconnect ^     |
-                           |                                                   |
-m.rtc.member[2]            |            ████████████████████████               |
-                           |            ^ connect   disconnect ^               |
-                           |                                                   |
-Slot (open)          [*********************************************************]
-                           |                                                   |
-Session lifetime           [***************************************************]
+m.rtc.member[0]            |████████████████████████            ████████████████████████|████
+                           |^ connect   disconnect ^            ^ connect   disconnect ^|
+                           |                                                            |
+m.rtc.member[1]            |       ████████████████████████████████████████████████     |
+                           |       ^ connect                           disconnect ^     |
+                           |                                                            |
+Slot (open)          [******************************************************************]
+                           |                                                            |
+Session lifetime           [************************************************************]
 
-
-Time               ───────────────────────────────────────────────────────────────────►
+Time                 ───────────────────────────────────────────────────────────────────────►
 ```
 
-The lifetime of a MatrixRTC session is implicitly defined by the union of all **connected** member
-intervals, bounded by the slot’s open and close times:
+```
+m.rtc.member[0]        ████|███████████████████████████|    |███████████████████████████|
+                           |^ connect      disconnect ^|    |^ connect      disconnect ^|
+                           |                           |    |                           |
+m.rtc.member[1]            |  ████████████████████████ |    | ████████████████████████  |
+                           |  ^ connect   disconnect ^ |    | ^ connect   disconnect ^  |
+                           |                           |    |                           |
+Slot (open)                [******************************************************************]
+                           |                           |    |                           |
+Session lifetime           [***************************|    |***************************]
 
-* **Session start:** the first member connects  
-* **Session end:** the last connected member disconnects
-
-#### On Session Identifiers
-
-A MatrixRTC session identifier MAY be retrospectively derived by XORing the `event_id` of all
-associated `m.rtc.member` events.
-
-Alternatively, a pre-defined MatrixRTC session identifier MAY be included in the associated
-`m.rtc.slot` state event. Because Matrix state events are always subject to state resolution,
-applications MUST handle potential conflicts gracefully — for example, by rolling back conflicting
-state changes or employing a coordination mechanism to prevent conflicts in the first place. A
-typical implementation might involve a bot maintaining a Matrix room as the sole administrator,
-opening a slot for a scheduled video conference, and including a unique `m.call.id` in the
-`application` JSON object. When a pre-defined session identifier is used, only one MatrixRTC session
-SHOULD exist within that slot.
-
-In essence, *slots* exist to support concurrent RTC sessions within the same room. The sessions
-within each slot may or may not have an stated session ID depending on whether the app is able to
-switch ID mid-session (or display multiple concurrent sessions meaningfully).
-
-* If an application supports switching or displaying multiple sessions concurrently, participants
-  SHOULD explicitly declare the session they belong to.  
-* If it does not (for example, in typical group VoIP scenarios), participants may omit a session ID
-  and implicitly join the default, anonymous session associated with that slot.
-
-**Implementation note:**  
-This behavior may lead to user confusion in edge cases such as network partitions. For example,
-users who thought they were in one session during a network partition and then find themselves
-suddenly merged into another (unified) session, and so teleported into someone else’s conversation. 
-
-A more robust design might require all calls to have explicit session identifiers. In cases where
-conflicting identifiers are detected shortly after call setup, clients could tear down the local
-session and converge on the session that wins the race.
-
-If conflicts occur later during a session, the better user experience may be to treat them as two
-concurrent calls within the same room, allowing users to choose which session to join. In practice,
-this could be implemented as a prompt (e.g., *“There’s already a call happening — do you want to
-join it?”*), potentially automated to accept by default when no other participants remain in the
-local session.
-
-#### Session history
-
-As MatrixRTC does not emit a single event describing past sessions, historic MatrixRTC sessions MUST
-be reconstructed from room history. Clients SHOULD cache reconstructed sessions to avoid repeated,
-expensive history pagination.
-
-In general, all required information is present as part of the Matrix DAG:
-
-* **Sticky events** are persistently recorded in the Matrix DAG.  
-* **`m.rtc.slot` state event transitions**, even when affected by state resolution, are visible as
-  part of the timeline.
-
-However, for this reconstruction process to work **reliably and deterministically**, the Matrix 
-protocol requires **consistent message ordering (on a homeserver basis)** across both state and 
-timeline events. This remains an open problem and is discussed further in the 
-[*Impact of Message Ordering wrt. Session History*](#impact-of-message-ordering-wrt-session-history) 
-section. As a temporary workaround, the reconstruction process uses `origin_server_ts` ordering.
-
-General concept
-* Paginate backward through room history to collect relevant events:  
-  * `m.rtc.slot` events (slot open/close boundaries)  
-  * `m.rtc.member` events (connects, updates, disconnects)  
-* Correlate `m.rtc.slot` events with surrounding `m.rtc.member` events to reconstruct membership
-  intervals.  
-* Handle incomplete membership events: clients may fail to send proper connect/disconnect events;
-  using slot boundaries helps limit incorrect membership data.
-
-Note: due to the two-tier power level model (who may manage slots vs participation), using slot
-boundaries to filter membership events is typically sufficient to avoid many classes of spurious or
-invalid records.
-
-Step-by-step reconstruction algorithm
-
-1. Gather all `m.rtc.slot` events from the timeline and determine the slot open/close intervals
-   (i.e. transitions where `m.rtc.slot` content becomes non-empty → slot open; becomes empty → slot
-   closed).  
-2. For each open slot interval \[`slot_start, slot_end`\], as given by `origin_server_ts` at the
-   slot status transitions:  
-   * Collect `m.rtc.member` events whose connect/update/disconnect activity intersects the slot
-     interval.  
-   * Cluster related `m.rtc.member` events by their `sticky_key`  
-     * For each member event cluster the `membership_interval` \=  \[`membership_start,
-       membership_end`\] is given by:  
-       * `membership_start = max(start_slot_ts, start_content_ts)` as defined in [Lifecycle of a MatrixRTC Membership](#lifecycle-of-a-matrixrtc-membership)
-       * `membership_end = min(end_slot_ts, end_content_ts, end_sticky_ts)` as defined in [Lifecycle of a MatrixRTC Membership](#lifecycle-of-a-matrixrtc-membership)
-     * Drop all `membership_interval`s where `membership_start >= membership_end`.  
-     * Merge all overlapping or contiguous `membership_interval`s into a single (continuous)
-       interval `collection`. Within a given slot, **MatrixRTC sessions cannot overlap**; all
-       intersecting intervals form a single unified session.  
-3. For each `collection` of overlapping `membership_interval`s, a (historical) MatrixRTC session
-   exists with the following properties:  
-   * Slot identified by `slot_id` in the interval \[`slot_start, slot_end`\].  
-   * Starts at `min(m.membership_start for m in collection)`  
-   * Ends at `max(m.membership_end for m in collection)`  
-   * Individual MatrixRTC membership intervals given by `((m.membership_start, m.membership_end) for m in collection)`
-
-In general, there may be more than one `collection` of overlapping membership intervals, resulting
-in multiple consecutive MatrixRTC sessions within a single slot.
+Time                 ───────────────────────────────────────────────────────────────────────►
+```
 
 ### MatrixRTC Transport
 
@@ -743,8 +646,7 @@ support disjoint sets of transports. A more complete interop solution is left as
 
 ### Impact of Message Ordering wrt. Session History
 
-As described above, all information required to reconstruct historic MatrixRTC sessions is available
-within the Matrix DAG:
+All information required to reconstruct historic MatrixRTC sessions is available within the Matrix DAG:
 
 * **Sticky events** are persistently recorded in the DAG.  
 * **`m.rtc.slot` state event transitions**, even when affected by state resolution, are visible as
