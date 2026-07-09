@@ -239,7 +239,7 @@ connected if all of the following conditions apply:
 
 - An open slot exists in the room as an `m.rtc.slot` state event with `state_key` equalling `slot_id`.
 - The sender is still a member of the room (i.e. not kicked or left).
-- The event is still sticky, meaning that its stickyness duration as per [MSC4354] has not expired.
+- The event is still sticky, meaning that its stickiness duration as per [MSC4354] has not expired.
   This is to ensure that the membership view is as consistent as possible across all participants.
   When a member event's stickiness expires, the associated delivery guarantee vanishes. As a result,
   some participants might not have received the event while others did. Treating the participant as
@@ -302,9 +302,9 @@ The MatrixRTC membership lifecycle of a participant is a collection of subsequen
 1. Participants first connect to a slot by sending an `m.rtc.member` event in its connected form.
 1. Afterwards, participants may update their membership, e.g. to change transports or modify
    application-specific settings, by sending a new `m.rtc.member` event with the same `sticky_key`.
-   Since the actual connection state is constrained by the stickyness of the member event, clients
-   also need to send new `m.rtc.member` events if they want to stay connected longer than the stickyness
-   duration. It is RECOMMENDED that clients send these events sufficiently ahead of the stickyness
+   Since the actual connection state is constrained by the stickiness of the member event, clients
+   also need to send new `m.rtc.member` events if they want to stay connected longer than the stickiness
+   duration. It is RECOMMENDED that clients send these events sufficiently ahead of the stickiness
    expiration to minimize potential connection state flickering.
 1. Finally, to disconnect from the slot, participants send an `m.rtc.member` event in its disconnected form.
 
