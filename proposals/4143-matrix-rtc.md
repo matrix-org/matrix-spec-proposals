@@ -322,11 +322,6 @@ short delay (e.g. 15-30 seconds). While being connected, the client can periodic
 the delayed event to push it into the future. If the client loses connectivity and the delay
 times out, the homeserver will send the disconnecting `m.rtc.member` event.
 
-Some transports may involve external services with high visibility on participants' connection state
-such as a Selective Forwarding Unit (SFU). Clients MAY delegate management of their delayed disconnect
-event to such services. How exactly the delegation is performed is defined by the transport's
-specification
-
 [MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 
 ### Sessions
