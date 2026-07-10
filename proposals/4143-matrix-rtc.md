@@ -394,43 +394,60 @@ Content-Type: application/json
 
 ### End-to-end encryption
 
-This section defines how key material is shared between participants in MatrixRTC to enable
-end-to-end encryption of RTC data.
+The process of encrypting RTC data is generally specific to the transport being used. Additionally,
+participants need to agree on the key material so that the data can be decrypted again. To support
+this, MatrixRTC provides a generic system for establishing shared key material between participants.
+Transports can then define how to actually use this key material which may involve deriving further
+secrets from it.
 
-MatrixRTC sessions initiated in a **non-encrypted room** will remain non-encrypted. Sessions started
-in **encrypted rooms** will be encrypted.
+The concrete mechanism for agreeing on the shared key material within a slot is prescribed through
+the `encryption` object in `m.rtc.slot` events. Clients SHOULD enforce the use of encryption when
+opening a slot in encrypted rooms. When a client observes encryption being enabled in an `m.rtc.slot`
+event, it SHOULD set a flag to indicate that connections to this slot should be encrypted. This flag
+SHOULD NOT be cleared if a later `m.rtc.slot` event disables encryption. In other words, once encryption
+is enabled on a slot, it can never be disabled. This is to avoid a situation where a MITM can simply
+ask participants to disable encryption.[^e2eeguide]
 
-Every member in an encrypted MatrixRTC slot maintains a unique sender key, which is securely shared
-with all other members. This sender key (secure random bytes) MUST be used by the RTC application to
-derive and stretch any secrets they need to encrypt/authenticate the data/media uploaded by this
-user. 
+[^e2eeguide]: This is aligned with the recommendation for handling the `m.room.encryption` state
+              event for normal room messaging in https://matrix.org/docs/matrix-concepts/end-to-end-encryption.
 
-Keys are distributed to the RTC members. The RTC membership is based on top of the room membership
-and inherits its security properties.
-
-The key exchange depends on the underlying secure peer-to-peer olm channel (via to-device message)
-for key distribution.
-
-This ensures that only members in the RTC slot can decrypt data/media; other people, even if in the
-room, will never get the key material.
-
-The RTC transport MSC (e.g., 
-[MSC4195: MatrixRTC Transport using LiveKit backend](https://github.com/matrix-org/matrix-spec-proposals/pull/4195)) 
-specifies how the key material is actually used. For example, the RTC client may generate a secure
-random 256-bit key, which the application can then use to derive the required secrets (using HKDF or
-other key-stretching methods as appropriate).
-
-#### Key Distribution
-
-When joining a MatrixRTC slot, each participant shares a generated E2EE key with the other members
-(`m.rtc.member`) of the same slot by sending an **encrypted** [Matrix to-device
-message](https://spec.matrix.org/v1.11/client-server-api/#send-to-device-messaging). The key is
-transmitted via an event of type `m.rtc.encryption_key`. The **target device ID** is taken from the
-`member.claimed_device_id` field of the recipient’s `m.rtc.member` event. The event follows the following
-schema:
+The only available mechanism for now is `m.per_participant`.
 
 ```json5
-// event type: "m.rtc.encryption_key"
+{
+  "type": "m.rtc.slot",
+  "content": {
+    "encryption": {
+      "type": "m.per_participant"
+    },
+    ...
+  },
+  ...
+}
+```
+
+Under `m.per_participant` every participant maintains a unique sender key. This key is shared securely
+with other participants via encrypted [to-device messages]. The RTC membership of participants is based
+on their room membership and inherits its security properties. Additionally, the to-device messages
+rely on secure peer-to-peer Olm channels. This ensures that keys are only distributed among participants
+of the slot. Other devices, even if in the room, never get the key material.
+
+[to-device messages]: https://spec.matrix.org/v1.18/client-server-api/#send-to-device-messaging
+
+#### Distributing keys
+
+When connecting to a slot, clients generate a 16-byte cryptographically secure key. They then share
+the key with other clients participating in the slot by sending encrypted to-device messages of the
+type `m.rtc.encryption_key`.
+
+The recipient devices are determined from the `m.rtc.member` events that are considered to be
+connected to the slot. The conditions for considering a participant connected were given
+[above](#connecting-to-a-slot). Once connected participants are determined, the target device ID
+is taken from the `member.claimed_device_id` property of the respective `m.rtc.member` event.
+
+```json5
+// PUT /_matrix/client/v3/sendToDevice/m.rtc.encryption_key/{txnId} 
+
 {
     "room_id": "!roomid:matrix.domain",
     "member_id": "xyzABCDEF0123",
@@ -442,66 +459,101 @@ schema:
 }
 ```
 
-**Field explanations:**
+- `room_id` (required, string): The ID of the room that the slot is located in.
+- `member_id` (required, string): The `member.id` value of the target's `m.rtc.member` event.
+  Note that because `member.id` is unique per participant, it is sufficient to disambiguate multiple
+  key events for the same device.
+- `media_key` (required, object): Information on the key to use to decrypt the sender's media.
+  - `key` (required, string): The key (16 bytes) encoded as specified by `format`.
+  - `index` (required, number): The rolling index of the key to distinguish it from other keys. The
+    value MUST be between 0 and 255 inclusive. WebRTC-based transports may use this as the `keyID`
+    field of [SFrame](https://www.w3.org/TR/webrtc-encoded-transform/#sframe) headers.
+- `format` (required, number): The format in which the key was exported. Only `0` is allowed for now
+  and implies that the key's raw bytes were encoded using unpadded base64.
 
-* `member_id` required string: The `member.id` from the target `m.rtc.member` event. Note, because
-  `member.id` is globally unique per member instance, it is sufficient to disambiguate multiple key
-  events for the same device, even if they use the same `media_key.index` value.  
-* `media_key` The media key to use to decrypt  the participant media:  
-  * `key` required string: The key material encoded using unpadded base64.
-  * `index` required int: The index of the key to distinguish it from other keys. This must be
-    between 0 and 255 inclusive. In some implementations of MatrixRTC this may correspond to the
-    `keyID` field of the WebRTC [SFrame](https://www.w3.org/TR/webrtc-encoded-transform/#sframe)
-    header.  
-* `format` the key export format, `0` for the raw bytes encoded using unpadded base64.
-* Depending on the RTC application, additional fields may be added to this event.
+Upon receipt, clients SHOULD discard any `m.rtc.encryption_key` events that were sent in cleartext.
 
-Upon receipt, any `m.rtc.encryption_key` to-device event sent in cleartext SHOULD be discarded. The
-receiving client SHOULD use the Olm decryption metadata to determine the sender’s `user_id`,
-`device_id`, and the device’s verification state. Sender information is considered *claimed* unless
-the device is verified.
-
-The client SHOULD apply the same acceptance policy for these to-device messages as it would for room
-messages or session setup. For example, if the client is configured to *exclude insecure devices*,
-then keys received from such devices MUST also be excluded.
-
-The corresponding  `m.rtc.member` is determined by matching its `member.id` with the one from
-`m.rtc.encryption_key`.
-
-The receiving MUST apply the following checks:
+Receiving clients can determine the corresponding `m.rtc.member` event by matching its `member.id`
+with the value of `member_id` in the `m.rtc.encryption_key`. Once the member event was determined,
+clients perform the following checks:
 
 - The `sender` property from the decryption result must match the `sender` of the `m.rtc.member`
   event.
-- The `device_id` property from the decryption result must match the `device_id` of the `member.device_id`
-  of `m.rtc.member` event.
+- The `device_id` property from the decryption result must match the `member.claimed_device_id`
+  value of the `m.rtc.member` event.
 
-Any `m.rtc.encryption_key` event that does not comply with these checks MUST be discarded.
+Any `m.rtc.encryption_key` event that does not pass these checks MUST be discarded.
 
-Clients SHOULD rotate their keys to ensure **confidentiality** whenever a participant joins or
-leaves the slot. The **key rotation** process is as follows:
+In keeping with [MSC4153: Exclude non-cross-signed devices][MSC4153], clients SHOULD also discard
+`m.rtc.encryption_key` events when the sending device is not cross-signed.
 
-* The sending client generates the new key material for the local participant.  
-* The sending client sends the new key material to all other participants with a new `index` value.  
-* The receiving client stores the new key material for the specified `index`.  
-* The sending client continues to use the old/current key to encrypt media.  
-* After a short delay `delayBeforeUse,` default: 5 seconds), the sending client switches to the
-  new key.  
-  * It is possible to overwrite the default delay on a per application basis in case an application
-    has specific requirements on security or wants to minimize missed stream data  
-  * Also negotiation can be used over data channels to confirm all participants have received the new key.
+[MSC4153]: https://github.com/matrix-org/matrix-spec-proposals/pull/4153
 
-**Note:** Rotating a key will require to re-send a to-device message to all the participants, and
-this is expensive. Clients SHOULD minimize key exchange traffic for rapid joiners/leavers. 
+#### Rotating keys
 
-For rapid new joiners: A key rotation grace period (`keyRotationGracePeriod`) is used, if a new
-member joins during the grace period, then the same key can be used and shared just to that new
-member.
+To ensure confidentiality, clients SHOULD rotate and redistribute their key whenever the set of
+participants that are considered connected to the slot changes. This prevents connecting/disconnecting
+participants from decrypting past/future RTC data.
 
-For rapid leavers: The `delayBeforeUse` period is used to coalesce any membership change occurring
-in that period and then a single key rotation is scheduled afterward.
+Additionally, clients SHOULD also rotate their key on a periodic schedule regardless of whether
+the participants have changed. This limits the impact of compromised keys.
 
-`keyRotationGracePeriod` must be greater than `delayBeforeUse` or it will have no effects (default
-10s and 5s)
+In order to account for the delivery latency of to-device messages, clients SHOULD add a short
+delay between sending a new key and starting to use it. Otherwise, receiving participants may
+be unable to decrypt the sender's streams temporarily. The RECOMMENDED delay duration is 5 seconds.
+
+Furthermore, resending to-device messages to all participants can be expensive when multiple
+participants connect and/or disconnect in short succession. To mitigate this, clients MAY apply
+some flexibility to exactly when a rotation happens relative to a membership change. This means
+accepting a small window in which joining or leaving participants could decrypt media that is
+slightly outside their actual membership period in exchange for fewer key rotations.
+
+As an example, let's assume a client applies the time interval `delay = 5s` between rotating a key
+and starting to use it for encryption. When participants disconnect during `delay`, the client
+could schedule another rotation for when `delay` has elapsed. This coalesces multiple participant
+changes into a single rotation and avoids excessive key rotations when multiple disconnections
+occur in short succession.
+
+```
+         A disconnects                   delay period ends               delay period ends
+         → generate key n+1              → generate key n+2              → switch to key n+2
+         → send to everyone              → send to everyone              │
+         │                               │                               │
+         ▼                               ▼                                ▼
+time ────●───────────────────────────────●───────────────────────────────●───────────────────────────────▶
+         t=0     ▲                  ▲    t=5s                            t=10s
+                 │                  │
+                 B disconnects      C disconnects
+                 → invalidate
+                   key n+1
+
+encrypts ├──────────── key n ────────────┼─────────── key n+1 ───────────┼─────────── key n+2 ───────────▶
+with
+         ├────────── delay (5s) ─────────┤────────── delay (5s) ─────────┤
+```
+
+As another example, a client could additionally introduce a grace period `grace = 10s`. When a participant
+connects within `grace` after a new key `k` was created, the client could skip rotating the key again and
+instead share `k` with the new participant.
+
+```
+         A connects                delay period ends         grace period ends
+         → generate key n+1        → switch to key n+1
+         → send to everyone
+         │                         │                         │
+         ▼                         ▼                         ▼
+time ────●─────────────────────────●─────────────────────────●───────────────────────────▶
+         t=0          ▲            t=5s         ▲            t=10s        ▲
+                      │                         │                         │
+                      B connects                C connects                D connects
+                      → send key n+1            → send key n+1            → generate key n+2
+                        to B                      to C                    → send to everyone
+
+encrypts ├───────── key n ─────────┼───────── key n+1 ───────────────────────────────────▶
+with
+         ├────── delay (5s) ───────┤                                      ├────── delay ...
+         ├─────────────────── grace (10s) ───────────────────┤            ├────── grace ...
+```
 
 ## Potential issues
 
