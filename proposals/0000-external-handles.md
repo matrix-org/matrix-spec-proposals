@@ -7,7 +7,7 @@ standard place to put their actual handle on the network they came from, the ide
 would recognize and use to find them there, which is often not the same as either the display name or
 the ghost's own Matrix ID.
 
-[matrix-appservice-activitypub](https://github.com/matrix-org/matrix-appservice-activitypub), a
+[matrix-appservice-activitypub](https://github.com/Haven-Organization/matrix-appservice-activitypub), a
 Matrix/ActivityPub (Fediverse) bridge, is a concrete case of this: a ghost user representing a remote
 Fediverse actor already uses `displayname` for that actor's ActivityPub display name (which is
 free-text and often not unique, e.g. multiple accounts named "Alice"), and its Matrix ID is an internal,
