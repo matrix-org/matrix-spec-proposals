@@ -1,4 +1,4 @@
-# MSCXXXX: External Protocol Handles
+# MSC4503: External Protocol Handles
 
 Bridges commonly represent a user from another network as a dedicated "ghost" Matrix user: a
 persistent puppet account that sends messages on that user's behalf. That ghost user already has
@@ -186,13 +186,13 @@ Until this proposal is accepted into the spec, implementations should use the fo
 
 | Stable (once accepted) | Unstable (for now)                     |
 | ------------------------ | ----------------------------------------- |
-| `m.external_handle`      | `org.matrix.mscXXXX.external_handle`      |
+| `m.external_handle`      | `org.matrix.msc4503.external_handle`      |
 
 As a profile field, `m.external_handle` additionally depends on whatever unstable identifier the
 implementing homeserver uses for MSC4133 support itself (e.g. some deployments currently advertise
 `uk.tcpip.msc4133`/`uk.tcpip.msc4133.stable` in `/_matrix/client/versions`), and, per MSC4133's own
 unstable-prefix convention for fields in the `m.*` namespace, would need to be set as
-`uk.tcpip.msc4133.org.matrix.mscXXXX.external_handle` until both proposals are stable. The event-level
+`uk.tcpip.msc4133.org.matrix.msc4503.external_handle` until both proposals are stable. The event-level
 use of `m.external_handle` has no such dependency and can use its own unstable prefix directly.
 
 ## Dependencies
