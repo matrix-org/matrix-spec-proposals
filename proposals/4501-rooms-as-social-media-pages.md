@@ -299,10 +299,10 @@ the only difference is what the outer `body` contains.
 
 Also known as:
 
-- **Retweet**/**Repost** (X/Twitter)
+- **Retweet** (Twitter)
 - **Boost** (Mastodon)
 - **Reblog** (Tumblr)
-- **Repost** (Instagram, Threads, Bluesky)
+- **Repost** (X, Instagram, Threads, Bluesky)
 - **Share** (Facebook, LinkedIn)
 - **Renote** (Misskey)
 - **Repeat** (Pleroma)
