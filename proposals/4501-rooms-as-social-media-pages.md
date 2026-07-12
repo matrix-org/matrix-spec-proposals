@@ -22,8 +22,8 @@ client can build a social media experience on top of:
 - Room membership doubling as "following", with no new event needed to represent it.
 - A post event type that is structurally identical to `m.room.message`, so existing message-handling
   code can be reused with no new parsing logic.
-- A minimal, generic mechanism for referencing another post across rooms, covering reposts, boosts,
-  retweets, and quote-posts, as well as cross-posting a reply into your own profile feed.
+- A minimal, generic mechanism for referencing another post across rooms, covering reposts and
+  quote-posts, as well as cross-posting a reply into your own profile feed.
 - Reusing the existing `m.reaction` mechanism for "liking" a post, rather than a new event type.
 - Guidance for how a client builds a "feed" out of these rooms.
 - A phased rollout plan for when clients should treat `m.room.message` as an interchangeable stand-in
@@ -228,8 +228,8 @@ aggregation, bundling, or thread-rollup behavior, only the identifier-naming con
 
 **Mandatory**
 
-- `rel_type`: `m.social.repost` or `m.social.reply` (see Reposting/Boosting/Retweeting/Quote-posting and
-  Cross-posting a reply to your profile, below, for what each means).
+- `rel_type`: `m.social.repost` or `m.social.reply` (see Quote Posts, Reposts, and Cross-posted reply,
+  below, for what each means).
 - `event_id`: the referenced post's event ID.
 - `room_id`: the room the referenced post was sent in.
 - `sender`: Matrix ID of the referenced post's author.
@@ -244,7 +244,7 @@ aggregation, bundling, or thread-rollup behavior, only the identifier-naming con
 - `content_inline` (boolean): set in place of `content`, when the outer event's own `content` is
   already an identical duplicate of the referenced post. Only meaningful for `rel_type: "m.social.repost"`;
   MUST NOT be set for `rel_type: "m.social.reply"`, whose outer `body` is always the replying user's own
-  text, never a duplicate of what they're replying to. See Boosting with inline content, below.
+  text, never a duplicate of what they're replying to. See Reposts, below.
 - `displayname`: snapshot of the referenced post's author's display name at reference time, for nicer
   default rendering. Clients MUST fall back to the bare `sender` Matrix ID when it is absent, the same
   as Matrix already does anywhere else a display name is unset.
@@ -258,11 +258,16 @@ have never joined. Clients SHOULD still attempt to resolve the live referenced e
 since been edited or redacted, falling back to the embedded copy when it isn't reachable, or to a bare
 placeholder linking to the event when no embedded copy was sent either.
 
-**Reposting / Boosting / Retweeting / Quote-posting** uses `rel_type: "m.social.repost"`. The outer `body`
-then determines which of the two:
+### Quote Posts
 
-**Quote-posting** is a repost with the reposting user's own added commentary in the *outer* post's
-`body`, with the quoted post held entirely inside `m.social.relates_to`:
+A repost with the reposting user's own added commentary in the *outer* post's `body`, with the quoted
+post held entirely inside `m.social.relates_to`. Uses `rel_type: "m.social.repost"`.
+
+Also known as:
+
+- **Quote Tweet** (X/Twitter)
+- **Quote post** (Bluesky)
+- **Quote** (Threads, Misskey)
 
 ```json
 {
@@ -287,8 +292,23 @@ then determines which of the two:
 }
 ```
 
-**Boosting/Retweeting** is the same structure with no added commentary. Rather than an empty (or
-absent) outer `body`, the outer `body` MUST contain only a permalink: a `matrix.to` URI
+### Reposts
+
+A repost with no added commentary. Also uses `rel_type: "m.social.repost"`, the same as a quote-post;
+the only difference is what the outer `body` contains.
+
+Also known as:
+
+- **Retweet**/**Repost** (X/Twitter)
+- **Boost** (Mastodon)
+- **Reblog** (Tumblr)
+- **Repost** (Instagram, Threads, Bluesky)
+- **Share** (Facebook, LinkedIn)
+- **Renote** (Misskey)
+- **Repeat** (Pleroma)
+
+Rather than an empty (or absent) outer `body`, the outer `body` MUST contain only a permalink: a
+`matrix.to` URI
 ([MSC1704](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1704-matrix.to-permalinks.md))
 or a `matrix:` URI
 ([MSC2312](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/2312-matrix-uri.md)),
@@ -315,12 +335,12 @@ pointing at the same event referenced by `m.social.relates_to`:
 ```
 
 A permalink, rather than an empty string, means a client with no support for this proposal (rendering
-the event as a plain `m.room.message`) shows a normal, clickable link to the boosted post instead of a
+the event as a plain `m.room.message`) shows a normal, clickable link to the reposted post instead of a
 blank bubble that looks like a send failure. Clients MAY additionally send a `formatted_body` with the
 same link as an HTML anchor, for nicer rendering in clients that support formatted bodies but not this
 proposal.
 
-**Boosting with inline content** is an alternative to the permalink form, for implementations, such as
+**Reposting with inline content** is an alternative to the permalink form, for implementations, such as
 a bridge mirroring reposts from another network, that already build one copy of the reposted content
 as the event's own `content` and would rather a non-compliant client render that content directly than
 a bare link. Set `content_inline: true` and omit `relates_to.content`:
@@ -344,35 +364,31 @@ a bare link. Set `content_inline: true` and omit `relates_to.content`:
 
 This MUST NOT carry reposting-user commentary: once `content_inline` is set, there is no way to tell
 duplicated original content apart from genuine commentary, so a repost with its own added text MUST use
-the `content` copy instead (Quote-posting, above).
+the `content` copy instead (Quote Posts, above).
 
-A boost and a quote-post are the same event shape. A compliant client detects a boost by checking
-whether `content_inline` is `true`, or `body` (trimmed) parses as a permalink matching `relates_to`'s
-`room_id`/`event_id`; otherwise it's a quote-post, even if the commentary happens to look like a URI.
+A plain repost and a quote-post are the same event shape. A compliant client detects a plain repost by
+checking whether `content_inline` is `true`, or `body` (trimmed) parses as a permalink matching
+`relates_to`'s `room_id`/`event_id`; otherwise it's a quote-post, even if the commentary happens to look
+like a URI.
 
-On a detected boost, clients SHOULD NOT render the literal `body` as commentary; instead show something
+On a detected repost, clients SHOULD NOT render the literal `body` as commentary; instead show something
 like "Alice reposted Bob's post" above the reposted content (from `relates_to.content`, or the outer
 `content` when `content_inline` is `true`), naming both the reposting user (outer `sender`) and the
 original author (`relates_to`'s `sender`/`displayname`).
 
-No new event type is needed to distinguish a boost from a quote-post, avoiding near-identical event
-types for what is fundamentally one relationship.
+No new event type is needed to distinguish a plain repost from a quote-post, avoiding near-identical
+event types for what is fundamentally one relationship.
 
-**Repost/boost counts.** When sending a post with `m.social.relates_to` of `rel_type: "m.social.repost"`,
-in any of the forms above (quote-post, boost, or boost with inline content), clients SHOULD (but are
-not required to) additionally send an `m.reaction` with `key: "🔁"` annotating the referenced event.
-This is RECOMMENDED, not mandatory, but it lets any client compute a repost/boost count for a post
-using the same reaction-aggregation mechanism it already needs for likes, without waiting for every
-viewing client to understand `m.social.relates_to` itself, the same rationale as treating a 👍
-`m.reaction` as a like (see Liking, below). This is only possible where the reposting user has
-permission to react in the referenced event's room; where they don't, the reaction is simply not sent
-and the count isn't incremented from that repost.
+### Cross-posted reply
 
-**Cross-posting a reply to your profile** uses `rel_type: "m.social.reply"`. A reply to a post already uses
-the ordinary `m.thread` relation within the room it's replying in (see Posts, above); this is a
-separate, additional mechanism for surfacing that same reply in the replying user's own profile feed,
-the same way replying to someone on other social platforms shows up on your own timeline, even though
-the people following you may never see the room the reply actually lives in.
+It's common on social media for a reply someone makes in a thread to also show up on their own profile,
+so followers see it without needing to find the thread it was posted in. This is what `rel_type:
+"m.social.reply"` is designed for.
+
+A reply to a post already uses the ordinary `m.thread` relation within the room it's replying in (see
+Posts, above); this is a separate, additional mechanism for surfacing that same reply in the replying
+user's own profile feed, even though the people following them may never see the room the reply
+actually lives in.
 
 To do this, the replying client (or, e.g., a federation bridge mirroring replies from another network)
 additionally posts an ordinary `m.social.post` into the replier's own profile room, with an
@@ -417,17 +433,24 @@ treat an `m.reaction` whose `key` is "👍" as a like: showing it in a dedicated
 than (or in addition to) the room's normal reaction display, incrementing a "like" affordance when the
 current user has sent one, and so on.
 
-A dedicated `m.social.like` event type was considered and rejected: it would add a new event type that
-carries no information a plain `m.reaction` doesn't already carry, since "reacting with 👍" and "liking"
-are the same user intent for the purposes of this proposal. The one real tradeoff is that a client
-cannot distinguish "this user actually meant to *like* the post" from "this user just happened to react
-with a thumbs-up emoji". This proposal considers that an acceptable ambiguity, given the alternative is
-an entire new event type whose only job is to disambiguate an edge case most users will never notice.
-Using the standard `m.reaction`/`m.annotation` relation also means a like sent by a compliant client is
-still a completely ordinary, renderable reaction to any non-compliant Matrix client, and a 👍 reaction
-sent by a non-compliant client is automatically recognized as a like by compliant ones, keeping the
-whole feature interoperable for free, the same rationale as
-[reusing `m.room.message` for posts](#handling-mroommessage-in-social-rooms).
+Also known as:
+
+- **Favorite**/**Favourite**: old Twitter (pre-2015), and still Mastodon/Pleroma and other
+  ActivityPub/Fediverse software today
+- **Heart**/**Hearting**: informal name for the same action on Instagram, Twitter, and Tumblr
+- **Thumbs up**: Slack, GitHub, and Facebook's own Reactions bar
+
+### Repost counts
+
+When sending a post with `m.social.relates_to` of `rel_type: "m.social.repost"` (a quote-post or a
+plain repost, in either form described under Reposts, above), clients SHOULD (but are not required to)
+additionally send an `m.reaction` with `key: "🔁"` annotating the referenced event. This is RECOMMENDED,
+not mandatory, but it lets any client compute a repost count for a post using the same
+reaction-aggregation mechanism it already needs for likes, without waiting for every viewing client to
+understand `m.social.relates_to` itself, mirroring how a 👍 `m.reaction` is treated as a like (see
+Liking, above). This is only possible where the reposting user has permission to react in the referenced
+event's room; where they don't, the reaction is simply not sent and the count isn't incremented from
+that repost.
 
 ### Feeds
 
@@ -473,7 +496,7 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
 ## Potential issues
 
 - **Cross-room reference content duplication.** Because `m.social.relates_to.content` (or, for a
-  `content_inline` boost, the outer event's own `content`) is a copy taken at reference time, an edit to
+  `content_inline` repost, the outer event's own `content`) is a copy taken at reference time, an edit to
   the referenced post does not propagate to reposts or cross-posted replies that already copied the old
   content, the same limitation any "forwarded message" feature already has. Clients can mitigate this by
   re-fetching the live referenced event where accessible (see Security considerations for the more
@@ -494,13 +517,14 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   fallback (a profile-typed room a client happens to be a member of and was created by the target user
   remains usable as a weaker, best-effort substitute; see Profile/Group discoverability, above).
 - **A quote-post whose entire commentary happens to be a permalink to the same event is
-  indistinguishable from a boost.** Specific to `rel_type: "m.social.repost"`: because a boost is detected
-  purely by `body` being nothing but a matching permalink (see Proposal, above), a user who deliberately
-  quote-posts with no text other than a copy-pasted link to that same event will have their post
-  rendered as a plain boost instead. This proposal considers that an acceptable, rare edge case (the
-  rendered outcome, "a repost with no commentary", is arguably correct anyway, since a bare link
-  duplicating `m.social.relates_to` carries no information a boost doesn't already convey). This does
-  not affect `rel_type: "m.social.reply"`, whose outer `body` is never used to distinguish sub-cases.
+  indistinguishable from a plain repost.** Specific to `rel_type: "m.social.repost"`: because a plain
+  repost is detected purely by `body` being nothing but a matching permalink (see Proposal, above), a
+  user who deliberately quote-posts with no text other than a copy-pasted link to that same event will
+  have their post rendered as a plain repost instead. This proposal considers that an acceptable, rare
+  edge case (the rendered outcome, "a repost with no commentary", is arguably correct anyway, since a
+  bare link duplicating `m.social.relates_to` carries no information a plain repost doesn't already
+  convey). This does not affect `rel_type: "m.social.reply"`, whose outer `body` is never used to
+  distinguish sub-cases.
 - **Phase transition timing is deliberately unmeasured.** "Majority of active users"/"majority of
   posts" in the phased rollout are not tied to any concrete, verifiable metric, since Matrix does not
   currently have a reliable mechanism for measuring client adoption share across the network. This is
@@ -545,11 +569,11 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   for the exact same reason, rendering a cross-room reference without requiring room membership; the
   only real difference is what the relationship *means*, which a `rel_type` field captures far more cheaply
   than a second, near-identical block would.
-- **Separate event types for boosts versus quote-reposts** (e.g. `m.social.boost` and
-  `m.social.quote_post`). Rejected in favor of a single mechanism (a `body` that is only a permalink
-  to the reposted event, versus one that isn't) to minimize the number of new event types and avoid
-  clients needing to special-case several near-identical shapes.
-- **Empty or absent outer `body` for boosts**, rather than an embedded permalink. This was the
+- **Separate event types for a plain repost versus a quote-post** (e.g. `m.social.repost` as an event
+  type of its own and `m.social.quote_post`). Rejected in favor of a single mechanism (a `body` that is
+  only a permalink to the reposted event, versus one that isn't) to minimize the number of new event
+  types and avoid clients needing to special-case several near-identical shapes.
+- **Empty or absent outer `body` for a plain repost**, rather than an embedded permalink. This was the
   original design, but was rejected: a blank `body` renders as an empty, confusing message bubble in
   any client without support for this proposal, indistinguishable from a send failure or a malformed
   event. A permalink-only `body` degrades gracefully instead, rendering as an ordinary clickable link
@@ -566,10 +590,10 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
 - **Always requiring the outer `content` to double as the duplicate, dropping `relates_to.content`
   entirely**, rather than making `content_inline` an opt-in alongside it. Rejected because a
   quote-post's outer `body` is the reposting user's own commentary, and a reply's outer `body` is
-  always its own real text, neither can double as a duplicate of the referenced post the way a boost's
-  can. Keeping `relates_to.content` as the general-case mechanism, with `content_inline` as an opt-in
-  for boost implementations that already build the outer content as a duplicate anyway, covers all
-  three cases without forcing every implementation to special-case quote-posts and replies.
+  always its own real text, neither can double as a duplicate of the referenced post the way a plain
+  repost's can. Keeping `relates_to.content` as the general-case mechanism, with `content_inline` as an
+  opt-in for repost implementations that already build the outer content as a duplicate anyway, covers
+  all three cases without forcing every implementation to special-case quote-posts and replies.
 
 ## Security considerations
 
@@ -607,7 +631,7 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   longer be found or has been redacted, distinct from a reference whose original is unchanged, and
   SHOULD verify the embedded `content`/`sender` against the live original's actual content/sender where
   it is accessible, flagging a mismatch as fabricated or altered (or misattributed) rather than silently
-  trusting the embedded copy. This applies equally to a `content_inline: true` boost: the outer event's
+  trusting the embedded copy. This applies equally to a `content_inline: true` repost: the outer event's
   own `content` is exactly as self-asserted and unverified as a `relates_to.content` copy would have
   been, so it carries no additional trust just for living at the top level of the event.
 - **Public, joinable profile/group rooms carry the same abuse surface as any public Matrix room
