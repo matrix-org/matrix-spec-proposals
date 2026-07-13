@@ -25,6 +25,9 @@ client can build a social media experience on top of:
 - A minimal, generic mechanism for referencing another post across rooms, covering reposts and
   quote-posts, as well as cross-posting a reply into your own profile feed.
 - Reusing the existing `m.reaction` mechanism for "liking" a post, rather than a new event type.
+- Conventions for structuring an `m.room.message` post so a compliant social client can render it
+  differently from how it renders in an ordinary room timeline, without looking malformed or confusing
+  to a non-compliant client.
 - Guidance for how a client builds a "feed" out of these rooms.
 - A phased rollout plan for when clients should treat `m.room.message` as an interchangeable stand-in
   for a real post, so that the ecosystem doesn't have to flag-day cut over and break interoperability
@@ -244,7 +247,7 @@ aggregation, bundling, or thread-rollup behavior, only the identifier-naming con
 - `content_inline` (boolean): set in place of `content`, when the outer event's own `content` is
   already an identical duplicate of the referenced post. Only meaningful for `rel_type: "m.social.repost"`;
   MUST NOT be set for `rel_type: "m.social.reply"`, whose outer `body` is always the replying user's own
-  text, never a duplicate of what they're replying to. See Reposts, below.
+  text, never a duplicate of what they're replying to. See Client Backwards Compatibility, below.
 - `displayname`: snapshot of the referenced post's author's display name at reference time, for nicer
   default rendering. Clients MUST fall back to the bare `sender` Matrix ID when it is absent, the same
   as Matrix already does anywhere else a display name is unset.
@@ -340,32 +343,6 @@ blank bubble that looks like a send failure. Clients MAY additionally send a `fo
 same link as an HTML anchor, for nicer rendering in clients that support formatted bodies but not this
 proposal.
 
-**Reposting with inline content** is an alternative to the permalink form, for implementations, such as
-a bridge mirroring reposts from another network, that already build one copy of the reposted content
-as the event's own `content` and would rather a non-compliant client render that content directly than
-a bare link. Set `content_inline: true` and omit `relates_to.content`:
-
-```json
-{
-  "type": "m.social.post",
-  "content": {
-    "msgtype": "m.text",
-    "body": "This is the original post being reposted",
-    "m.social.relates_to": {
-      "rel_type": "m.social.repost",
-      "event_id": "$original:example.org",
-      "room_id": "!originalroom:example.org",
-      "sender": "@bob:example.org",
-      "content_inline": true
-    }
-  }
-}
-```
-
-This MUST NOT carry reposting-user commentary: once `content_inline` is set, there is no way to tell
-duplicated original content apart from genuine commentary, so a repost with its own added text MUST use
-the `content` copy instead (Quote Posts, above).
-
 A plain repost and a quote-post are the same event shape. A compliant client detects a plain repost by
 checking whether `content_inline` is `true`, or `body` (trimmed) parses as a permalink matching
 `relates_to`'s `room_id`/`event_id`; otherwise it's a quote-post, even if the commentary happens to look
@@ -424,6 +401,138 @@ original author (`relates_to`'s `sender`/`displayname`). This event is a copy po
 visibility, not the real in-thread reply, so clients MUST NOT rely on it for thread aggregation,
 reaction counts, or anything else that depends on the actual in-room relation; that still comes from
 the genuine `m.thread`-related event in the room the reply was sent in.
+
+### Client Backwards Compatibility
+
+Because Phase 1 (and any client that never adopts this proposal at all, see Handling `m.room.message`
+in social rooms, below) relies on plain `m.room.message` for posts, and because profile/group rooms are
+joinable by any Matrix client whether or not it understands this proposal, a post needs to render
+sensibly in a non-compliant client's ordinary room timeline, not just in a compliant social client's
+feed. This section covers the parts of this proposal that exist purely to keep `m.room.message` events
+looking correct there, as distinct from the rest of this proposal, which exists to make a *compliant*
+client's rendering better.
+
+**`m.social.body` and `m.social.formatted_body`** are two new, optional content fields, usable alongside
+the ordinary `body`/`formatted_body` on any post:
+
+- `m.social.body` MUST only be set when `body` is also present.
+- `m.social.formatted_body` MUST only be set when `formatted_body` (and `format`) is also present.
+
+A compliant social client SHOULD render `m.social.body`/`m.social.formatted_body` in place of
+`body`/`formatted_body` when present. A non-compliant client, with no knowledge of this proposal, renders
+`body`/`formatted_body` exactly as it would for any other message, unaffected by these fields' presence.
+
+This exists because what a non-compliant client's ordinary room timeline needs to show, and what a
+compliant social client needs to show, can genuinely differ. A repost with the reposting user's own
+commentary (see Quote Posts, above) is the motivating case: a non-compliant client has no idea the event
+is a repost at all, so `body` needs to spell that out in full, the commentary followed by a "reposted
+so-and-so's post:" line and a quoted copy of the original, or the event looks like unexplained text
+sitting next to a bare permalink or attachment with no context. A compliant social client already
+renders that same attribution and original-post context itself, from `m.social.relates_to`, so repeating
+it inside the rendered body would just duplicate it. `m.social.body` lets the compliant client show only
+the reposting user's own added commentary, leaving the fuller, self-explanatory version in `body` for
+everyone else:
+
+```json
+{
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.text",
+    "body": "This is exactly what I was talking about:\n\n🔁 reposted Bob's post:\n> This is the original post being reposted",
+    "m.social.body": "This is exactly what I was talking about:",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "This is exactly what I was talking about:<p>🔁 reposted <a href=\"https://matrix.to/#/@bob:example.org\">Bob</a>'s <a href=\"https://matrix.to/#/!originalroom:example.org/$original:example.org\">post</a></p><blockquote>This is the original post being reposted</blockquote>",
+    "m.social.formatted_body": "This is exactly what I was talking about:",
+    "m.social.relates_to": {
+      "rel_type": "m.social.repost",
+      "event_id": "$original:example.org",
+      "room_id": "!originalroom:example.org",
+      "sender": "@bob:example.org",
+      "displayname": "Bob",
+      "content": {
+        "msgtype": "m.text",
+        "body": "This is the original post being reposted"
+      }
+    }
+  }
+}
+```
+
+`m.social.body` and `m.social.formatted_body` MUST NOT be set on `m.social.post` events. A native post
+has no non-compliant room timeline to accommodate; `body`/`formatted_body` can be used directly, with no
+need for a second, duplicate pair of fields.
+
+**Reposting with inline content** is an alternative to the permalink form (see Reposts, above), for
+implementations, such as a bridge mirroring reposts from another network, that already build one copy of
+the reposted content as the event's own `content` and would rather a non-compliant client render that
+content directly than a bare link. Set `content_inline: true` and omit `relates_to.content`:
+
+```json
+{
+  "type": "m.social.post",
+  "content": {
+    "msgtype": "m.text",
+    "body": "This is the original post being reposted",
+    "m.social.relates_to": {
+      "rel_type": "m.social.repost",
+      "event_id": "$original:example.org",
+      "room_id": "!originalroom:example.org",
+      "sender": "@bob:example.org",
+      "content_inline": true
+    }
+  }
+}
+```
+
+This MUST NOT carry reposting-user commentary: once `content_inline` is set, there is no way to tell
+duplicated original content apart from genuine commentary, so a repost with its own added text MUST use
+the `content` copy instead (Quote Posts, above).
+
+`content_inline` duplicates the outer event's entire `content`, not just its text: any media fields
+(`url`/`file`, `info`, etc.) on the outer event are just as much a copy of the original post as `body`
+is, so a compliant client rendering the duplicated content SHOULD render the whole thing, attachment
+included, not only extract text from it. And where `m.social.body`/`m.social.formatted_body` (see
+Client Backwards Compatibility, above) are also present on the outer event, they, not the raw
+`body`/`formatted_body`, are what a compliant client should treat as the duplicated content's actual
+text, the same way it already prefers them over `body`/`formatted_body` for any other post. `body`
+still carries whatever a non-compliant client's timeline needs, which for a repost is the fuller,
+self-explanatory version, not the clean duplicate:
+
+```json
+{
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.image",
+    "body": "🔁 reposted Bob's post:\n> Look at this cat!",
+    "m.social.body": "Look at this cat!",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "<p>🔁 reposted <a href=\"https://matrix.to/#/@bob:example.org\">Bob</a>'s <a href=\"https://matrix.to/#/!originalroom:example.org/$original:example.org\">post</a></p><blockquote>Look at this cat!</blockquote>",
+    "m.social.formatted_body": "Look at this cat!",
+    "url": "mxc://example.org/catpicture",
+    "info": {
+      "mimetype": "image/jpeg",
+      "w": 800,
+      "h": 600,
+      "size": 123456
+    },
+    "m.social.relates_to": {
+      "rel_type": "m.social.repost",
+      "event_id": "$original:example.org",
+      "room_id": "!originalroom:example.org",
+      "sender": "@bob:example.org",
+      "displayname": "Bob",
+      "content_inline": true
+    }
+  }
+}
+```
+
+Here, Bob's original post was a cat picture captioned "Look at this cat!". Alice reposted it via an
+implementation that builds the outer event as a duplicate rather than sending `relates_to.content`, so
+the outer event carries the same image (`url`/`info`) and, via `m.social.body`, the same clean caption.
+`body`/`formatted_body` carry the fuller "reposted Bob's post:" version for a non-compliant client's
+timeline; a compliant client renders the image with just "Look at this cat!" as its caption, using
+`m.social.body` in place of `body`, the same as it would for any other post carrying that field.
 
 ### Liking
 
@@ -659,6 +768,8 @@ all under the `org.matrix.msc4501.social.` namespace:
 | `m.social.reply`                  | `org.matrix.msc4501.social.reply`                 |
 | `m.social.profile_room_id`        | `org.matrix.msc4501.social.profile_room_id`       |
 | `m.social.profile_user_id`        | `org.matrix.msc4501.social.profile_user_id`       |
+| `m.social.body`                   | `org.matrix.msc4501.social.body`                  |
+| `m.social.formatted_body`         | `org.matrix.msc4501.social.formatted_body`        |
 
 *(This mirrors how MSC3639 itself moved from `org.matrix.msc3639.*` unstable identifiers to
 `m.social.*` on acceptance; the same rename will happen here if/when this proposal is accepted.)*
