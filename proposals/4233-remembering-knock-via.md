@@ -1,111 +1,99 @@
 # MSC4233: Remembering which server a user knocked through
 
-[Knocking](https://spec.matrix.org/v1.12/client-server-api/#knocking-on-rooms) allows users to request
-an invite into a semi-public room from members already in that room. The use cases for this feature
-vary, though it is relatively common that the room isn't already known to the user's homeserver. For
-this reason, the [API endpoint for knocking](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3knockroomidoralias)
-accepts `via` parameters to assist the homeserver in locating another server to knock through.
+[Knocking](https://spec.matrix.org/v1.12/client-server-api/#knocking-on-rooms) lets a user request
+an invite to a room, which may be one their homeserver is not otherwise in. To knock, the homeserver
+completes the [federation knock dance](https://spec.matrix.org/v1.12/server-server-api/#knocking-rooms)
+through a server already in the room, located using the `via` parameters on
+[`POST /_matrix/client/v3/knock/{roomIdOrAlias}`](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3knockroomidoralias).
 
-Later, when the client wishes to show the user's pending knocks, it may wish to show the user more
-information, or possibly even detect that the room became public and offer a direct join button. It
-may do this through an API like the summary endpoint proposed in [MSC3266](https://github.com/matrix-org/matrix-spec-proposals/pull/3266).
-When trying to call such endpoints, the client may only have a room ID, [which is unroutable](https://spec.matrix.org/v1.12/appendices/#room-ids),
-leading to errors if the room is unknown to the server.
+Once the knock is pending, the knocking server keeps no record of which server it knocked through.
+Since room IDs are [unroutable](https://spec.matrix.org/v1.12/appendices/#room-ids), this breaks the
+follow-up operations on the knock:
 
-This proposal requires the server to remember what server(s) were used by a user to knock on a room,
-making it available to clients to use in subsequent API calls. This proposal doesn't address invites
-or other membership states because the client can parse the user ID which sent the membership change.
+* Rescinding the knock requires a `make_leave`/`send_leave` dance with a server in the room, but
+  [`POST /_matrix/client/v3/rooms/{roomId}/leave`](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3roomsroomidleave)
+  takes no `via` parameters and the server no longer knows a server in the room. In practice servers
+  rescind the knock locally only, leaving it pending in the room.
+* Rejection of the knock never reaches the knocking user, who sees their request as pending forever.
+  [MSC2403 de-scoped](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/2403-knock.md#membership-change-to-leave-via-rejecting-a-knock)
+  informing the knocking server of a rejection, while suggesting the eventual solution: trust a leave
+  event sent by the homeserver the user knocked through.
+
+This proposal requires the knocking server to remember the server that fulfilled the knock, and to
+use it to route the rescinded knock and to validate a rejection. There are no client-visible changes.
 
 ## Proposal
 
-Within the [`GET /_matrix/client/v3/sync`](https://spec.matrix.org/v1.12/client-server-api/#get_matrixclientv3sync)
-response is a `knock` section to denote which rooms the user has knocked on. This currently contains
-a single property, `knock_state`, which is the [stripped state](https://spec.matrix.org/v1.12/client-server-api/#stripped-state)
-for the room. This stripped state can be used for simple rendering of the room, but may be outdated
-and require a refresh from the server using an API like the one proposed in [MSC3266](https://github.com/matrix-org/matrix-spec-proposals/pull/3266).
+When a homeserver completes the knock dance on behalf of a user, it MUST remember which server
+answered `/send_knock`, for at least as long as the knock remains the user's membership in the room.
+Only the most recent knock per user and room need be tracked.
 
-A new property next to `knock_state` is added, denoting the servers specified by the client at the
-time of the most recent knock. This property is called `knock_servers`.
+### Rescinding the knock
 
-Example `/sync` response (irrelevant details not shown):
+When a user calls `POST /rooms/{roomId}/leave` for a room in which their membership is a pending
+knock and their homeserver is not in the room, the homeserver MUST attempt the
+`make_leave`/`send_leave` dance through the remembered server, as though it had been supplied as a
+`via` parameter on the request. If no server was remembered (for example the knock predates this
+proposal) or the dance fails, the server falls back to generating the leave locally, as today.
 
-```json5
-{
-  "rooms": {
-    "knock": {
-      "!opaque:example.org": {
-        "knock_state": {
-          "events": [
-            {"type": "m.room.name", "state_key": "", "content": {"name": "My Room"}}
-          ]
-        },
-        "knock_servers": [ // new property
-          "a.example.org",
-          "b.example.org",
-          "c.example.org"
-        ]
-      }
-    }
-  }
-}
-```
+Servers SHOULD similarly use the remembered server as an implicit `via` for other room-ID-based
+requests the user makes concerning the knocked room, such as the room summary API proposed in
+[MSC3266](https://github.com/matrix-org/matrix-spec-proposals/pull/3266).
 
-Servers SHOULD put the server name used to complete the [federation knock dance](https://spec.matrix.org/v1.12/server-server-api/#knocking-rooms)
-first in the array. This is to help speed up API calls on servers which sequentially check `via`
-parameters rather than process them in parallel. There's also a small amount of debugging benefit,
-when troubleshooting knocks.
+### Rejecting the knock
 
-Servers MUST track the server names specified in `via` parameters on [`POST /_matrix/client/v3/knock/{roomIdOrAlias}`](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3knockroomidoralias)
-when called with a room ID. Tracking server names specified as `server_name`s is optional due to the
-parameter being [slated for removal](https://github.com/matrix-org/matrix-spec-proposals/pull/4213).
-Servers MUST expose this information through `knock_servers`, as described above. Only the most recent
-knock is required to be tracked, though prior knocks may be stored at the server's discretion.
+When a server in the room creates a leave or ban event for a knocking user whose homeserver is not
+in the room, it SHOULD send that event to the knocking user's homeserver in a federation
+transaction, which that homeserver would otherwise not receive.
 
-Servers SHOULD impose a maximum limit of not less than 3 server names to track from a client's call.
-This is to avoid a database disk fill if a malicious client decides to try knocking through a few
-thousand servers, for example.
+The knocking homeserver cannot fully authenticate such an event, having no room state. It SHOULD
+nevertheless accept it as retracting the knock, storing it as an out-of-band leave or ban in the
+same way the knock itself was stored, provided all of the following hold:
 
-Clients MUST be tolerable to `knock_servers` being empty or missing as the knock may have happened
-before the server tracked this information. Servers SHOULD use an empty array rather than lack of
-field to denote this case, indicating that it is tracking server names for future knocks.
-
-### Simplified sliding sync considerations
-
-Simplified sliding sync is currently described as [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186)
-and is set to overhaul the sync model for clients. This proposal doesn't change MSC4186, but does
-suggest that the `knock_servers` field be similarly kept next to `knock_state` on a room subscription.
+* the user's current membership in the room is the knock;
+* the knock event is referenced in the event's `auth_events`; and
+* the event was received from the server the knock was fulfilled through, or from the event
+  sender's own homeserver (against whose keys the event's signature is checked as usual).
 
 ## Potential issues
 
-Servers may not have already tracked this, so information will be lacking for already-knocked rooms.
-Clients should expect errors, per usual, when attempting to call the summary API or any other endpoint.
+Knocks made before servers implement this proposal have no remembered route, so rescinding them
+behaves as it does today.
+
+The remembered server may have left the room or gone offline by the time of the rescinded knock, in
+which case the fallback leaves the room's copy of the knock pending, as today. Servers MAY
+additionally try other servers, for instance those inferred from the senders of the knock's
+stripped state events.
 
 ## Alternatives
 
-A client could track this information on its own, however this is not shared to other clients under
-the user's account. This effectively leaves other clients operated by the user broken.
+An earlier revision of this proposal returned the remembered servers to clients as a
+`knock_servers` array in `/sync`, for clients to replay as `via` parameters on later requests. That
+required changes in every client to round-trip routing information the server already holds, and
+did not help `/leave`, which takes no `via` parameters. Server-side tracking fixes all clients
+without any API change.
+
+Rejection propagation could be left to a separate MSC, but the remembered knock server is exactly what
+makes a rejection trustworthy to the knocking server, so both are addressed here.
 
 ## Security considerations
 
-As mentioned in the above proposal text, servers are encouraged to apply two limits:
+The knocking server accepts a leave or ban event it cannot fully authenticate. The conditions above
+bound the exposure: the event must be signed by its sender's server, must reference the knock event
+(whose ID a server uninvolved in the room has no way to learn), and must arrive from the server
+knocked through or from the sender's own server. What cannot be verified is that the sender has the
+power level required to kick or ban. A malicious server in the room could therefore show the
+knocking user a rejection that did not really happen; the room's actual state is unaffected and the
+user may knock again. This matches the trust model servers already apply when accepting out-of-band
+rescinded invites.
 
-1. Only record the most recent knock attempt.
-2. Limit to 3 or more server names from that knock attempt.
-
-Both of these limitations are to prevent unbounded data being stored on the server, leading to disk
-fill or similar availability concerns.
-
-## Safety considerations
-
-No significant safety considerations identified.
+The storage requirement is bounded: one server name per user and room, for the most recent knock
+only.
 
 ## Unstable prefix
 
-While this proposal is not considered stable, implementations should use `org.matrix.msc4233.knock_servers`
-in place of `knock_servers`.
-
-Simplified sliding sync may wish to include `knock_servers`'s behaviour independent to this MSC,
-avoiding a complex MSC dependency tree.
+None required: this proposal adds no new API surface or event fields. Implementations should gate
+the new behaviour behind an experimental configuration flag until this proposal is accepted.
 
 ## Dependencies
 
