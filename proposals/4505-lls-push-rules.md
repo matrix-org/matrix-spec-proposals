@@ -86,7 +86,7 @@ de-duplicate notifications for a beacon they already know about.
 As with [MSC3930](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3930-polls-notifications.md),
 these rules are a stop-gap of the current push rules system rather than a step
 towards a general solution for extensible events, and future work on notifications for extensible
-events would supercede them.
+events would supersede them.
 
 ## Alternatives
 
