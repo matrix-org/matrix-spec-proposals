@@ -411,6 +411,8 @@ for the `matrix_server_name` supplied in the OpenID token. If the resolution is 
 the `/delegate_delayed_leave` request, resolution failures MUST result in the request being rejected
 with 400 / `M_BAD_JSON`.
 
+[.well-known discovery]: https://spec.matrix.org/v1.18/client-server-api/#well-known-uris
+
 Additionally, implementations SHOULD verify support for delayed events by querying the homeserver's
 `_matrix/client/versions` endpoint. If the homeserver does not advertise support for delayed events,
 the SFU authorisation request MUST be rejected with the error code `M_UNSUPPORTED` and error message
