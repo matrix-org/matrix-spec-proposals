@@ -1,7 +1,7 @@
 # MSC4504: Using a global version number for the entire specification (v2)
 
 **Note**: This proposal changes process rather than specification. It may be tested in production
-ahead of formal acceptance under the supervison of the Spec Core Team.
+ahead of formal acceptance under the supervision of the Spec Core Team.
 
 [MSC2844](https://github.com/matrix-org/matrix-spec-proposals/pull/2844) ([merged](https://github.com/matrix-org/matrix-doc/blob/master/proposals/2844-global-versioning.md))
 introduced the [modern vX.Y versioning scheme](https://spec.matrix.org/v1.19/#specification-versions)
@@ -134,7 +134,7 @@ A third option would be to label certain releases as Long-Term Stable (LTS) rele
 could allow for non-LTS releases to potentially make more breaking changes, but might carry higher
 administrative burden to operate or determine the impact to server implementations. This proposal
 still introduces the essence of LTS releases to the spec, but does not call them LTS releases because
-the intermediary releases are requried to be compatible with the last "LTS" release.
+the intermediary releases are required to be compatible with the last "LTS" release.
 
 Finally, we could require implementations to drop old spec versions on a schedule. As the introduction
 mentions, this would potentially cause issues within local server ecosystems where they're not ready
@@ -176,7 +176,7 @@ error code to encounter in the wild (as is `500 M_UNKNOWN`).
 
 It's expected that the first removal-containing release after this MSC is merged to the spec will be
 at least 6 months later. This is to give time for implementations to discover the new requirements
-and adapt accordingly. That release MAY be out of cycle (ie: not divisble by 6), but MUST be the last
+and adapt accordingly. That release MAY be out of cycle (ie: not divisible by 6), but MUST be the last
 out of cycle release until the process is changed by another MSC. If that release is out of cycle,
 that fact SHOULD be advertised to developers during the minimum 6 month time period.
 
