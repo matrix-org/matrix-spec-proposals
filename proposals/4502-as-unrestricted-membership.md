@@ -5,7 +5,7 @@ Client-Server API. This can, among others, be used to verify a user's membership
 only works for local users, however. In some cases an application service might need to verify that
 a remote user is joined to a room known to the local homeserver.
 
-One example for this is the Matrix RTC Authentication Service from [MSC4195: MatrixRTC Transport
+One example for this is the LiveKit SFU Authorisation Service from [MSC4195: MatrixRTC Transport
 Using LiveKit Backend]. A remote user hits this service to get access to a local user's RTC media
 stream. A precondition for this is that both users share a room where a MatrixRTC session is
 established. In order to verify this, the service needs to check if the remote user is actually
