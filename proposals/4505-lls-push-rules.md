@@ -1,4 +1,4 @@
-# MSCXXXX: Push rules for live location sharing
+# MSC4505: Push rules for live location sharing
 
 [MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489) and
 [MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672) describe live location
@@ -108,9 +108,9 @@ matching the unstable event types from the
 
 | Stable | Unstable |
 |---|---|
-| `.m.rule.beacon_info_one_to_one` | `.io.element.rule.beacon_info_one_to_one` |
-| `.m.rule.beacon_info` | `.io.element.rule.beacon_info` |
-| `.m.rule.beacon` | `.io.element.rule.beacon` |
+| `.m.rule.beacon_info_one_to_one` | `.org.matrix.msc4505.rule.beacon_info_one_to_one` |
+| `.m.rule.beacon_info` | `.org.matrix.msc4505.rule.beacon_info` |
+| `.m.rule.beacon` | `.org.matrix.msc4505.rule.beacon` |
 | `m.beacon_info` (in conditions) | `org.matrix.msc3672.beacon_info` |
 | `m.beacon` (in conditions) | `org.matrix.msc3672.beacon` |
 
