@@ -708,19 +708,18 @@ tradeoff and introduce a shared-key system via a new encryption `type`.
 
 ## Security considerations
 
-### Discoverability of RTC Infrastructure
+### Discoverability of RTC infrastructure
 
-RTC infrastructure details are disseminated to all participants through `m.rtc.member` events. This
-transparency means that anyone part of a MatrixRTC session can view and understand the
-infrastructure, which could potentially lead to unauthorized resource use. However, each
-infrastructure type defines its own authentication mechanisms, as detailed in its specific MSC.
-These mechanisms may involve a service interacting with the homeserver to determine whether a user
-is authorized to utilize the infrastructure.
+Details of the serverside RTC infrastructure may be disclosed to all room mebers through `m.rtc.member`
+events. This could lead to abuse and unauthorized resource use. Guarding against this generically is not
+feasible, however. Instead, each transport mechanism needs to consider its security and required
+authentication mechanisms.
 
-### End-to-end media encryption key rotation lag
+### Encryption key rotation lag
 
-The proposed key rotation semantics does mean that a participant could continue to decrypt media
-that was sent in the three seconds after leaving the session.
+The recommended key rotation behaviour may allow participants to decrypt media for a short time interval
+before connecting and after disconnecting. This is deemed an acceptable compromise to reduce the performance
+impact of key exchange.
 
 ## Unstable prefix
 
@@ -728,7 +727,6 @@ that was sent in the three seconds after leaving the session.
 | ----------------- | ------- | --------------------|
 | `m.rtc.slot` | Event type | `org.matrix.msc4143.rtc.slot` |
 | `m.rtc.member` | Event type | `org.matrix.msc4143.rtc.member` |
-| `m.rtc.shared_encryption_key` | Event type | `org.matrix.msc4143.rtc.shared_encryption_key` |
 | `m.rtc.encryption_key` | To-device message event type | `org.matrix.msc4143.rtc.encryption_key` |
 | `/_matrix/client/v1/rtc/transports` | Endpoint | `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` |
 
@@ -741,10 +739,4 @@ server to adopt a version of the spec that includes it.
 
 ## Dependencies
 
-This proposal depends on [MSC4354 Sticky
-Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4354) to provide room state similar
-semantics without the drawback of contributing to room state bloating. 
-
-This proposal also depends on [MSC4140: Cancellable delayed
-events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) to provide a mechanism for
-clients to ensure that they can update the room state even if they lose connection.
+This proposal depends on [MSC4354: Sticky Events][MSC4354] and [MSC4140: Cancellable delayed events][MSC4140].
