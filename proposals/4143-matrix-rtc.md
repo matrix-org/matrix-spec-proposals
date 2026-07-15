@@ -214,10 +214,9 @@ To connect to a slot, the client sends an `m.rtc.member` event with the followin
     identifier when disconnecting and then reconnecting to a slot. Transports can use `id` as the
     canonical participant identifier to help prevent leaking metadata such as user or device IDs to
     external services.
-  - `claimed_device_id` (required, string) — Matrix device identifier. This is "claimed" because a
-    receiving device has no way to tell if the event actually came from this device ID without the
-    encryption envelope. The device ID is used to exchange encryption keys as explained later in the
-    [encryption section].
+  - `claimed_device_id` (required, string) — Matrix device identifier. This is used to exchange
+    encryption keys as explained later in the [encryption section]. The device ID is untrusted ("claimed"
+    by the sender) and must be cross checked against the message encryption envelope for confirmation.
 - `transports` (object): Details on the MatrixRTC transports of this member. Other clients use the
   information in this object to determine how to connect to and exchange real-time data with this
   participant. Client should be prepared to connect to as many transports as there are members
