@@ -69,7 +69,8 @@ https://github.com/matrix-org/matrix-spec/issues/2416
 
 ### Multi-device key bundle claiming
 
-[MSC4268] delivers a room key bundle as an encrypted to-device message to each of the invited
+[MSC4268](https://github.com/matrix-org/matrix-spec-proposals/pull/4268) delivers a room key
+bundle as an encrypted to-device message to each of the invited
 user's devices, pointing at an encrypted blob in the media repository. However, when a join is
 initiated by a client, only the joining device downloads and imports the bundle eagerly;
 the user's other devices obtain any keys they later need from key backup or the bundle itself
