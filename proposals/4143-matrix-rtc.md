@@ -454,7 +454,7 @@ is taken from the `member.claimed_device_id` property of the respective `m.rtc.m
       "index": {index},
       "key": "{encoded_key}",
     },
-    "version": "0"
+    "format": "0"
 }
 ```
 
