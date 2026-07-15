@@ -70,10 +70,10 @@ by the application's specification and MUST follow the [Common Namespaced Identi
 multiple parallel application instances per room. Again, the allowed values are defined by
 the application's specification and MUST follow the [Common Namespaced Identifier Grammar]
 but this time without the namespacing requirements[^nohash]. Additionally, the values should
-be predictable for clients given that slots act like a virtual addresses where participants
+be predictable for clients given that slots act like virtual addresses where participants
 are allowed to meet.
 
-As an example, the default slot ID for the calling applications from [MSC4196: MatrixRTC voice and video calling application `m.call`]
+As an example, the default slot ID for the calling applications from [MSC4196: MatrixRTC voice and video calling application `m.call`][MSC4196]
 is `m.call#ROOM`.
 
 The grammar for forming slot IDs MUST NOT be used to parse the components out of a slot ID.
