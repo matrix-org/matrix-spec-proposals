@@ -221,7 +221,7 @@ To connect to a slot, the client sends an `m.rtc.member` event with the followin
 - `transports` (object): Details on the MatrixRTC transports of this member. Other clients use the
   information in this object to determine how to connect to and exchange real-time data with this
   participant. Client should be prepared to connect to as many transports as there are members
-  connected on a slot. The exact procedure for subscribing to and publishing real-time data is
+  connected on a slot. The exact procedure for publishing and subscribing to real-time data is
   defined in each transport's specification.
   - `published` (array): An array of objects describing the transports on which the participant is
     publishing media.
