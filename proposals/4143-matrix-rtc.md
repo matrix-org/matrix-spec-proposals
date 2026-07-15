@@ -115,6 +115,7 @@ following schema:
 - `encryption` (optional, object): Describes the encryption mechanism to use in this slot. Further,
   details on the available mechanisms can be found in the [encryption section] below.
   - `type` (required, string): The globally unique identifier of the encryption mechanism.
+    MUST follow the [Common Namespaced Identifier Grammar].
   - Optionally includes further properties for settings that are specific to the encryption
   `type`.
 
