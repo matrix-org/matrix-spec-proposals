@@ -318,8 +318,8 @@ even though no media can be exchanged. To mitigate the impact of this, clients S
 delayed events as per [MSC4140: Cancellable delayed events][MSC4140] to implement a "dead man's switch".
 This means scheduling the `m.rtc.member` disconnection event as a delayed event with a reasonably
 short delay (e.g. 15-30 seconds). While being connected, the client can periodically restart
-the delayed event to push it into the future. If the client loses connectivity and the delay
-times out, the homeserver will send the disconnecting `m.rtc.member` event.
+the delayed event to push it into the future. If the client then happens to lose connectivity
+and the delay times out, the homeserver will automatically send the disconnecting `m.rtc.member` event.
 
 [MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 
