@@ -79,7 +79,7 @@ A server-initiated join, by contrast, arrives on all of the user's online device
 the same time, which could cause all the clients to try to download the bundle simultaneously,
 wasting bandwidth and DoSing the server.
 
-To avoid ths risk:
+To avoid this risk:
 
 * On a server-initiated join, clients SHOULD NOT eagerly download a room key bundle. They SHOULD
   retain the bundle details and import the bundle lazily, when first needed (for instance, when
