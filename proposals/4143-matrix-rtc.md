@@ -716,7 +716,7 @@ authentication mechanisms.
 
 The flexibility in handling key rotations may allow participants to decrypt media for a short time interval
 before connecting and after disconnecting. This is deemed an acceptable compromise to reduce the performance
-impact of key exchange.
+impact of key exchanges.
 
 ## Unstable prefix
 
