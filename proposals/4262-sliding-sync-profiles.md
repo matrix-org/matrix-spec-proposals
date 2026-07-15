@@ -40,13 +40,13 @@ updates in the following format:
         "profiles": {
             "users": {
                 "@alice:example.com": {
-                    // Fields that were newly set, or updated.
+                    // Optional. Fields that were newly set, or updated.
                     "updated": {
                         "displayname": "Alice",
                         "avatar_url": "mxc://example.com/abc123",
                         "org.example.language": "en-GB"
                     },
-                    // A field has been removed from a user's profile.
+                    // Optional. A field has been removed from a user's profile.
                     "removed": ["com.example.other_field"]
                 },
                 // Client can stop tracking this user (they left all shared rooms).
@@ -62,10 +62,15 @@ updated are found under `users-><user_id>->updated`. Likewise, any field IDs tha
 are cleared/removed from a user's profile will appear under
 `users-><user_id>->removed`. Omitted fields are considered unchanged.
 
-Only fields specified by the `fields` request parameter will be included in
-these two sections.
+The `updated` field SHOULD only be present if there are changes to existing
+fields on a user's profile. Otherwise, the field should not be present (i.e. if
+fields were only removed). Likewise, the `removed` field should not be present
+if there were only updated to existing fields (and none were cleared).
 
-These fields must be specified in every sync request.
+Only fields specified by the `fields` request parameter will be included in
+these two sections. `fields` must be specified in every sync request; the
+homeserver does not "remember" the client's requested `fields` from the last
+sync request.
 
 If the value directly underneath a user's ID is `null`
 (`@bob:remote.example.com` in the above example), this is a signal to the client
