@@ -388,8 +388,7 @@ Content-Type: application/json
   - `type`: (required, string): The globally unique transport identifier. MUST follow the
     [Common Namespaced Identifier Grammar] but without the namespacing requirements.
   - Optionally includes further properties specific to the transport `type`. The concrete properties
-    are defined by the transport's specification. An SFU-based transport, for instance, could include
-    the URL on which to reach the SFU.
+    are defined by the transport's specification.
 
 ### End-to-end encryption
 
@@ -666,7 +665,7 @@ still required manual history traversal while employing timestamp overlap logic.
 
 ### Transport provisioning models
 
-This proposal requires the serverside Matrix deployment to also provide the MatrixRTC transport
+This proposal requires the server-side Matrix deployment to also provide the MatrixRTC transport
 infrastructure. Alternatives that were considered and discarded include:
 
 * A transport system separate from Matrix accounts
@@ -709,7 +708,7 @@ tradeoff and introduce a shared-key system via a new encryption `type`.
 
 ### Discoverability of RTC infrastructure
 
-Details of the serverside RTC infrastructure may be disclosed to all room members through `m.rtc.member`
+Details of the server-side RTC infrastructure may be disclosed to all room members through `m.rtc.member`
 events. This could lead to abuse and unauthorized resource use. Guarding against this generically is not
 feasible, however. Instead, each transport mechanism needs to consider its security and required
 authentication mechanisms.
