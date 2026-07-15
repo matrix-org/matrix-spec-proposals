@@ -87,7 +87,7 @@ Before this MSC is accepted, implementations should use the following unstable k
 
 [MSC4441]: https://github.com/matrix-org/matrix-spec-proposals/pull/4441
 [`account_data`]: https://spec.matrix.org/v1.18/client-server-api/#client-config
-[secret-storage]: https://spec.matrix.org/v1.18/client-server-api/#secret-storage
+[secret storage]: https://spec.matrix.org/v1.18/client-server-api/#secret-storage
 [`m.secret_storage.v1.aes-hmac-sha2`]: https://spec.matrix.org/v1.18/client-server-api/#msecret_storagev1aes-hmac-sha2-1
 [Common Namespaced Identifier]: https://spec.matrix.org/v1.18/appendices/#common-namespaced-identifier-grammar
 
