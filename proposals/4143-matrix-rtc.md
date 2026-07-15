@@ -392,7 +392,7 @@ server-supported transport types:
 
 ### End-to-end encryption
 
-`m.rtc.member` events MUST be encrypted when sent in an encrypted room. Seperately from this, the
+`m.rtc.member` events MUST be encrypted when sent in an encrypted room. Separately from this, the
 process of encrypting the RTC data itself is generally specific to the transport being used.
 Additionally, participants need to agree on the key material so that the data can be decrypted again.
 To support this, MatrixRTC provides a generic system for establishing shared key material between
