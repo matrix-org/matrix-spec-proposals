@@ -658,7 +658,7 @@ m.rtc.member ──► m.rtc.member ─ ... ─► m.rtc.member     m.rtc.member
 Time ─────────────────────────────────────────────────────────────────────────────────────►
 ```
 
-This was meant to assist in reconstructing historical sessions accurately. However, the relations
+This was meant to assist in reconstructing historical sessions efficiently. However, the relations
 turned out to not be helpful because finding the slot as well as other participants' member events
 still required manual history traversal while employing timestamp overlap logic.
 
