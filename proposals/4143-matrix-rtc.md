@@ -369,9 +369,9 @@ connection details. To enable this, a new authenticated Client-Server endpoint
 `GET /_matrix/client/v1/rtc/transports` is introduced. The endpoint returns the available
 server-supported transport types:
 
-```http
-200 OK
-Content-Type: application/json
+```json5
+// 200 OK
+// Content-Type: application/json
 
 {
   "rtc_transports": [
@@ -448,11 +448,11 @@ is taken from the `member.claimed_device_id` property of the respective `m.rtc.m
 // PUT /_matrix/client/v3/sendToDevice/m.rtc.encryption_key/{txnId} 
 
 {
-    "room_id": "!roomid:matrix.domain",
-    "member_id": "xyzABCDEF0123",
+    "room_id": "{room_id}",
+    "member_id": "{member_id}",
     "media_key": {
-      "index": 10,
-      "key": "base64encodedkey",
+      "index": {index},
+      "key": "{encoded_key}",
     },
     "version": "0"
 }
