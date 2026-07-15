@@ -724,6 +724,7 @@ impact of key exchanges.
 | ----------------- | ------- | --------------------|
 | `m.rtc.slot` | Event type | `org.matrix.msc4143.rtc.slot` |
 | `m.rtc.member` | Event type | `org.matrix.msc4143.rtc.member` |
+| `m.per_participant` | Encryption type | `org.matrix.msc4143.per_participant` |
 | `m.rtc.encryption_key` | To-device message event type | `org.matrix.msc4143.rtc.encryption_key` |
 | `/_matrix/client/v1/rtc/transports` | Endpoint | `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` |
 
