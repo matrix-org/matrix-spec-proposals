@@ -228,8 +228,7 @@ To connect to a slot, the client sends an `m.rtc.member` event with the followin
     - `type`: (required, string): The globally unique transport identifier. MUST follow the
       [Common Namespaced Identifier Grammar] but without the namespacing requirements.
     - Optionally includes further properties specific to the transport `type`. The concrete properties
-      are defined by the transport's specification. An SFU-based transport, for instance, could include
-      a WebSocket URL.
+      are defined by the transport's specification. This could, for instance, include WebSocket URLs.
   - `can_subscribe` (array): An array of transport types that the participant is able to subscribe to.
 - `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
   in the addendum of [MSC4354]. MUST have the same value as `member.id` field.
