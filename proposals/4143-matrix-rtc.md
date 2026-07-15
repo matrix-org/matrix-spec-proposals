@@ -473,7 +473,7 @@ is taken from the `member.claimed_device_id` property of the respective `m.rtc.m
 Upon receipt, clients SHOULD discard any `m.rtc.encryption_key` events that were sent in cleartext.
 
 Receiving clients can determine the corresponding `m.rtc.member` event by matching its `member.id`
-with the value of `member_id` in the `m.rtc.encryption_key`. Once the member event was determined,
+with the value of `member_id` in the `m.rtc.encryption_key` message. Once the member event was determined,
 clients perform the following checks:
 
 - The `sender` property from the decryption result must match the `sender` of the `m.rtc.member`
@@ -637,7 +637,7 @@ The advantages of sticky events over state events may be found in [MSC4354] and 
 
 [MSC3401] proposed to use one state event per user with that event containing an array of RTC memberships.
 This is suboptimal as it introduces the possibility of race conditions when the event is written from
-different devices. Furthermore, a joint membership event is diificult to combine with delayed disconnect
+different devices. Furthermore, a joint membership event is difficult to combine with delayed disconnect
 mechanisms as the remaining members at the time of disconnecting would have to be known ahead of time.
 
 ### Chaining member events with relations
