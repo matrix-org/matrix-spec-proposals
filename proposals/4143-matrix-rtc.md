@@ -39,9 +39,11 @@ As first concrete instances, a voice- and video conferencing application and a t
 [MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
 
 This proposal also doesn't cover notifications for RTC sessions. These are considered outside the core
-protocol and are described in [MSC4075: MatrixRTC notifications & call ringing].
+protocol and are described in [MSC4075: MatrixRTC notifications & call ringing][MSC4075] and
+[MSC4310: MatrixRTC decline m.rtc.decline][MSC4310].
 
-[MSC4075: MatrixRTC notifications & call ringing]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
+[MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
+[MSC4310]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
 
 ## Proposal
 
