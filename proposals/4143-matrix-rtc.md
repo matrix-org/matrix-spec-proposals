@@ -710,7 +710,7 @@ tradeoff and introduce a shared-key system via a new encryption `type`.
 
 ### Discoverability of RTC infrastructure
 
-Details of the serverside RTC infrastructure may be disclosed to all room mebers through `m.rtc.member`
+Details of the serverside RTC infrastructure may be disclosed to all room members through `m.rtc.member`
 events. This could lead to abuse and unauthorized resource use. Guarding against this generically is not
 feasible, however. Instead, each transport mechanism needs to consider its security and required
 authentication mechanisms.
