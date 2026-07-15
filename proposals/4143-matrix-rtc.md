@@ -180,8 +180,7 @@ To connect to a slot, the client sends an `m.rtc.member` event with the followin
     },
     "member": {
       "id": "{member_id}",
-      "claimed_device_id": "{device_id}",
-      "claimed_user_id": "{user_id}"
+      "claimed_device_id": "{device_id}"
     },
     "transports": {
       "published": [
