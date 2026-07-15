@@ -8,7 +8,7 @@ currently missing.
 [1-to-1 calls]: https://spec.matrix.org/v1.18/client-server-api/#voice-over-ip
 [MSC3401]: https://github.com/matrix-org/matrix-spec-proposals/pull/3401
 
-The present proposal aims to close this gap by introducing "MatrixRTC", a generalised framework for
+The present proposal aims to close this gap by introducing *MatrixRTC*, a generalised framework for
 building RTC experiences on top of Matrix. At a high level, MatrixRTC consists of the following parts:
 
 * **End-to-end encryption** provides a generic basis for encrypted media exchange and reuses existing
@@ -36,7 +36,7 @@ As first concrete instances, a voice- and video conferencing application and a t
 
 [LiveKit SFU]: https://docs.livekit.io/reference/internals/livekit-sfu/
 [MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
-[MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195/changes
+[MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
 
 This proposal also doesn't cover notifications for RTC sessions. These are considered outside the core
 protocol and are described in [MSC4075: MatrixRTC notifications & call ringing].
