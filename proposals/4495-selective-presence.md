@@ -175,6 +175,11 @@ The **recipient user set** of a user's presence transition is determined as foll
    include users from this list that the sender shares at least one room with.
 5. Exclude any **users listed as `"deny"`** in the user's `m.presence.sharing` configuration.
 
+In addition to current presence update triggers, when a recipient user set changes to include new recipients, an
+update containing the user's presence state SHOULD be sent to those recipients' servers within a reasonable time
+frame. This is to prevent poor UX with not receiving presence until the next transition when you join a room, so
+this proposal recommends using 30 minutes.
+
 Determine the delta from the previous recipient user set. If there is no previous state, the entire set is an addition.
 If the recipient user set is left unchanged, emit a presence EDU using only the prior `stream_id` \- no `recipients`, no
 `prev_id`. Otherwise, generate a `stream_id` for the new state. Emit a presence EDU for each destination of the
