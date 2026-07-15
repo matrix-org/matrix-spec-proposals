@@ -123,13 +123,17 @@ following schema:
 
 #### Closing a slot
 
-To close a slot, the corresponding `m.rtc.slot` state event is updated with empty content.
+To close a slot, the corresponding `m.rtc.slot` state event is updated by removing the `application`
+object.
 
 ```json5
 {
   "type": "m.rtc.slot",
   "state_key": "{application_type}#{application_slot_id}", // = slot_id
-  "content": {},
+  "content": {
+    // No application property
+    "encryption": { ... }
+  },
   ...
 }
 ```
