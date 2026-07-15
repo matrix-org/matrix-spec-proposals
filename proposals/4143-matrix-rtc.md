@@ -498,7 +498,7 @@ Additionally, clients SHOULD also rotate their key on a periodic schedule regard
 the participants have changed. This limits the impact of compromised keys.
 
 In order to account for the delivery latency of to-device messages, clients SHOULD add a short
-delay between sending a new key and starting to use it. Otherwise, receiving participants may
+delay after sending a new key before starting to use it. Otherwise, receiving participants may
 be unable to decrypt the sender's streams temporarily. The RECOMMENDED delay duration is 5 seconds.
 
 Furthermore, resending to-device messages to all participants can be expensive when multiple
