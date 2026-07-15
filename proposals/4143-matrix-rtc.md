@@ -31,12 +31,12 @@ defines how these components are plugged into the system while leaving the intro
 and transports to other proposals.
 
 As first concrete instances, a voice- and video conferencing application and a transport based on the
-[LiveKit SFU] are proposed in [MSC4196: MatrixRTC voice and video calling application `m.call`] and
-[MSC4195: MatrixRTC Transport using LiveKit Backend], respectively.
+[LiveKit SFU] are proposed in [MSC4196: MatrixRTC voice and video calling application `m.call`][MSC4196] and
+[MSC4195: MatrixRTC Transport using LiveKit Backend][MSC4195], respectively.
 
 [LiveKit SFU]: https://docs.livekit.io/reference/internals/livekit-sfu/
-[MSC4196: MatrixRTC voice and video calling application `m.call`]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
-[MSC4195: MatrixRTC Transport using LiveKit Backend]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195/changes
+[MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
+[MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195/changes
 
 This proposal also doesn't cover notifications for RTC sessions. These are considered outside the core
 protocol and are described in [MSC4075: MatrixRTC notifications & call ringing].
@@ -559,86 +559,59 @@ with
 
 ## Potential issues
 
-### Shared State for a MatrixRTC Session using Matrix Primitives
+### Shared state
 
-In the context of Matrix’s eventual consistency, we evaluated options for representing shared state
-in MatrixRTC and identified the following trade-offs:
+In any distributed system, if multiple participants operate on the same shared state at the same
+time, there is a risk of *glare* (a race condition). One side will win and the other may need to
+roll back. This is not specific to Matrix. It is a well-known problem across telephony protocols
+such as PSTN, GSM, SS7, SIP, or even early rotary exchanges.
 
-* For a **conflict-free approach**:  
-* We **avoid** shared state such as a session identifier altogether (at least not a priori).  
-* Each participant state is independent, and the session is computed as the aggregate of
-  `m.rtc.member` events.  
-* This sacrifices the simplicity of a UUID-like session identifier but avoids rollback problems due
-  to state resolution  
-* A good example of this approach is a room-based call or videoconference where the set of active
-  participants defines the session.  
-* For **shared state** (e.g., introducing a session identifier that all participants agree on):  
-  * In any distributed system, if multiple participants attempt the same action at the same time,
-    there is a risk of *glare* (a race condition). One side will “win,” and the other may need to
-    roll back. This is not specific to Matrix: it is a well-known problem across telephony protocols
-    such as PSTN, GSM, SS7, SIP, or even early rotary exchanges.  
-  * Using Matrix state resolution can lead to **rollbacks**, which is problematic for real-time
-    communication, since rolling back is not matching the semantics of real-time.  
-  * The Matrix protocol does **not provide a consensus primitive** to prevent such rollbacks.  
-  * As a result, any shared state implementation must accept the possibility of rollbacks and handle
-    them at the application layer.
+MatrixRTC minimises but doesn't fully avoid shared state.
 
-From this we conclude: both approaches are valid within MatrixRTC:
+On the one hand, `m.rtc.member` events are conflict-free. Each participant's membership state is
+independent and the session is computed ad-hoc and without session identifiers as the aggregate
+of `m.rtc.member` events. Most importantly, normal participants cannot cause conflicts that would
+break an ongoing session.
 
-* For the actual session state the **conflict-free** approach is well suited. It should be avoided
-  to rollback calls and should not allow a participant to initiate such a rollback and break the
-  current ongoing session.  
-* For permissions and (shared) metadata, **shared state** is the desired concept. By decoupling the
-  concept of a **session** (people communicating in a meeting room with a predefined `slot_id`) and
-  the **context** itself (the slot), we can have a conflict-free session concept but a centrally
-  managed context with potential state rollbacks that do not necessarily interfere with the session
-  itself.
+On the other hand, `m.rtc.slot` events are subject to state resolution which can lead to rollbacks
+and ongoing sessions breaking. Slots are only used for administration, however, where shared state
+is actually desired. They should generally see far lower usage than membership events and exhibit
+a low potential for conflicts.
 
-### Discovery and Negotiation of Application Types
+### Discovery and negotiation of application types
 
 MatrixRTC does not currently define how clients should discover or negotiate which real-time
-applications are available in a given room or between users. For example, when placing a call, it is
-unclear whether the client should offer a MatrixRTC application, legacy 1:1 VoIP, or a room widget
-such as Jitsi. Even in the case of similar applications (e.g., multiple call-capable MatrixRTC
-apps), the proposal does not specify how a client should decide which one to launch. Application
-discovery and negotiation are therefore left to a future MSC.
+applications are available in a given room or between a set of users. For example, when multiple
+calling-capable applications exist, it is unclear which of them clients should offer for making a call.
+The impact of this is limited for now as only a single application exists with [MSC4196]. Therefore,
+introducing a scheme for application discovery and/or negotiation is left to a future proposal.
 
-### Interoperation Between Different RTC Transports
+### Interoperation between different transports
 
-MatrixRTC currently lacks a defined mechanism for interoperability across different RTC backends
-(e.g., SFUs, MCUs, peer-to-peer). As a result, all participants in the same slot must share at least
-one common transport implementation. This can lead to fragmentation if clients or Matrix sites
-support disjoint sets of transports. A more complete interop solution is left as future work.
+MatrixRTC currently lacks a mechanism for interoperability across different RTC transports. As a
+result, participants of a slot must share at least one common transport implementation. When clients
+support disjoint sets of transports, this can lead to fragmentation. This shortcoming has limited impact
+for now since only a single transport exists with [MSC4195]. Ensuring compatibility in a multi-transport
+setup is, therefore, left as a problem for a future proposal.
 
-### Impact of Message Ordering wrt. Session History
+### Accurate session reconstruction
 
-All information required to reconstruct historic MatrixRTC sessions is available within the Matrix DAG:
+Historic MatrixRTC sessions can technically be reconstructed from `m.rtc.slot` and `m.rtc.member`
+events in room history. However, to accurately represent RTC session history as perceived by participants
+at the time, events would require a `received_server_ts` which is, however, not available today. While
+`origin_server_ts` could serve as a practical workaround, it does not necessarily reflect the
+experienced order of events which might differ per homeserver due to netsplits or federation delays.
+This problem is aggravated by the fact that the [/messages] endpoint used for back-pagination returns
+events in topological order.
 
-* **Sticky events** are persistently recorded in the DAG.  
-* **`m.rtc.slot` state event transitions**, even when affected by state resolution, are visible as
-  part of the timeline.
+Additionally, clients currently have no way to query the room state as observed by their homeserver
+over time. As a result, they cannot identify historic state resets which, for instance, might have
+caused participants to suddenly consider a slot closed rather than open.
 
-However, for this reconstruction process to function **reliably and deterministically**, the Matrix
-protocol requires **consistent message ordering** on a **homeserver basis** across both state and
-timeline events.This homeserver-centric ordering is crucial: due to netsplits or federation delays,
-the room state may temporarily diverge between homeservers, even though it will eventually converge.
-A concept such as [stitched
-ordering](https://codeberg.org/andybalaam/stitched-order/src/branch/main/msc/msc.md) would satisfy
-these requirements. Furthermore, **state resolution results** — even though they do not need to be
-persisted in the DAG — **must be presented to clients as part of the timeline**. This ensures an
-immutable and complete historical view per homeserver.
+Due to these complications, accurately reconstructing session history is left as a consideration for a
+future proposal.
 
-To accurately represent RTC session history as perceived in-real-life by participants, ordering
-should ideally rely on `received_server_ts` (which is not available today) rather than
-`origin_server_ts`. While `origin_server_ts` can serve as a practical workaround for now, it does
-not necessarily reflect the experienced order of events in the presence of latency, netsplits, or
-federation lag.
-
-Counterintuitively, **state resolution for `m.rtc.slot` is not a problem** — RTC sessions occur in
-real life, and their existence remains valid regardless of how room state later resolves. What *is*
-important, however, is that each `m.rtc.slot` event, at its position in the DAG, **satisfies the
-applicable authorisation rules** at that point in time to ensure the reconstructed session history
-is consistent with valid room state transitions.
+[/messages]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3roomsroomidmessages
 
 ### Excessive key traffic
 
