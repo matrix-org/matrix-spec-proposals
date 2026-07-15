@@ -435,7 +435,7 @@ of the slot. Other devices, even if in the room, never get the key material.
 
 #### Distributing keys
 
-When connecting to a slot, clients generate a 16-byte cryptographically secure key. They then share
+When connecting to a slot, clients generate a 32-byte cryptographically secure key. They then share
 the key with other clients participating in the slot by sending encrypted to-device messages of the
 type `m.rtc.encryption_key`.
 
@@ -463,7 +463,7 @@ is taken from the `member.claimed_device_id` property of the respective `m.rtc.m
   Note that because `member.id` is unique per participant, it is sufficient to disambiguate multiple
   key events for the same device.
 - `media_key` (required, object): Information on the key to use to decrypt the sender's media.
-  - `key` (required, string): The key (16 bytes) encoded as specified by `format`.
+  - `key` (required, string): The key (32 bytes) encoded as specified by `format`.
   - `index` (required, number): The rolling index of the key to distinguish it from other keys. The
     value MUST be between 0 and 255 inclusive. WebRTC-based transports may use this as the `keyID`
     field of [SFrame](https://www.w3.org/TR/webrtc-encoded-transform/#sframe) headers.
