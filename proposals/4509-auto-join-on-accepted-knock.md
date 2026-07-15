@@ -1,4 +1,4 @@
-# MSCXXXX: Auto-joining rooms when a knock is accepted
+# MSC4509: Auto-joining rooms when a knock is accepted
 
 Knocking ([MSC2403](https://github.com/matrix-org/matrix-spec-proposals/pull/2403)) treats
 accepting a knock as receiving an ordinary invite. In practice this results in poor UX: the user has
@@ -177,7 +177,7 @@ Until this proposal is accepted:
 
 | Stable identifier | Unstable identifier |
 |---|---|
-| `m.key_bundle_claim` | `org.matrix.mscxxxx.key_bundle_claim` |
+| `m.key_bundle_claim` | `org.matrix.msc4509.key_bundle_claim` |
 
 `prev_sender` is already emitted by Synapse without a prefix; this proposal specs the existing
 behaviour rather than renaming it.
