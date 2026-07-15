@@ -9,7 +9,7 @@ account data, which may be used to optionally encrypt sensitive values.
 ### Account Data Key (ADK)
 
 Clients MAY choose to store a new secret, `m.account_data.key` within [secret storage][]. The value of the key, the
-"ADK secret," is the base64-encoded private portion of the ed25519 key used to encrypt account data.
+"ADK secret," is the base64-encoded `secret` used for AES-HMAC-SHA256 when encrypting account data.
 
 `m.account_data.key`:
 
