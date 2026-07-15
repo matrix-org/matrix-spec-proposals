@@ -29,9 +29,9 @@ Clients MAY choose to store a new secret, `m.account_data.key` within [secret st
 ### Encrypted Account Data
 
 Using the ADK secret introduced above, specified "encryptable" account data MAY be encrypted using the
-[`m.secret_storage.v1.aes-hmac-sha2`][] algorithm. Clients MUST NOT encrypt specified account data that has not been
-listed as encryptable. Clients MAY, however, encrypt their own unspecified account data, given that those events are
-named using a [Common Namespaced Identifier].
+[`m.secret_storage.v1.aes-hmac-sha2`][] algorithm with the account data event name as the info. Clients MUST NOT
+encrypt specified account data that has not been listed as encryptable. Clients MAY, however, encrypt
+their own unspecified account data, given that those events are named using a [Common Namespaced Identifier].
 
 `com.example.some_encryptable_account_data_key`:
 
