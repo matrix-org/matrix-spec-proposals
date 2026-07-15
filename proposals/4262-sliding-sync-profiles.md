@@ -47,7 +47,8 @@ updates in the following format:
                     "updated": {
                         "displayname": "Alice",
                         "avatar_url": "mxc://example.com/abc123",
-                        "org.example.language": "en-GB"
+                        "org.example.language": "en-GB",
+                        "org.example.another_field": null
                     },
                     // Optional. A field has been removed from a user's profile.
                     "removed": ["com.example.other_field"]
@@ -68,14 +69,23 @@ are cleared/removed from a user's profile will appear under
 The `updated` field SHOULD only be present if there are changes to existing
 fields on a user's profile. Otherwise, the field should not be present (i.e. if
 fields were only removed). Likewise, the `removed` field should not be present
-if there were only updated to existing fields (and none were cleared).
+if there were only updates to existing fields (and none were cleared).
 
 Only fields specified by the `fields` request parameter will be included in
 these two sections.
 
-If the value directly underneath a user's ID is `null`
-(`@bob:remote.example.com` in the above example), this is a signal to the client
-that they may stop tracking this user, as that user has left all shared rooms.
+Note that the value of a profile field MAY be `null`, as per the definition of
+[`PUT /_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.19/client-server-api/#put_matrixclientv3profileuseridkeyname):
+
+> Servers MAY reject `null` values. Servers that accept `null` values SHOULD store
+> them rather than treating `null` as a deletion request. Clients that want to
+> delete a field, including its key and value, SHOULD use the DELETE endpoint
+> instead.
+
+Homeservers SHOULD set the value directly underneath a user's ID to `null`
+(`@bob:remote.example.com` in the above example), if the user has left all
+shared rooms. This is a signal to the client that they may stop tracking this
+user.
 
 ### When are profile updates returned?
 
