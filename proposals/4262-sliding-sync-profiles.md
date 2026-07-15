@@ -26,9 +26,12 @@ optional arguments:
 ```json5
 {
     "enabled": true,
-    "fields": ["displayname", "avatar_url", "m.some_field"], // optional filter for specific profile fields
+    "fields": ["displayname", "avatar_url", "m.some_field"],
 }
 ```
+
+The `fields` parameter is optional. If omitted, *all* profile fields will be in
+scope.
 
 If `enabled` is `true`, then the sliding sync response MAY include profile
 updates in the following format:
@@ -68,9 +71,7 @@ fields were only removed). Likewise, the `removed` field should not be present
 if there were only updated to existing fields (and none were cleared).
 
 Only fields specified by the `fields` request parameter will be included in
-these two sections. `fields` must be specified in every sync request; the
-homeserver does not "remember" the client's requested `fields` from the last
-sync request.
+these two sections.
 
 If the value directly underneath a user's ID is `null`
 (`@bob:remote.example.com` in the above example), this is a signal to the client
