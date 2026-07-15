@@ -284,15 +284,15 @@ schema:
     concrete values are defined by the application's specification.
   - `description` (string): Optional human-readable explanation of the disconnection reason.
 - `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
-  in the addendum of [MSC4354]. MUST have the same value as `member.id` field in the previously
+  in the addendum of [MSC4354]. MUST have the same value as `member.id` in the previously
   connected `m.rtc.member` event.
 
 [^disconnect]: The structured design of `disconnect_reason` allows representing complex error situations
 such as found in e.g. [SIP](https://en.wikipedia.org/wiki/List_of_SIP_response_codes) in an
 accessible way.
 
-Again, once a participant has disconnected, clients MUST abort or refrain from consuming the
-participant's transports.
+Again, once a participant has disconnected, clients MUST refrain from sending them encryption keys
+and consuming their transports.
 
 #### Membership lifecycle
 
