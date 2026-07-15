@@ -73,8 +73,7 @@ but this time without the namespacing requirements[^nohash]. Additionally, the v
 be predictable for clients given that slots act like virtual addresses where participants
 are allowed to meet.
 
-As an example, the default slot ID for the calling applications from [MSC4196: MatrixRTC voice and video calling application `m.call`][MSC4196]
-is `m.call#ROOM`.
+As an example, the default slot ID for the calling application from [MSC4196] is `m.call#ROOM`.
 
 The grammar for forming slot IDs MUST NOT be used to parse the components out of a slot ID.
 It exists only to namespace the `state_key`.
