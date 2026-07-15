@@ -259,8 +259,8 @@ schema:
     "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
     "disconnect_reason": {
       "class": "{class}",
+      "code": "{code}",
       "reason": "{reason}",
-      "description": "{description}",
     },
     "sticky_key": "{member_id}" // = member.id from previously connected m.rtc.member event
   },
@@ -279,10 +279,10 @@ schema:
     - `server_error`: The server experienced a failure.
     - `redirection`: The connection was moved somewhere else (e.g. to a different slot).
     - `permanent_failure`: An unrecoverable failure occurred.
-  - `reason` (required, string): Identifier for the specific disconnection cause. MUST follow
+  - `code` (required, string): Identifier for the specific disconnection cause. MUST follow
     the [Common Namespaced Identifier Grammar] but without the namespacing requirement. The
     concrete values are defined by the application's specification.
-  - `description` (string): Optional human-readable explanation of the disconnection reason.
+  - `reason` (string): Optional human-readable explanation of the disconnection reason.
 - `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
   in the addendum of [MSC4354]. MUST have the same value as `member.id` in the previously
   connected `m.rtc.member` event.
