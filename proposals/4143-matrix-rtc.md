@@ -392,9 +392,8 @@ Content-Type: application/json
 
 ### End-to-end encryption
 
-`m.rtc.member` events MUST be encrypted when sent in an encrypted room.
-
-The process of encrypting the RTC data itself is generally specific to the transport being used.
+`m.rtc.member` events MUST be encrypted when sent in an encrypted room. Seperately from this, the
+process of encrypting the RTC data itself is generally specific to the transport being used.
 Additionally, participants need to agree on the key material so that the data can be decrypted again.
 To support this, MatrixRTC provides a generic system for establishing shared key material between
 participants. Transports can then define how to actually use this key material which may involve
