@@ -191,14 +191,26 @@ configuration. This might make implementation easier? Needs to be explored.
 ## Unstable Prefix
 
 Before this MSC is accepted, implementations should use
-`org.matrix.msc4262.profiles` as the extension field name, rather than
-`profiles`:
+`org.matrix.msc4262.profiles`, rather than `profiles`, as the extension field
+name in both sliding sync requests:
 
 ```json
 {
     "extensions": {
         "org.matrix.msc4262.profiles": {
             "enabled": true
+        }
+    }
+}
+```
+
+and responses:
+
+```json
+{
+    "extensions": {
+        "org.matrix.msc4262.profiles": {
+            "users": { ... }
         }
     }
 }
