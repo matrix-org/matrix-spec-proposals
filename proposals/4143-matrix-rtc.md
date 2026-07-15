@@ -51,15 +51,10 @@ protocol and are described in [MSC4075: MatrixRTC notifications & call ringing][
 
 MatrixRTC slots act as containers for MatrixRTC applications to run in. Slots are represented by
 state events of type `m.rtc.slot` which means that they can only be created or modified by users
-with sufficient power level. As described [below], participants can connect to slots by sending
-`m.rtc.member` room events.
+with sufficient power level. This design deliberately separates slot management from slot participation
+which is introduced [below] and requires lower power level.
 
 [below]: #membership
-
-This design deliberately separates slot management, requiring higher power level, from slot
-participation, requiring lower power level. This separation gives applications a robust surface
-for conflict resolution, clear ownership of events, and flexibility across use cases such as
-always-on spaces, scheduled meetings, or ephemeral conversations.
 
 Slots are always tied to specific applications through their slot ID which acts as the `state_key`. 
 The slot ID is constructed as:
