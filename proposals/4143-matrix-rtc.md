@@ -626,161 +626,27 @@ new joiner only.
 
 ## Alternatives
 
-### Represent MatrixRTC Members as regular Matrix State
-
-Sticky events are used because they combine persistence with efficiency
-
-* They do have similar delivery guarantees as state events and are reliably passed down the sync
-  loop for the duration of their stickiness – no pagination required in the event of gappy syncs  
-* They allow clients to compute the current membership (and session) state reliably without
-  contributing to long-term room state bloating.  
-* As they are persisted in the DAG like regular events, they can also be used to reconstruct
-  previous sessions, supporting session history and retrospective analysis.
-
-Furthermore and In contrast to Matrix room state (as of writing this MSC), sticky events can be
-already encrypted improving security significantly. 
-
-### Organising MatrixRTC Members (`m.rtc.member`)as an Array per User
-
-[MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) proposed to have one state
-event per user with that state event containing an array of RTC memberships.
-
-This introduces two problems:
-
-- Potential inconsistency where one user device overwrites the state of another device during a
-  concurrent update.  
-- When handling client disconnects, [MSC4140 delayed events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) **cannot
-  reliably maintain an accurate membership state**. This is because, at the time a delayed event is
-  scheduled, the current membership array may change before the event is actually emitted, making it
-  impossible to predict the correct state in advance.
-
-### Using the Device Name as State Key for MatrixRTC Members (`m.rtc.member`)
-
-Using the client’s **device name** instead of `member.id` as the state key for the `m.rtc.member`
-event may lead to **race conditions** if the same device joins a MatrixRTC slot multiple times.
-
-This scenario is realistic in cases such as:
-
-* multiple widgets joining the same slot to provide different perspectives on the session (e.g.,
-  moderator view vs. participant view), or  
-* a native mobile application establishing an additional connection (e.g., alongside a webview) for
-  purposes such as screen sharing.
-
-### Alternative Transport Provisioning Models
-
-This MSC proposes that the Matrix site setup is also responsible for providing the MatrixRTC
-infrastructure. However, other sources for providing MatrixRTC transport could be considered,
-including:
-
-* **A separate system not associated with a Matrix account.**  
-  For example, users might require both a Matrix account and a separate “LiveKit provider” account.  
-  This approach is difficult to achieve across federation, since all users participating in a
-  MatrixRTC session would need an account at the external service provider.  
-* **Client-provided transport.**  
-  The client itself could define and operate the SFU used for a session.  
-  This approach represents a middle ground but introduces several challenges: most users rely on a
-  small number of popular clients, meaning only a handful of transport infrastructures would
-  ultimately serve the majority of traffic.  
-  This concentration makes the system harder to scale and raises questions about cost, governance,
-  and accountability for maintaining the infrastructure.  
-* **A centralized solution.**  
-  A single shared service could provide transport for all MatrixRTC users.  
-  While simple to deploy, this model is **not Matrix-idiomatic**, as it contradicts the
-  decentralized design principles of the protocol.
-
-In contrast, Matrix homeservers already have diverse answers to the question of infrastructure
-provision — individuals, communities, and institutions independently operate homeservers for their
-own reasons and at their own expense. Replicating this **distributed sustainability model** for
-MatrixRTC transport remains the most natural direction.
-
-### E2EE Key Distribution via Room Event (`m.rtc.encryption_keys`)
-
-Earlier iterations of this MSC used an encrypted `m.rtc.encryption_keys` room event to distribute
-the per-participant sender keys.
-
-The encrypted content of the `m.rtc.encryption_keys` event was as follows:
-
-```json5
-{
-    "session": {
-      "application": "m.call",
-      "id": ""
-    },
-    "member": {
-      "id": "xyzABCDEF10123",
-      "device_id": "DEVICEID",
-      "user_id": "@user:matrix.domain"
-    }.
-    "keys": [
-        {
-            "index": 0,
-            "key": "base64encodedkey"
-        },
-    ],
-}
-```
-
-#### Issues Encountered
-
-1. **Scalability Problems**
-   - Generated high volumes of message traffic in rooms
-   - Frequently hit rate limiting thresholds
-
-2. **Timeline Pollution**
-   - Introduced invisible events into the room timeline
-   - Created notification noise depending on user settings
-   - Negatively impacted backpagination experience
-
-3. **Security Concerns**
-   - Over-exposed call keys by sharing them with all room participants
-   - Failed to limit key distribution to active call participants only (impossibility to rotate key on leaver)
-
-### Transport discovery via .well-known
-
-Rather than using a dedicated endpoint, homeservers could publish supported transports
-via a `.well-known` document. This exposes transports to unauthenticated users, however,
-which can be a security concern. Additionally, in enterprise deployments, `.well-known`
-files are often not served by the homeserver itself and it can be bureaucratically complicated
-to update entries under the top-level domain.
-
-`GET /_matrix/client/v1/rtc/transports` avoids these issues and offers more flexibility for
-future extensions such as user-specific transports.
-
-#### Shared key encryption
-
-For large calls an encryption scheme based on a shared key instead of a per-sender keys could
-be more efficient. However, this proposal prioritises security over performance. Therefore,
-defining a shared-key system by using a new encryption `type` is consciously left to a future
-proposal.
-
-## Extensibility considerations
-
-This MSC introduces a completely new concept to Matrix. The proposal is designed to be as abstract
-and flexible as possible. While it is expected to replace legacy Matrix calling mechanisms, it does
-**not** attempt to replicate or redefine how traditional calls work. Instead, it focuses on modeling
-the **core principles** required for real-time communication sessions.
-
-The design process drew heavily from real-world use cases — most notably the multi-year [Element
-Call](https://github.com/element-hq/element-call) project. Other RTC application types were also
-examined to identify common requirements and to test whether the proposal could be naturally
-extended to support Matrix’s broader ecosystem of use cases..
-
 ### Slot constraints
 
-Additional constraints may be defined for the `m.rtc.slot` event. Examples could include:
+Additional constraints such as restricting participation to a specific set of users could be added
+to slots. These have been descoped from this proposal and may be introduced by a future MSC.
 
-* **matrix ID list** – Restricting participation to a specific set of users.  
-* **power level constraint** – Limiting access based on user power levels or roles.
+### Using room state instead of sticky events for membership
 
-These and other potential constraints are **not** part of this MSC and will be addressed in a
-follow-up proposal. However, this MSC has been designed to remain compatible with such extensions.
-Future constraint definitions would likely exist alongside the `"application"` key within the
-`m.rtc.slot` event structure.
+Earlier iterations of MatrixRTC used room state rather than sticky events to represent session membership.
+The advantages of sticky events over state events may be found in [MSC4354] and are not repeated here.
+
+### Maintaining membership in one event per user
+
+[MSC3401] proposed to use one state event per user with that event containing an array of RTC memberships.
+This is suboptimal as it introduces the possibility of race conditions when the event is written from
+different devices. Furthermore, a joint membership event is diificult to combine with delayed disconnect
+mechanisms as the remaining members at the time of disconnecting would have to be known ahead of time.
 
 ### Chaining member events with relations
 
 An earlier version of this proposal used `m.reference` relations to link updated `m.rtc.member`
-events to the initial connect event.
+events to the initial connecting event.
 
 ```
 (Connect)        (Update)              (Disconnect)     (Reconnect)      (Update)
@@ -799,8 +665,46 @@ This was meant to assist in reconstructing historical sessions accurately. Howev
 turned out to not be helpful because finding the slot as well as other participants' member events
 still required manual history traversal while employing timestamp overlap logic.
 
-A future proposal may tackle the problem of performant session history reconstruction, possibly
-by using relations. This proposal does not add relations in order not to preclude such later attempts.
+### Transport provisioning models
+
+This proposal requires the serverside Matrix deployment to also provide the MatrixRTC transport
+infrastructure. Alternatives that were considered and discarded include:
+
+* A transport system separate from Matrix accounts
+  Users could obtain an account with a separate service provider for the RTC transport infrastructure.
+  This is difficult to achieve across federation, however, since all users participating in a session
+  would need an account with the same external service provider.  
+* Client-provided transports
+  Clients themself could define and operate transport infrastructure such as SFUs. This is problematic
+  because most users rely on a relatively small number of popular clients. Consequently, a low number of
+  transport backends would have to cover the majority of traffic which makes the system harder to scale
+  and raises questions around cost, governance, and accountability for infrastructure maintenance.
+* Centralized infrastructure
+  A single shared service could provide transport infrastructure for all MatrixRTC users. This creates
+  a single point of failure though. It's also unclear what entity would operate such a service.
+
+### Transport discovery via .well-known
+
+Rather than using a dedicated endpoint, homeservers could publish supported transports via a `.well-known`
+document. This exposes transports to unauthenticated users, however, which can be a security concern.
+Additionally, in enterprise deployments, `.well-known` files are often not served by the homeserver itself
+and it can be bureaucratically complicated to update entries under the top-level domain.
+
+`GET /_matrix/client/v1/rtc/transports` avoids these issues and offers more flexibility for future extensions
+such as user-specific transports.
+
+### Key distribution via room events
+
+Earlier iterations of this MSC used an encrypted room event to distribute per-participant encryption
+keys. This turned out to be problematic due to homeservers rate-limiting message sending, timelines
+being polluted with invisible events and, most importantly, the keys being shared across all room
+participants rather than just the session participants.
+
+#### Shared key encryption
+
+For large calls an encryption scheme based on a shared key instead of per-sender keys could be more
+efficient. This would obviously weaken security properties though. A future proposal may consider the
+tradeoff and introduce a shared-key system via a new encryption `type`.
 
 ## Security considerations
 
