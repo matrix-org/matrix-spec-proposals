@@ -242,6 +242,7 @@ connected if all of the following conditions apply:
   When a member event's stickiness expires, the associated delivery guarantee vanishes. As a result,
   some participants might not have received the event while others did. Treating the participant as
   connected in such cases would result in inconsistent views on the participating members.
+- If the room is encrypted, the `m.rtc.member` event was sent encrypted rather than in clear.
 
 If these conditions are not fulfilled, clients MUST treat the participant as disconnected and refrain
 from sending them encryption keys and consuming their transports.
