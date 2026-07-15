@@ -60,6 +60,11 @@ and may be repeated multiple times in order to ask for multiple state events.
 A JSON object is preferable to a tuple of `(type, state_key)`, as it is both
 self-describing and easily extendable.
 
+If `additional_state` is provided, as the value cannot be parsed as JSON, the
+homeserver MUST respond with status code 400 and error `M_NOT_JSON`. If the
+parsed JSON is otherwise invalid (i.e. missing a `type` field) the homeserver
+MAY return status code 400 and error `M_INVALID_PARAM`.
+
 ### `m.public_state` state event
 
 A new state event `m.public_state` with a `state_key` of an empty string is
