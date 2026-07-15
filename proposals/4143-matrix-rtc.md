@@ -231,7 +231,7 @@ To connect to a slot, the client sends an `m.rtc.member` event with the followin
       are defined by the transport's specification. This could, for instance, include WebSocket URLs.
   - `can_subscribe` (array): An array of transport types that the participant is able to subscribe to.
 - `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
-  in the addendum of [MSC4354]. MUST have the same value as `member.id` field.
+  in the addendum of [MSC4354]. MUST have the same value as `member.id`.
 
 Apart from having to match the above schema, an `m.rtc.member` event MUST only be considered to be
 connected if all of the following conditions apply:
@@ -244,8 +244,8 @@ connected if all of the following conditions apply:
   some participants might not have received the event while others did. Treating the participant as
   connected in such cases would result in inconsistent views on the participating members.
 
-If these conditions are not fulfilled, clients MUST treat the participant as disconnected and abort
-or refrain from consuming the participant's transports.
+If these conditions are not fulfilled, clients MUST treat the participant as disconnected and refrain
+from sending them encryption keys and consuming their transports.
 
 #### Disconnecting from a slot
 
@@ -273,7 +273,7 @@ schema:
   This SHOULD only be used by clients if the user has actually attempted to connect to the slot before.
   This ensures that the `disconnect_reason` refers to a real connection lifecycle rather
   than pre-join cancellation.
-  - `class` (required, string): High-level category of the disconnection or error. Must be on of:
+  - `class` (required, string): High-level category of the disconnection or error. Must be one of:
     - `user_action`: The disconnect happened due to explicit user action (e.g. a hang up).
     - `client_error`: The client experienced a failure.
     - `server_error`: The server experienced a failure.
@@ -282,7 +282,7 @@ schema:
   - `reason` (required, string): Identifier for the specific disconnection cause. MUST follow
     the [Common Namespaced Identifier Grammar] but without the namespacing requirement. The
     concrete values are defined by the application's specification.
-| `description` (string): Optional human-readable explanation of the disconnection reason.
+  - `description` (string): Optional human-readable explanation of the disconnection reason.
 - `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
   in the addendum of [MSC4354]. MUST have the same value as `member.id` field in the previously
   connected `m.rtc.member` event.
