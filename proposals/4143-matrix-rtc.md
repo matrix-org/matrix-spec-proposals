@@ -570,14 +570,6 @@ calling-capable applications exist, it is unclear which of them clients should o
 The impact of this is limited for now as only a single application exists with [MSC4196]. Therefore,
 introducing a scheme for application discovery and/or negotiation is left to a future proposal.
 
-### Interoperation between different transports
-
-MatrixRTC currently lacks a mechanism for interoperability across different RTC transports. As a
-result, participants of a slot must share at least one common transport implementation. When clients
-support disjoint sets of transports, this can lead to fragmentation. This shortcoming has limited impact
-for now since only a single transport exists with [MSC4195]. Ensuring compatibility in a multi-transport
-setup is, therefore, left as a problem for a future proposal.
-
 ### Accurate session reconstruction
 
 Historic MatrixRTC sessions can technically be reconstructed from `m.rtc.slot` and `m.rtc.member`
