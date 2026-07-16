@@ -1,12 +1,11 @@
-# MSC4501: Rooms as Social Media Pages
+# MSC4501: Social Media on Matrix
 
 *Note: this proposal is a spiritual successor to
 [MSC3639: Matrix for the Social Media Use Case](https://github.com/Henri2h/matrix-doc/blob/henri2h-matrix-for-social-media/proposals/3639-matrix-for-the-social-media-use-case.md),
 which has been abandoned. It keeps MSC3639's core idea, dedicated room types for social-media-style
-profiles and groups, but narrows and simplifies the rest: it drops the bespoke comment event type in
-favor of Matrix's own thread relations, reuses `m.room.message`'s content schema directly for posts
-instead of defining a new one, and adds a profile-discoverability mechanism and a phased migration
-plan that MSC3639 did not cover.*
+profiles and groups, and builds on top of it: MSC3639 had no structures for representing actions like
+reposting or cross-room replies, and left other social media conventions, like how liking should work,
+unclear. See Comparison to MSC3639, below, for the full picture.*
 
 Matrix has no standardized convention for building a social-media-style application (one organized
 around personal profiles, group pages, a following/discovery model, and an aggregated "feed") on top
@@ -34,14 +33,6 @@ client can build a social media experience on top of:
   with clients that haven't adopted this MSC yet.
 
 ## Proposal
-
-### Terminology
-
-This proposal uses "post" to mean a piece of social-media content submitted to a profile or group (the
-equivalent of a tweet/X post, a Bluesky post, or a Facebook status update), as distinct from a "message"
-sent in an ordinary Matrix room (a chat message). Structurally, under this proposal, a post is simply a
-message-shaped event sent into a room of a particular type: the distinction is about the room and
-event *type*, not the content shape.
 
 ### Profile rooms
 
@@ -134,8 +125,9 @@ PUT /_matrix/client/v3/profile/{userId}/m.social.profile_room_id
 { "m.social.profile_room_id": "!theirprofileroom:example.org" }
 ```
 
-This relies on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133) (Extensible
-Profiles), which is what makes arbitrary per-key profile fields like this possible, see Dependencies.
+This relies on [profile fields beyond `displayname`/`avatar_url`](https://spec.matrix.org/latest/client-server-api/#profiles),
+added to the Client-Server API in Matrix 1.16 (originally proposed as MSC4133), which is what makes
+arbitrary per-key profile fields like this possible, see Dependencies.
 
 Setting this field ties a user's Matrix account directly to their profile room, the same way
 `avatar_url` and `displayname` are already discoverable from any account, without needing a directory
@@ -197,9 +189,17 @@ levels.
 
 ### Posts
 
-A new event type, `m.social.post`. Its content is **structurally identical to `m.room.message`**:
-same `msgtype`, `body`, `formatted_body`, media fields, etc. It is not a new content schema, only a
-different top-level event `type`:
+A new event type, `m.social.post`, for a piece of social-media content submitted to a profile or group,
+as distinct from a "message" sent in an ordinary Matrix room. Its content is **structurally identical to
+`m.room.message`**: same `msgtype`, `body`, `formatted_body`, media fields, etc. It is not a new content
+schema, only a different top-level event `type`.
+
+Also known as:
+
+- **Tweet** (X/Twitter)
+- **Toot** (Mastodon)
+- **Note** (Misskey, also used by Nostr)
+- **Skeet** (Bluesky)
 
 ```json
 {
@@ -621,10 +621,6 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   room today. Given that the whole point of a profile/group room is usually to be broadly readable,
   most deployments are expected to be unencrypted and public/knock-restricted in practice, but this MSC
   does not mandate it.
-- **Depends on an MSC that hasn't landed.** Profile discoverability depends entirely on MSC4133. If
-  MSC4133 stalls or changes shape significantly, this proposal's discoverability mechanism has no
-  fallback (a profile-typed room a client happens to be a member of and was created by the target user
-  remains usable as a weaker, best-effort substitute; see Profile/Group discoverability, above).
 - **A quote-post whose entire commentary happens to be a permalink to the same event is
   indistinguishable from a plain repost.** Specific to `rel_type: "m.social.repost"`: because a plain
   repost is detected purely by `body` being nothing but a matching permalink (see Proposal, above), a
@@ -643,11 +639,11 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
 ## Alternatives
 
 - **Keep reviving MSC3639 as-is.** Rejected because MSC3639 is abandoned (no active author or
-  momentum), and this proposal intentionally narrows its scope in ways that aren't just a straight
-  continuation: dropping the bespoke `org.matrix.msc3639.social.comment` event type in favor of
-  standard thread relations (which did not yet exist when MSC3639 was written), and dropping
-  post-specific fields like `m.social.image-ref` in favor of reusing `m.room.message`'s existing media
-  `msgtype`s directly.
+  momentum), and this proposal isn't just a straight continuation: it adds structures MSC3639 never
+  had, such as reposts/quote-posts and cross-room replies, and replaces its bespoke
+  `org.matrix.msc3639.social.comment` event type with standard thread relations (which did not yet
+  exist when MSC3639 was written) and its `m.social.image-ref` field with `m.room.message`'s existing
+  media `msgtype`s directly. See Comparison to MSC3639, below.
 - **No new room types, treating "feed" as a purely client-side filter over ordinary rooms.** Rejected
   because, without a room-level type marker, there is no reliable way for a client to know a room is
   *meant* to be a social profile or group at all, e.g. to show a "Create Profile" versus "Create Room"
@@ -704,6 +700,39 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   opt-in for repost implementations that already build the outer content as a duplicate anyway, covers
   all three cases without forcing every implementation to special-case quote-posts and replies.
 
+## Comparison to MSC3639
+
+MSC4501 keeps MSC3639's core idea, dedicated room types for social-media-style profiles and groups,
+and builds on top of it rather than simplifying it. MSC3639 has no structures for representing actions
+like reposting or cross-room replies at all, and leaves other social media conventions unclear:
+
+- **Reposts, quote-posts, and cross-room replies.** MSC3639 has no mechanism for referencing a post in
+  another room; a "comment" there is only ever a same-room thread reply to a same-room post. This
+  proposal's `m.social.relates_to` mechanism (see Cross-room post references, above) is new.
+- **Liking.** MSC3639 only says emoji reactions are standard Matrix reactions, without specifying which
+  reaction represents a like, or any convention for counting reposts. This proposal makes both explicit
+  (see Liking and Repost counts, above).
+
+**Profile and group rooms are currently compatible between the two proposals.** Both use the same room
+type identifiers, `m.social.profile` and `m.social.group` (see Unstable prefix, above), so a room typed
+this way is recognized as a profile or group room by an implementation of either proposal, regardless
+of which one created it.
+
+**Posts are only partly compatible.** Both proposals use the same event type, `m.social.post`, for a
+top-level piece of content, and a plain-text post (a bare `body`, no attachments) is readable under
+either proposal's rules. Where they diverge is media: MSC3639 posts reference separately-sent image
+events via an `m.social.image-ref` array, while this proposal embeds media directly using
+`m.room.message`'s own media `msgtype`s (see Posts, above), so an implementation of one proposal will
+not render media attached the other proposal's way.
+
+**Comments and replies are not compatible.** MSC3639 gives a reply its own event type,
+`m.social.comment`, related to its post via a thread. This proposal deliberately drops that distinct
+type in favor of standard thread relations: a reply is just another `m.social.post`, related to the
+post it replies to via an ordinary `m.thread` relation (see Posts, above). An MSC3639-only
+implementation has no reason to expect a threaded `m.social.post` to be anything other than a new
+top-level post, and an implementation of this proposal will not recognize an `m.social.comment`-typed
+event as a reply at all.
+
 ## Security considerations
 
 - **`m.social.profile_room_id` and `m.social.profile_user_id` are both self-asserted, unauthenticated
@@ -749,9 +778,9 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   moderation tooling (power levels, bans, policy-room-based moderation) rather than proposing anything
   new.
 - **No new client-server or server-server API surface.** This proposal only defines conventions layered
-  on existing mechanisms (room types, message-shaped events, and MSC4133's per-key profile fields), so
-  it introduces no new endpoints and no attack surface beyond what those existing/dependency mechanisms
-  already carry.
+  on existing mechanisms (room types, message-shaped events, and the Client-Server API's per-key
+  profile fields), so it introduces no new endpoints and no attack surface beyond what those
+  existing/dependency mechanisms already carry.
 
 ## Unstable prefix
 
@@ -774,21 +803,19 @@ all under the `org.matrix.msc4501.social.` namespace:
 *(This mirrors how MSC3639 itself moved from `org.matrix.msc3639.*` unstable identifiers to
 `m.social.*` on acceptance; the same rename will happen here if/when this proposal is accepted.)*
 
-The `m.social.profile_room_id` profile field additionally depends on whatever unstable identifier the
-implementing homeserver uses for MSC4133 support itself (e.g. some Synapse deployments currently
-advertise `uk.tcpip.msc4133`/`uk.tcpip.msc4133.stable` in `/_matrix/client/versions`); clients should
-check for MSC4133 support (by whatever identifier the server advertises) before relying on
+The `m.social.profile_room_id` profile field additionally depends on the implementing homeserver
+supporting per-key profile fields, part of the Client-Server API since Matrix 1.16; clients should
+check the server's supported spec versions (`/_matrix/client/versions`) before relying on
 `m.social.profile_room_id` being writable/readable.
 
 ## Dependencies
 
-This MSC builds on the following, neither of which has been accepted into the spec at the time of
-writing:
+This MSC builds on the following:
 
-- [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133) (Extensible Profiles): the
-  profile discoverability mechanism (`m.social.profile_room_id`) has no fallback if MSC4133 does not
-  land in close to its current form.
-- [MSC4221](https://github.com/matrix-org/matrix-spec-proposals/pull/4221) (Room Banners): used for
-  `m.room.banner` in Profile rooms and Group rooms, above. Without it, profile/group rooms still have a
-  name, avatar, and topic, just no banner image, so this dependency is not load-bearing for the rest of
-  this proposal.
+- [Per-key profile fields](https://spec.matrix.org/latest/client-server-api/#profiles), part of the
+  Client-Server API since Matrix 1.16 (originally proposed as MSC4133): the profile discoverability
+  mechanism (`m.social.profile_room_id`) depends on this.
+- [MSC4221](https://github.com/matrix-org/matrix-spec-proposals/pull/4221) (Room Banners), not yet
+  accepted into the spec at the time of writing: used for `m.room.banner` in Profile rooms and Group
+  rooms, above. Without it, profile/group rooms still have a name, avatar, and topic, just no banner
+  image, so this dependency is not load-bearing for the rest of this proposal.
