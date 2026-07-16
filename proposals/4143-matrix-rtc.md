@@ -213,7 +213,7 @@ To join a slot, the client sends an `m.rtc.member` event with the following sche
     - Optionally includes further properties specific to the transport `type`. The concrete properties
       are defined by the transport's specification. This could, for instance, include WebSocket URLs.
   - `can_subscribe` (array): An array of transport types that the member is able to subscribe to.
-    Other members can use this as cue for deciding which transports to use to accomodate this member.
+    Other members can use this as cue for deciding which transports to use to accommodate this member.
 - `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
   in the addendum of [MSC4354]. MUST have the same value as `member.id`.
 
