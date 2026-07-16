@@ -256,8 +256,13 @@ schema:
   This ensures that the `leave_reason` reflects a real join lifecycle rather
   than pre-join cancellation (such as declining a call).
   - `code` (required, string): Identifier for the specific leave cause. MUST follow
-    the [Common Namespaced Identifier Grammar] but without the namespacing requirement. The
-    concrete values are defined by the application's specification.
+    the [Common Namespaced Identifier Grammar] but without the namespacing requirement.
+    This proposal defines a set of generic `code`s. Further values may be introduced by
+    application and/or transport specifications. The generic values include:
+    - `leave`: The member left intentionally (e.g. by hanging up a call).
+    - `delayed_leave`: The member left through a scheduled delayed leave event (see the
+      [lifecycle] section below).
+    - `slot_closed`: The member left because the slot was closed midway through the session.
   - `reason` (string): Optional human-readable explanation of the leave reason.
 - `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
   in the addendum of [MSC4354]. MUST have the same value as `member.id` in the previously
@@ -265,6 +270,8 @@ schema:
 
 Again, once a member has left, clients SHOULD refrain from sending them encryption keys
 or connecting to their transports.
+
+[lifecycle]: #membership-lifecycle
 
 #### Membership lifecycle
 
