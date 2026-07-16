@@ -398,14 +398,14 @@ ask participants to disable encryption.[^e2eeguide]
 [^e2eeguide]: This is aligned with the recommendation for handling the `m.room.encryption` state
               event for normal room messaging in https://matrix.org/docs/matrix-concepts/end-to-end-encryption.
 
-The only available mechanism for now is `m.per_participant`.
+The only available mechanism for now is `m.per_member`.
 
 ```json5
 {
   "type": "m.rtc.slot",
   "content": {
     "encryption": {
-      "type": "m.per_participant"
+      "type": "m.per_member"
     },
     ...
   },
@@ -413,7 +413,7 @@ The only available mechanism for now is `m.per_participant`.
 }
 ```
 
-Under `m.per_participant` every participant maintains a unique sender key. This key is shared securely
+Under `m.per_member` every participant maintains a unique sender key. This key is shared securely
 with other participants via Olm-encrypted [to-device messages]. This ensures that keys are only
 distributed among session members. Other devices, even if in the room, never get the key material.
 
@@ -719,7 +719,7 @@ encryption types are introduced.
 | ----------------- | ------- | --------------------|
 | `m.rtc.slot` | Event type | `org.matrix.msc4143.rtc.slot` |
 | `m.rtc.member` | Event type | `org.matrix.msc4143.rtc.member` |
-| `m.per_participant` | Encryption type | `org.matrix.msc4143.per_participant` |
+| `m.per_member` | Encryption type | `org.matrix.msc4143.per_member` |
 | `m.rtc.encryption_key` | To-device message event type | `org.matrix.msc4143.rtc.encryption_key` |
 | `/_matrix/client/v1/rtc/transports` | Endpoint | `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` |
 
