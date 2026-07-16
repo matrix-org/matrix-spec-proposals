@@ -227,9 +227,6 @@ connected if all of the following conditions apply:
 - The sender is currently a member of the room (i.e. has membership `join`).
 - The event is currently sticky, meaning that its stickiness duration as per [MSC4354] has not expired.
   This is to ensure that the membership view is as consistent as possible across all participants.
-  When a member event's stickiness expires, the associated delivery guarantee vanishes. As a result,
-  some participants might not have received the event while others did. Treating the participant as
-  connected in such cases would result in inconsistent views on the participating members.
 - If the room is encrypted, the `m.rtc.member` event was sent encrypted rather than in clear.
 
 If these conditions are not fulfilled, clients SHOULD treat the participant as disconnected and refrain
