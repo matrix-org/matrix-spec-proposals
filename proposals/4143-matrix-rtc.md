@@ -593,10 +593,7 @@ future proposal.
 
 In per-participant encryption, keys are rotated and distributed to _all_ participants whenever a
 member joins or leaves the session. This could result in a large amount of to-device messages being
-exchanged. This is deemed acceptable for now given that it should usually only occur during session
-setup.
-
-To further mitigate this, a future version of the key exchange mechanism could introduce ratcheting.
+exchanged. To mitigate this, a future version of the key exchange mechanism could introduce ratcheting.
 Rather than rotating the key for all members, this would allow to ratchet the key and send it to the
 new joiner only.
 
