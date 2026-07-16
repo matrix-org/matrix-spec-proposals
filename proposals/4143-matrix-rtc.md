@@ -82,16 +82,14 @@ It exists only to namespace the `state_key`, and could be modified in a future p
 [^nohash]: Note that due the use of the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar),
 neither `application_type` nor `application_slot_id` can contain the `#` character.
 
-#### Opening a slot
-
-A slot is opened by sending an `m.rtc.slot` state event with `state_key = slot_id` and the
-following schema:
+`m.rtc.slot` events have the following schema:
 
 ```json5
 {
   "type": "m.rtc.slot",
   "state_key": "{application_type}#{application_slot_id}", // = slot_id
   "content": {
+    "status": "{status}",
     "application": {
       "type": "{application_type}",
       ... // Further application-specific properties (if required)
@@ -105,13 +103,14 @@ following schema:
 }
 ```
 
-- `application` (required, object): Describes the application that can run in this slot.
+- `status` (required, string): The slot's current status. MUST be one of `"open"`, `"closed"`.
+- `application` (object): Describes the application that can run in this slot.
   - `type` (required, string): The globally unique application identifier. MUST follow the
     [Common Namespaced Identifier Grammar].
   - Optionally includes further properties for settings that are specific to the application
     `type`. The concrete properties are defined by the application's specification. A calling
     application, for instance, could include properties for constraining the call to be voice-only.
-- `encryption` (optional, object): Describes the encryption mechanism to use in this slot. Further,
+- `encryption` (object): Describes the encryption mechanism to use in this slot. Further,
   details on the available mechanisms can be found in the [encryption section] below.
   - `type` (required, string): The globally unique identifier of the encryption mechanism.
     MUST follow the [Common Namespaced Identifier Grammar].
@@ -120,27 +119,15 @@ following schema:
 
 [encryption section]: #end-to-end-encryption
 
-#### Closing a slot
-
-To close a slot, the corresponding `m.rtc.slot` state event is updated by removing the `application`
-object.
-
-```json5
-{
-  "type": "m.rtc.slot",
-  "state_key": "{application_type}#{application_slot_id}", // = slot_id
-  "content": {
-    // No application property
-    "encryption": { ... }
-  },
-  ...
-}
-```
-
-The semantics of open and closed slots for slot participation are described in the membership
-event section [below].
-
 #### Slot lifecycle
+
+A slot is opened by sending an `m.rtc.slot` state event with `status = "open"`, a valid `application`
+object that aligns with the slot's `state_key` and, if needed, a valid `encryption` object. To close a
+slot, the corresponding `m.rtc.slot` state event is updated with `status = "closed"`. The `application`
+and `encryption` objects are not required on closed slots but may be kept around for convenience to
+simplify re-opening the slot. Slot events that don't match the schema above, SHOULD be considered closed.
+The semantics of open and closed slots for actual slot participation are described in the membership event
+section [below].
 
 Slots may follow different lifecycles depending on the use case. For instance, a long-lived slot
 that is kept open continually could power a Discord-style experience where participants can hop on
@@ -719,6 +706,14 @@ authentication mechanisms.
 The flexibility in handling key rotations may allow participants to decrypt media for a short time interval
 before connecting and after disconnecting. This is deemed an acceptable compromise to reduce the performance
 impact of key exchanges.
+
+### Encryption downgrade
+
+This proposal recommends clients to remember whether a slot uses encryption or not to prevent a MITM from
+disabling encryption. This is sufficient as long as only a single encryption type exists. Once further types
+are introduced, however, the boolean flag won't protect against encryption being changed to a different and
+potentially less secure type. This issue will have to be addressed by a future proposal when further
+encryption types are introduced.
 
 ## Unstable prefix
 
