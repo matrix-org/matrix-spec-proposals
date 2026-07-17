@@ -25,7 +25,7 @@ Exactly one of these parameters can be supplied at the same time. If both or non
 server MUST respond with HTTP 400 / `M_MISSING_PARAM`. If either `roomId`, `mxid` or `server_name`
 contain invalid values, the server MUST respond with HTTP 400 / `M_INVALID_PARAM`.
 
-If all paremeters are valid, the server checks whether the supplied user identifier or server name
+If all parameters are valid, the server checks whether the supplied user identifier or server name
 is joined to the room and returns the following response:
 
 ``` json5
