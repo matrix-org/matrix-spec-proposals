@@ -22,7 +22,7 @@ We add a new field to represent banners:
   "displayname": "Alice Margatroid",
   "m.example_field": "custom_value",
   "m.tz": "Europe/London",
-  "m.banner_url": "mxc://matrix.org/example123"
+  "m.banner_uri": "mxc://matrix.org/example123"
 }
 ```
 
