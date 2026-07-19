@@ -133,6 +133,9 @@ Unrecognized `fields` entries are ignored, which is indistinguishable from a
 server declining to disclose a known field and keeps the field set
 forward-extensible.
 
+A room version MAY define additional queryable fields. Unrecognized `fields`
+entries remain ignored unless a room version specifies otherwise.
+
 The response maps each event ID to an object containing the fields returned for
 that event. Servers may omit fields they do not know, do not store efficiently,
 or are not willing to disclose to the requester.
@@ -151,10 +154,11 @@ Each event ID is visited at most once, even if it is reachable through multiple
 paths or multiple edge types. This also prevents cycles from causing repeated
 work: an already-seen event is not queued again.
 
-Within the same recursion depth, events should be processed in bytewise
-lexicographic order by event ID. This gives stable results when a response is
-limited. Because event IDs may be hashes, this is not intended to prefer the
-most recent or most useful branch. It is only a deterministic truncation rule.
+Within the same recursion depth, events MUST be processed in bytewise
+lexicographic order by the UTF-8 encoding of the event ID string. This gives
+stable results when a response is limited. Because event IDs may be hashes, this
+is not intended to prefer the most recent or most useful branch. It is only a
+deterministic truncation rule.
 
 The server applies limits in this order:
 
