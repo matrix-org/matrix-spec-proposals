@@ -22,13 +22,13 @@ We add a new field to represent banners:
   "displayname": "Alice Margatroid",
   "m.example_field": "custom_value",
   "m.tz": "Europe/London",
-  "m.banner_uri": "mxc://matrix.org/example123"
+  "m.banner_url": "mxc://matrix.org/example123"
 }
 ```
 
 Clients can then use this field to load user banners.
 
-The `m.banner_uri` field MUST be an MXC URI. External URIs/URLs, i.e 
+The `m.banner_url` field MUST be an MXC URI. External URIs/URLs, i.e 
 to image hosting services, should not be used.
 
 It is recommended that clients stick to a horizontal aspect ratio, 
