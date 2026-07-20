@@ -48,6 +48,7 @@ For example:
   "max_depth": 50,
   "max_event_records": 1000,
   "max_nodes_visited": 5000,
+  "max_compute_event_pairs": 10,
   "fields": ["prev_events", "origin"],
   "compute": ["common_ancestor", "hop_distance"],
   "compute_event_pairs": [["$missing_event_A", "$prev_1"]]
@@ -64,7 +65,8 @@ The response is intentionally sparse:
   "events": {
     "$missing_event_A": {
       "prev_events": ["$prev_1", "$prev_2"],
-      "origin": "example.org"
+      "origin": "example.org",
+      "rejected": false
     },
     "$missing_event_B": {
       "prev_events": ["$prev_1"],
@@ -444,8 +446,9 @@ A compatible future room version modifies event hashing to generate an
   legacy event `hashes` field unless a future room-version MSC explicitly maps
   them together;
 - `other_signed_fields_hash`: canonical hash of every remaining signed event
-  field which is not included in `prev_events_hash`, `auth_events_hash`,
-  `event_header_root`, or `content_hash`;
+  field that is not included in `prev_events_hash`, `auth_events_hash`,
+  `event_header_root`, or `content_hash`, strictly excluding the `signatures`
+  and `unsigned` dictionaries;
 - `event_root`: the root hash committing to the above components.
 
 The future room version MUST define this partition so every signed,
@@ -486,9 +489,9 @@ event ID.
 ### Header tree construction
 
 The `event_header_root` is constructed as a binary Merkle tree. Header leaves
-are ordered bytewise by field name. Missing optional fields use the canonical
-JSON value `null`; present fields use their standard Matrix canonical JSON
-encoding.
+are ordered bytewise by field name. Missing optional fields, such as `redacts`,
+use the canonical JSON value `null`; present fields use their standard Matrix
+canonical JSON encoding.
 
 Because the number of header leaves is not guaranteed to be a power of two,
 implementations MUST construct `event_header_root` using the Merkle tree
