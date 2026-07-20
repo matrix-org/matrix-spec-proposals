@@ -24,10 +24,10 @@ The spec does not however clarify how the two should be handled in mixed encrypt
 The proposal is to introduce new language in the [Thumbnails](https://spec.matrix.org/v1.18/client-server-api/#thumbnails)
 section that does address this as follows:
 
-Clients are expected to provide, next to the original media they're uploading, thumbnail images
-as close as possible in resolution to the maximum resolution the 
-[/thumbnail](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv1mediathumbnailservernamemediaid) endpoint 
-would provide (800x600 at the time of writing).
+Clients are expected provide, next to the original media they're uploading, a thumbnail image.
+Clients should use the maximum resolution among those 
+[recommended for server-side thumbnails](https://spec.matrix.org/v1.18/client-server-api/#thumbnails)
+(i.e. 800x600 at the time of writing) as the target thumbnail resolution).
 
 For image media smaller than that no thumbnail should be provided. Uploading clients can provide thumbnails larger than 
 800x600 for non-image media.
