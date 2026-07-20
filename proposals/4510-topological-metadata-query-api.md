@@ -133,8 +133,14 @@ Unrecognized `fields` entries are ignored, which is indistinguishable from a
 server declining to disclose a known field and keeps the field set
 forward-extensible.
 
-A room version MAY define additional queryable fields. Unrecognized `fields`
-entries remain ignored unless a room version specifies otherwise.
+A room version or extension MAY define additional queryable fields. Unrecognized
+`fields` entries remain ignored unless a room version or extension specifies
+otherwise.
+
+Future extensions may also define an arbitrary query language over event fields,
+including field projection, predicates over event JSON, and recursive relations,
+provided the extension specifies deterministic evaluation, authorization
+behavior, resource limits, and failure semantics.
 
 The response maps each event ID to an object containing the fields returned for
 that event. Servers may omit fields they do not know, do not store efficiently,
@@ -256,6 +262,13 @@ The initial computed query names are:
   `null`. If the search is limited (for example by `max_nodes_visited`,
   processing-time, or response-size limits) before a result can be determined,
   the result is `null` and the server MUST set `limited` to `true`.
+
+Future computed query names or query-language extensions MUST specify their
+inputs, outputs, limit behavior, authorization behavior, and deterministic
+ordering. Extensions that introduce arbitrary predicates, recursive rule
+evaluation, joins over arbitrary event fields, or a general-purpose query
+language MUST also define hard evaluation budgets and truncation behavior, since
+those features carry database-style recursive query execution risks.
 
 Computed queries only walk events which belong to the requested room and are
 visible to the requester. Hidden history-visibility branches are pruned, not
@@ -516,6 +529,14 @@ If a required hash is missing or any hash check fails, verification fails. By
 chaining hashes upward, the server only needs to send missing neighbor hashes in
 the proof, and the verifier recomputes the root locally.
 
+Redaction semantics are deferred to the future room-version MSC that adopts
+split canonicalization. That room version MUST define whether `content_hash`
+commits to the full unredacted content, the redacted event representation, or
+separate full and redacted content commitments. This topology proof format only
+proves the selected metadata leaves and their inclusion in `event_root`; it does
+not by itself authorize disclosure of redacted content or change Matrix
+redaction rules.
+
 ## Future extensions
 
 Future room versions may extend the proof fields, add more independently
@@ -661,5 +682,9 @@ passes normal Matrix authorization and event verification.
 - [Polkadot Fellowship RFC-0078: Merkleized Metadata](https://polkadot-fellows.github.io/RFCs/approved/0078-merkleized-metadata.html)
   as prior art for committing to metadata with a root hash while revealing only
   the pieces needed by the verifier.
+- [Crosby and Wallach, Efficient Data Structures for Tamper-Evident Logging](https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf)
+  as foundational work on the security model and proof semantics for
+  tamper-evident logs, including logarithmic membership and consistency proofs
+  and authenticated query results over logged event attributes.
 - [RFC 6962, Section 2.1](https://datatracker.ietf.org/doc/html/rfc6962#section-2.1)
   for the Merkle tree construction used by `event_header_root`.
