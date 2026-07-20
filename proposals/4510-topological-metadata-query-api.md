@@ -715,12 +715,18 @@ passes normal Matrix authorization and event verification.
 - [MSC4242: State DAGs](https://github.com/matrix-org/matrix-spec-proposals/pull/4242),
   as related work for representing state progression separately from the message
   event DAG.
-- [Polkadot Fellowship RFC-0078: Merkleized Metadata](https://polkadot-fellows.github.io/RFCs/approved/0078-merkleized-metadata.html)
-  as prior art for committing to metadata with a root hash while revealing only
-  the pieces needed by the verifier.
-- [Crosby and Wallach, Efficient Data Structures for Tamper-Evident Logging](https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf)
-  as foundational work on the security model and proof semantics for
-  tamper-evident logs, including logarithmic membership and consistency proofs
-  and authenticated query results over logged event attributes.
+- [Polkadot Fellowship RFC-0078: Merkleized Metadata][polkadot-rfc-0078] as
+  prior art for committing to metadata with a root hash while revealing only the
+  pieces needed by the verifier.
+- [Crosby and Wallach, Efficient Data Structures for Tamper-Evident
+  Logging][crosby-wallach] as foundational work on the security model and proof
+  semantics for tamper-evident logs, including logarithmic membership and
+  consistency proofs and authenticated query results over logged event
+  attributes.
 - [RFC 6962, Section 2.1](https://datatracker.ietf.org/doc/html/rfc6962#section-2.1)
   for the Merkle tree construction used by `event_header_root`.
+
+[polkadot-rfc-0078]:
+  https://polkadot-fellows.github.io/RFCs/approved/0078-merkleized-metadata.html
+[crosby-wallach]:
+  https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf
