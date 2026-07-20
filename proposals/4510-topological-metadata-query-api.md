@@ -453,21 +453,28 @@ differ in any signed field that contributes to event identity, including
 
 The hash algorithm is `SHA3-256`. Each hash input is domain-separated:
 
-- Leaf hash:
-  `SHA3-256("tk.nutra.msc4510.topology_query.leaf.v1" || field_name || "\x00" || canonical_value)`.
-- Inner hash:
-  `SHA3-256("tk.nutra.msc4510.topology_query.node.v1" || left_hash || right_hash)`.
-- Root hash:
-  `SHA3-256("tk.nutra.msc4510.topology_query.root.v1" || prev_events_hash || auth_events_hash || event_header_root || content_hash || other_signed_fields_hash)`.
+```text
+leaf_hash =
+  SHA3-256("msc4510:leaf:v1" || field_name || "\x00" || canonical_value)
+
+inner_hash =
+  SHA3-256("msc4510:node:v1" || left_hash || right_hash)
+
+event_root =
+  SHA3-256("msc4510:root:v1" || prev_events_hash || auth_events_hash ||
+           event_header_root || content_hash || other_signed_fields_hash)
+```
 
 The top-level component hashes (`prev_events_hash`, `auth_events_hash`, and
 `content_hash`, and `other_signed_fields_hash`) are computed with the leaf-hash
 construction above, using the field names `prev_events`, `auth_events`,
 `content`, and `other_signed_fields` respectively.
 
-During development, implementations use `tk.nutra.msc4510.topology_query.*`
-domain separators. Before stabilization, these MUST be replaced with the final
-room-version identifier.
+The domain-separation strings use the stable MSC identifier `msc4510` and are
+part of the event ID derivation. Implementations MUST NOT use the unstable
+endpoint namespace or an implementation-local identifier for these domain
+separators, because changing the identifier changes the derived `event_root` and
+event ID.
 
 ### Header tree construction
 
@@ -485,7 +492,7 @@ above for the RFC's `0x00`- and `0x01`-prefixed hashes. Only the tree shape (the
 largest-power-of-two split rule and its recursion) is taken from RFC 6962; no
 padding leaves are used.
 
-<!-- RFC 6962 tree shape is a dyadic interval decomposition over the ordered leaf list. -->
+<!-- RFC 6962 tree shape: dyadic interval decomp over ordered leaves. -->
 
 ### Event IDs and signatures
 
@@ -574,8 +581,8 @@ redaction rules.
 
 ## Future extensions
 
-Future room versions may extend the proof fields, add more independently
-provable metadata fields, or alter the domain separators during stabilization.
+Future room versions may extend the proof fields or add more independently
+provable metadata fields.
 
 ## Performance characteristics and benchmarking
 
