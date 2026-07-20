@@ -245,22 +245,23 @@ If the number of `compute_event_pairs` entries exceeds the effective
 traversal, or computed query processing.
 
 Servers MUST enforce a request-wide aggregate work budget covering raw traversal
-and all computed graph query processing. At minimum this budget MUST include the
-effective `max_nodes_visited` cap, processing time, and local database-read or
-equivalent storage-operation limits. Raw traversal and computed queries consume
-the same request-wide `max_nodes_visited` budget; the budget is not reset when
-computed query processing begins. The effective cap is the lower of
-`max_nodes_visited` and the responding server's local limit.
+and all computed graph query processing. At minimum, this budget MUST include
+the effective `max_nodes_visited` cap and a processing-time limit.
+Implementations SHOULD account for local storage work, such as database reads,
+when setting those limits or applying additional local caps. Raw traversal and
+computed queries consume the same request-wide `max_nodes_visited` budget; the
+budget is not reset when computed query processing begins. The effective cap is
+the lower of `max_nodes_visited` and the responding server's local limit.
 
 When more than one `compute_event_pairs` entry is supplied, the server MUST
 process pairs in request order. The effective `max_nodes_visited` budget is
 shared across the whole request rather than reset for each pair. If the
 remaining budget is exhausted before a pair's result can be determined, that
 pair's affected computed result is `null`, any later affected results are also
-`null`, and the response sets `limited` to `true`. If the request-wide
-processing-time, database-read, or storage-operation budget is exhausted after
-processing has started, the server returns the partial response it can produce,
-sets affected computed results to `null`, and sets `limited` to `true`.
+`null`, and the response sets `limited` to `true`. If a request-wide time or
+local work budget is exhausted after processing has started, the server returns
+the partial response it can produce, sets affected computed results to `null`,
+and sets `limited` to `true`.
 
 The initial computed query names are:
 
@@ -316,7 +317,6 @@ At minimum, implementations MUST enforce these limits:
 - maximum returned event records;
 - maximum distinct events visited while serving raw or computed graph queries;
 - maximum number of computed graph query pairs;
-- maximum database reads or equivalent storage operations per request;
 - maximum number of start events;
 - maximum response body size;
 - maximum processing time;
