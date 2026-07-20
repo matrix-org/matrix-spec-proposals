@@ -40,15 +40,15 @@ For example:
 
 ```json
 {
-    "room_id": "!room:example.org",
-    "start_event_ids": ["$missing_event_A", "$missing_event_B"],
-    "edge_types": ["prev_events"],
-    "max_depth": 50,
-    "max_event_records": 1000,
-    "max_nodes_visited": 5000,
-    "fields": ["prev_events", "origin"],
-    "compute": ["common_ancestor", "hop_distance"],
-    "compute_event_pairs": [["$missing_event_A", "$prev_1"]]
+  "room_id": "!room:example.org",
+  "start_event_ids": ["$missing_event_A", "$missing_event_B"],
+  "edge_types": ["prev_events"],
+  "max_depth": 50,
+  "max_event_records": 1000,
+  "max_nodes_visited": 5000,
+  "fields": ["prev_events", "origin"],
+  "compute": ["common_ancestor", "hop_distance"],
+  "compute_event_pairs": [["$missing_event_A", "$prev_1"]]
 }
 ```
 
@@ -59,25 +59,25 @@ The response is intentionally sparse:
 
 ```json
 {
-    "events": {
-        "$missing_event_A": {
-            "prev_events": ["$prev_1", "$prev_2"],
-            "origin": "example.org"
-        },
-        "$missing_event_B": {
-            "prev_events": ["$prev_1"],
-            "origin": "elsewhere.example"
-        },
-        "$prev_1": {
-            "prev_events": ["$prev_0"],
-            "origin": "example.org"
-        }
+  "events": {
+    "$missing_event_A": {
+      "prev_events": ["$prev_1", "$prev_2"],
+      "origin": "example.org"
     },
-    "computed": {
-        "common_ancestor": ["$prev_1"],
-        "hop_distance": [1]
+    "$missing_event_B": {
+      "prev_events": ["$prev_1"],
+      "origin": "elsewhere.example"
     },
-    "limited": true
+    "$prev_1": {
+      "prev_events": ["$prev_0"],
+      "origin": "example.org"
+    }
+  },
+  "computed": {
+    "common_ancestor": ["$prev_1"],
+    "hop_distance": [1]
+  },
+  "limited": true
 }
 ```
 
@@ -96,7 +96,9 @@ The initial query fields are:
 - `max_depth`: the maximum number of recursive hops requested.
 - `max_event_records`: the maximum number of event records returned.
 - `max_nodes_visited`: the maximum number of distinct events visited while
-  serving raw traversal, or while serving each computed graph query pair.
+  serving raw traversal and all computed graph query pairs in the request.
+- `max_compute_event_pairs`: the maximum number of event ID pairs accepted in
+  `compute_event_pairs`.
 - `fields`: the exact metadata fields requested.
 - `compute`: optional graph facts to compute over the same bounded traversal.
 - `compute_event_pairs`: ordered event ID pairs that each computed graph fact
@@ -233,16 +235,28 @@ MUST also be present and non-empty. If `compute_event_pairs` is present without
 pairs, pairs with fewer or more than two event IDs, or pairs containing
 malformed event IDs cause the request to fail with `M_INVALID_PARAM`.
 
-Computed graph queries MUST enforce a hard cap on the number of distinct events
-visited while processing each `compute_event_pairs` entry. The effective cap is
-the lower of `max_nodes_visited` and the responding server's local limit.
+If the number of `compute_event_pairs` entries exceeds the effective
+`max_compute_event_pairs` limit, the server MUST reject the request with
+`M_INVALID_PARAM` before performing any event lookup, authorization check, graph
+traversal, or computed query processing.
+
+Servers MUST enforce a request-wide aggregate work budget covering raw traversal
+and all computed graph query processing. At minimum this budget MUST include the
+effective `max_nodes_visited` cap, processing time, and local database-read or
+equivalent storage-operation limits. Raw traversal and computed queries consume
+the same request-wide `max_nodes_visited` budget; the budget is not reset when
+computed query processing begins. The effective cap is the lower of
+`max_nodes_visited` and the responding server's local limit.
 
 When more than one `compute_event_pairs` entry is supplied, the server MUST
 process pairs in request order. The effective `max_nodes_visited` budget is
-reset for each pair rather than shared across the whole request, so an expensive
-earlier pair does not consume the budget for later pairs. If the search for any
-pair hits the effective cap, that pair's affected computed result is `null` and
-the response sets `limited` to `true`.
+shared across the whole request rather than reset for each pair. If the
+remaining budget is exhausted before a pair's result can be determined, that
+pair's affected computed result is `null`, any later affected results are also
+`null`, and the response sets `limited` to `true`. If the request-wide
+processing-time, database-read, or storage-operation budget is exhausted after
+processing has started, the server returns the partial response it can produce,
+sets affected computed results to `null`, and sets `limited` to `true`.
 
 The initial computed query names are:
 
@@ -297,6 +311,8 @@ At minimum, implementations MUST enforce these limits:
 - maximum recursion depth;
 - maximum returned event records;
 - maximum distinct events visited while serving raw or computed graph queries;
+- maximum number of computed graph query pairs;
+- maximum database reads or equivalent storage operations per request;
 - maximum number of start events;
 - maximum response body size;
 - maximum processing time;
@@ -307,7 +323,8 @@ integers:
 
 - `max_depth`;
 - `max_event_records`;
-- `max_nodes_visited`.
+- `max_nodes_visited`;
+- `max_compute_event_pairs`.
 
 Omitting a limit uses the server's configured default, which may be lower than
 its configured maximum. There is no request syntax for unlimited traversal;
@@ -325,11 +342,18 @@ effective maximum start-event count, the server MUST reject the request with
 graph traversal. This rejection does not produce a partial response and
 therefore has no `limited` flag.
 
+If the number of `compute_event_pairs` entries exceeds the effective
+`max_compute_event_pairs` limit, the server MUST reject the request with
+`M_INVALID_PARAM` before performing any event lookup, authorization check, or
+graph traversal. This rejection does not produce a partial response and
+therefore has no `limited` flag.
+
 Implementations SHOULD use conservative defaults no higher than:
 
 - `max_depth`: 500;
 - `max_event_records`: 1000;
 - `max_nodes_visited`: 5000;
+- `max_compute_event_pairs`: 20;
 - maximum start events: 20;
 - maximum response body size: 1 MiB;
 - maximum processing time: 3 seconds.
@@ -411,12 +435,21 @@ A compatible future room version modifies event hashing to generate an
 - `prev_events_hash`: canonical hash of the event's `prev_events`;
 - `auth_events_hash`: canonical hash of the event's `auth_events`;
 - `event_header_root`: Merkle root over routing and authorship fields:
-  `room_id`, `sender`, `type`, `state_key`, `depth`, and `origin_server_ts`;
+  `room_id`, `sender`, `type`, `state_key`, `redacts`, `depth`, and
+  `origin_server_ts`;
 - `content_hash`: canonical hash of the remaining event body after the topology
   and header components above are separated out. This is distinct from the
   legacy event `hashes` field unless a future room-version MSC explicitly maps
   them together;
+- `other_signed_fields_hash`: canonical hash of every remaining signed event
+  field which is not included in `prev_events_hash`, `auth_events_hash`,
+  `event_header_root`, or `content_hash`;
 - `event_root`: the root hash committing to the above components.
+
+The future room version MUST define this partition so every signed,
+identity-relevant event field is committed to exactly once. Two events which
+differ in any signed field that contributes to event identity, including
+`redacts`, MUST NOT derive the same `event_root` or event ID.
 
 The hash algorithm is `SHA3-256`. Each hash input is domain-separated:
 
@@ -425,11 +458,12 @@ The hash algorithm is `SHA3-256`. Each hash input is domain-separated:
 - Inner hash:
   `SHA3-256("tk.nutra.msc4510.topology_query.node.v1" || left_hash || right_hash)`.
 - Root hash:
-  `SHA3-256("tk.nutra.msc4510.topology_query.root.v1" || prev_events_hash || auth_events_hash || event_header_root || content_hash)`.
+  `SHA3-256("tk.nutra.msc4510.topology_query.root.v1" || prev_events_hash || auth_events_hash || event_header_root || content_hash || other_signed_fields_hash)`.
 
 The top-level component hashes (`prev_events_hash`, `auth_events_hash`, and
-`content_hash`) are computed with the leaf-hash construction above, using the
-field names `prev_events`, `auth_events`, and `content` respectively.
+`content_hash`, and `other_signed_fields_hash`) are computed with the leaf-hash
+construction above, using the field names `prev_events`, `auth_events`,
+`content`, and `other_signed_fields` respectively.
 
 During development, implementations use `tk.nutra.msc4510.topology_query.*`
 domain separators. Before stabilization, these MUST be replaced with the final
@@ -463,9 +497,9 @@ containing this root:
 
 ```json
 {
-    "room_id": "!room:example.org",
-    "room_version": "tk.nutra.msc4510.topology_query",
-    "event_root": "unpadded_base64url_sha3_256_hash"
+  "room_id": "!room:example.org",
+  "room_version": "tk.nutra.msc4510.topology_query",
+  "event_root": "unpadded_base64url_sha3_256_hash"
 }
 ```
 
@@ -480,8 +514,8 @@ When `proof` is requested in `fields` and the queried room version supports
 split canonicalization, a server MAY include proof material for provable
 requested fields inside a `proof` object. A room version adopting this format
 also extends the queryable `fields` set with the header leaves not exposed in
-hint-only mode (`sender`, `type`, `state_key`), since a field must be returnable
-to be provable.
+hint-only mode (`sender`, `type`, `state_key`, `redacts`), since a field must be
+returnable to be provable.
 
 The `proof` object schema explicitly maps the proven fields to their Merkle
 paths, provides any required top-level component hashes needed to reconstruct
@@ -498,7 +532,8 @@ paths, provides any required top-level component hashes needed to reconstruct
     },
     "top_level_hashes": {
         "auth_events_hash": "base64url_sha3_256_hash",
-        "content_hash": "base64url_sha3_256_hash"
+        "content_hash": "base64url_sha3_256_hash",
+        "other_signed_fields_hash": "base64url_sha3_256_hash"
     },
     "signatures": {
         "example.org": {
@@ -515,8 +550,8 @@ performs the following steps:
 2. Apply each step in `leaf_paths`, computing the parent inner hash using the
    provided left or right sibling, to reconstruct `event_header_root` or the
    relevant top-level component hash. For top-level components (`prev_events`,
-   `auth_events`, and content), the path list is empty and the leaf hash is used
-   directly.
+   `auth_events`, content, and other signed fields), the path list is empty and
+   the leaf hash is used directly.
 3. Combine the reconstructed component with the remaining hashes in
    `top_level_hashes` to compute the master `event_root`. `top_level_hashes`
    MUST contain every component hash not reconstructed from a proof in the same
@@ -567,12 +602,13 @@ these illustrative percentages as protocol guarantees.
 
 The split-canonicalization sketch introduces storage overhead if a server stores
 the top-level hashes `prev_events_hash`, `auth_events_hash`,
-`event_header_root`, `content_hash`, and `event_root`.
+`event_header_root`, `content_hash`, `other_signed_fields_hash`, and
+`event_root`.
 
-Using SHA3-256, each hash is 32 bytes, so storing these five hashes adds 160
+Using SHA3-256, each hash is 32 bytes, so storing these six hashes adds 192
 bytes of raw hash material per event before database row, index, and encoding
-overhead. For a 2 KiB event, this raw hash material is approximately 7.8% of the
-event size; for a 5 KiB event, it is approximately 3.1%. Implementations can
+overhead. For a 2 KiB event, this raw hash material is approximately 9.4% of the
+event size; for a 5 KiB event, it is approximately 3.8%. Implementations can
 recompute proof paths on demand; caching intermediate Merkle nodes or proof
 indexes is optional and would increase this overhead.
 
