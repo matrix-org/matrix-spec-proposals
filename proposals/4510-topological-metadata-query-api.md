@@ -465,7 +465,12 @@ event_root =
            event_header_root || content_hash || other_signed_fields_hash)
 ```
 
-The top-level component hashes (`prev_events_hash`, `auth_events_hash`, and
+All concatenations above are byte concatenations: domain-separation strings and
+`field_name` are UTF-8 bytes; `\x00` is a single `0x00` byte; `canonical_value`
+is the UTF-8 encoding of the canonical JSON value; and
+`left_hash`/`right_hash`/component hashes are the raw 32-byte hash outputs.
+
+The top-level component hashes (`prev_events_hash`, `auth_events_hash`,
 `content_hash`, and `other_signed_fields_hash`) are computed with the leaf-hash
 construction above, using the field names `prev_events`, `auth_events`,
 `content`, and `other_signed_fields` respectively.
@@ -505,7 +510,7 @@ containing this root:
 ```json
 {
   "room_id": "!room:example.org",
-  "room_version": "tk.nutra.msc4510.topology_query",
+  "room_version": "<room_version>",
   "event_root": "unpadded_base64url_sha3_256_hash"
 }
 ```
