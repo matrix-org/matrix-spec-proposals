@@ -35,9 +35,9 @@ application service and allows the service to trigger S-S requests under its own
 
 ### Proxying client-server requests
 
-For any authenticated C-S request under `/_matrix/client/{proxy}/*`, the server first authorises the
-request as usual. If authorization succeeds, the server proxies the request to
-`{url}/_matrix/client/{proxy}/*` and streams the response back to the requesting client.
+For any authenticated C-S request under `/_matrix/client/(unstable/[^/]+|v[^/]+)/{proxy}/.*`, the
+server first authorises the request as usual. If authorization succeeds, the server proxies the
+request to the same path anchored on `url` and streams the response back to the requesting client.
 
 Any "hop-by-hop" headers as defined by [RFC2616] MUST be stripped both before forwarding the request
 to the service and before streaming the response back to the requesting client.
@@ -50,9 +50,9 @@ server supplies the MXID of the requesting client to the application service in 
 
 The process for proxying server-server requests is analogous.
 
-For any authenticated S-S request under `/_matrix/federation/{proxy}/*`, the server first authorises
-the request as usual. If authorization succeeds, the server proxies the request to
-`{url}/_matrix/federation/{proxy}/*` and streams the response back to the requesting server.
+For any authenticated S-S request under `/_matrix/federation/(unstable/[^/]+|v[^/]+)/{proxy}/.*`, the
+server first authorises the request as usual. If authorization succeeds, the server proxies the
+request to the same path anchored on `url` and streams the response back to the requesting server.
 
 Any "hop-by-hop" headers as defined by [RFC2616] MUST be stripped both before forwarding the request
 to the service and before streaming the response back to the requesting server.
@@ -73,7 +73,7 @@ POST /_matrix/client/v1/appservice/fed_proxy HTTP/1.1
 {
   "destination": "example.org",
   "method": "POST",
-  "path": "/_matrix/federation/{proxy}/foo/bar/",
+  "path": "/_matrix/federation/v1/{proxy}/foo/bar/",
   "query": { ... },
   "body": { ... }
 }
