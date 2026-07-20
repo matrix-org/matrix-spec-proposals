@@ -5,15 +5,17 @@ backfills or otherwise retrieve previous or missing events. Often we do not know
 the shape of the graph we are traversing, whether it is a dead end, or whether
 two branches reconnect at a known common ancestor. When a server encounters a
 gap in the DAG, the current federation API provides limited ways to discover
-which event IDs or remote servers are most likely to help bridge that gap before
-fetching full events.
+which events reference the gap, which servers sent or received them, or which
+servers are otherwise likely to have the missing event before fetching full
+events.
 
 This proposal seeks to reduce these inefficiencies and traversal failures by
 allowing homeservers to return routing hints as customized queries of highly
 granular metadata and bounded graph facts, including:
 
 - `prev_events` / `auth_events` edge event IDs, up to a recursion limit.
-- `origin` for a missing event (potentially useful for retrieving it).
+- `origin` for a missing event, plus derivative or referencing events and their
+  likely servers.
 - whether a known edge target is outside the requested room.
 - graph shape hints and bounded computed facts, such as common ancestors, hop
   distances, and per-event branching factor from returned edges.
