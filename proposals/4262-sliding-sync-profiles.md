@@ -227,6 +227,24 @@ and responses:
 }
 ```
 
+Before this MSC is merged into a released version of the spec, homeserver
+implementations SHOULD advertise support for this feature to clients by adding
+an entry to the `unstable_features` section of the
+[`/_matrix/client/versions`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientversions)
+endpoint with the following content:
+
+```json5
+{
+  // ...
+  "unstable_features": {
+    "org.matrix.msc4262": true
+  }
+}
+```
+
+Clients should interpret the absence of this field, or a value as `false`, as
+the homeserver NOT supporting the feature.
+
 ## Dependencies
 
 This MSC depends on:
