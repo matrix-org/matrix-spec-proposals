@@ -1,4 +1,4 @@
-# MSC4510: Topological peek/query API with sparse fieldsets and Merkleized metadata
+# MSC4511: Topological peek/query API with sparse fieldsets and Merkleized metadata
 
 Currently the Matrix protocol relies on fetching entire events to perform
 backfills or otherwise retrieve previous or missing events. Often we do not know
@@ -31,7 +31,7 @@ payload.
 A new federation endpoint is added:
 
 ```http
-POST /_matrix/federation/unstable/tk.nutra.msc4510/topology_query
+POST /_matrix/federation/unstable/tk.nutra.msc4511/topology_query
 ```
 
 The endpoint accepts a bounded query over one or more starting events. The
@@ -493,13 +493,13 @@ The hash algorithm is `SHA3-256`. Each hash input is domain-separated:
 
 ```text
 leaf_hash =
-  SHA3-256("msc4510:leaf:v1" || field_name || "\x00" || canonical_value)
+  SHA3-256("msc4511:leaf:v1" || field_name || "\x00" || canonical_value)
 
 inner_hash =
-  SHA3-256("msc4510:node:v1" || left_hash || right_hash)
+  SHA3-256("msc4511:node:v1" || left_hash || right_hash)
 
 event_root =
-  SHA3-256("msc4510:root:v1" || prev_events_hash || auth_events_hash ||
+  SHA3-256("msc4511:root:v1" || prev_events_hash || auth_events_hash ||
            event_header_root || content_hash || other_signed_fields_hash)
 ```
 
@@ -513,7 +513,7 @@ The top-level component hashes (`prev_events_hash`, `auth_events_hash`,
 construction above, using the field names `prev_events`, `auth_events`,
 `content`, and `other_signed_fields` respectively.
 
-The domain-separation strings use the stable MSC identifier `msc4510` and are
+The domain-separation strings use the stable MSC identifier `msc4511` and are
 part of the event ID derivation. Implementations MUST NOT use the unstable
 endpoint namespace or an implementation-local identifier for these domain
 separators, because changing the identifier changes the derived `event_root` and
@@ -780,7 +780,5 @@ passes normal Matrix authorization and event verification.
 - [RFC 6962, Section 2.1](https://datatracker.ietf.org/doc/html/rfc6962#section-2.1)
   for the Merkle tree construction used by `event_header_root`.
 
-[polkadot-rfc-0078]:
-  https://polkadot-fellows.github.io/RFCs/approved/0078-merkleized-metadata.html
-[crosby-wallach]:
-  https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf
+[polkadot-rfc-0078]: https://polkadot-fellows.github.io/RFCs/approved/0078-merkleized-metadata.html
+[crosby-wallach]: https://static.usenix.org/event/sec09/tech/full_papers/crosby.pdf
