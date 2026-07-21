@@ -31,7 +31,7 @@ inherent direction, even if they happen to be labelled `next_batch` or
 
 Pagination tokens produced by `/messages`, `/relations`, `/context`, the `context`
 response field of `/search`, and the `prev_batch` response field of `/sync` represent
-a posiiton in the event stream and MUST be indistinguishable. These tokens are referred
+a position in the event stream and MUST be indistinguishable. These tokens are referred
 to as "room event stream tokens" in the rest of the proposal text. (Although it is not
 proposed to use that term in the spec itself.)
 
