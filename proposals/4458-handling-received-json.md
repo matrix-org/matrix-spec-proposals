@@ -401,3 +401,14 @@ N/A
 ## Dependencies
 
 None
+
+## Appendix: test vectors for Canonical JSON
+
+The existing spec contains a number of
+[examples](https://spec.matrix.org/v1.19/appendices/#examples) of the Canonical
+JSON representation of a number of JSON objects. This MSC is accompanied by an
+extended set of test vectors which come as corrolaries of the existing rules,
+or the clarifications set out above.
+
+These test cases are at
+https://github.com/matrix-org/matrix-spec-proposals/tree/rav/proposal/json_handling_clarifications/proposals/data/4458.
