@@ -1,0 +1,7 @@
+# A simple object, taken from spec v1.19.
+{
+    "one": 1,
+    "two": "Two"
+}
+---
+{"one":1,"two":"Two"}
