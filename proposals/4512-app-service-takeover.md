@@ -16,28 +16,31 @@ claim parts of the Client-Server and Server-Server API.
 
 ## Proposal
 
-A new optional property `proxy` is added to the top level of the [registration file] for application
-services. `proxy` is a string and defines the path prefix that the service is claiming. If `proxy`
-is specified, a non-null value for `url` is REQUIRED.
+Two new properties `proxy_prefix` and `proxy_url` are added to the top level of the [registration
+file] for application services. `proxy_prefix` is a string and defines the path prefix that the
+service is claiming. `proxy_url` is a string that determines the `url` to send proxied requests to.
+`proxy_prefix` and `proxy_url` are optional but if used, MUST always be specified together.
 
 ``` yaml
 id: "My app service"
-url: "http://127.0.0.1:1234"
+url: null
 as_token: "30c05ae90a248a4188e620216fa72e349803310ec83e2a77b34fe90be6081f46"
 hs_token: "312df522183efd404ec1cd22d2ffa4bbc76a8c1ccf541dd692eef281356bb74e"
 sender_localpart: "_my_service"
 namespaces:
-proxy: "foo/bar"
+proxy_prefix: "foo/bar"
+proxy_url: "http://127.0.0.1:1234"
 ```
 
-When both `proxy` and `url` are set, the server proxies matching C-S and S-S requests to the
-application service and allows the service to trigger S-S requests under its own `proxy` prefix.
+When both `proxy_prefix` and `proxy_url` are set, the server proxies matching C-S and S-S requests
+to the application service and allows the service to trigger S-S requests under its own prefix.
 
 ### Proxying client-server requests
 
-For any authenticated C-S request under `/_matrix/client/(unstable/[^/]+|v[^/]+)/{proxy}/.*`, the
-server first authorises the request as usual. If authorization succeeds, the server proxies the
-request to the same path anchored on `url` and streams the response back to the requesting client.
+For any authenticated C-S request under `/_matrix/client/(unstable/[^/]+|v[^/]+)/{proxy_prefix}/.*`,
+the server first authorises the request as usual. If authorization succeeds, the server proxies the
+request to the same path anchored on `proxy_url` and streams the response back to the requesting
+client.
 
 Any "hop-by-hop" headers as defined by [RFC2616] MUST be stripped both before forwarding the request
 to the service and before streaming the response back to the requesting client.
@@ -50,9 +53,10 @@ server supplies the MXID of the requesting client to the application service in 
 
 The process for proxying server-server requests is analogous.
 
-For any authenticated S-S request under `/_matrix/federation/(unstable/[^/]+|v[^/]+)/{proxy}/.*`, the
-server first authorises the request as usual. If authorization succeeds, the server proxies the
-request to the same path anchored on `url` and streams the response back to the requesting server.
+For any authenticated S-S request under
+`/_matrix/federation/(unstable/[^/]+|v[^/]+)/{proxy_prefix}/.*`, the server first authorises the
+request as usual. If authorization succeeds, the server proxies the request to the same path
+anchored on `proxy_url` and streams the response back to the requesting server.
 
 Any "hop-by-hop" headers as defined by [RFC2616] MUST be stripped both before forwarding the request
 to the service and before streaming the response back to the requesting server.
@@ -99,10 +103,10 @@ If `destination` points to a remote server that the server generally denies fede
 `destination` is the server's own server name, the server MUST reject the request with HTTP 403 /
 `M_FEDPROXY_DESTINATION_DENIED`.
 
-If `path` does not have a prefix of `/_matrix/federation/{proxy}/` (where `proxy` is the identically
-named property from the application service's registration file), the server MUST reject the request
-with HTTP 403 / `M_FEDPROXY_PATH_NOT_ALLOWED`. The same MUST happen if `path` contains any segments
-of `.` or `..`.
+If `path` does not have a prefix of `/_matrix/federation/{proxy_prefix}/` (where `proxy_prefix` is
+the identically named property from the application service's registration file), the server MUST
+reject the request with HTTP 403 / `M_FEDPROXY_PATH_NOT_ALLOWED`. The same MUST happen if `path`
+contains any segments of `.` or `..`.
 
 Otherwise, the server signs and sends the respective federation request.
 
@@ -132,7 +136,9 @@ design as no associated use cases are known yet.
 
 ## Alternatives
 
-None apparent.
+The existing `url` property could be reused to avoid having to specify a separate `proxy_url`. This
+would disallow using proxying while disabling namespace-related traffic from the server by setting
+`url` to `null`, however.
 
 ## Security considerations
 
@@ -144,7 +150,8 @@ homeserver needs to explicitly allow-list.
 
 | Stable identifier | Purpose | Unstable identifier |
 |----|----|----|
-| `proxy` | Registration file property | `io.element.msc4512.proxy` |
+| `proxy_prefix` | Registration file property | `io.element.msc4512.proxy_prefix` |
+| `proxy_url` | Registration file property | `io.element.msc4512.proxy_url` |
 | `/_matrix/client/v1/appservice/fed_proxy` | Endpoint | `/_matrix/client/unstable/io.element.msc4512/appservice/fed_proxy` |
 | `M_FEDPROXY_DESTINATION_DENIED` | Error code | `IO.ELEMENT.MSC4512.M_FEDPROXY_DESTINATION_DENIED` |
 | `M_FEDPROXY_PATH_NOT_ALLOWED` | Error code | `IO.ELEMENT.MSC4512.M_FEDPROXY_PATH_NOT_ALLOWED` |
