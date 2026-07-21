@@ -42,7 +42,7 @@ Large EDUs were possible before, but were somewhat likely to encounter 413 or si
 the wild due to reverse proxy configurations. Those applications will need to be adjusted to fit their
 data into a smaller form factor.
 
-Noted by [synpase#19617](https://github.com/element-hq/synapse/pull/19617), it's still possible for
+Noted by [synapse#19617](https://github.com/element-hq/synapse/pull/19617), it's still possible for
 implementations to split up to-device messages such that they're larger than the individual EDU size
 limit. This proposal doesn't carve out an exception for this because it's believed that a to-device
 message *could* be rejected at client send time with the size of the EDU's boilerplate being known.
