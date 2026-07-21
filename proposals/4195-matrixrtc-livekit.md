@@ -74,16 +74,14 @@ serialization defined [above](#canonical-json-serialization).
 
 For improved metadata protection, the `livekit_alias` SHOULD be derived as
 `base64(SHA256(JSON.serialize([room_id, slot_id, truly_random_bits])))`, where the `truly random bits`
-are maintained by the LiveKit SFU authorisation service. This approach enhances pseudonymity but
-requires the service to be **stateful** in order to manage and persist the random bits.
+are maintained by the server.
 
 The resulting value is opaque to the MatrixRTC application. Within the LiveKit namespace, the
 `livekit_alias` uniquely represents a MatrixRTC slot. Participants from the same Matrix deployment
 (using the same SFU to publish their media) are considered to use the same `livekit_alias` in order
 to limit the number of active LiveKit SFU connections. 
 
-The `livekit_alias` is shared with clients as part of their JWT token issued by the authorisation
-service.
+The `livekit_alias` is shared with clients as part of their JWT token issued by the server.
 
 ### Transport type: `livekit`
 
@@ -97,16 +95,13 @@ The mechanism for advertising available RTC transports by homeservers is already
 
 The homeserver announces available LiveKit Transport as a JSON object with the following fields:
 * `type` — required `string`: this MUST be `livekit`  
-* `livekit_service_url` — required `string`: The URL of the service that issues JWT tokens for
-  connecting this LiveKit SFU.
 
 An example for  `GET /_matrix/client/v1/rtc/transports`
 ```json5
 {
   "rtc_transports": [
     {
-      "type": "livekit",
-      "livekit_service_url": "https://matrix-rtc.example.com/livekit/jwt"
+      "type": "livekit"
     }
   ]
 }
@@ -126,75 +121,19 @@ to the published media.
 
 Field Descriptions:
 * `type` — required `string`: this MUST be `"livekit"`  
-* `livekit_service_url` — required `string`: The URL of the service that issues JWT tokens for
-  connecting this LiveKit SFU.
 
 ```
 {
   // rest of the m.rtc.member event
   "rtc_transports": [
     {
-      "type": "livekit",
-      "livekit_service_url": "https://matrix-rtc.example.com/livekit/jwt",
+      "type": "livekit"
     }
   ]
 }
 ```
 
-### LiveKit SFU Authorisation Service
-
-This section describes endpoints on the SFU Authorisation Service.
-
-#### General requirements for all endpoints
-
-##### Prerequisites
-
-* The `livekit_service_url` for the MatrixRTC backend has been discovered from one of the methods above.  
-* The Matrix client has obtained an OpenID token from the [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#openid).
-
-##### OpenID token verification
-
-An all endpoints listed below, the service MUST validate the supplied OpenID token with the
-homeserver using [`/_matrix/federation/v1/openid/userinfo`](https://spec.matrix.org/v1.18/server-server-api/#get_matrixfederationv1openiduserinfo).
-Additionally, it MUST verify that the returned user ID matches `claimed_user_id`. If either
-check fails, the service MUST reject the request with `M_UNAUTHORIZED`.
-
-##### Error responses
-
-The LiveKit authorisation service MUST respond with appropriate HTTP status codes and structured
-JSON bodies when an error occurs. All error responses MUST include a top-level `"errcode"` string
-and a human-readable `"error"` description, following the conventions used in the 
-[Matrix Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#error-codes).
-
-Common error responses:
-
-| HTTP Status | `errcode` | Meaning / Recommended handling |
-|--------------|------------|--------------------------------|
-| `400 Bad Request` | `M_BAD_JSON` | The request body was malformed, missing required fields, or contained invalid values (e.g. missing `room_id`, `slot_id`, or `openid_token`). |
-| `401 Unauthorized` | `M_UNAUTHORIZED` | The request could not be authorised. This response is used for all cases where the OpenID token is invalid, expired, could not be verified, or where the requested room or slot is unknown or inaccessible. Clients may attempt to refresh their OpenID token and retry. |
-| `429 Too Many Requests` | `M_LIMIT_EXCEEDED` | The client or homeserver has exceeded rate limits. Please refer to the existing [spec](https://spec.matrix.org/v1.18/client-server-api/#common-error-codes) for further details.|
-| `403 Forbidden` | `M_USER_LIMIT_EXCEEDED` | The user has exceeded a configured quota or usage limit. Please refer to the existing [spec](https://spec.matrix.org/v1.18/client-server-api/#common-error-codes) for further details.|
-| `500 Internal Server Error` | `M_UNKNOWN` | An unexpected internal error occurred while generating the token. The client may retry after a short delay. |
-
-Example Error Response:
-
-```http
-HTTP/1.1 401 Unauthorized
-Content-Type: application/json
-
-{
-  "errcode": "M_UNAUTHORIZED",
-  "error": "The request could not be authorised."
-}
-```
-For privacy reasons, the authorisation service does not distinguish between invalid credentials,
-unknown resources, or insufficient permissions. All such conditions result in a 401 Unauthorized
-response with `M_UNAUTHORIZED`. This prevents clients from inferring the existence of specific
-rooms, users, or slots based on error responses.
-
-The LiveKit authorisation service MAY include additional fields (such as
-`reason`) for diagnostic purposes, but clients MUST be prepared to ignore unknown fields.
-Implementations SHOULD NOT disclose sensitive information in the `"error"` field.
+### Additions to the Client-Server and Server-Server API
 
 #### Acquiring a token for the SFU
 
@@ -205,74 +144,140 @@ token. A high level overview is depicted in the following diagram
 
 ```mermaid
 sequenceDiagram
-    participant U as 🧑 User
-    participant M as 🏢 Matrix Homeserver
-    participant A as 🔐 LiveKit Authorisation Service
-    participant L as 📡 LiveKit SFU
+    autonumber
 
-    U->>M: Requests OpenID token
-    M-->>U: Returns OpenID token
-    U->>A: Sends OpenID token & room request
-    A->>M: Validates token via OpenID API
-    M-->>A: Confirms user identity
-    A->>A: Generates LiveKit JWT
-    A->>L: (If full-access user) Create room if missing
-    A-->>U: Returns LiveKit JWT
-    U->>L: Connects to room using JWT
+    participant U as 🧑 Alice
+
+    box floralwhite alice.com
+        participant H as 🏢 Homeserver
+        participant L as 📡 LiveKit SFU
+    end
+
+    box floralwhite bob.com
+        participant H2 as 🏢 Homeserver
+    end
+
+
+    participant O as 👨‍🦰 Bob
+
+    U->>H: /get_token
+    activate H
+    H->>H: Verify user's<br>room membership
+    H->>L: Request token
+    activate L
+    L-->>H: Return token & URL
+    deactivate L
+    H-->>U: Return token & URL
+    deactivate H
+
+    U->>L: Publish media stream
+
+    O->>H2: /get_token
+    activate H2
+    H2->>H2: Verify user's<br>room membership
+    H2->>H: /get_token
+    activate H
+    H->>H: Verify servers's<br>room membership
+    H->>L: Request token
+    activate L
+    L-->>H: Return token & URL
+    deactivate L
+    H-->>H2: Return token & URL
+    deactivate H
+    H2-->>O: Return token & URL
+    deactivate H2
+  
+    O->>L: Subscribe to media streams
 ```
 
-##### Request
-
-The JWT token is obtained by making a `POST` request to the `/get_token` endpoint of the LiveKit service.
+The JWT token is obtained by making an authenticated `POST` request to a new Client-Server endpoint
+`/_matrix/client/v1/rtc/livekit/get_token`.
 
 The `Content-Type` of the request is `application/json` and the JSON body contains the following
 fields:
-  * `room_id` — required `string`: the Matrix room ID where the `m.rtc.member` event is present.  
-  * `slot_id` — required `string`: the slot ID from the `m.rtc.member` event.  
-  * `openid_token` — required `object`: the verbatim OpenID token response obtained from the 
-    [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3useruseridopenidrequest_token).  
+
+  * `server_name` — `string`: the [server name](https://spec.matrix.org/v1.19/appendices/#server-name)
+    of the `m.rtc.member` event's `sender`. Defaults to the server's own server name if omitted.
+  * `room_id` — required `string`: the Matrix room ID where the `m.rtc.member` event is present. 
+  * `slot_id` — required `string`: the slot ID from the `m.rtc.member` event.
   * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
 
-Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
 ```http
-POST /livekit/jwt/get_token HTTP/1.1
-Host: matrix-rtc.example.com
-Content-Type: application/json
+POST /_matrix/client/v1/rtc/livekit/get_token HTTP/1.1
 
 {
+  "server_name": "example.com",
   "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
-  "openid_token": {
-    "access_token": "FPkexLLvKbAHKclQhpvgfWxx",
-    "expires_in": 3600,
-    "matrix_server_name": "matrix.example.com",
-    "token_type": "Bearer"
-  },
   "member": {
     "id": "xyzABCDEF10123",
-    "claimed_device_id": "DEVICEID",
-    "claimed_user_id": "@user:matrix.example.com"
+    "claimed_device_id": "DEVICEID"
   }
 }
 ```
 
-##### Successful response
+Upon receiving the request, the server verifies that the requesting user is joined to the room
+identified by `room_id`. If the user is not joined, the request MUST be rejected with HTTP 401 /
+`M_UNAUTHORIZED`.
 
-If the request is successful, an HTTP `200 OK` response is returned with
-`Content-Type: application/json`. The response body contains:
+If `server_name` is the server's own name, it obtains a token from its own SFU and if successful
+returns an HTTP `200 OK` response is returned with `Content-Type: application/json`. The response body
+contains:
+
 * `jwt` — `string`: the JWT token to use for authentication with the SFU.  
 * `url` — `string`: the URL of the LiveKit SFU to use for the given slot.
 
-Example response:
 ```http
 HTTP/1.1 200 OK
-Content-Type: application/json
 
 {
   "jwt": "thejwt",
   "url": "wss://matrix-rtc.example.com/livekit/sfu"
 }
 ```
+
+If `server_name` points to a remote server, the server triggers a `POST` request to a new authenticated
+Server-Server endpoint `/_matrix/federation/v1/rtc/livekit/get_token`. The `Content-Type` of the
+request is `application/json` and the JSON body contains the following fields:
+
+  * `room_id` — required `string`: the Matrix room ID where the `m.rtc.member` event is present.  
+  * `slot_id` — required `string`: the slot ID from the `m.rtc.member` event.  
+  * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
+
+```http
+POST /_matrix/federation/v1/rtc/livekit/get_token HTTP/1.1
+
+{
+  "room_id": "!tDLCaLXijNtYcJZEey:example.com",
+  "slot_id": "the_id",
+  "member": {
+    "id": "xyzABCDEF10123",
+    "claimed_device_id": "DEVICEID"
+  }
+}
+```
+
+The receiving server verifies that the requesting server is joined to the room identified by `room_id`.
+If either the receiving server or the requesting server are not joined, the request MUST be rejected with
+HTTP 401 / `M_UNAUTHORIZED`.
+
+Otherwise, the receiving server obtains a token from its own SFU and if successful
+returns an HTTP `200 OK` response is returned with `Content-Type: application/json`. The response body
+contains:
+
+* `jwt` — `string`: the JWT token to use for authentication with the SFU.  
+* `url` — `string`: the URL of the LiveKit SFU to use for the given slot.
+
+```http
+HTTP/1.1 200 OK
+
+{
+  "jwt": "thejwt",
+  "url": "wss://matrix-rtc.example.com/livekit/sfu"
+}
+```
+
+The requesting server then forwards the response to its client as above.
 
 #### Optional Delegated MatrixRTC Membership Lifecycle Tracking using Cancellable Delayed Events
 
@@ -286,147 +291,113 @@ even in cases of sudden disconnection, crashes, or network failures. However, re
 restart the delayed event timer can be error-prone in adverse network conditions, particularly due to
 TCP connection instability.
 
-Since the LiveKit SFU already maintains authoritative knowledge of each participant's connection
-state, the management of cancellable delayed events MAY be delegated to the LiveKit SFU
-Authorisation Service. This delegation allows the RTC transport layer to accurately manage and
+Since the LiveKit SFU, which is tied to the homeserver, already maintains authoritative knowledge of
+each participant's connection state, the management of cancellable delayed events MAY be delegated
+to the homeserver. This delegation allows the RTC transport layer to accurately manage and
 maintain MatrixRTC membership lifecycles across transient disconnects, ensuring a consistent and
 reliable view of session state.
 
 ```mermaid
 sequenceDiagram
-    participant U as 🧑 User
-    participant M as 🏢 Matrix Homeserver
-    participant A as 🔐 LiveKit Authorisation Service
-    participant L as 📡 LiveKit SFU
+    autonumber
 
-    U->>M: Requests OpenID token
-    M-->>U: Returns OpenID token
-    U->>M: Schedules delayed disconnect event
-    M-->>U: Returns delay ID
-    U->>A: Sends OpenID token & delegation parameters
-    A->>M: Validates token via OpenID API
-    M-->>A: Confirms user identity
-    A-->>U: Confirms delegation
-    A->>M: Renews delayed disconnect event
-    U->>U: Looses connection
-    L->>A: Notifies about participant disconnect
-    A->>M: Triggers sending of disconnect event
+    participant U as 🧑 Alice
+
+    box floralwhite alice.com
+        participant H as 🏢 Homeserver
+        participant L as 📡 LiveKit SFU
+    end
+
+    U->>H: Send m.rtc.member event<br>to join session
+    activate H
+    H-->>U: ​
+    deactivate H
+  
+    U->>H: Schedule delayed m.rtc.member event<br>to leave session
+    activate H
+    H-->>U: ​
+    deactivate H
+  
+    Note over U,L: Obtain SFU token and URL as shown in the chart above
+  
+    U->>L: Publish media stream
+  
+    U->>H: /delegate_delayed_leave
+    activate H
+    H-->>U: Confirm delegation
+    H->>H: Reschedule delayed<br>leave event
+    H->>H: Reschedule delayed<br>leave event
+    H->>H: Reschedule delayed<br>leave event
+  
+    U->>U: Loses connectivity
+  
+    L->>H: Trigger disconnect webhook
+    H->>H: Trigger sending<br>leave event
+    deactivate H
 ```
 
 ##### Request
 
-The delegation is carried out by making a `POST` request to the `/delegate_delayed_leave` endpoint
-of the LiveKit service.
+The delegation is carried out by making a `POST` request to a new authenticated endpoint
+`/_matrix/client/v1/rtc/livekit/delegate_delayed_leave`.
 
 The `Content-Type` of the request is `application/json` and the JSON body contains the following
 fields:
+
   * `room_id` — required `string`: the Matrix room ID where the `m.rtc.member` event is present.  
   * `slot_id` — required `string`: the slot ID from the `m.rtc.member` event.  
-  * `openid_token` — required `object`: the verbatim OpenID token response obtained from the 
-    [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3useruseridopenidrequest_token).  
   * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
   * `delay_id` — required `string`: the delayed event id of the MatrixRTC member leave event.
-  * `delay_timeout` — required `string`: number of positive non-zero milliseconds the homeserver
-    should wait before sending the MatrixRTC member leave event. Clients SHOULD not use values smaller
-    than 1 hour to avoid unnecessarily frequent `/restart`s of the delayed event. Service implementations
-    MAY reject requests with a timeout below 1 hour with `M_BAD_JSON`.
-
-Example request where `livekit_service_url` is `https://matrix-rtc.example.com/livekit/jwt`:
 
 ```http
-POST /livekit/jwt/delegate_delayed_leave HTTP/1.1
-Host: matrix-rtc.example.com
-Content-Type: application/json
+POST /_matrix/client/v1/rtc/livekit/delegate_delayed_leave HTTP/1.1
 
 {
   "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
-  "openid_token": {
-    "access_token": "FPkexLLvKbAHKclQhpvgfWxx",
-    "expires_in": 3600,
-    "matrix_server_name": "matrix.example.com",
-    "token_type": "Bearer"
-  },
   "member": {
     "id": "xyzABCDEF10123",
-    "claimed_device_id": "DEVICEID",
-    "claimed_user_id": "@user:matrix.example.com"
+    "claimed_device_id": "DEVICEID"
   },
-  "delay_id": "1234567890",
-  "delay_timeout": "7200000"
+  "delay_id": "1234567890"
 }
 ```
 
+When delegating delayed events, Clients SHOULD NOT use values smaller than 1 hour for the `delay_timeout`
+to avoid unnecessarily frequent restarts of the delayed event. Servers MAY reject requests when the delegated
+event has a timeout below 1 hour with `M_BAD_JSON`.
+
 ##### Successful response
 
-The service MUST only maintain a single delegated event per `room_id`, `slot_id`,
-`member` and MXID (as determined by verifyng the OpenID token). Requests to delegate
-a different `delay_id` MUST invalidate earlier delegations for the same parameters.
+The server MUST only maintain a single delegated event per `room_id`, `slot_id`,
+`member` and MXID. Requests to delegate a different `delay_id` MUST invalidate earlier
+delegations for the same parameters.
 
 If the delegation request is successful, an HTTP `200 OK` response is returned with
 `Content-Type: application/json`. The response body contains an empty JSON object
 for future extension.
 
-Example response:
 ```http
 HTTP/1.1 200 OK
-Content-Type: application/json
 
 {}
 ```
 
-Once the LiveKit SFU Authorisation Service observes the client's SFU connection, identified by
+Once the homeserver observes the client's SFU connection (either by receiving a
+[webhook](https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/)
+from the SFU or by polling the connection status from the SFU), identified by
 the LiveKit room `livekit_alias` and the LiveKit identity as specified in the next section
 (`base64(SHA256(JSON.serialize([user_id, claimed_device_id, member.id])))`), it SHOULD issue
-a `/restart` of the delayed event by sending the following POST request to the  homeserver of
-that client:
+a restart of the delayed event.
 
-```http
-POST /_matrix/client/v1/delayed_events/{delay_id}/restart HTTP/1.1
-Host: matrix-rtc.example.com
-Content-Type: application/json
-
-{}
-```
-
-It then starts a timer corresponding to the specified `delay_timeout`. The timer is periodically
+It then starts a timer corresponding to the delayed event's `delay_timeout`. The timer is periodically
 restarted while the client remains connected with sufficient headroom (e.g., 80% of `delay_timeout`) to
- ensure the restart occurs well before `delay_timeout` expires. If the SFU detects that the client has
-disconnected before the timer is restarted, the Authorisation Service MUST trigger the `disconnect`
-event by sending the following request to the homeserver:
-
-```http
-POST /_matrix/client/v1/delayed_events/{delay_id}/send HTTP/1.1
-Host: matrix-rtc.example.com
-Content-Type: application/json
-
-{}
-```
-
-This ensures that the MatrixRTC membership state remains accurate and consistent, even in the
-presence of network interruptions or client crashes.
-
-Implementations SHOULD resolve the location of the client-server API by using [.well-known discovery]
-for the `matrix_server_name` supplied in the OpenID token. If the resolution is performed when processing
-the `/delegate_delayed_leave` request, resolution failures MUST result in the request being rejected
-with 400 / `M_BAD_JSON`.
-
-[.well-known discovery]: https://spec.matrix.org/v1.18/client-server-api/#well-known-uris
-
-Additionally, implementations SHOULD verify support for delayed events by querying the homeserver's
-`_matrix/client/versions` endpoint. If the homeserver does not advertise support for delayed events,
-the SFU authorisation request MUST be rejected with the error code `M_UNSUPPORTED` and error message
-`MatrixRTC membership lifecycle delegation failed: homeserver does not support delayed events.`.
-
-Implementations MAY retry failed delayed event POST requests using an exponential backoff strategy
-in the event of transient network failures. However, retry attempts MUST cease once the configured
-`delay_timeout` has elapsed.
-
-As per [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), participants are
-considered disconnected once their member event becomes unsticky. Therefore, as a heuristic,
-implementations SHOULD also stop retries once the maximum sticky duration of one hour has elapsed.
-The underlying thought here is that if the authorisation service cannot reach the homeserver,
-the participant likely cannot reach it either and, thus, cannot update their sticky member event.
+ensure the restart occurs well before `delay_timeout` expires. If the homeserver detects that the client
+has disconnected  before the timer is restarted (either by receiving a
+[webhook](https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/)
+from the SFU or by polling the connection status from the SFU), the server MUST trigger sending of the
+delegated delayed leave event. This ensures that the MatrixRTC membership state remains accurate and
+consistent, even in the presence of network interruptions or client crashes.
 
 ### Pseudonymous LiveKit Participant Identity
 
@@ -537,22 +508,20 @@ Two approaches are possible:
     `rtc_transports` field) ensures that the data is encrypted shared state, it is subject to
     client-side consensus and may flip over time. Overall, it does **not** improve the reliability
     of propagating and converging those random bits.
-  * This approach keeps the LiveKit Authorisation Service stateless
   * Requires the removal of the `room_id` field from the access request, which prevents additional
     access checks, such as verifying that the user is actually part of the claimed Matrix room.
-2. **Authorisation-service-provided random bits**
-  * The Authorisation Service generates and persists the `truly_random_bits` for each `(room_id,
+2. **Server-provided random bits**
+  * The server generates and persists the `truly_random_bits` for each `(room_id,
     slot_id)` tuple
   * Guarantees consistent alias derivation across clients without requiring client-side
     coordination.
-  * The service becomes stateful, as it must retain the `truly_random_bits`
-  * The benefit of improved pseudonymity only applies if the LiveKit SFU authorisation service is
+  * The benefit of improved pseudonymity only applies if the server is
     operated separately from the actual LiveKit SFU.
   * Preserves the `room_id` in the access request, allowing additional access checks, such as
     verifying that the user is actually part of the claimed Matrix room.
 
 Given that pseudonymous LiveKit participant IDs already exist, the design prioritizes **reliability
-over additional pseudonymity** by using Authorisation-service-provided random bits, ensuring
+over additional pseudonymity** by using server-provided random bits, ensuring
 consistent `livekit_alias` across clients while enabling additional access checks.
 
 ### Reliance on the LiveKit Protocol and Implementation
@@ -632,26 +601,6 @@ Additionally, a joint endpoint introduces the problem of having to handle the ca
 the two operations succeeds but the other fails.
 
 ## Security considerations
-
-### Resource usage
-
-To prevent abuse of SFU resources, the LiveKit Authorisation service should validate the OpenID
-token as part of requests to `/get_token`.
-
-The Server-Server API endpoint
-[/\_matrix/federation/v1/openid/userinfo](https://spec.matrix.org/v1.11/server-server-api/#get_matrixfederationv1openiduserinfo)
-can be used for this purpose.
-
-An access control policy should be applied based on the result of the OpenID token validation. For
-example, access might be restricted to users of a particular homeserver or to users with a specific
-role.
-
-The homeserver restriction could be applied by checking the `matrix_server_name` field of the OpenID
-token before validating the token.
-
-The Matrix `room_id` could be validated too, and checking that the Matrix user from the OpenID token
-is a member of the room. This would require a dedicated way for the LiveKit Authorisation Service to
-perform these checks via the homeserver though.
 
 ### Pseudonymity
 
