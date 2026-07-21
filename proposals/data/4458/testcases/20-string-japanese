@@ -1,0 +1,6 @@
+# We should be able to support non-latin strings. Taken from spec v1.19.
+{
+    "a": "日本語"
+}
+---
+{"a":"日本語"}

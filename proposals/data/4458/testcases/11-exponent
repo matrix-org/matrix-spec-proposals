@@ -1,0 +1,12 @@
+# Negative zero and exponents should be resolved.
+# Taken from spec v1.19.
+#
+# However, I think this is incorrect, per https://github.com/matrix-org/matrix-spec/issues/2424, and I have
+# added "REJECT" as an acceptable output.
+{
+    "a": -0,
+    "b": 1e10
+}
+---
+{"a":0,"b":10000000000}
+REJECT

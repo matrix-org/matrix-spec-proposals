@@ -1,0 +1,7 @@
+# A string containing invalid UTF-8: in particular, an attempt to encode one of the UTF-16 surrogates. New for MSC 4458.
+#
+# D83D is 1101 1000 0011 1101, making its UTF-8 encoding
+# 11101101 10100000 10111101, ie ED A0 BD
+"a �\ude00 b"
+---
+REJECT

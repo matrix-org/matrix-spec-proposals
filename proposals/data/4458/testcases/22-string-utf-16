@@ -1,0 +1,4 @@
+# A string with UTF-16 surrogates. New for MSC 4458.
+"a \ud83d\ude00 b"
+---
+"a 😀 b"
