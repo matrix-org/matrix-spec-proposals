@@ -1,16 +1,17 @@
 # MSC4514: EDU size limit
 
 This proposal clarifies/specifies that [EDUs](https://spec.matrix.org/v1.19/server-server-api/#edus)
-are limited to 65535 bytes. See [this issue](https://github.com/matrix-org/matrix-spec/issues/807)
+are limited to 65536 bytes. See [this issue](https://github.com/matrix-org/matrix-spec/issues/807)
 for more detail.
 
 
 ## Proposal
 
-EDUs MUST NOT exceed 65536 bytes. This matches the [size limit for events](https://spec.matrix.org/v1.19/client-server-api/#size-limits).
+EDUs MUST NOT exceed 65536 bytes when formatted as [Canonical JSON](https://spec.matrix.org/v1.19/appendices/#canonical-json).
+This matches the [size limit for events](https://spec.matrix.org/v1.19/client-server-api/#size-limits).
 
 This implicitly means that [to-device messages](https://spec.matrix.org/v1.19/server-server-api/#send-to-device-messaging)
-and other information bundled into an EDU cannot exceed 65535 bytes. Clients MAY encounter errors if
+and other information bundled into an EDU cannot exceed 65536 bytes. Clients MAY encounter errors if
 they attempt to send information larger than the implied EDU permits. For example, a large to-device
 message.
 
