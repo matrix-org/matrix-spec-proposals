@@ -33,7 +33,8 @@ generate EDUs in normal operation:
 * [`POST /_matrix/client/v3/keys/signatures/upload`](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3keyssignaturesupload)
 
 Servers SHOULD return a [standard Matrix error](https://spec.matrix.org/v1.19/client-server-api/#standard-error-response)
-with the 413 status code, but are not required to. This is in alignment with MSC4513.
+with the `M_TOO_LARGE` error code alongside the 413 status code, but are not required to. This is in
+alignment with MSC4513.
 
 
 ## Potential issues
@@ -48,6 +49,12 @@ limit. This proposal doesn't carve out an exception for this because it's believ
 message *could* be rejected at client send time with the size of the EDU's boilerplate being known.
 If it ends up being that some EDUs need to be larger than the target, the target SHOULD be adjusted
 by this proposal.
+
+Further, this proposal is not *technically* backwards compatible because it changes behaviour of
+existing endpoints. Avoiding the breaking change would mean specifying that the old endpoints *must*
+accept malformed/malicious payloads, which isn't great security posture. Some server implementations
+have also implemented this proposal in production for several months with no ill effects to the public
+federation.
 
 
 ## Alternatives
