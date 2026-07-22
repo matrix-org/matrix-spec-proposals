@@ -198,7 +198,7 @@ To join a slot, the client sends an `m.rtc.member` event with the following sche
     allowing clients to avoid connecting to members outside their area of interest.
 - `member` (required, object): Information to identify the member.
   - `id` (required, string): Identifier to distinguish multiple members, even for the same user
-    and device. MUST be unique for each join. This means that clients need to use a different
+    and device. MUST be unique for each join of the same user. This means that clients need to use a different
     identifier when leaving and then rejoining a slot.
   - `claimed_device_id` (required, string) — Matrix device identifier. This is used to exchange
     encryption keys as explained later in the [encryption section]. The device ID is untrusted ("claimed"
