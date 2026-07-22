@@ -50,8 +50,8 @@ protocol and are described in [MSC4075: MatrixRTC notifications & call ringing][
 
 MatrixRTC slots act as virtual locations for MatrixRTC applications to run in. Slots are tied to rooms
 and represented by state events of type `m.rtc.slot`. This means that slots can only be created or
-modified by users with sufficient power level. This design deliberately separates slot management from slot membership,
-which is introduced [below] and typically requires lower power level.
+modified by users with sufficient power level. This design deliberately separates slot management
+from slot membership, which is introduced [below] and typically requires lower power level.
 
 [below]: #membership
 
