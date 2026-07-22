@@ -219,7 +219,7 @@ To join a slot, the client sends an `m.rtc.member` event with the following sche
 - `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
   in the addendum of [MSC4354]. MUST have the same value as `member.id`.
 
-Apart from having to match the above schema, an `m.rtc.member` event SHOULD only be considered to be
+Apart from having to match the above schema, an `m.rtc.member` event MUST only be considered to be
 joined if all of the following conditions apply:
 
 - An open slot exists in the room state as an `m.rtc.slot` state event with `state_key` equalling
