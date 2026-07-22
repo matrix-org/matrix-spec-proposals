@@ -428,7 +428,7 @@ is taken from the `member.claimed_device_id` property of the respective `m.rtc.m
 
 ```json5
 // PUT /_matrix/client/v3/sendToDevice/m.rtc.encryption_key/{txnId} 
-// (Unencrypted OlmPlaintext shown, but in reality this would be an encrypted message)
+// Unencrypted OlmPlaintext (formerly OlmPayload) shown, but in reality this would be an encrypted message
 
 {
     "room_id": "{room_id}",
