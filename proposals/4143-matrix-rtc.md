@@ -229,7 +229,7 @@ joined if all of the following conditions apply:
   This is to ensure that the membership view is as consistent as possible across all members.
 - If the room is encrypted, the `m.rtc.member` event was sent encrypted rather than in clear.
 
-If these conditions are not fulfilled, clients SHOULD treat the member as left and refrain
+If these conditions are not fulfilled, clients MUST treat the member as left and refrain
 from sending them encryption keys or connecting to their transports.
 
 #### Leaving a slot
