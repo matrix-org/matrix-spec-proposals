@@ -106,7 +106,7 @@ neither `application_type` nor `application_slot_id` can contain the `#` charact
 - `status` (required, string): The slot's current status. MUST be one of `"open"`, `"closed"`.
 - `application` (object): Describes the application that can run in this slot.
   - `type` (required, string): The globally unique application identifier. MUST follow the
-    [Common Namespaced Identifier Grammar].
+    [Common Namespaced Identifier Grammar]. MUST align with the event's `state_key`.
   - Optionally includes further properties for settings that are specific to the application
     `type`. The concrete properties are defined by the application's specification. A calling
     application, for instance, could include properties for constraining the call to be voice-only.
