@@ -677,6 +677,14 @@ tradeoff and introduce a shared-key system via a new encryption `type`.
 
 ## Security considerations
 
+### Shadow sessions
+
+Malicious clients could ignore slot events and consider members to be joined regardless of slot
+restrictions. This would allow them to engage in "shadow sessions" in the room that would be ignored
+by other, conforming clients in the room. While this undermines the authoritativeness of slots, it
+does not impact conforming clients in any way. RTC application and transport designers should be
+aware that slots don't provide access control, however, and adopt appropriate measures.
+
 ### Discoverability of RTC infrastructure
 
 Details of the server-side RTC infrastructure may be disclosed to all room members through `m.rtc.member`
