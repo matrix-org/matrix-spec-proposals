@@ -316,7 +316,7 @@ give rise to sessions.
 
 ```
 m.rtc.member[0]            |████████████████████████            ████████████████████████|████
-                           |^ join           leave ^            ^ join           leave ^|
+                           |^ join           leave ^            ^ join                  |   ^ leave
                            |                                                            |
 m.rtc.member[1]            |       ████████████████████████████████████████████████     |
                            |       ^ join                                   leave ^     |
