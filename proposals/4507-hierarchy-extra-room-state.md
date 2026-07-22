@@ -196,6 +196,7 @@ unstable identifiers:
 
 * `m.public_state` state event -> `org.matrix.msc4507.public_state`
 * `additional_state` query parameter -> `org.matrix.msc4507.additional_state`
+* `additional_state` response field -> `org.matrix.msc4507.additional_state`
 
 ## Dependencies
 
