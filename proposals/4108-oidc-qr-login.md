@@ -870,6 +870,46 @@ Against:
   chance of other devices seeing the new device as unverified, incorrectly prompting the user to verify the device that
   will soon be verified.
 
+### Proof of possession of the new device's key
+
+As described under [Device ID confusion](#device-id-confusion), the existing device's checks bind the shared secrets to
+a `device_id` that comes online during the flow, but not to the peer it is talking to on the secure channel. A stronger
+binding could be obtained by requiring the new device to prove possession of the private key associated with the
+`device_id` it claims.
+
+Concretely, before sharing secrets the existing device would require the peer to demonstrate that it controls the
+Ed25519 device signing key (`ed25519:D`) that the homeserver publishes for device `D`:
+
+- The new device signs a value that is bound to *this* secure channel — for example the secure channel transcript hash
+  or session key from [MSC4388], or the existing device's public key — with its Ed25519 device key, and sends the
+  signature over the secure channel. Binding to the channel prevents an attacker from relaying a proof that the victim's
+  genuine device produced on a different channel.
+- Before sharing secrets, the existing device fetches the new device's published keys (e.g. via
+  [`POST /_matrix/client/v3/keys/query`](https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3keysquery))
+  for `device_id` `D`, and confirms both that the returned `ed25519:D` matches the key used to produce the signature and
+  that the signature verifies. Verifying a bare signature is not sufficient on its own, because an attacker could
+  present a freshly generated key pair; the proof must be anchored to the key the homeserver holds for `D`.
+
+This defeats both variants of the device ID confusion attack: a peer that free-rides on the victim's concurrent login
+holds no private key for `D`, and a peer that claims a device ID belonging to another of the victim's devices cannot
+produce a signature valid for that device's published key.
+
+For:
+
+- Cryptographically binds the secure channel peer to the device the secrets are shared with, closing the device ID
+  confusion gap rather than relying on the unpredictability of the device ID.
+
+Against:
+
+- The new device's device keys must be published on the homeserver *before* secrets are shared, so that the existing
+  device can query them. This conflicts with the single `/keys/upload` request described in
+  [Secret sharing and device verification](#secret-sharing-and-device-verification), where the device keys and
+  cross-signing signature are uploaded together specifically to avoid the new device being transiently visible as
+  unverified. Splitting the upload reintroduces that window, or an extra round-trip is needed. This is the same
+  trade-off weighed in [Alternative method of secret sharing](#alternative-method-of-secret-sharing).
+- Adds protocol complexity and an additional homeserver round-trip to an already large proposal, to mitigate a threat
+  whose preconditions are contrived.
+
 ### Support users without cross-signing set up
 
 The proposal is opinionated that the user must have end-to-end encryption cross-signing set up before they can use this
@@ -997,6 +1037,42 @@ require the `verification_uri` to be hosted on the same server as the authorizat
 vanity short URL such as `https://example.com/devicelogin` is used with an issuer of
 `https://login.example.com`).
 
+### Device ID confusion
+
+Scenario:
+
+- The victim's existing device establishes a secure channel with a device under the attacker's control (for example as
+  in the [remote phishing](#social-engineering-sign-in-with-qr-remote-phishing) scenario above), including completing
+  the check code step.
+- The attacker's device sends an `m.login.protocol` message claiming a `device_id` of `D`, where `D` is the device ID
+  that a genuine new device belonging to the victim is (or will shortly be) using in a separate, legitimate login that
+  the victim is performing at the same time.
+- The existing device's checks are satisfied without the attacker's device ever authenticating: at step 4 the device
+  `D` is not yet present (`404`), and by the time the existing device performs its liveness check before sharing
+  secrets (`GET /_matrix/client/v3/devices/D`), device `D` has come online — created by the victim's *genuine* new
+  device, not the attacker's.
+
+Result:
+
+- The existing device shares the cross-signing secrets and backup decryption key with the attacker's device, which has
+  authenticated to nothing. The attacker obtains the victim's end-to-end encryption secrets.
+
+The root of the weakness is that the existing device treats "a device with ID `D` exists on the homeserver" as proof
+that "the peer I am talking to on the secure channel is the device that logged in as `D`". These are not equivalent: the
+liveness check can be satisfied by *any* concurrent login that happens to use the same device ID, including one
+performed by a different party.
+
+Mitigations:
+
+- The `device_id` is chosen by the new device and is not otherwise predictable, so mounting this attack requires the
+  attacker to know or force the device ID that the victim's genuine new device will use, concurrently with the phishing
+  flow. This makes the attack contrived, but does not close the underlying gap.
+- The existing device already asserts that `D` was absent at step 4 and present before secret sharing. This binds the
+  secrets to a device ID that came online during the flow, but — as noted above — not to the secure channel peer.
+- A stronger, cryptographic mitigation is described under [Proof of possession of the new device's key](#proof-of-possession-of-the-new-devices-key)
+  in the alternatives section , which binds the secure channel peer to the device keys published for `D` on the
+  homeserver.
+
 ## Threat modelling
 
 During the design of this proposal various security threats have been identified and considered. The details of these
@@ -1010,6 +1086,7 @@ The following table is intended to provide an overview with links into the detai
 |**Social engineering: Sign in with QR remote phishing (remote client)**|Attacker tricks a legitimate user into scanning a QR code (generated on an attacker controlled remote client) with their existing client and completing the sign in, resulting in disclosure of access token and end-to-end encryption secrets|login protocol; grant|UX|[MSC4108 Social Engineering: Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing)|
 |**Social engineering: Sign in with QR remote phishing (remote client + malicious homeserver)**|Similar to remote client phishing, but homeserver is under active control of the attacker and wants to compromise the victim's end-to-end encryption|login protocol|UX|[MSC4108 Social Engineering: Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing)|
 |**Malicious client sends arbitrary verification URI**|A malicious new client sends an arbitrary URL in the `m.login.protocol` message which the victim's existing client then opens in a trusted browser environment|login protocol|UX|[MSC4108 Malicious client sends arbitrary verification URI](#malicious-client-sends-arbitrary-verification-uri)|
+|**Device ID confusion**|A malicious device on the secure channel claims a `device_id` that the victim's genuine new device is bringing online concurrently, causing the existing device's liveness check to pass and secrets to be shared with the attacker without it authenticating|login protocol|device ID checks|[MSC4108 Device ID confusion](#device-id-confusion)|
 |**Shoulder-surfing attacker (Specter)**|Attacker has control of homeserver and network and is present for QR scanning and attempts to steal end-to-end encryption secrets|secure channel|cryptographic|[MSC4388 Shoulder-surfing attacker (Specter)](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#shoulder-surfing-attacker-specter)|
 |**Pure Dolev-Yao attacker**|Attacker has control of the network but isn't present for QR scanning|secure channel|cryptographic|[MSC4388 Pure Dolev-Yao attacker](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#pure-dolev-yao-attacker)|
 |**Shoulder-surfing to sign in to attacker account**|Victim is signing in a new device. Attacker is present for QR code display/scanning. Victim's new device could be signed in as attacker|login protocol; secure channel|cryptographic; UX|[MSC4108 Shoulder-surfing to sign in to attacker account](#shoulder-surfing-to-sign-in-to-attacker-account)|
