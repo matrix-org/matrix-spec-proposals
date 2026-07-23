@@ -67,7 +67,8 @@ the top level:
 
   // The type of harm being reported in this complaint. Currently, the available harms are defined
   // by MSC4456: https://github.com/matrix-org/matrix-spec-proposals/pull/4456
-  // A future MSC is expected to advertise which custom harms (if any) the server supports.
+  // A future MSC is expected to advertise which custom harms (if any) the server supports. Servers
+  // reject the request if the harm identifier is unknown.
   //
   // Note: This is the reporter's opinion and is not necessarily fact.
   //
@@ -79,15 +80,16 @@ the top level:
   //
   // Cannot exceed 1024 bytes (before trimming whitespace).
   //
-  // REQUIRED (cannot be an empty string, after trimming whitespace).
+  // REQUIRED if `harm` is for a "General/Other" identifier, starts with `m.other`, or is a custom identifier.
+  // OPTIONAL otherwise. When provided, cannot be an empty string after trimming whitespace. Custom identifiers
+  // have a required `description` because the server/client cannot reasonably determine how self-describing
+  // the identifier is.
   "description": "This user is spamming",
 }
 ```
 
-*Author's note*: The choice to use `regarding` is deliberate for a bit of natural language: a user is
-**reporting** a **complaint** **regarding** something/someone which caused **harm**. `description`
-replaces what used to be called `reason` because the word "reason" feels wrong in this context. The
-reporter is adding information (a "description"), not justifying their actions.
+*Author's note*: This proposal doesn't use the word `reason` because it's overly accusatory. Asking
+for a description of the harm is more natural.
 
 *Note:* Future MSCs are expected to add more fields, like where/who to send the report to (community
 moderators, server admin, remote server, etc).
@@ -118,8 +120,9 @@ If the report was *not* successful, it will be for one of the following [error c
 
 * `429 M_LIMIT_EXCEEDED` - Rate limited (“too many reports too quickly”).
 * `400 M_BAD_JSON` - A `REQUIRED` field is missing, especially for the `type`, or a field is too long/short.
-* `400 M_INVALID_PARAM` - The `type` is unknown to the server. (Note: servers MUST support at least
-  `complaint` and more in future MSCs).
+* `400 M_INVALID_PARAM` - The `type` or `harm` is unknown to the server.
+  * Note: Servers MUST support at least `type: complaint` and possibly more in future MSCs. Servers
+    MUST also support any specified harm identifiers, but are not required to support unstable ones.
 * `404 M_NOT_FOUND` - The server cannot process the report because the reported identifier does not
   exist (or is unknown). Servers MUST NOT return this error for `m.system` complaints.
 * `403 M_FORBIDDEN` - The caller cannot file this report. For example, the server has banned the
@@ -132,7 +135,7 @@ If the report was *not* successful, it will be for one of the following [error c
 be returned in applicable cases. This optionality is to allow servers to customize their operations
 to their individual regulatory requirements and needs. For example, a server might choose to validate
 that a user can see an event, but also choose *not* to return an error if they can’t (instead, it’d
-get flagged internally on the report).
+get flagged internally on the report). Always returning an error is not considered compliant.
 
 The new report endpoint is available to [guests](https://spec.matrix.org/v1.18/client-server-api/#guest-access).
 
