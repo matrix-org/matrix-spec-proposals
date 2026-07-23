@@ -1,4 +1,4 @@
-# MSC4508: Sliding Sync Extension: Typing Notifications
+# MSC4508: Sliding Sync Extensions: Common format and Typing
 
 [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) (Simplified Sliding Sync)
 only includes core room data and omits other data, such as typing notifications, from the sync
