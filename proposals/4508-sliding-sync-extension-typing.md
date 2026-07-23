@@ -61,8 +61,8 @@ The per-room extensions include the following fields (as well as the ones above)
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
-| `lists` | `[string]` | No | Which lists (by list key, from the `lists` request field) the extension applies to. Defaults to `["*"]`. |
-| `rooms` | `[string]` | No | Which room subscriptions (by room ID, from the `room_subscriptions` request field) the extension applies to. Defaults to `["*"]`. |
+| `lists` | `[string]` | No | Which lists (by list key, from the `lists` request field) the extension applies to. Defaults to all lists. |
+| `rooms` | `[string]` | No | Which room subscriptions (by room ID, from the `room_subscriptions` request field) the extension applies to. Defaults to all room subscriptions. |
 
 The `lists` and `rooms` arguments control which rooms are "in scope" for the extension. A room is in
 scope if either of the following holds:
@@ -71,11 +71,11 @@ scope if either of the following holds:
   list's filters, the room's index in the filtered list is within the list's range), or
 - it is one of the room subscriptions named in `rooms`.
 
-The special value `"*"` acts as a wildcard: `{"lists": ["*"]}` matches all lists in the request and
-`{"rooms": ["*"]}` matches all room subscriptions in the request. An empty array matches nothing,
-e.g. `{"lists": [], "rooms": ["*"]}` applies the extension only to room subscriptions. List keys
-that are not in the request, and rooms that are either unknown or inaccessible to the user, are
-ignored.
+Both fields default to matching everything if they are not present, i.e. a missing `lists` will
+match all rooms that are in *any* list, and a missing `rooms` will match all room subscriptions.
+Conversely, an empty array matches nothing, e.g. `{"lists": []}` applies the extension only to room
+subscriptions, and `{"rooms": []}` applies it only to rooms in lists. List keys that are not in the
+request, and rooms that are either unknown or inaccessible to the user, are ignored.
 
 Note that a room being in scope does *not* require the room to have an entry in the `rooms` section
 of the *response*: a room within a list's range is in scope even if the room has no other updates to
@@ -193,8 +193,8 @@ previously sent on a connection (unless it wants to use the omission optimisatio
 
 A room within the range of a scoped list receives typing updates even if the user is not currently
 viewing it, which is wasted bandwidth for clients that only show typing indicators inside the room
-view. Clients can avoid this by scoping the extension: for example `{"lists": [], "rooms": ["*"]}`
-together with a room subscription for the currently-open room limits typing updates to that room.
+view. Clients can avoid this by scoping the extension: for example `{"lists": []}` together with a
+room subscription for the currently-open room limits typing updates to that room.
 
 # Alternatives
 
@@ -230,3 +230,12 @@ compatibility with existing implementations.
 
 This MSC builds on [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186), which
 at the time of writing has passed FCP but has not yet been released in the spec.
+
+
+# Appendix
+
+## Changelog
+
+Differences from the experimental implementation of simplified sliding sync in Synapse v1.151.0.
+
+1. Removed the special value `"*"` from the common room extension fields.
