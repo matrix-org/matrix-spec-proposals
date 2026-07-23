@@ -900,6 +900,9 @@ Against:
   in, letting the consent screen state that *another* device is being signed in — a mitigation relied upon in
   [Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing).
 
+Of the three shapes outlined here, the first one appears to be most sensible with the main trade-off being that the user
+may need to re-authenticate on the new device.
+
 Note that this proposal already includes the `m.login.protocols` negotiation step, so the mechanism is extensible: a
 future MSC could add an Authorization Code Grant protocol (in whichever shape proves most useful) alongside
 `device_authorization_grant` without a breaking change. There is therefore no need to choose between the grants now.
