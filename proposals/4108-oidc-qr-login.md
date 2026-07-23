@@ -932,6 +932,35 @@ Mitigations:
 - After the new device gets the access token it calls the `whoami` endpoint to determine what user was authenticated.
   The new device MAY then prompt the user to confirm that they wish to proceed before proceeding.
 
+### Social Engineering: Sign in with QR remote phishing
+
+Scenario:
+
+An attacker has an out-of-band channel (e.g. email) through which they can communicate with a victim (a legitimate user
+of a homeserver). The attacker starts the QR sign-in process as described in this MSC on a remote client that they
+control. The attacker generate a QR code using the device under their control. The attacker then uses the out-of-band
+channel to trick the victim into scanning the QR code with their existing Matrix client and completing the sign-in.
+
+A variant of this (which is referred to as "remote client + malicious homeserver") is where the homeserver is also under
+active control of the attacker. In this case the attacker can bypass any server-side measures (such as showing a consent
+screen to the user) to complete the attack more easily.
+
+Result:
+
+- The attacker has the victim's end-to-end encryption secrets on the device under their control.
+- The attacker has an access token for the victim's account.
+  (n.b. in the case of the homeserver being under control of the attacker then the attacker can create a valid access
+  token without requiring any action of the victim)
+  
+Mitigations:
+
+|Mitigation|Applicable to remote client scenario|Applicable to remote client + malicious homeserver variant|
+|-|-|-|
+|The consent screen shown by the homeserver during the Device Authorization Grant SHOULD make it explicit that the user is signing in another device (as opposed to the device that they are currently using).|Yes|No - as homeserver under control of attacker|
+|Because the data in the QR code is a Matrix-specific binary format, system provided QR scanners can not be used to initiate an attack. This means that the client can control the UI shown to the user prior to scanning a QR code.|Yes|Yes|
+|Before scanning a QR code an existing client SHOULD warn the user in the UI about the dangers of scanning a QR from an untrusted source.|Yes|Yes|
+|If an existing client provides a mechanism to initiate the scanning of a QR (e.g. via a deep-link) then it MUST not bypass any warnings that are implemented.|Yes|Yes|
+
 ## Threat modelling
 
 During the design of this proposal various security threats have been identified and considered. The details of these
@@ -942,6 +971,8 @@ The following table is intended to provide an overview with links into the detai
 |Threat|Summary|Impacted layers|Types of mitigations|MSC section(s)|
 |-|-|-|-|-|
 |**Unattended devices**|The Sign in with QR mechanism could be used by an attacker who has gained temporary access to a client to escalate the attack to creation of a new client session that has ongoing access|login protocol; grant|biometrics; server policies|[MSC4108 Malicious session spawning](#malicious-session-spawning)|
+|**Social engineering: Sign in with QR remote phishing (remote client)**|Attacker tricks a legitimate user into scanning a QR code (generated on an attacker controlled remote client) with their existing client and completing the sign in, resulting in disclosure of access token and end-to-end encryption secrets|login protocol; grant|UX|[MSC4108 Social Engineering: Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing)|
+|**Social engineering: Sign in with QR remote phishing (remote client + malicious homeserver)**|Similar to remote client phishing, but homeserver is under active control of the attacker and wants to compromise the victim's end-to-end encryption|login protocol|UX|[MSC4108 Social Engineering: Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing)|
 |**Shoulder-surfing attacker (Specter)**|Attacker has control of homeserver and network and is present for QR scanning and attempts to steal end-to-end encryption secrets|secure channel|cryptographic|[MSC4388 Shoulder-surfing attacker (Specter)](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#shoulder-surfing-attacker-specter)|
 |**Pure Dolev-Yao attacker**|Attacker has control of the network but isn't present for QR scanning|secure channel|cryptographic|[MSC4388 Pure Dolev-Yao attacker](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#pure-dolev-yao-attacker)|
 |**Shoulder-surfing to sign in to attacker account**|Victim is signing in a new device. Attacker is present for QR code display/scanning. Victim's new device could be signed in as attacker|login protocol; secure channel|cryptographic; UX|[MSC4108 Shoulder-surfing to sign in to attacker account](#shoulder-surfing-to-sign-in-to-attacker-account)|
