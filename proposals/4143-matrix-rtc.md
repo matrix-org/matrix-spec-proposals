@@ -167,8 +167,7 @@ To join a slot, the client sends an `m.rtc.member` event with the following sche
       ... // Further application-specific properties (if required)
     },
     "member": {
-      "id": "{member_id}",
-      "claimed_device_id": "{device_id}"
+      "id": "{member_id}"
     },
     "transports": {
       "published": [
@@ -200,9 +199,6 @@ To join a slot, the client sends an `m.rtc.member` event with the following sche
   - `id` (required, string): Identifier to distinguish multiple members, even for the same user
     and device. MUST be unique for each join of the same user. This means that clients need to use a different
     identifier when leaving and then rejoining a slot.
-  - `claimed_device_id` (required, string) — Matrix device identifier. This is used to exchange
-    encryption keys as explained later in the [encryption section]. The device ID is untrusted ("claimed"
-    by the sender) and must be cross checked against the message encryption envelope for confirmation.
 - `transports` (object): Details on the MatrixRTC transports of this member. Other clients use the
   information in this object to determine how to connect to and exchange real-time data with this
   member. Clients should be prepared to connect to as many transports as there are members
@@ -227,10 +223,9 @@ joined if all of the following conditions apply:
 - The sender is currently a member of the room (i.e. has membership `join`).
 - The event is currently sticky, meaning that its stickiness duration as per [MSC4354] has not expired.
   This is to ensure that the membership view is as consistent as possible across all members.
-- If the room is encrypted, the `m.rtc.member` event was sent encrypted rather than in clear.
 
 If these conditions are not fulfilled, clients MUST treat the member as left and refrain
-from sending them encryption keys or connecting to their transports.
+from connecting to their transports.
 
 #### Leaving a slot
 
@@ -270,8 +265,7 @@ schema:
   in the addendum of [MSC4354]. MUST have the same value as `member.id` in the previously
   joined `m.rtc.member` event.
 
-Again, once a member has left, clients SHOULD refrain from sending them encryption keys
-or connecting to their transports.
+Again, once a member has left, clients SHOULD refrain from connecting to their transports.
 
 [lifecycle]: #membership-lifecycle
 
@@ -375,26 +369,26 @@ server-supported transport types:
 
 ### End-to-end encryption
 
-`m.rtc.member` events MUST be encrypted when sent in an encrypted room.
+Encryption in MatrixRTC has two layers. On the one hand, room events use the [existing mechanisms]
+for encrypting messages in rooms. On the other hand, applications also need a way to encrypt the RTC
+data itself. This process is generally specific to the transport being used, but often requires session
+members to agree on key material, at a minimum. To support this, MatrixRTC provides a generic system
+for establishing shared key material between members. Transports can then define how to actually use
+this key material, which may involve deriving further secrets from it. The concrete mechanism for
+agreeing on the shared key material within a slot is prescribed through the `encryption` object in
+`m.rtc.slot` events.
 
-Additionally, applications need a way to encrypt the RTC data itself. The process is generally
-specific to the transport being used, but often requires session members to agree on key material, at a minimum.
-To support this, MatrixRTC provides a generic system for establishing shared key material between
-members. Transports can then define how to actually use this key material, which may involve
-deriving further secrets from it.
+[existing mechanisms]: https://spec.matrix.org/v1.19/client-server-api/#end-to-end-encryption
 
-The concrete mechanism for agreeing on the shared key material within a slot is prescribed through
-the `encryption` object in `m.rtc.slot` events. Clients SHOULD enforce the use of encryption when
-opening a slot in encrypted rooms. When a client observes encryption being enabled in an `m.rtc.slot`
-event, it SHOULD set a flag to indicate that encryption should be used when being joined to this slot. This flag
-SHOULD NOT be cleared if a later `m.rtc.slot` event disables encryption. In other words, once encryption
-is enabled on a slot, it can never be disabled. This is to avoid a situation where a MITM can simply
-ask members to disable encryption.[^e2eeguide]
+Use of encryption in MatrixRTC is REQUIRED in encrypted rooms. This means that `m.rtc.member` events
+MUST be encrypted and `m.rtc.slot` events MUST contain an `encryption` object when sent in an encrypted
+room. Member / slot events that violate these conditions MUST be considered left / closed.
 
-[^e2eeguide]: This is aligned with the recommendation for handling the `m.room.encryption` state
-              event for normal room messaging in https://matrix.org/docs/matrix-concepts/end-to-end-encryption.
+Conversely, MatrixRTC encryption MUST NOT be used in unencrypted rooms. This is because the specific
+encryption mechanism introduced in this proposal is not well suited for unencrypted rooms. A future MSC
+may introduce another mechanism that lends itself better to unencrypted rooms.
 
-The only available mechanism for now is `m.per_member`.
+The only available encryption mechanism for now is `m.per_member`.
 
 ```json5
 {
@@ -423,12 +417,21 @@ type `m.rtc.encryption_key`.
 
 The recipient devices are determined from the `m.rtc.member` events that are considered to be
 joined to the slot. The conditions for considering a member joined were given
-[above](#joining-a-slot). Once joined members are determined, the target device ID
-is taken from the `member.claimed_device_id` property of the respective `m.rtc.member` event.
+[above](#joining-a-slot). Once the member events are determined, the target device IDs are
+obtained by:
+
+1. Identifying the Megolm session that was used to encrypt the `m.rtc.member` event.
+1. Looking up the [`m.room_key`] to-device message on which that session was received.
+1. Taking the device ID from the `OlmPlaintext` (formerly `OlmPayload`) of that message.
+
+[`m.room_key`]: https://spec.matrix.org/v1.19/client-server-api/#mroom_key
+[`OlmPlaintext`]: https://spec.matrix.org/v1.19/client-server-api/#molmv1curve25519-aes-sha2
+
+The schema for `m.rtc.encryption_key` to-device messages is as follows:
 
 ```json5
 // PUT /_matrix/client/v3/sendToDevice/m.rtc.encryption_key/{txnId} 
-// Unencrypted OlmPlaintext (formerly OlmPayload) shown, but in reality this would be an encrypted message
+// Unencrypted content of OlmPlaintext (formerly OlmPayload) shown, but in reality this would be an encrypted message
 
 {
     "room_id": "{room_id}",
@@ -442,7 +445,7 @@ is taken from the `member.claimed_device_id` property of the respective `m.rtc.m
 ```
 
 - `room_id` (required, string): The ID of the room that the slot is located in.
-- `member_id` (required, string): The `member.id` value of the target's `m.rtc.member` event.
+- `member_id` (required, string): The `member.id` value of the sender's `m.rtc.member` event.
   Note that because `member.id` is unique per member, it is sufficient to disambiguate multiple
   key events for the same device.
 - `media_key` (required, object): Information on the key material.
@@ -455,14 +458,14 @@ is taken from the `member.claimed_device_id` property of the respective `m.rtc.m
 
 Upon receipt, clients SHOULD discard any `m.rtc.encryption_key` events that were sent in cleartext.
 
-Receiving clients can determine the corresponding `m.rtc.member` event by matching its `member.id`
-with the value of `member_id` in the `m.rtc.encryption_key` message. Once the member event was determined,
+Receiving clients can determine the sender's `m.rtc.member` event by matching its `member.id` with
+the value of `member_id` in the `m.rtc.encryption_key` message. Once the member event was determined,
 clients perform the following checks:
 
-- The `sender` property from the decryption result matches the `sender` of the `m.rtc.member`
+- The `sender` property in the message's [`OlmPlaintext`] matches the `sender` of the `m.rtc.member`
   event.
-- The `device_id` property from the decryption result matches the `member.claimed_device_id`
-  value of the `m.rtc.member` event.
+- The `device_id` property in the message's [`OlmPlaintext`] matches the device ID that was used to
+  send the `m.rtc.member` event (as determined by following the same steps given for the sender above).
 
 Any `m.rtc.encryption_key` event that does not pass these checks MUST be discarded.
 
@@ -697,14 +700,6 @@ authentication mechanisms.
 The flexibility in handling key rotations may allow members to decrypt media for a short time interval
 before joining and after leaving. This is deemed an acceptable compromise to reduce the performance
 impact of key exchanges.
-
-### Encryption downgrade
-
-This proposal recommends clients to remember whether a slot uses encryption or not to prevent a MITM from
-disabling encryption. This is sufficient as long as only a single encryption type exists. Once further types
-are introduced, however, the boolean flag won't protect against encryption being changed to a different and
-potentially less secure type. This issue will have to be addressed by a future proposal when further
-encryption types are introduced.
 
 ## Unstable prefix
 
