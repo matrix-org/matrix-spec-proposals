@@ -226,12 +226,6 @@ proposal's MSC number) as the extension key on the stable
 `typing` key remains in use on the unstable `org.matrix.simplified_msc3575` endpoint for
 compatibility with existing implementations.
 
-# Dependencies
-
-This MSC builds on [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186), which
-at the time of writing has passed FCP but has not yet been released in the spec.
-
-
 # Appendix
 
 ## Changelog
