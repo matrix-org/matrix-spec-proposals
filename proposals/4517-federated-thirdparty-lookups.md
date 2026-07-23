@@ -1,21 +1,20 @@
-# MSCXXXX: Federated third-party network lookups
+# MSC4517: Federated third-party network lookups
 
 ## Problem
 
 Matrix has always had [third-party lookup
-APIs](https://spec.matrix.org/v1.15/client-server-api/#third-party-networks): a client asks its
+APIs](https://spec.matrix.org/v1.19/client-server-api/#third-party-networks): a client asks its
 homeserver to map an identifier on a bridged network (an XMPP JID, an IRC channel, a phone number)
 to the corresponding Matrix ghost user or portal room, and the homeserver asks its application
-services via the corresponding [AS API](https://spec.matrix.org/v1.15/application-service-api/#third-party-networks).
+services via the corresponding [AS API](https://spec.matrix.org/v1.19/application-service-api/#third-party-networks).
 
 However, this only works for bridges attached to *your own* homeserver. In practice bridges are
 run by somebody else: if montague.example runs an XMPP bridge, only montague.example's users can
-resolve `juliet@capulet.example` to `@_xmpp_juliet=40capulet.example:montague.example` - even
-though, once you know that MXID, DMing it federates perfectly well. Everyone else has to guess the
-ghost's MXID syntax by hand, which is miserable and bridge-specific.
+resolve `juliet@capulet.example` to `@_xmpp_juliet=40capulet.example:montague.example`.
+Everyone else has to guess the ghost's MXID syntax by hand, which is miserable and bridge-specific.
 
 The room directory already solved the equivalent problem years ago with
-[`GET /publicRooms?server=`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3publicrooms),
+[`GET /publicRooms?server=`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3publicrooms),
 which lets a client browse another server's directory over federation. This proposal does the same
 for third-party lookups.
 
@@ -88,23 +87,11 @@ server each instance came from and pass the same `server` when querying it.
 
 ## Potential issues
 
-A remote bridge's ghost mappings are only useful if the resulting MXIDs/portals actually federate;
-a bridge run in un-federated or allowlisted mode will return results that the requesting user then
-cannot use. This is no different from finding an un-joinable room in a remote directory.
-
-`/thirdparty/protocols` responses can be large-ish (per-instance metadata); callers are expected
-to cache them per server as they already do locally.
-
-## Alternatives
-
-The lookup could broadcast to every known server rather than targeting one, aggregating the
-results (as [MSC4258](https://github.com/matrix-org/matrix-spec-proposals/pull/4258) does for user
-directory search). That trades an explicit, predictable UX ("search montague.example's bridges")
-for fan-out amplification and slow-responder problems, and the two approaches compose: an
-aggregating search can use these endpoints as its transport.
-
-Clients could instead hit the remote server's client-server API directly, but they have no account
-there, and anonymous cross-origin lookup APIs are exactly what we're trying not to proliferate.
+This doesn't solve the discoverability problem of which servers expose which bridges.
+For instance, it might be nice for a given homeserver at example.com to tell its users that
+if they want to talk XMPP, they should do so via a federated third party lookup against the
+xmpp protocol on xmpp.bridge.example.com.  This is deferred for a later MSC, given it can always
+be configured clientside.
 
 ## Security considerations
 
@@ -122,8 +109,8 @@ destination.
 Until this proposal is stable:
 
 * the federation endpoints are served under
-  `/_matrix/federation/unstable/org.matrix.unstable.thirdparty/{protocols,user/{protocol},location/{protocol}}`;
-* servers advertise support via `org.matrix.unstable.thirdparty` in `unstable_features` on
+  `/_matrix/federation/unstable/org.matrix.msc4517.thirdparty/{protocols,user/{protocol},location/{protocol}}`;
+* servers advertise support via `org.matrix.msc4517.thirdparty` in `unstable_features` on
   `GET /_matrix/client/versions`. (Servers which don't support it simply ignore `?server=` and
   answer locally, so clients should check before offering remote pickers.)
 
