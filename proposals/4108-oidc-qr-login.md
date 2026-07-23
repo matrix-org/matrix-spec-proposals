@@ -961,6 +961,42 @@ Mitigations:
 |Before scanning a QR code an existing client SHOULD warn the user in the UI about the dangers of scanning a QR from an untrusted source.|Yes|Yes|
 |If an existing client provides a mechanism to initiate the scanning of a QR (e.g. via a deep-link) then it MUST not bypass any warnings that are implemented.|Yes|Yes|
 
+### Malicious client sends arbitrary verification URI
+
+Scenario:
+
+- The attacker convinces the victim to complete the secure channel establishment, including the check code step, with a
+  new client under the attacker's control (as in the remote phishing scenario above).
+- Because this MSC places no restrictions on the `verification_uri` and `verification_uri_complete` fields of the
+  `m.login.protocol` message, the malicious client sends an arbitrary URL in place of one from a genuine
+  [Device Authorization Response].
+- The victim's existing client automatically opens the attacker's URL in a trusted browser environment (e.g. an
+  `ASWebAuthenticationSession` on iOS where the cookie jar and password manager features are available) at a point where
+  the user is expecting to authenticate.
+
+Result:
+
+- The victim's trusted client opens an attacker-controlled URL. For example, this could be a spoofed consent/login page
+  attempting to capture the user's homeserver credentials, or a URI with a non-`https` scheme that deep-links into
+  another application.
+
+Mitigations:
+
+- The prerequisites are the same as for the
+  [remote phishing](#social-engineering-sign-in-with-qr-remote-phishing) scenario above, so the same UX mitigations
+  (warnings before scanning a QR code from an untrusted source) apply. An attacker in this position could instead
+  complete the full sign in and obtain an access token and the end-to-end encryption secrets, which is a strictly more
+  valuable outcome, and in any case there are much simpler ways of attempting to get a victim to open an arbitrary URL.
+  As such, no protocol-level mitigation is proposed.
+- Clients MAY choose to only open URIs with an `https` scheme, or to warn the user before opening a URI with an
+  unusual scheme.
+
+Note that it is not possible for the existing client to validate the `verification_uri` against the homeserver's
+advertised authorization server metadata: [RFC8628](https://datatracker.ietf.org/doc/html/rfc8628#section-3.2) does not
+require the `verification_uri` to be hosted on the same server as the authorization server itself (for example, a
+vanity short URL such as `https://example.com/devicelogin` is used with an issuer of
+`https://login.example.com`).
+
 ## Threat modelling
 
 During the design of this proposal various security threats have been identified and considered. The details of these
@@ -973,6 +1009,7 @@ The following table is intended to provide an overview with links into the detai
 |**Unattended devices**|The Sign in with QR mechanism could be used by an attacker who has gained temporary access to a client to escalate the attack to creation of a new client session that has ongoing access|login protocol; grant|biometrics; server policies|[MSC4108 Malicious session spawning](#malicious-session-spawning)|
 |**Social engineering: Sign in with QR remote phishing (remote client)**|Attacker tricks a legitimate user into scanning a QR code (generated on an attacker controlled remote client) with their existing client and completing the sign in, resulting in disclosure of access token and end-to-end encryption secrets|login protocol; grant|UX|[MSC4108 Social Engineering: Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing)|
 |**Social engineering: Sign in with QR remote phishing (remote client + malicious homeserver)**|Similar to remote client phishing, but homeserver is under active control of the attacker and wants to compromise the victim's end-to-end encryption|login protocol|UX|[MSC4108 Social Engineering: Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing)|
+|**Malicious client sends arbitrary verification URI**|A malicious new client sends an arbitrary URL in the `m.login.protocol` message which the victim's existing client then opens in a trusted browser environment|login protocol|UX|[MSC4108 Malicious client sends arbitrary verification URI](#malicious-client-sends-arbitrary-verification-uri)|
 |**Shoulder-surfing attacker (Specter)**|Attacker has control of homeserver and network and is present for QR scanning and attempts to steal end-to-end encryption secrets|secure channel|cryptographic|[MSC4388 Shoulder-surfing attacker (Specter)](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#shoulder-surfing-attacker-specter)|
 |**Pure Dolev-Yao attacker**|Attacker has control of the network but isn't present for QR scanning|secure channel|cryptographic|[MSC4388 Pure Dolev-Yao attacker](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#pure-dolev-yao-attacker)|
 |**Shoulder-surfing to sign in to attacker account**|Victim is signing in a new device. Attacker is present for QR code display/scanning. Victim's new device could be signed in as attacker|login protocol; secure channel|cryptographic; UX|[MSC4108 Shoulder-surfing to sign in to attacker account](#shoulder-surfing-to-sign-in-to-attacker-account)|
