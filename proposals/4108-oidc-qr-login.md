@@ -855,99 +855,54 @@ proposal. Please also see the potential issues from the dependent MSCs.
 
 Instead of the [RFC8628](https://datatracker.ietf.org/doc/html/rfc8628) Device Authorization Grant, the new device
 could use the [RFC6749](https://datatracker.ietf.org/doc/html/rfc6749#section-4.1) Authorization Code Grant (with
-PKCE), which is the grant that clients already use for a regular sign in with the OAuth 2.0 API.
+PKCE), the grant already used for a regular sign in with the OAuth 2.0 API. This could take one of three shapes:
 
-This could take one of three shapes:
-
-1. **New device as OAuth 2.0 client, authorizing in its own browser.** The new device constructs an authorization
-   request URL for its own `client_id` (as in shape 3 below) but opens it in a browser on the new device itself. The
-   redirect is then delivered back to the new device exactly as in a regular same-device sign in, and no part of the
-   grant involves the existing device.
-2. **Existing device as OAuth 2.0 client.** The existing device runs the whole grant itself in its browser and passes
-   the resulting access and refresh tokens to the new device over the secure channel.
-3. **New device as OAuth 2.0 client, authorizing on existing device.** The new device constructs an authorization
-   request URL for its own `client_id` (including `redirect_uri`, `scope` containing the device ID, `state` and PKCE
-   `code_challenge`) and sends it to the existing device over the secure channel in place of the `verification_uri`. The
-   existing device opens it in a browser where the user consents as in the current proposal. The authorization code from
-   the redirect then needs to make its way back to the new device — for example, by the existing device capturing the
-   redirect and relaying the code over the secure channel — after which the new device completes the token exchange
-   using its PKCE `code_verifier`.
-
-In shapes 2 and 3, as in the current proposal, the user experience at the consent step depends on whether the user still
-has an authenticated session with the authorization server in the browser context used on the existing device. This is
-not a given: the original sign in may have used an ephemeral or in-app browser context that did not persist cookies,
-or a different browser or profile, or may simply have happened long enough ago that the browser session has expired —
-a Matrix client's own session stays alive through token refresh long after the browser session that created it has
-lapsed. Where no session is present the user has to authenticate from scratch (e.g. enter their password or complete
-an upstream IdP login) before they can consent. Neither grant lets the existing client use its own access token to
-authenticate the browser session, so this cost is common to both grants; the difference is in the fallback available, as
-noted below. Shape 1 is the degenerate case: the browser performing the authorization is on the new device, which by
-construction has no session with the authorization server, so the user always has to authenticate from scratch there.
+1. **New device authorizes in its own browser.** The new device is the OAuth 2.0 client and opens the authorization
+   URL locally; the redirect returns to it as in a regular same-device sign in, and the existing device is not involved
+   in the grant.
+2. **Existing device as OAuth 2.0 client.** The existing device runs the whole grant in its browser and passes the
+   resulting tokens to the new device over the secure channel.
+3. **New device authorizes on existing device.** The new device is the OAuth 2.0 client but sends its authorization URL
+   over the secure channel for the existing device to open; the authorization code must then be relayed back to the new
+   device, which completes the token exchange with its PKCE `code_verifier`.
 
 For:
 
-- Availability: support for the `authorization_code` grant type is required by the
+- Availability: the `authorization_code` grant type is mandatory in the
   [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api), whereas the
-  [device authorization flow] is optional. This alternative would work with every homeserver that supports the
-  OAuth 2.0 API, including those whose authorization server does not implement RFC8628.
-- Shape 1 makes the grant a regular same-device sign in: there is no redirect to capture, no authorization code or URL
-  crossing the secure channel, and the existing device never opens a URL at all — removing the
-  [Malicious client sends arbitrary verification URI](#malicious-client-sends-arbitrary-verification-uri) concern. It
-  is also more resistant to [remote phishing](#social-engineering-sign-in-with-qr-remote-phishing): an attacker's
-  remote device can only obtain an access token if the victim authenticates on that device itself, not merely by
-  consenting on a device they already hold.
-- No `user_code`: RFC8628 requires the new device to display the `user_code` so that the user can confirm it on the
-  verification page, which is a UX step that this alternative would not need.
-- No polling: the new device would handle the redirect itself (shape 1), receive the tokens directly
-  (shape 2) or learn the outcome via the secure channel (shape 3) instead of polling the token endpoint at the
-  RFC8628-mandated `interval`, reducing latency and load on the homeserver.
-- In shape 3 the URL opened by the existing device could be validated: the existing device could check that the
-  authorization request URL matches the `authorization_endpoint` advertised in the homeserver's authorization server
-  metadata (in shape 2 it constructs the URL itself, and in shape 1 it never opens one). As
-  noted in [Malicious client sends arbitrary verification URI](#malicious-client-sends-arbitrary-verification-uri),
-  no equivalent check is possible for the `verification_uri`.
+  [device authorization flow] is optional, so this would work with every OAuth-capable homeserver.
+- No polling and no `user_code` display: the new device gets the outcome directly rather than polling the token
+  endpoint at the RFC8628 `interval` and prompting the user to confirm a `user_code`.
+- Shape 1 is a plain same-device sign in, so nothing crosses the secure channel for the grant and the existing device
+  opens no URL, removing the [Malicious client sends arbitrary verification URI](#malicious-client-sends-arbitrary-verification-uri)
+  concern and resisting [remote phishing](#social-engineering-sign-in-with-qr-remote-phishing) (an attacker only wins
+  if the victim authenticates on the attacker's own device).
+- In shape 3 the existing device can validate the authorization URL against the `authorization_endpoint` in the
+  homeserver's metadata, which is not possible for an RFC8628 `verification_uri`.
 
 Against:
 
-- Shape 1 forfeits the main UX benefit of this proposal: because the new device never has a session with the
-  authorization server, the user must always authenticate from scratch on the new device (e.g. type their password or
-  complete an upstream IdP login) and the existing device's authenticated state contributes nothing. The QR code and
-  secure channel are left serving only homeserver discovery, device verification and secret sharing — "sign in
-  normally, then set up E2EE via QR" rather than "sign in via QR".
-- In shape 2 the existing device sees the new device's access and refresh tokens, losing the stated benefit of the
-  current proposal that the existing device never handles the new session's credentials. It also requires the
-  authorization server to permit one client to obtain tokens on behalf of another client/device, which the OAuth 2.0
-  model does not naturally allow.
-- The Authorization Code Grant anchors the consent step to one specific user agent: in shape 3 it must be completed in
-  the browser context on the existing device that is able to capture the redirect, and in shape 2 in the browser that
-  the existing client controls. If the user has no authenticated session in that particular context then
-  re-authenticating there is the only option. With the Device Authorization Grant the `verification_uri` and
-  `user_code` are deliberately not bound to any user agent, so a client could fall back to letting the user complete
-  the consent in whichever browser — or even on whichever device — they still have an authenticated session with the
-  authorization server.
-- The Authorization Code Grant assumes that the user agent performing the authorization and the client receiving the
-  authorization code are on the same device, which does not hold in shape 3: the redirect carrying the code lands
-  in the *existing* device's browser but is addressed to a `redirect_uri` registered for the *new* device's
-  `client_id`. There is no standard, portable way for the existing device to capture it: a custom URI scheme or app
-  link belonging to the new client is generally not claimable by the existing client (and never by an existing *web*
-  client, which cannot observe a cross-origin redirect in another tab), and a `localhost`/loopback redirect has
-  nothing listening on the existing device. Working around this — e.g. a special redirect URI that renders the code
-  for manual transfer, or platform-specific interception — amounts to re-inventing the cross-device delivery that
-  RFC8628 already standardizes.
-- In shape 3 the authorization code transits the existing device. PKCE means the code is not usable without the
-  `code_verifier` held by the new device, but it is still an additional sensitive artifact to handle.
-- The homeserver loses the signal that a cross-device login is taking place: a Device Authorization Request is
-  distinguishable from a regular sign in, allowing the consent screen to state explicitly that the user is signing in
-  *another* device — one of the mitigations relied upon in
-  [Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing). An authorization code
-  request from the new device would be indistinguishable from a normal same-device sign in.
+- Shape 1 forfeits the main benefit of QR login: the new device's browser has no session with the authorization
+  server, so the user must always authenticate from scratch there — reducing this to "sign in normally, then set up
+  E2EE via QR" rather than "sign in via QR".
+- Shape 2 gives the existing device the new session's access and refresh tokens, losing the property that it never
+  handles those credentials, and needs the authorization server to issue tokens for one client on behalf of another.
+- Shape 3 assumes the authorizing browser and the client receiving the code are co-located, which is false here: the
+  redirect lands in the existing device's browser but targets the new client's `redirect_uri`, and there is no
+  portable way for the existing device to capture it (custom schemes/app links aren't claimable across clients — never
+  by a web client — and loopback redirects have nothing listening). Any workaround re-invents the cross-device
+  delivery RFC8628 already standardizes, and the code transits the existing device (though PKCE keeps it unusable
+  without the new device's `code_verifier`).
+- With the Device Authorization Grant the `verification_uri`/`user_code` are not bound to any user agent, so consent
+  can fall back to whichever browser or device still holds a session. Shapes 2 and 3 pin consent to a specific browser
+  on the existing device; if it has no session there, re-authenticating in place is the only option.
+- The homeserver loses the cross-device signal: a Device Authorization Request is distinguishable from a normal sign
+  in, letting the consent screen state that *another* device is being signed in — a mitigation relied upon in
+  [Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing).
 
-Note that this proposal already includes the `m.login.protocols` negotiation step, in which the existing device
-advertises the set of login protocols it supports and the new device picks one. This MSC defines only the
-`device_authorization_grant` protocol, but the mechanism is deliberately extensible: a future MSC could add a new
-protocol based on the Authorization Code Grant (in whichever of the shapes above proves most useful) and offer it
-alongside `device_authorization_grant`, without any breaking change to this proposal. There is therefore no need to
-choose between the two grants now.
+Note that this proposal already includes the `m.login.protocols` negotiation step, so the mechanism is extensible: a
+future MSC could add an Authorization Code Grant protocol (in whichever shape proves most useful) alongside
+`device_authorization_grant` without a breaking change. There is therefore no need to choose between the grants now.
 
 ### Alternative method of secret sharing
 
