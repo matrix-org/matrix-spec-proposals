@@ -139,9 +139,11 @@ design as no associated use cases are known yet.
 
 ## Alternatives
 
-The existing `url` property could be reused to avoid having to specify a separate `proxy_url`. This
-would disallow using proxying while disabling namespace-related traffic from the server by setting
-`url` to `null`, however.
+The existing `url` property could be reused to avoid having to specify a separate `proxy_url`. However,
+`url` is also used to forward events to the application service as per its `namespaces` setting. An
+application service may not be interested in receiving regular Matrix events though. Instead, it could
+only be using `namespaces` to be able to puppet users on the C-S API. The separate `proxy_url` property
+resolves this conflict and avoids excess traffic between the homeserver and the application service.
 
 ## Security considerations
 
