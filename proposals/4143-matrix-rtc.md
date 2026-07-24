@@ -111,7 +111,7 @@ neither `application_type` nor `application_slot_id` can contain the `#` charact
   - Optionally includes further properties for settings that are specific to the application
     `type`. The concrete properties are defined by the application's specification. A calling
     application, for instance, could include properties for constraining the call to be voice-only.
-- `encryption` (object): If present, describes the encryption mechanism to use in this slot. Further,
+- `encryption` (object): If present, describes the encryption mechanism to use in this slot. Further
   details on the available mechanisms can be found in the [encryption section] below. If absent,
   encryption is disabled.
   - `type` (required, string): The globally unique identifier of the encryption mechanism.
