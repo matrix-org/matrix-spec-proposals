@@ -1,0 +1,718 @@
+# MSC4143: MatrixRTC – Real-time communication over Matrix
+
+Matrix is a generalised protocol for decentralised communication. This includes chatting but also
+real-time communication (RTC) such as VoIP. While Matrix supports VoIP signalling for [1-to-1 calls],
+and [MSC3401] attempts to extend it to group calling, a unified system for RTC applications is
+currently missing.
+
+[1-to-1 calls]: https://spec.matrix.org/v1.18/client-server-api/#voice-over-ip
+[MSC3401]: https://github.com/matrix-org/matrix-spec-proposals/pull/3401
+
+The present proposal aims to close this gap by introducing *MatrixRTC*, a generalised framework for
+building RTC experiences on top of Matrix. At a high level, MatrixRTC consists of the following parts:
+
+* **End-to-end encryption** provides a generic basis for encrypted media exchange and reuses existing
+  Matrix primitives such as encrypted room and to-device messages.
+* **Transports** define how members exchange media streams. This can, for instance, happen
+  peer-to-peer or through Selective Forwarding Unit (SFUs). Transports also determine how the generic
+  end-to-end encryption is used in transport-specific encryption.
+* **Applications** describe the type of RTC activity such as a call, a shared document, or a real-time
+  game. Applications also define what types of transports they can work with and how media streams are used.
+* **Slots** are represented in room state and govern what kind of applications may run, along with
+  any needed configuration.
+* **Membership** is expressed via room events and provides a record of who is joined to a slot,
+  and under which transports.
+* **Sessions** are formed only indirectly through the temporal overlap of joined members within
+  a slot.
+
+This MSC is concerned with the foundational MatrixRTC protocol and covers slots, membership, sessions and
+end-to-end encryption. Applications and transports are treated as generic building blocks only. The proposal
+defines how these components are plugged into the system while leaving the introduction of concrete applications
+and transports to other proposals.
+
+As first concrete instances, [MSC4196] proposes a voice and video conferencing application, and
+[MSC4195] proposes a transport based on the [LiveKit SFU].
+
+[LiveKit SFU]: https://docs.livekit.io/reference/internals/livekit-sfu/
+[MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
+[MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
+
+This proposal also doesn't cover notifications for RTC sessions. These are considered outside the core
+protocol and are described in [MSC4075: MatrixRTC notifications & call ringing][MSC4075] and
+[MSC4310: MatrixRTC decline m.rtc.decline][MSC4310].
+
+[MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
+[MSC4310]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
+
+## Proposal
+
+### Slots
+
+MatrixRTC slots act as virtual locations for MatrixRTC applications to run in. Slots are tied to rooms
+and represented by state events of type `m.rtc.slot`. This means that slots can only be created or
+modified by users with sufficient power level. This design deliberately separates slot management
+from slot membership, which is introduced [below] and typically requires lower power level.
+
+[below]: #membership
+
+A slot is always associated with one specific application, by way of its slot ID. The slot ID is
+used as the `state_key` of the `m.rtc.slot` event and is constructed as follows:
+
+```json5
+slot_id = {application_type}#{application_slot_id} (= state_key)
+```
+
+`application_type` is the application's globally unique identifier. This identifier is defined
+by the application's specification and MUST follow the [Common Namespaced Identifier Grammar].
+
+`application_slot_id` is the application-specific slot ID and enables applications to support
+multiple parallel application instances per room. Again, the allowed values are defined by
+the application's specification and MUST follow the [Common Namespaced Identifier Grammar]
+but this time without the namespacing requirements[^nohash]. Additionally, the values should
+be predictable for clients given that slots act like virtual addresses where members
+are allowed to meet.
+
+As an example, the default slot ID for the calling application from [MSC4196] is `m.call#ROOM`.
+
+The grammar for forming slot IDs MUST NOT be used to parse the components out of a slot ID.
+It exists only to namespace the `state_key`, and could be modified in a future proposal.
+
+[Common Namespaced Identifier Grammar]: https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar
+
+[^nohash]: Note that due the use of the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar),
+neither `application_type` nor `application_slot_id` can contain the `#` character.
+
+`m.rtc.slot` events have the following schema:
+
+```json5
+{
+  "type": "m.rtc.slot",
+  "state_key": "{application_type}#{application_slot_id}", // = slot_id
+  "content": {
+    "status": "{status}",
+    "application": {
+      "type": "{application_type}",
+      ... // Further application-specific properties (if required)
+    },
+    "encryption": {
+      "type": "{encryption_type}",
+      ... // Further encryption-specific properties (if required)
+    }
+  },
+  ...
+}
+```
+
+- `status` (required, string): The slot's current status. MUST be one of `"open"`, `"closed"`.
+- `application` (object): Describes the application that can run in this slot. REQUIRED if
+  `status = open`.
+  - `type` (required, string): The globally unique application identifier. MUST follow the
+    [Common Namespaced Identifier Grammar]. MUST align with the event's `state_key`.
+  - Optionally includes further properties for settings that are specific to the application
+    `type`. The concrete properties are defined by the application's specification. A calling
+    application, for instance, could include properties for constraining the call to be voice-only.
+- `encryption` (object): If present, describes the encryption mechanism to use in this slot. Further
+  details on the available mechanisms can be found in the [encryption section] below. If absent,
+  encryption is disabled.
+  - `type` (required, string): The globally unique identifier of the encryption mechanism.
+    MUST follow the [Common Namespaced Identifier Grammar].
+  - Optionally includes further properties for settings that are specific to the encryption
+  `type`.
+
+[encryption section]: #end-to-end-encryption
+
+#### Slot lifecycle
+
+A slot is opened by sending an `m.rtc.slot` state event with `status = "open"`, a valid application
+object and, if needed, a valid encryption object as per the JSON schema above. Any slot that
+doesn't fulfill these requirements is closed. To explicitly close an open slot, the associated `m.rtc.slot`
+state event is updated with `status = "closed"`. The `application` and `encryption` objects are not
+required on closed slots but may be kept around for convenience to simplify re-opening the slot.
+The semantics of open and closed slots for actual slot membership are described in the membership event
+section [below].
+
+Slots may follow different lifecycles depending on the use case. For instance, a long-lived slot
+that is kept open continually could power a Discord-style experience where members can hop on
+and hop off as desired. Scheduled conference meetings, in turn, could benefit from a time-bounded
+slot that is only opened when the meeting starts and closed again afterwards.
+
+For the time being, slots will have to be created manually. A future proposal may change the
+defaults for newly created rooms to provide slots for standard RTC applications.
+
+### Membership
+
+Membership in slots is expressed via `m.rtc.member` room events. These events provide sufficient
+metadata for other room members to join the same slot and to exchange media streams via the
+chosen transports.
+
+`m.rtc.member` events MUST be sent as sticky events as per [MSC4354: Sticky Events][MSC4354]. This
+results in the same delivery guarantee that state events have which is highly desirable for RTC
+experiences. At the same time, it avoids the drawbacks associated with state events. Further details
+on this can be found in [MSC4354]. Clients MUST also implement the ephemeral map algorithm as defined
+in the addendum of [MSC4354] to construct a state-like store of membership events.
+
+[MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
+
+Within `m.rtc.member` events, `content` contains the following properties:
+
+- `slot_id` (required, string): The `state_key` of the slot that is being joined.
+- `member` (required, object): Information to identify the member.
+  - `id` (required, string): Identifier to distinguish multiple members, even for the same user
+    and device. MUST be unique for each join of the same user. This means that clients need to use a different
+    identifier when leaving and then rejoining a slot.
+  - `membership` (required, string): The intended membership status. One of `join`, `leave`.
+- `application` (object): Describes the application that is running in the slot. REQUIRED if `membership = join`.
+  - `type` (required, string): The application's globally unique identifier; same as in `m.rtc.slot`.
+  - Optionally includes further properties for settings that are specific to the application
+    `type`. As in `m.rtc.slot`, the concrete properties are defined by the application's specification.
+    For example, a [Third Room](https://thirdroom.io) application could include approximate map positions,
+    allowing clients to avoid connecting to members outside their area of interest.
+- `transports` (object): Details on the MatrixRTC transports of this member. Other clients use the
+  information in this object to determine how to connect to and exchange real-time data with this
+  member. Clients should be prepared to connect to as many transports as there are members
+  joined to the session. The exact procedure for publishing and subscribing to real-time data is
+  defined in each transport's specification.
+  - `published` (array): An array of objects describing the transports on which the member is
+    publishing media.
+    - `type`: (required, string): The globally unique transport identifier. MUST follow the
+      [Common Namespaced Identifier Grammar] but without the namespacing requirements.
+    - Optionally includes further properties specific to the transport `type`. The concrete properties
+      are defined by the transport's specification. This could, for instance, include WebSocket URLs.
+  - `can_subscribe` (array): An array of transport types that the member is able to subscribe to.
+    Other members can use this as cue for deciding which transports to use to accommodate this member.
+- `leave_reason` (object): If `membership = leave`, optionally provides context on why the client left.
+  This SHOULD only be used by clients if the user has actually attempted to join the slot before.
+  This ensures that the `leave_reason` reflects a real join lifecycle rather
+  than pre-join cancellation (such as declining a call).
+  - `code` (required, string): Identifier for the specific leave cause. MUST follow
+    the [Common Namespaced Identifier Grammar] but without the namespacing requirement.
+    This proposal defines a set of generic `code`s. Further values may be introduced by
+    application and/or transport specifications. The generic values include:
+    - `leave`: The member left intentionally (e.g. by hanging up a call).
+    - `delayed_leave`: The member left through a scheduled delayed leave event (see the
+      [lifecycle] section below).
+    - `slot_closed`: The member left because the slot was closed midway through the session.
+  - `reason` (string): Optional human-readable explanation of the leave reason.
+- `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
+  in the addendum of [MSC4354]. MUST have the same value as `member.id`.
+
+#### Joining a slot
+
+To join a slot, the client sends an `m.rtc.member` event with `membership = join`, a valid
+`application` object and, if available, the member's `transports`.
+
+```json5
+{
+  "type": "m.rtc.member",
+  "content": {
+    "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
+    "member": {
+      "id": "{member_id}",
+      "membership": "join"
+    },
+    "application": {
+      "type": "{application_type}",
+      ... // Further application-specific properties (if required)
+    },
+    "transports": {
+      "published": [
+        {
+          "type": "{transport_type}",
+          ... // Further transport-specific properties (if required)
+        },
+        ...
+      ],
+      "can_subscribe": [
+        "{transport_type}",
+        ...
+      ]
+    },
+    "sticky_key": "{member_id}", // = member.id
+  },
+  ...
+}
+```
+
+Apart from having to match the above schema, an `m.rtc.member` event MUST only be considered to be
+joined if all of the following conditions apply:
+
+- `member.membership` equals `join`.
+- An open slot exists in the room state as an `m.rtc.slot` state event with `state_key` equalling
+  the `m.rtc.member` event's `slot_id`.
+- The sender is currently a member of the room (i.e. has room membership `join`).
+- The event is currently sticky, meaning that its stickiness duration as per [MSC4354] has not expired.
+  This is to ensure that the membership view is as consistent as possible across all members.
+
+If these conditions are not fulfilled, clients MUST treat the member as left and refrain
+from connecting to their transports.
+
+#### Leaving a slot
+
+To voluntarily leave a slot, the client sends an `m.rtc.member` event for the desired `member.id` and with `membership = leave`.
+`m.rtc.member` event.
+
+```json5
+{
+  "type": "m.rtc.member",
+  "content": {
+    "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
+    "member": {
+      "id": "{member_id}",
+      "membership": "leave",
+    },
+    "leave_reason": {
+      "code": "{code}",
+      "reason": "{reason}",
+    },
+    "sticky_key": "{member_id}" // = member.id from previously joined m.rtc.member event
+  },
+  ...
+}
+```
+
+Again, once a member has left, clients SHOULD refrain from connecting to their transports.
+
+[lifecycle]: #membership-lifecycle
+
+#### Membership lifecycle
+
+A typical lifecycle of a MatrixRTC membership involves a series of `m.rtc.member` events, as follows:
+
+1. members first join a slot by sending a joining `m.rtc.member` event.
+1. Afterwards, members may update their membership, e.g. to change transports or modify
+   application-specific settings, by sending a new `m.rtc.member` event with the same `sticky_key`.
+   Since the actual join state is constrained by the stickiness of the member event, clients
+   also need to send new `m.rtc.member` events if they want to stay joined for longer than the stickiness
+   duration. It is RECOMMENDED that clients send these events sufficiently ahead of the stickiness
+   expiration to minimize potential join state flickering.
+1. Finally, to leave the slot, members send a leaving `m.rtc.member` event.
+
+As explained above, the resolved membership state is also constrained by the associated `m.rtc.slot`
+event existing and being open. Since `m.rtc.slot` state may generally be changed at any time, clients
+MUST constantly react to and respect the latest state of the room.
+
+One problem with the membership lifecycle as listed above is that a client may not be able to
+send its leaving `m.rtc.member` event if it loses network connectivity. This would result
+in other members considering the member as still joined, possibly for longer periods,
+even though no media can be exchanged. To mitigate the impact of this, clients SHOULD use
+delayed events as per [MSC4140: Cancellable delayed events][MSC4140] to implement a "dead man's switch".
+This means scheduling the `m.rtc.member` leave event as a delayed event with a reasonably
+short delay (e.g. 15-30 seconds). While being connected, the client can periodically restart
+the delayed event to push it into the future. If the client then happens to lose connectivity
+and the delay times out, the homeserver will automatically send the leaving `m.rtc.member` event.
+
+[MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
+
+### Sessions
+
+MatrixRTC sessions only exist indirectly through the temporal overlap of `m.rtc.member` events
+that are considered to be joined to the same `m.rtc.slot` event. In other words, a session
+represents the span of time during which a potentially changing set of one or more members
+is continuously joined to the same slot.
+
+The examples below illustrate how different membership lifecycles and slot configurations
+give rise to sessions.
+
+```
+m.rtc.member[0]            |████████████████████████            ████████████████████████|████
+                           |^ join           leave ^            ^ join                  |   ^ leave
+                           |                                                            |
+m.rtc.member[1]            |       ████████████████████████████████████████████████     |
+                           |       ^ join                                   leave ^     |
+                           |                                                            |
+Slot (open)          [******************************************************************]
+                           |                                                            |
+Session lifetime           [*************************Session 1**************************]
+
+Time                 ───────────────────────────────────────────────────────────────────────►
+```
+
+```
+m.rtc.member[0]        ████|███████████████████████████|    |███████████████████████████|
+                           |^ join              leave ^|    |^ join              leave ^|
+                           |                           |    |                           |
+m.rtc.member[1]            |  ████████████████████████ |    | ████████████████████████  |
+                           |  ^ join           leave ^ |    | ^ join           leave ^  |
+                           |                           |    |                           |
+Slot (open)                [******************************************************************]
+                           |                           |    |                           |
+Session lifetime           [*********Session 2*********|    |*********Session 3*********]
+
+Time                 ───────────────────────────────────────────────────────────────────────►
+```
+
+### Discovery of transport infrastructure
+
+Some RTC transports may require server-side infrastructure such as SFUs or TURN servers. Clients
+need a mechanism to discover the availability of such infrastructure and any potentially required
+connection details. To enable this, a new authenticated Client-Server endpoint
+`GET /_matrix/client/v1/rtc/transports` is introduced. The endpoint returns the available
+server-supported transport types:
+
+```json5
+// 200 OK
+// Content-Type: application/json
+
+{
+  "rtc_transports": [
+    {
+      "type": "{transport_type}",
+      ... // Further transport-specific properties (if required)
+    }
+  ]
+}
+```
+
+- `rtc_transports` (required, array): Array of objects describing the transports the homeserver
+  supports. Generally, these are given in no particular order, but in case the homeserver considers
+  multiple transports interchangeable (e.g. when advertising multiple transports of the same type),
+  it SHOULD arrange them in descending order of preference (e.g. listing backup infrastructure last).
+  - `type`: (required, string): The globally unique transport identifier. MUST follow the
+    [Common Namespaced Identifier Grammar] but without the namespacing requirements.
+  - Optionally includes further properties specific to the transport `type`. The concrete properties
+    are defined by the transport's specification.
+
+### End-to-end encryption
+
+Encryption in MatrixRTC has two layers. On the one hand, room events use the [existing mechanisms]
+for encrypting messages in rooms. On the other hand, applications also need a way to encrypt the RTC
+data itself. This process is generally specific to the transport being used, but often requires session
+members to agree on key material, at a minimum. To support this, MatrixRTC provides a generic system
+for establishing shared key material between members. Transports can then define how to actually use
+this key material, which may involve deriving further secrets from it. The concrete mechanism for
+agreeing on the shared key material within a slot is prescribed through the `encryption` object in
+`m.rtc.slot` events.
+
+[existing mechanisms]: https://spec.matrix.org/v1.19/client-server-api/#end-to-end-encryption
+
+Use of encryption in MatrixRTC is REQUIRED in encrypted rooms. This means that `m.rtc.member` events
+MUST be encrypted and `m.rtc.slot` events MUST contain an `encryption` object when sent in an encrypted
+room. Member / slot events that violate these conditions MUST be considered left / closed.
+
+Conversely, MatrixRTC encryption MUST NOT be used in unencrypted rooms. This is because the specific
+encryption mechanism introduced in this proposal is not well suited for unencrypted rooms. A future MSC
+may introduce another mechanism that lends itself better to unencrypted rooms.
+
+The only available encryption mechanism for now is `m.per_member`.
+
+```json5
+{
+  "type": "m.rtc.slot",
+  "content": {
+    "encryption": {
+      "type": "m.per_member"
+    },
+    ...
+  },
+  ...
+}
+```
+
+Under `m.per_member` every member maintains a unique sender key. This key is shared securely
+with other members via Olm-encrypted [to-device messages]. This ensures that keys are only
+distributed among session members. Other devices, even if in the room, never get the key material.
+
+[to-device messages]: https://spec.matrix.org/v1.18/client-server-api/#send-to-device-messaging
+
+#### Distributing keys
+
+When joining a slot, clients generate a 32-byte cryptographically secure key. They then share
+the key with other clients joined to the slot by sending encrypted to-device messages of the
+type `m.rtc.encryption_key`.
+
+The recipient devices are determined from the `m.rtc.member` events that are considered to be
+joined to the slot. The conditions for considering a member joined were given
+[above](#joining-a-slot). Once the member events are determined, the `m.rtc.encryption_key`
+to-device messages are sent to the devices that were used to encrypt these member events.
+
+The schema for `m.rtc.encryption_key` to-device messages is as follows:
+
+```json5
+// PUT /_matrix/client/v3/sendToDevice/m.rtc.encryption_key/{txnId} 
+// Unencrypted content of OlmPayload shown, but in reality this would be an encrypted message
+
+{
+    "room_id": "{room_id}",
+    "member_id": "{member_id}",
+    "media_key": {
+      "index": {index},
+      "key": "{encoded_key}",
+    },
+"index": <index>,
+"key": "{encoded_key}",
+},
+"format": 0
+}
+```
+
+- `room_id` (required, string): The ID of the room that the slot is located in.
+- `member_id` (required, string): The `member.id` value of the sender's `m.rtc.member` event.
+  Note that because `member.id` is unique per member, it is sufficient to disambiguate multiple
+  key events for the same device.
+- `media_key` (required, object): Information on the key material.
+  - `key` (required, string): The key (32 bytes) encoded as specified by `format`.
+  - `index` (required, number): The rolling index of the key to distinguish it from other keys. The
+    value MUST be between 0 and 255 inclusive. WebRTC-based transports may use this as the `keyID`
+    field of [SFrame](https://www.w3.org/TR/webrtc-encoded-transform/#sframe) headers.
+- `format` (required, number): The format in which the key was exported. Only `0` is allowed for now
+  and implies that the key's raw bytes were encoded using unpadded base64.
+
+Upon receipt, clients SHOULD discard any `m.rtc.encryption_key` events that were sent in cleartext.
+
+Receiving clients can determine the sender's `m.rtc.member` event by matching its `member.id` with
+the value of `member_id` in the `m.rtc.encryption_key` message. Once the member event was determined,
+clients verify that the sender and device that was used to send the member event match the sender
+and device of the to-device message. Otherwise the message MUST be discarded.
+
+In keeping with [MSC4153: Exclude non-cross-signed devices][MSC4153], clients SHOULD also discard
+`m.rtc.encryption_key` events when the sending device is not cross-signed.
+
+[MSC4153]: https://github.com/matrix-org/matrix-spec-proposals/pull/4153
+
+#### Rotating keys
+
+To ensure confidentiality, clients SHOULD rotate and redistribute their key whenever the set of
+members that are considered joined to the slot changes. Rotation prevents joining/leaving
+members from decrypting past/future RTC data.
+
+Additionally, clients SHOULD also rotate their key on a periodic schedule regardless of whether
+the members have changed. This limits the impact of compromised keys.
+
+In order to account for the delivery latency of to-device messages, clients SHOULD add a short
+delay after sending a new key before starting to use it. Otherwise, receiving members may
+be unable to decrypt the sender's streams temporarily. The RECOMMENDED delay duration is 5 seconds.
+
+Furthermore, resending to-device messages to all members can be expensive when multiple
+members join and/or leave in short succession. To mitigate this, clients MAY apply
+some flexibility to exactly when a rotation happens relative to a membership change. This means
+accepting a small window in which joining or leaving members could decrypt media that is
+slightly outside their actual membership period in exchange for fewer key rotations.
+
+As an example, let's assume a client applies the time interval `delay = 5s` between rotating a key
+and starting to use it for encryption. When members leave during `delay`, the client
+could schedule another rotation for when `delay` has elapsed. This coalesces multiple member
+changes into a single rotation and avoids excessive key rotations when multiple leaves
+occur in short succession.
+
+```
+         A leaves                        delay period ends               delay period ends
+         → generate key n+1              → generate key n+2              → switch to key n+2
+         → send to everyone              → send to everyone              │
+         │                               │                               │
+         ▼                               ▼                                ▼
+time ────●───────────────────────────────●───────────────────────────────●───────────────────────────────▶
+         t=0     ▲                  ▲    t=5s                            t=10s
+                 │                  │
+                 B leaves           C leaves
+                 → invalidate
+                   key n+1
+
+encrypts ├──────────── key n ────────────┼─────────── key n+1 ───────────┼─────────── key n+2 ───────────▶
+with
+         ├────────── delay (5s) ─────────┤────────── delay (5s) ─────────┤
+```
+
+As another example, a client could additionally introduce a grace period `grace = 10s`. When a member
+joins within `grace` after a new key `k` was created, the client could skip rotating the key again and
+instead share `k` with the new member.
+
+```
+         A joins                   delay period ends         grace period ends
+         → generate key n+1        → switch to key n+1
+         → send to everyone
+         │                         │                         │
+         ▼                         ▼                         ▼
+time ────●─────────────────────────●─────────────────────────●───────────────────────────▶
+         t=0          ▲            t=5s         ▲            t=10s        ▲
+                      │                         │                         │
+                      B joins                   C joins                   D joins
+                      → send key n+1            → send key n+1            → generate key n+2
+                        to B                      to C                    → send to everyone
+
+encrypts ├───────── key n ─────────┼───────── key n+1 ───────────────────────────────────▶
+with
+         ├────── delay (5s) ───────┤                                      ├────── delay ...
+         ├─────────────────── grace (10s) ───────────────────┤            ├────── grace ...
+```
+
+## Potential issues
+
+### Shared state
+
+In any distributed system, if multiple members operate on the same shared state at the same
+time, there is a risk of *glare* (a race condition). One side will win and the other may need to
+roll back. This is not specific to Matrix. It is a well-known problem across telephony protocols
+such as PSTN, GSM, SS7, SIP, or even early rotary exchanges.
+
+MatrixRTC minimises but doesn't fully avoid shared state.
+
+On the one hand, `m.rtc.member` events are conflict-free. Each member's membership state is
+independent and the session is computed ad-hoc and without session identifiers as the aggregate
+of `m.rtc.member` events. Most importantly, normal members cannot cause conflicts that would
+break an ongoing session.
+
+On the other hand, `m.rtc.slot` events are subject to state resolution which can lead to rollbacks
+and ongoing sessions breaking. Slots are only used for administration, however, where shared state
+is actually desired. They should generally see far fewer updates than memberships and exhibit
+a low potential for conflicts.
+
+### Discovery and negotiation of application types
+
+MatrixRTC does not currently define how clients should discover or negotiate which real-time
+applications are available in a given room or between a set of users. For example, when multiple
+calling-capable applications exist, it is unclear which of them clients should offer for making a call.
+The impact of this is limited for now as only a single application exists with [MSC4196]. Therefore,
+introducing a scheme for application discovery and/or negotiation is left to a future proposal.
+
+### Accurate session reconstruction
+
+Historic MatrixRTC sessions can technically be reconstructed from `m.rtc.slot` and `m.rtc.member`
+events in room history. However, to accurately represent RTC session history as perceived by members
+at the time, events would require a `received_server_ts` which is, however, not available today. While
+`origin_server_ts` could serve as a practical workaround, it does not necessarily reflect the
+experienced order of events which might differ per homeserver due to netsplits or federation delays.
+This problem is aggravated by the fact that the [/messages] endpoint used for back-pagination returns
+events in topological order.
+
+Additionally, clients currently have no way to query the room state as observed by their homeserver
+over time. As a result, they cannot identify historic state resets which, for instance, might have
+caused members to suddenly consider a slot closed rather than open.
+
+Due to these complications, accurately reconstructing session history is left as a consideration for a
+future proposal.
+
+[/messages]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3roomsroomidmessages
+
+### Excessive key traffic
+
+In per-member encryption, keys are rotated and distributed to _all_ members whenever a
+member joins or leaves the session. This could result in a large amount of to-device messages being
+exchanged. To mitigate this, a future version of the key exchange mechanism could introduce ratcheting.
+Rather than rotating the key for all members, this would allow to ratchet the key and send it to the
+new joiner only.
+
+## Alternatives
+
+### Slot constraints
+
+Additional constraints such as restricting members to a specific set of users could be added
+to slots. These have been descoped from this proposal and may be introduced by a future MSC.
+
+### Using room state instead of sticky events for membership
+
+Earlier iterations of MatrixRTC used room state rather than sticky events to represent session membership.
+The advantages of sticky events over state events may be found in [MSC4354] and are not repeated here.
+
+### Maintaining membership in one event per user
+
+[MSC3401] proposed to use one state event per user with that event containing an array of RTC memberships.
+This is suboptimal as it introduces the possibility of race conditions when the event is written from
+different devices. Furthermore, a joint membership event is difficult to combine with delayed leave
+mechanisms as the remaining members at the time of leaving would have to be known ahead of time.
+
+### Chaining member events with relations
+
+An earlier version of this proposal used `m.reference` relations to link updated `m.rtc.member`
+events to the initial joining event.
+
+```
+(Join)           (Update)              (Leave)          (Rejoin)         (Update)
+
+m.rtc.member ──► m.rtc.member ─ ... ─► m.rtc.member     m.rtc.member ──► m.rtc.member ─ ...
+      ^                │                     │                ^                │
+      ├────────────────┘                     │                └────────────────┘
+      │      m.reference                     │                       m.reference
+      └──────────────────────────────────────┘
+                                  m.reference
+
+Time ─────────────────────────────────────────────────────────────────────────────────────►
+```
+
+This was meant to assist in reconstructing historical sessions efficiently. However, the relations
+turned out to not be helpful because finding the slot as well as other members' member events
+still required manual history traversal while employing timestamp overlap logic.
+
+### Transport provisioning models
+
+This proposal requires the server-side Matrix deployment to also provide the MatrixRTC transport
+infrastructure. Alternatives that were considered and discarded include:
+
+* A transport system separate from Matrix accounts – Users could obtain an account with a separate
+  service provider for the RTC transport infrastructure. This is difficult to achieve across federation,
+  however, since all members joined to a slot would need an account with the same external service
+  provider.  
+* Client-provided transports – Clients themself could define and operate transport infrastructure such as
+  SFUs. This is problematic because most users rely on a relatively small number of popular clients.
+  Consequently, a low number of transport backends would have to cover the majority of traffic which makes
+  the system harder to scale and raises questions around cost, governance, and accountability for
+  infrastructure maintenance.
+* Centralized infrastructure – A single shared service could provide transport infrastructure for all
+  MatrixRTC users. This creates a single point of failure though. It's also unclear what entity would
+  operate such a service.
+
+### Transport discovery via .well-known
+
+Rather than using a dedicated endpoint, homeservers could publish supported transports via a `.well-known`
+document. This exposes transports to unauthenticated users, however, which can be a security concern.
+Additionally, in enterprise deployments, `.well-known` files are often not served by the homeserver itself
+and it can be bureaucratically complicated to update entries under the top-level domain.
+
+`GET /_matrix/client/v1/rtc/transports` avoids these issues and offers more flexibility for future extensions
+such as user-specific transports.
+
+### Key distribution via room events
+
+Earlier iterations of this MSC used encrypted room events to distribute per-member encryption
+keys. This turned out to be problematic due to homeservers rate-limiting message sending, timelines
+being polluted with invisible events and, most importantly, the keys being shared with all room
+members rather than just the session members.
+
+#### Shared key encryption
+
+For large calls an encryption scheme based on a shared key instead of per-sender keys could be more
+efficient. This would obviously weaken security properties though. A future proposal may consider the
+tradeoff and introduce a shared-key system via a new encryption `type`.
+
+## Security considerations
+
+### Shadow sessions
+
+Malicious clients could ignore slot events and consider members to be joined regardless of slot
+restrictions. This would allow them to engage in "shadow sessions" in the room that would be ignored
+by other, conforming clients in the room. While this undermines the authoritativeness of slots, it
+does not impact conforming clients in any way. RTC application and transport designers should be
+aware that slots don't provide access control, however, and adopt appropriate measures.
+
+### Discoverability of RTC infrastructure
+
+Details of the server-side RTC infrastructure may be disclosed to all room members through `m.rtc.member`
+events. This could lead to abuse and unauthorized resource use. Guarding against this generically is not
+feasible, however. Instead, each transport mechanism needs to consider its security and required
+authentication mechanisms.
+
+### Encryption key rotation lag
+
+The flexibility in handling key rotations may allow members to decrypt media for a short time interval
+before joining and after leaving. This is deemed an acceptable compromise to reduce the performance
+impact of key exchanges.
+
+## Unstable prefix
+
+| Stable identifier | Purpose | Unstable identifier |
+| ----------------- | ------- | --------------------|
+| `m.rtc.slot` | Event type | `org.matrix.msc4143.rtc.slot` |
+| `m.rtc.member` | Event type | `org.matrix.msc4143.rtc.member` |
+| `m.per_member` | Encryption type | `org.matrix.msc4143.per_member` |
+| `m.rtc.encryption_key` | To-device message event type | `org.matrix.msc4143.rtc.encryption_key` |
+| `/_matrix/client/v1/rtc/transports` | Endpoint | `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` |
+
+Servers may advertise support for the feature by listing `org.matrix.msc4143` in the `unstable_features`
+section of the response to [`GET /_matrix/client/versions`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientversions).
+
+Once this proposal completes FCP, servers may advertise support for the _stable_ identifiers by listing
+`org.matrix.msc4143.stable` in `unstable_features`. Clients may use this while they are waiting for the
+server to adopt a version of the spec that includes it.
+
+## Dependencies
+
+This proposal depends on [MSC4354: Sticky Events][MSC4354] and [MSC4140: Cancellable delayed events][MSC4140].
