@@ -153,52 +153,20 @@ in the addendum of [MSC4354] to construct a state-like store of membership event
 
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
 
-#### Joining a slot
-
-To join a slot, the client sends an `m.rtc.member` event with the following schema:
-
-```json5
-{
-  "type": "m.rtc.member",
-  "content": {
-    "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
-    "application": {
-      "type": "{application_type}",
-      ... // Further application-specific properties (if required)
-    },
-    "member": {
-      "id": "{member_id}"
-    },
-    "transports": {
-      "published": [
-        {
-          "type": "{transport_type}",
-          ... // Further transport-specific properties (if required)
-        },
-        ...
-      ],
-      "can_subscribe": [
-        "{transport_type}",
-        ...
-      ]
-    },
-    "sticky_key": "{member_id}" // = member.id
-  },
-  ...
-}
-```
+Within `m.rtc.member` events, `content` contains the following properties:
 
 - `slot_id` (required, string): The `state_key` of the slot that is being joined.
-- `application` (required, object): Describes the application that is running in the slot.
+- `member` (required, object): Information to identify the member.
+  - `id` (required, string): Identifier to distinguish multiple members, even for the same user
+    and device. MUST be unique for each join of the same user. This means that clients need to use a different
+    identifier when leaving and then rejoining a slot.
+  - `membership` (required, string): The membership status. One of `join`, `leave`.
+- `application` (object): Describes the application that is running in the slot. REQUIRED if `membership = join`.
   - `type` (required, string): The application's globally unique identifier; same as in `m.rtc.slot`.
   - Optionally includes further properties for settings that are specific to the application
     `type`. As in `m.rtc.slot`, the concrete properties are defined by the application's specification.
     For example, a [Third Room](https://thirdroom.io) application could include approximate map positions,
     allowing clients to avoid connecting to members outside their area of interest.
-- `member` (required, object): Information to identify the member.
-  - `id` (required, string): Identifier to distinguish multiple members, even for the same user
-    and device. MUST be unique for each join of the same user. This means that clients need to use a different
-    identifier when leaving and then rejoining a slot.
 - `transports` (object): Details on the MatrixRTC transports of this member. Other clients use the
   information in this object to determine how to connect to and exchange real-time data with this
   member. Clients should be prepared to connect to as many transports as there are members
@@ -212,43 +180,7 @@ To join a slot, the client sends an `m.rtc.member` event with the following sche
       are defined by the transport's specification. This could, for instance, include WebSocket URLs.
   - `can_subscribe` (array): An array of transport types that the member is able to subscribe to.
     Other members can use this as cue for deciding which transports to use to accommodate this member.
-- `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
-  in the addendum of [MSC4354]. MUST have the same value as `member.id`.
-
-Apart from having to match the above schema, an `m.rtc.member` event MUST only be considered to be
-joined if all of the following conditions apply:
-
-- An open slot exists in the room state as an `m.rtc.slot` state event with `state_key` equalling
-  the `m.rtc.member` event's `slot_id`.
-- The sender is currently a member of the room (i.e. has membership `join`).
-- The event is currently sticky, meaning that its stickiness duration as per [MSC4354] has not expired.
-  This is to ensure that the membership view is as consistent as possible across all members.
-
-If these conditions are not fulfilled, clients MUST treat the member as left and refrain
-from connecting to their transports.
-
-#### Leaving a slot
-
-To voluntarily leave a slot, the client sends an `m.rtc.member` event with the following
-schema:
-
-```json5
-{
-  "type": "m.rtc.member",
-  "content": {
-    "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
-    "leave_reason": {
-      "code": "{code}",
-      "reason": "{reason}",
-    },
-    "sticky_key": "{member_id}" // = member.id from previously joined m.rtc.member event
-  },
-  ...
-}
-```
-
-- `slot_id` (required, string): The `state_key` of the slot that is being left.
-- `leave_reason` (object): Optionally provides context on why the client left.
+- `leave_reason` (object): If `membership = leave`, optionally provides context on why the client left.
   This SHOULD only be used by clients if the user has actually attempted to join the slot before.
   This ensures that the `leave_reason` reflects a real join lifecycle rather
   than pre-join cancellation (such as declining a call).
@@ -262,8 +194,82 @@ schema:
     - `slot_closed`: The member left because the slot was closed midway through the session.
   - `reason` (string): Optional human-readable explanation of the leave reason.
 - `sticky_key` (required, string): The sticky key for the ephemeral map algorithm as defined
-  in the addendum of [MSC4354]. MUST have the same value as `member.id` in the previously
-  joined `m.rtc.member` event.
+  in the addendum of [MSC4354]. MUST have the same value as `member.id`.
+
+#### Joining a slot
+
+To join a slot, the client sends an `m.rtc.member` event with `membership = join`, a valid
+`application` object and, if available, the member's `transports`.
+
+```json5
+{
+  "type": "m.rtc.member",
+  "content": {
+    "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
+    "member": {
+      "id": "{member_id}",
+      "membership": "join"
+    },
+    "sticky_key": "{member_id}", // = member.id
+    "application": {
+      "type": "{application_type}",
+      ... // Further application-specific properties (if required)
+    },
+    "transports": {
+      "published": [
+        {
+          "type": "{transport_type}",
+          ... // Further transport-specific properties (if required)
+        },
+        ...
+      ],
+      "can_subscribe": [
+        "{transport_type}",
+        ...
+      ]
+    }
+  },
+  ...
+}
+```
+
+Apart from having to match the above schema, an `m.rtc.member` event MUST only be considered to be
+joined if all of the following conditions apply:
+
+- `member.membership` equals `join`.
+- An open slot exists in the room state as an `m.rtc.slot` state event with `state_key` equalling
+  the `m.rtc.member` event's `slot_id`.
+- The sender is currently a member of the room (i.e. has membership `join`).
+- The event is currently sticky, meaning that its stickiness duration as per [MSC4354] has not expired.
+  This is to ensure that the membership view is as consistent as possible across all members.
+
+If these conditions are not fulfilled, clients MUST treat the member as left and refrain
+from connecting to their transports.
+
+#### Leaving a slot
+
+To voluntarily leave a slot, the client sends an `m.rtc.member` event with `membership = leave`.
+The event's `sticky_key` MUST have the same value as `member.id` in the previously joined
+`m.rtc.member` event.
+
+```json5
+{
+  "type": "m.rtc.member",
+  "content": {
+    "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
+    "member": {
+      "id": "{member_id}",
+      "membership": "leave",
+    },
+    "leave_reason": {
+      "code": "{code}",
+      "reason": "{reason}",
+    },
+    "sticky_key": "{member_id}" // = member.id from previously joined m.rtc.member event
+  },
+  ...
+}
+```
 
 Again, once a member has left, clients SHOULD refrain from connecting to their transports.
 
