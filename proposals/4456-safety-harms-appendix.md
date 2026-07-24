@@ -17,9 +17,9 @@ the harm caused.
 Identified harms are also helpful when events or searches are rejected due to backend safety tooling,
 like in [MSC4387](https://github.com/matrix-org/matrix-spec-proposals/pull/4387).
 
-This proposal introduces a new [appendix](https://spec.matrix.org/v1.18/appendices/) to list out
-harms common to safety legislation across the world. Other proposals are expected to actually use
-this taxonomy - this proposal simply introduces them as a dependency for other MSCs.
+This proposal introduces a new [appendix](https://spec.matrix.org/v1.18/appendices/)-like document to
+list out harms common to safety legislation across the world. Other proposals are expected to actually
+use this taxonomy - this proposal simply introduces them as a dependency for other MSCs.
 
 
 ## Proposal
@@ -28,6 +28,26 @@ The following standardized harm identifiers are expected to be used by Matrix sa
 For example, when reporting something, the user can express their opinion of what kind of harm is caused
 by the thing they're reporting. Similarly, a (policy) server might reject an event due to a common
 harm.
+
+A [MSC4518](https://github.com/matrix-org/matrix-spec-proposals/pull/4518)-style registry is created
+to contain the identifiers. The registry lists the identifier, a suggested name, and supported spec
+versions where server support is required. Additions/changes/removals are managed by the normal MSC
+process, though are expected to receive significant review from the Foundation's T&S team.
+
+Where harm identifiers are used in an endpoint's request schema, servers MUST support the identifiers
+which overlap the server's own supported spec versions. Where harm identifiers are used in a response
+schema, servers SHOULD NOT use harm identifiers outside of their supported spec versions. For example,
+if a server supports spec versions v1.12 through v1.15, it MUST accept harm identifiers supported in
+versions v1.12 through v1.15 as well, but SHOULD NOT return any identifiers from v1.16+ or v1.11 and
+older.
+
+**Note**: For editorial ease, this proposal SHOULD be implemented as an [appendix](https://spec.matrix.org/v1.19/appendices/)
+rather than as an explicit registry. Later, when more proposals require registries, this proposal's
+registry can be formally created. Note that by using the appendices means that "supported spec versions"
+requirements are implied through the spec's global versioning system - the appendices would only list
+the identifiers supported in that spec version.
+
+Categories are used to organize the identifiers - they are non-normative.
 
 The identifiers chosen represent the similarities between various safety legislations (UK, Australia,
 Canada, EU, etc) and what other services offer to their users in reporting flows, especially Bluesky. The identifiers use
@@ -123,8 +143,9 @@ The harms, their categories, and suggested names are:
 
 * The specified harms list might not be extensive enough to encompass all possible harms in the online
   world. It's expected that custom identifiers for commonly used harms will become MSCs to expand the
-  list as needed. Other MSCs are expected to describe ways of expressing custom namespaced harms that
-  are usable in different environments.
+  list as needed, per the registry process. Different, future, MSCs are expected to make custom harm
+  identifiers usable in specific environments. Custom identifiers would enable localized optionality
+  where the standard list is insufficient for regional requirements.
 
 
 ## Alternatives
@@ -149,3 +170,8 @@ is done to mitigate possible changes to the final identifiers list ahead of acce
 ## Dependencies
 
 No direct dependencies. Several other MSCs are expected to build upon this proposal, however.
+
+This proposal has improved utility with [MSC4518](https://github.com/matrix-org/matrix-spec-proposals/pull/4518),
+but is capable of being added (temporarily) to the spec via the appendices. If MSC4518 were to progress
+slowly through the spec process or ultimately be rejected, this proposal can remain in the appendices
+comfortably. A future MSC might find a more suitable long-term home, however.
