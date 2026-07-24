@@ -248,8 +248,7 @@ from connecting to their transports.
 
 #### Leaving a slot
 
-To voluntarily leave a slot, the client sends an `m.rtc.member` event with `membership = leave`.
-The event's `sticky_key` MUST have the same value as `member.id` in the previously joined
+To voluntarily leave a slot, the client sends an `m.rtc.member` event for the desired `member.id` and with `membership = leave`.
 `m.rtc.member` event.
 
 ```json5
