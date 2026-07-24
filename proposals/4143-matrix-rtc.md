@@ -422,23 +422,8 @@ type `m.rtc.encryption_key`.
 
 The recipient devices are determined from the `m.rtc.member` events that are considered to be
 joined to the slot. The conditions for considering a member joined were given
-[above](#joining-a-slot). Once the member events are determined, the target device IDs are
-obtained by:
-
-1. Identifying the Megolm session that was used to encrypt the `m.rtc.member` event.
-1. Looking up the [`m.room_key`] to-device message on which that session was received.
-1. If `sender_device_keys` exists in that message's decrypted [`OlmPayload`] and has
-   been [validated], take the device ID from the `device_id` property in `sender_device_keys`.
-1. If `sender_device_keys` does not exists, take the Curve25519 device identity key from the
-   `sender_key` property in the message's `m.room.encrypted` event body and look up the device
-   ID associated with that key via [`/keys/query`](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3keysquery).
-
-Note that usually SDKs should already provide methods for obtaining and validating device IDs so that
-clients should not have to implement the logic above themselves.
-
-[`m.room_key`]: https://spec.matrix.org/v1.19/client-server-api/#mroom_key
-[`OlmPayload`]: https://spec.matrix.org/v1.19/client-server-api/#molmv1curve25519-aes-sha2
-[validated]: https://spec.matrix.org/v1.19/client-server-api/#validation-of-incoming-decrypted-events
+[above](#joining-a-slot). Once the member events are determined, the `m.rtc.encryption_key`
+to-device messages are sent to the devices that were used to encrypt these member events.
 
 The schema for `m.rtc.encryption_key` to-device messages is as follows:
 
@@ -476,16 +461,8 @@ Upon receipt, clients SHOULD discard any `m.rtc.encryption_key` events that were
 
 Receiving clients can determine the sender's `m.rtc.member` event by matching its `member.id` with
 the value of `member_id` in the `m.rtc.encryption_key` message. Once the member event was determined,
-clients perform the following checks:
-
-- The `sender` property in the message's [`OlmPayload`] matches the `sender` of the `m.rtc.member`
-  event.
-- The Curve25519 device identity key that was used to send the message matches the key that was
-  used to send the `m.rtc.member` event. Similar to the steps given above for obtaining the device
-  ID, the sender key can be acquired and validated using `sender_device_keys` or failing that by
-  taking the value from the encryption envelope and verifying it against `/keys/query`.
-
-Any `m.rtc.encryption_key` event that does not pass these checks MUST be discarded.
+clients verify that the sender and device that was used to send the member event match the sender
+and device of the to-device message. Otherwise the message MUST be discarded.
 
 In keeping with [MSC4153: Exclude non-cross-signed devices][MSC4153], clients SHOULD also discard
 `m.rtc.encryption_key` events when the sending device is not cross-signed.
