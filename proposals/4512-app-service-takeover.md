@@ -42,7 +42,7 @@ the server first authorises the request as usual. If authorization succeeds, the
 request to the same path anchored on `proxy_url` and streams the response back to the requesting
 client.
 
-Any "hop-by-hop" headers as defined by [RFC2616] MUST be stripped both before forwarding the request
+Any "hop-by-hop" headers as defined by [RFC 2616] MUST be stripped both before forwarding the request
 to the service and before streaming the response back to the requesting client.
 
 Additionally, the `Authorization` header MUST be stripped on the forwarded request. Instead, the
