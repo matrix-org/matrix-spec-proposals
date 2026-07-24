@@ -480,8 +480,10 @@ clients perform the following checks:
 
 - The `sender` property in the message's [`OlmPayload`] matches the `sender` of the `m.rtc.member`
   event.
-- The `device_id` property in the message's [`OlmPayload`] matches the device ID that was used to
-  send the `m.rtc.member` event (as determined by following the same steps given for the sender above).
+- The Curve25519 device identity key that was used to send the message matches the key that was
+  used to send the `m.rtc.member` event. Similar to the steps given above for obtaining the device
+  ID, the sender key can be acquired and validated using `sender_device_keys` or failing that by
+  taking the value from the encryption envelope and verifying it against `/keys/query`.
 
 Any `m.rtc.encryption_key` event that does not pass these checks MUST be discarded.
 
