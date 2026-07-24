@@ -210,7 +210,6 @@ To join a slot, the client sends an `m.rtc.member` event with `membership = join
       "id": "{member_id}",
       "membership": "join"
     },
-    "sticky_key": "{member_id}", // = member.id
     "application": {
       "type": "{application_type}",
       ... // Further application-specific properties (if required)
@@ -227,7 +226,8 @@ To join a slot, the client sends an `m.rtc.member` event with `membership = join
         "{transport_type}",
         ...
       ]
-    }
+    },
+    "sticky_key": "{member_id}", // = member.id
   },
   ...
 }
