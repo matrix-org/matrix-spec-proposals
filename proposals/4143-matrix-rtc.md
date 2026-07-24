@@ -422,16 +422,21 @@ obtained by:
 
 1. Identifying the Megolm session that was used to encrypt the `m.rtc.member` event.
 1. Looking up the [`m.room_key`] to-device message on which that session was received.
-1. Taking the device ID from the `OlmPlaintext` (formerly `OlmPayload`) of that message.
+1. If `sender_device_keys` exists in that message's decrypted [`OlmPayload`] and has
+   been [validated], take the device ID from the `device_id` property in `sender_device_keys`.
+1. If `sender_device_keys` does not exists, take the Curve25519 device identity key from the
+   `sender_key` property in the message's `m.room.encrypted` event body and look up the device
+   ID associated with that key via [`/keys/query`](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3keysquery).
 
 [`m.room_key`]: https://spec.matrix.org/v1.19/client-server-api/#mroom_key
-[`OlmPlaintext`]: https://spec.matrix.org/v1.19/client-server-api/#molmv1curve25519-aes-sha2
+[`OlmPayload`]: https://spec.matrix.org/v1.19/client-server-api/#molmv1curve25519-aes-sha2
+[validated]: https://spec.matrix.org/v1.19/client-server-api/#validation-of-incoming-decrypted-events
 
 The schema for `m.rtc.encryption_key` to-device messages is as follows:
 
 ```json5
 // PUT /_matrix/client/v3/sendToDevice/m.rtc.encryption_key/{txnId} 
-// Unencrypted content of OlmPlaintext (formerly OlmPayload) shown, but in reality this would be an encrypted message
+// Unencrypted content of OlmPayload shown, but in reality this would be an encrypted message
 
 {
     "room_id": "{room_id}",
@@ -462,9 +467,9 @@ Receiving clients can determine the sender's `m.rtc.member` event by matching it
 the value of `member_id` in the `m.rtc.encryption_key` message. Once the member event was determined,
 clients perform the following checks:
 
-- The `sender` property in the message's [`OlmPlaintext`] matches the `sender` of the `m.rtc.member`
+- The `sender` property in the message's [`OlmPayload`] matches the `sender` of the `m.rtc.member`
   event.
-- The `device_id` property in the message's [`OlmPlaintext`] matches the device ID that was used to
+- The `device_id` property in the message's [`OlmPayload`] matches the device ID that was used to
   send the `m.rtc.member` event (as determined by following the same steps given for the sender above).
 
 Any `m.rtc.encryption_key` event that does not pass these checks MUST be discarded.
