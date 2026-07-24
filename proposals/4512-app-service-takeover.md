@@ -35,6 +35,9 @@ proxy_url: "http://127.0.0.1:1234"
 When both `proxy_prefix` and `proxy_url` are set, the server proxies matching C-S and S-S requests
 to the application service and allows the service to trigger S-S requests under its own prefix.
 
+For now, authentication is REQUIRED for any C-S and S-S requests under the `proxy_prefix`. A future
+proposal may introduce a way for application services to define when authentication isn't required.
+
 ### Proxying client-server requests
 
 For any authenticated C-S request under `/_matrix/client/(unstable/[^/]+|v[^/]+)/{proxy_prefix}/.*`,
