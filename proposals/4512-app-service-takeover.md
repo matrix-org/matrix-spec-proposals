@@ -46,7 +46,7 @@ Any "hop-by-hop" headers as defined by [RFC 2616] MUST be stripped both before f
 to the service and before streaming the response back to the requesting client.
 
 Additionally, the `Authorization` header MUST be stripped on the forwarded request. Instead, the
-server supplies the MXID of the requesting client to the application service in a new request header
+server supplies the User ID of the requesting client to the application service in a new request header
 `X-Matrix-User-Identifier`.
 
 ### Proxying server-server requests
