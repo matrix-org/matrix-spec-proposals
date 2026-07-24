@@ -21,7 +21,7 @@ file] for application services. `proxy_prefix` is a string and defines the path 
 service is claiming. `proxy_url` is a string that determines the `url` to send proxied requests to.
 `proxy_prefix` and `proxy_url` are optional but if used, MUST always be specified together.
 
-``` yaml
+```yaml
 id: "My app service"
 url: null
 as_token: "30c05ae90a248a4188e620216fa72e349803310ec83e2a77b34fe90be6081f46"
