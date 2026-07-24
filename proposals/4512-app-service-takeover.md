@@ -167,5 +167,5 @@ None.
   [lk-jwt-service]: https://github.com/element-hq/lk-jwt-service
   [MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
   [registration file]: https://spec.matrix.org/v1.19/application-service-api/#registration
-  [RFC2616]: https://datatracker.ietf.org/doc/html/rfc2616#section-13.5.1
+  [RFC 2616]: https://datatracker.ietf.org/doc/html/rfc2616#section-13.5.1
   [server name]: https://spec.matrix.org/v1.19/appendices/#server-name
