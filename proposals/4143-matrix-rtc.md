@@ -433,6 +433,9 @@ obtained by:
    `sender_key` property in the message's `m.room.encrypted` event body and look up the device
    ID associated with that key via [`/keys/query`](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3keysquery).
 
+Note that usually SDKs should already provide methods for obtaining and validating device IDs so that
+clients should not have to implement the logic above themselves.
+
 [`m.room_key`]: https://spec.matrix.org/v1.19/client-server-api/#mroom_key
 [`OlmPayload`]: https://spec.matrix.org/v1.19/client-server-api/#molmv1curve25519-aes-sha2
 [validated]: https://spec.matrix.org/v1.19/client-server-api/#validation-of-incoming-decrypted-events
