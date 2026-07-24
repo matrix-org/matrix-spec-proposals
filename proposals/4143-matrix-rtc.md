@@ -450,7 +450,10 @@ The schema for `m.rtc.encryption_key` to-device messages is as follows:
       "index": {index},
       "key": "{encoded_key}",
     },
-    "format": "0"
+"index": <index>,
+"key": "{encoded_key}",
+},
+"format": 0
 }
 ```
 
