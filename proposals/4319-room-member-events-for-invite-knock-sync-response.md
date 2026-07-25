@@ -198,7 +198,8 @@ homeserver, which is currently not possible
 Besides, those fields are really only necessary for the `invite` or `knock` `m.room.member` event.
 
 This doesn't solve the case where a room doesn't have an `m.room.name` or `m.room.canonical_alias`
-state event, so [its display name should be computed using the room summary](https://spec.matrix.org/v1.15/client-server-api/#calculating-the-display-name-for-a-room).
+state event, so [its display name should be computed using the room summary](https://spec.matrix.org/v1.15/client-server-api/#calculating-the-display-name-for-a-room)
+(see also the [Matrix spec issue #2353](https://github.com/matrix-org/matrix-spec/issues/2353)).
 This is left to another MSC.
 
 
