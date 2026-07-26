@@ -42,10 +42,10 @@ keeping with current behavior.
 
 Example for the behavior of `unchanged`:
 
-| `displayname` in global account data | `displayname` in room membership | `displayname` in PUT request | New `displayname` in room membership |
-| ------------------------------------ | -------------------------------- | ---------------------------- | ------------------------------------ |
-| Alice Margatroid                     | Alice "Nickname" Margatroid      | Alice                        | Unchanged from Alice "Nickname" Margatroid, because `displayname` in room membership is different from displayname in global account data |
-| Alice Margatroid | Alice Margatroid | Alice | Changed to Alice, because `displayname` in room membership is identical to `displayname` in global account data |
+| `displayname` in global profile      | `displayname` in room membership | `displayname` in PUT request | New `displayname` in room membership                                                                                                 |
+| ------------------------------------ | -------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Alice Margatroid                     | Alice "Nickname" Margatroid      | Alice                        | Unchanged from Alice "Nickname" Margatroid, because `displayname` in room membership is different from displayname in global profile |
+| Alice Margatroid                     | Alice Margatroid                 | Alice                        | Changed to Alice, because `displayname` in room membership is identical to `displayname` in global profile                           |
 
 
 ### Key copying rules
@@ -120,7 +120,7 @@ None.
 While this proposal is unstable, implementations should use
 `computer.gingershaped.msc4466.propagate_to` instead of `propagate_to` as a query parameter for the `PUT
 /_matrix/client/v3/profile/{userId}/{keyName}` endpoint and `DELETE /_matrix/client/v3/profile/{userId}/{keyName}`
-endpoint. Servers may use the `computer.gingershaped.msc4466` unstable feature flag to advertise support for
+endpoint. Servers may use the `computer.gingershaped.msc4466` unstable feature flag on `/versions` to advertise support for
 this proposal.
 
 Servers which implement MSC4437 as well as this proposal should strongly consider supporting this proposal's
