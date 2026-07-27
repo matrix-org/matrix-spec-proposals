@@ -2,7 +2,7 @@
 
 Scheduling messages to be sent at a defined later time is a feature present on a number of other
 messaging platforms such as [Teams] or [Telegram]. This mechanism has a wide range of possible
-applications such as tea timers, reminders, self-destructing messages (where the redaction is
+applications such as reminders, self-destructing messages (where the redaction is
 scheduled to be sent later), or other ephemeral events such as temporary power level changes.
 
 [Teams]: https://support.microsoft.com/en-us/office/schedule-chat-messages-in-microsoft-teams-2fc5ea77-7bb4-4511-8f59-e62bac1c0f6a
