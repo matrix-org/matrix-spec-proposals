@@ -700,7 +700,7 @@ We define the result of `EncodeStringAsBytes8(StringInput)` to be a sequence of 
 e.g. `EncodeStringAsBytes8("abcdef")` returns `[0x06, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66]`
 
 n.b. Because this proposal restricts the length of `RendezvousId` and `SequenceToken` to 255 bytes (according to the
-[opaque identifier grammar]) we don't specify a handling for `StringInput` of length greater than 266 bytes.
+[opaque identifier grammar]) we don't specify a handling for `StringInput` of length greater than 255 bytes.
 
 Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request
 and noting the new **sequence token**.
