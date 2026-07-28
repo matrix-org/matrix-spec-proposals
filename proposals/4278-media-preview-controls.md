@@ -121,8 +121,8 @@ all rooms, unless a per-room setting overrides it.
 If the client doesn't have access to room level account data, such as for invites then it should just read
 from the global account data.
 
-If `m.media_preview_config` is set at both global and room levels, the client MUST prefer using a defined value
-over a default value. E.g. account data of:
+If `m.media_preview_config` is set at both global and room levels, the client MUST prefer the room account data value
+over the global account data value. E.g. account data of:
 
 ```jsonc
 { // Room-level account data
