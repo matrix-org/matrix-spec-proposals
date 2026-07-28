@@ -41,10 +41,7 @@ depending on the authenticated user (e.g. disabled for guest users).
 
 ## Potential issues
 
-This increases complexity for clients who offer URL previews as a feature. They will need to check
-the capabilities offered by the homeserver before they can start making requests. This has been mitigated
-by reusing the capabilities endpoint. For the reasons outlined in Alternatives, it's an acceptable
-tradeoff to include a capability for this feature.
+None
 
 ## Alternatives
 
