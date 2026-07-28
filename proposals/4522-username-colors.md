@@ -89,7 +89,7 @@ The room state `m.roles_style` represents an array of objects with powerlevel, a
   },
 ```
 
-The room state `m.colors` for PMPs may look for example for example:
+The `m.colors` for PMPs may look for example:
 ```json
 "com.beeper.per_message_profile": {
   "id": "nough",
@@ -120,7 +120,7 @@ may be mitigated by setting `override_other_colors` to true if needed or by havi
 above the user's powerlevel and setting their color to a different one.
 
 A user may choose to set the color and background within one item to the same value but this may be mitigated
-by clients easily to remove these values from the pool of potential colors to choose from.
+by clients by removing these values from the pool of potential colors to choose from.
 
 ## Alternatives
 
