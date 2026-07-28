@@ -86,7 +86,7 @@ The `m.colors` for PMPs may look for example:
   "displayname": "Nough",
   "avatar_url": "mxc://example.com/example_url",
   "has_fallback": true,
-  "colors": [
+  "m.colors": [
     { "color": "#f0f", "background": "#818181" },
     { "color": "#88f", "background": "#808080" }
   ]
