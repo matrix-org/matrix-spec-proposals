@@ -87,6 +87,14 @@ is added to the Client-Server API (core spec):
 not in the registry are not permitted. Additional properties/schema are as per the specification for
 the `type`.
 
+### Exception: MSC4195
+
+Because MSC4195 has been used to test the unstable implementation of MSC4143 and has no unstable
+prefixes itself, `livekit` is registered as an unstable type instead of `msc4195.livekit`. When
+MSC4195 becomes accepted, its type is to be upgraded to `stable` with relevant changes to the spec
+link. No implementation changes would be required outside what they'd need to do to support MSC4143
+becoming stable itself.
+
 
 ## Potential issues
 
