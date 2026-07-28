@@ -20,13 +20,9 @@ For standardization:
 If a custom color is wished to be set for an ID of a PMP it may be set through a `m.colors` field within the 
 `m.per_message_profile` of the message
 
-  The `m.colors` and `color` fields represent arrays of objects for the color. Each object of the array
-should contain the color that is to be displayed and may contain a `background` that it is meant to 
-represent the ideal background the `color` should be displayed over. The background SHOULD NOT be 
-displayed but should only serve as a way for the client to determine which color best fits the background 
-it is displayed against. 
-  The `m.colors` array and color arrays MUST have at most one object that has no background color that SHOULD
-serve as a fallback.
+  The `m.colors` and `color` fields represent an object that contains the colors that may be choosen depending
+on the active theme of the client. The light_color represents the color that is lighter, and dark_color the color that is darker,
+so a light_color should ideally be used when the user has a dark theme and vice versa.
 
 The field within the extended profile can be for example:
 ```json
@@ -35,12 +31,10 @@ The field within the extended profile can be for example:
   "displayname": "Shea Butter",
   "m.banner_url": "mxc://matrix.org/example_banner",
   "m.tz": "Europe/Troll",
-  "m.colors": [
-    { "color": "#ffd9f5", "background": "#000000" },
-    { "color": "#440000", "background": "#fff" },
-    { "color": "#f0f", "background": "#888" },
-    { "color": "#ff0000" }
-  ]
+  "m.colors": {
+    "light_color": "#ffd9f5",
+    "dark_color": "#440000" 
+  }
 }
 ```
 
@@ -50,9 +44,10 @@ The room state `m.room.member` may be updated to for example:
   "membership": "join",
   "displayname": "User",
   "avatar_url": "mxc://example.com/code",
-  "m.colors": [
-    {"color": "#ff0", "background": "000"}
-  ]
+  "m.colors": {
+    "light_color": "#f00",
+    "dark_color": "#400" 
+  }
 }
 ```
 
@@ -63,17 +58,17 @@ The room state `m.powerlevels_style` represents a potential override, and an arr
     "powerlevels": [
       {
         "powerlevel": 51,
-        "colors": [
-          { "color": "#00f", "background": "#818181" },
-          { "color": "#88f", "background": "#808080" }
-        ]
+        "colors": {
+          "light_color": "#f00",
+          "dark_color": "#400" 
+        }
       },
       {
         "powerlevel": 1,
-        "colors": [
-          { "color": "#000", "background": "#ffffff" },
-          { "color": "#fff", "background": "#000000" }
-        ]
+        "colors": {
+          "light_color": "#f8f",
+          "dark_color": "#404" 
+        }
       }
     ]
   },
@@ -86,10 +81,10 @@ The `m.colors` for PMPs may look for example:
   "displayname": "Nough",
   "avatar_url": "mxc://example.com/example_url",
   "has_fallback": true,
-  "m.colors": [
-    { "color": "#f0f", "background": "#818181" },
-    { "color": "#88f", "background": "#808080" }
-  ]
+  "m.colors": {
+    "light_color": "#82F2A3",
+    "dark_color": "#11403A" 
+  }
 },
 ```
 
@@ -97,26 +92,26 @@ The `m.colors` for PMPs may look for example:
 to the other colors in order to reduce ambiguity between the moderators of a community and its participants,
 but if it is missing clients should consider that as being set to false.
 
-  Every `color` and `background` field must be a hex color for consistency.
+  The color fields must be a hex color for consistency.
 
-  The order of the color values should be: PMP color, per-room color, 
-account profile color, powerlevel color, default fallback that a client SHOULD have. This order may be
-overridden for powerlevels to take precedence above every other color however.
+  The order of the color values should be: PMP color, per-room color, account profile color, 
+powerlevel color, default fallback that a client SHOULD have. This order may be overridden 
+for powerlevels to take precedence above every other color.
 
 ## Potential issues
 
 A user may choose to set their per-room or per account color to match one of a modertator of a room, but this
 may be mitigated by setting `override_other_colors` to true if needed.
 
-A user may choose to set the color and background within one item to the same value but this may be mitigated
-by clients by removing these values from the pool of potential colors to choose from.
+A user may choose to set the color that has poor visibility to the background but that may be mitigated by
+either choosing the color for the opposite theme if it fits better or refusing both and going one step lower
+whenever that is detected (ie so it would ignore the PMP color and use the per-room color)
 
 ## Alternatives
 
-One alternative is setting only one hex value for the color but that was dismissed as that would force clients
-to either fully dismiss the color option of an individual when using a color that clashes with the background it
-is set over or display a color that has poor visibility, and does not offer an alternative color that the user 
-might prefer instead.
+One alternative is setting only one hex value for the color but that was dismissed as it reduces the pool of
+potential colors that a client might have to choose from when there is poor visiblity resulting in a less
+personalized experience.
 
 ## Security considerations
 
