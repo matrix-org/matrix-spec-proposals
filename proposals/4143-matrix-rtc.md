@@ -15,7 +15,8 @@ building RTC experiences on top of Matrix. At a high level, MatrixRTC consists o
   Matrix primitives such as encrypted room and to-device messages.
 * **Transports** define how members exchange media streams. This can, for instance, happen
   peer-to-peer or through Selective Forwarding Unit (SFUs). Transports also determine how the generic
-  end-to-end encryption is used in transport-specific encryption.
+  end-to-end encryption is used in transport-specific encryption. Transports are recorded in a registry
+  defined by [MSC4519].
 * **Applications** describe the type of RTC activity such as a call, a shared document, or a real-time
   game. Applications also define what types of transports they can work with and how media streams are used.
 * **Slots** are represented in room state and govern what kind of applications may run, along with
@@ -43,6 +44,7 @@ protocol and are described in [MSC4075: MatrixRTC notifications & call ringing][
 
 [MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
 [MSC4310]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
+[MSC4519]: https://github.com/matrix-org/matrix-spec-proposals/pull/4519
 
 ## Proposal
 
@@ -174,10 +176,10 @@ Within `m.rtc.member` events, `content` contains the following properties:
   defined in each transport's specification.
   - `published` (array): An array of objects describing the transports on which the member is
     publishing media.
-    - `type`: (required, string): The globally unique transport identifier. MUST follow the
-      [Common Namespaced Identifier Grammar] but without the namespacing requirements.
+    - `type`: (required, string): The [MSC4519]-registered transport `type`.
     - Optionally includes further properties specific to the transport `type`. The concrete properties
       are defined by the transport's specification. This could, for instance, include WebSocket URLs.
+      The transport's specification would be as per its [MSC4519] registration.
   - `can_subscribe` (array): An array of transport types that the member is able to subscribe to.
     Other members can use this as cue for deciding which transports to use to accommodate this member.
 - `leave_reason` (object): If `membership = leave`, optionally provides context on why the client left.
@@ -343,34 +345,8 @@ Time                 ───────────────────�
 
 ### Discovery of transport infrastructure
 
-Some RTC transports may require server-side infrastructure such as SFUs or TURN servers. Clients
-need a mechanism to discover the availability of such infrastructure and any potentially required
-connection details. To enable this, a new authenticated Client-Server endpoint
-`GET /_matrix/client/v1/rtc/transports` is introduced. The endpoint returns the available
-server-supported transport types:
-
-```json5
-// 200 OK
-// Content-Type: application/json
-
-{
-  "rtc_transports": [
-    {
-      "type": "{transport_type}",
-      ... // Further transport-specific properties (if required)
-    }
-  ]
-}
-```
-
-- `rtc_transports` (required, array): Array of objects describing the transports the homeserver
-  supports. Generally, these are given in no particular order, but in case the homeserver considers
-  multiple transports interchangeable (e.g. when advertising multiple transports of the same type),
-  it SHOULD arrange them in descending order of preference (e.g. listing backup infrastructure last).
-  - `type`: (required, string): The globally unique transport identifier. MUST follow the
-    [Common Namespaced Identifier Grammar] but without the namespacing requirements.
-  - Optionally includes further properties specific to the transport `type`. The concrete properties
-    are defined by the transport's specification.
+Server-side infrastructure might be required to support some RTC transports. [MSC4519] defines a
+discovery endpoint for transports.
 
 ### End-to-end encryption
 
@@ -428,7 +404,7 @@ to-device messages are sent to the devices that were used to encrypt these membe
 The schema for `m.rtc.encryption_key` to-device messages is as follows:
 
 ```json5
-// PUT /_matrix/client/v3/sendToDevice/m.rtc.encryption_key/{txnId} 
+// PUT /_matrix/client/v3/sendToDevice/m.rtc.encryption_key/{txnId}
 // Unencrypted content of OlmPayload shown, but in reality this would be an encrypted message
 
 {
@@ -640,7 +616,7 @@ infrastructure. Alternatives that were considered and discarded include:
 * A transport system separate from Matrix accounts – Users could obtain an account with a separate
   service provider for the RTC transport infrastructure. This is difficult to achieve across federation,
   however, since all members joined to a slot would need an account with the same external service
-  provider.  
+  provider.
 * Client-provided transports – Clients themself could define and operate transport infrastructure such as
   SFUs. This is problematic because most users rely on a relatively small number of popular clients.
   Consequently, a low number of transport backends would have to cover the majority of traffic which makes
@@ -649,16 +625,6 @@ infrastructure. Alternatives that were considered and discarded include:
 * Centralized infrastructure – A single shared service could provide transport infrastructure for all
   MatrixRTC users. This creates a single point of failure though. It's also unclear what entity would
   operate such a service.
-
-### Transport discovery via .well-known
-
-Rather than using a dedicated endpoint, homeservers could publish supported transports via a `.well-known`
-document. This exposes transports to unauthenticated users, however, which can be a security concern.
-Additionally, in enterprise deployments, `.well-known` files are often not served by the homeserver itself
-and it can be bureaucratically complicated to update entries under the top-level domain.
-
-`GET /_matrix/client/v1/rtc/transports` avoids these issues and offers more flexibility for future extensions
-such as user-specific transports.
 
 ### Key distribution via room events
 
@@ -704,7 +670,6 @@ impact of key exchanges.
 | `m.rtc.member` | Event type | `org.matrix.msc4143.rtc.member` |
 | `m.per_member` | Encryption type | `org.matrix.msc4143.per_member` |
 | `m.rtc.encryption_key` | To-device message event type | `org.matrix.msc4143.rtc.encryption_key` |
-| `/_matrix/client/v1/rtc/transports` | Endpoint | `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` |
 
 Servers may advertise support for the feature by listing `org.matrix.msc4143` in the `unstable_features`
 section of the response to [`GET /_matrix/client/versions`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientversions).
@@ -715,4 +680,8 @@ server to adopt a version of the spec that includes it.
 
 ## Dependencies
 
-This proposal depends on [MSC4354: Sticky Events][MSC4354] and [MSC4140: Cancellable delayed events][MSC4140].
+This proposal depends on:
+* [MSC4354: Sticky Events][MSC4354]
+* [MSC4140: Cancellable delayed events][MSC4140]
+* [MSC4519: MatrixRTC Transports Registry][MSC4519]
+  * Depends on [MSC4518: Registries](https://github.com/matrix-org/matrix-spec-proposals/pull/4518)
