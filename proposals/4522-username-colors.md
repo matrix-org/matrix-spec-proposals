@@ -5,7 +5,7 @@ and with the advent of extensible events clients have started to create unique i
 that are not cross compatible.
 
 There needs to be a way to tell a client that your name should have a specific color, ideally one 
-that could be specific to a room, a role, or PMP
+that could be specific to a room, a powerlevel, or PMP
 
 
 ## Proposal
@@ -14,12 +14,11 @@ Color selection should have a unified cross platform solution in order to best r
 
 For standardization:
  - per-account colors, profiles may have an optional `m.colors` field object relying on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133).
- - per-room colors may be set through a `m.users_colors` room state object
- - per-role colors may be set through a `colors` field within a new `m.roles_style` room state object
+ - per-room colors may be set through a `m.colors` field within the `m.room.member` state event
+ - per-powerlevel colors may be set through a `colors` field within a new `m.powerlevels_style` room state object
 
-If a custom color is wished to be set for an ID of a PMP, that may be done as follows:
- - per-message colors may be set through a `m.colors` field within the `m.per_message_profile` of the message
- - per-room colors may be set through the same means as the account ones, but prefixed with the id (eg. @foo@bar:example.org )
+If a custom color is wished to be set for an ID of a PMP it may be set through a `m.colors` field within the 
+`m.per_message_profile` of the message
 
   The `m.colors` and `color` fields represent arrays of objects for the color. Each object of the array
 should contain the color that is to be displayed and may contain a `background` that it is meant to 
@@ -45,28 +44,19 @@ The field within the extended profile can be for example:
 }
 ```
 
-The room state `m.users_colors` is an array of objects with the name and colors array as for example:
+The room state `m.room.member` may be updated to for example:
 ```json
 {
-    "m.users": [
-      {
-        "userId": "@foo:example.com",
-        "colors": [
-          { "color": "#00f", "background": "#818181" },
-          { "color": "#88f", "background": "#808080" }
-        ]
-      },
-      {
-        "userId": "@bar@foo:example.com",
-        "colors": [
-          { "color": "#f00" }
-        ]
-      }
-    ]
-  },
+  "membership": "join",
+  "displayname": "User",
+  "avatar_url": "mxc://example.com/code",
+  "m.colors": [
+    {"color": "#ff0", "background": "000"}
+  ]
+}
 ```
 
-The room state `m.roles_style` represents an array of objects with powerlevel, an optional override, and a colors array as for example:
+The room state `m.powerlevels_style` represents a potential override, and an array of objects with powerlevels with and a colors array as for example:
 ```json
 {
     "override_other_colors": false,
@@ -91,7 +81,7 @@ The room state `m.roles_style` represents an array of objects with powerlevel, a
 
 The `m.colors` for PMPs may look for example:
 ```json
-"com.beeper.per_message_profile": {
+"m.per_message_profile": {
   "id": "nough",
   "displayname": "Nough",
   "avatar_url": "mxc://example.com/example_url",
@@ -103,21 +93,20 @@ The `m.colors` for PMPs may look for example:
 },
 ```
 
-  The `override_other_colors` key may be set in order to define whether or not the roles of a room should take precedence 
+  The `override_other_colors` key may be set in order to define whether or not the powerlevels of a room should take precedence 
 to the other colors in order to reduce ambiguity between the moderators of a community and its participants,
 but if it is missing clients should consider that as being set to false.
 
   Every `color` and `background` field must be a hex color for consistency.
 
-  The order of the color values should be: PMP room color, PMP message color, account room color, 
-account profile color, role color, default fallback that a client SHOULD have. This order may be
-overridden for roles to take precedence above every other color however.
+  The order of the color values should be: PMP color, per-room color, 
+account profile color, powerlevel color, default fallback that a client SHOULD have. This order may be
+overridden for powerlevels to take precedence above every other color however.
 
 ## Potential issues
 
 A user may choose to set their per-room or per account color to match one of a modertator of a room, but this
-may be mitigated by setting `override_other_colors` to true if needed or by having the `m.user_colors` restricted
-above the user's powerlevel and setting their color to a different one.
+may be mitigated by setting `override_other_colors` to true if needed.
 
 A user may choose to set the color and background within one item to the same value but this may be mitigated
 by clients by removing these values from the pool of potential colors to choose from.
@@ -139,9 +128,7 @@ There are no new security issues introduced by this proposal
 
 `eu.she-a.colors` should be used instead of `m.colors`       
 
-`eu.she-a.users_colors` should be used instead of `m.users_colors`      
-
-`eu.she-a.roles_style` should be used instead of `m.roles_style`
+`eu.she-a.powerlevels_style` should be used instead of `m.powerlevels_style`
 
 
 ## Dependencies
