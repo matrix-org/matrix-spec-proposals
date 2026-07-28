@@ -11,8 +11,8 @@ action to get the information by delegating to the client.
 
 ## Proposal
 
-The widget API is extended with one new interface to access the discovery of rtc transports. The user must
-manually approve the `rtc_transports` capability before the action can be used.
+The widget API is extended with one new interface to access the discovery of RTC transports. The client must
+approve the `rtc_transports` capability before the action can be used.
 
 To trigger the action to get the configuration, widgets will use a new fromWidget request with the action
 `get_rtc_transports` which takes the following shape:
