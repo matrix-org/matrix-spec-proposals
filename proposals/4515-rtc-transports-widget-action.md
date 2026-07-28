@@ -76,7 +76,7 @@ The `rtc_transports` field follows the same format as
 }
 ```
 
-The `error` envelope follows the standard widget API error format. Two error cases are possible:
+The `error` envelope follows the standard widget API error format. At least two error cases are possible:
 
 - **Missing capability**: the widget was not approved for the `rtc_transports` capability. The client MUST
   reject the request without calling the endpoint.
