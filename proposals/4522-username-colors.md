@@ -58,8 +58,8 @@ The room state `m.powerlevels_style` represents a potential override, and an arr
       {
         "powerlevel": 51,
         "color": {
-          "light_color": "#f00",
-          "dark_color": "#400" 
+          "on_dark": "#f00",
+          "on_light": "#400" 
         }
       },
       {
