@@ -13,16 +13,15 @@ that could be specific to a room, a powerlevel, or PMP
 Color selection should have a unified cross platform solution in order to best represent every case.
 
 For standardization:
- - per-account colors, profiles may have an optional `m.colors` field object relying on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133).
- - per-room colors may be set through a `m.colors` field within the `m.room.member` state event
- - per-powerlevel colors may be set through a `colors` field within a new `m.powerlevels_style` room state object
+ - per-account colors, profiles may have an optional `m.color` field object relying on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133).
+ - per-room colors may be set through a `m.color` field within the `m.room.member` state event
+ - per-powerlevel colors may be set through a `color` field within a new `m.powerlevels_style` room state object
 
-If a custom color is wished to be set for an ID of a PMP it may be set through a `m.colors` field within the 
+If a custom color is wished to be set for an ID of a PMP it may be set through a `m.color` field within the 
 `m.per_message_profile` of the message
 
-  The `m.colors` and `color` fields represent an object that contains the colors that may be choosen depending
-on the active theme of the client. The light_color represents the color that is lighter, and dark_color the color that is darker,
-so a light_color should ideally be used when the user has a dark theme and vice versa.
+  The `m.color` and `color` fields represent the theme that the color is to be displayed over, 
+the `on_dark` value represents the color that should be used when the client uses a dark theme and `on_light` on light themes.
 
 The field within the extended profile can be for example:
 ```json
@@ -31,9 +30,9 @@ The field within the extended profile can be for example:
   "displayname": "Shea Butter",
   "m.banner_url": "mxc://matrix.org/example_banner",
   "m.tz": "Europe/Troll",
-  "m.colors": {
-    "light_color": "#ffd9f5",
-    "dark_color": "#440000" 
+  "m.color": {
+    "on_dark": "#ffd9f5",
+    "on_light": "#440000" 
   }
 }
 ```
@@ -44,9 +43,9 @@ The room state `m.room.member` may be updated to for example:
   "membership": "join",
   "displayname": "User",
   "avatar_url": "mxc://example.com/code",
-  "m.colors": {
-    "light_color": "#f00",
-    "dark_color": "#400" 
+  "m.color": {
+    "on_dark": "#f00",
+    "on_light": "#400" 
   }
 }
 ```
@@ -58,32 +57,32 @@ The room state `m.powerlevels_style` represents a potential override, and an arr
     "powerlevels": [
       {
         "powerlevel": 51,
-        "colors": {
+        "color": {
           "light_color": "#f00",
           "dark_color": "#400" 
         }
       },
       {
         "powerlevel": 1,
-        "colors": {
-          "light_color": "#f8f",
-          "dark_color": "#404" 
+        "color": {
+          "on_dark": "#f8f",
+          "on_light": "#404" 
         }
       }
     ]
   },
 ```
 
-The `m.colors` for PMPs may look for example:
+The `m.color` for PMPs may look for example:
 ```json
 "m.per_message_profile": {
   "id": "nough",
   "displayname": "Nough",
   "avatar_url": "mxc://example.com/example_url",
   "has_fallback": true,
-  "m.colors": {
-    "light_color": "#82F2A3",
-    "dark_color": "#11403A" 
+  "m.color": {
+    "on_dark": "#82F2A3",
+    "on_light": "#11403A" 
   }
 },
 ```
@@ -121,7 +120,7 @@ There are no new security issues introduced by this proposal
 
 ## Unstable prefix
 
-`eu.she-a.colors` should be used instead of `m.colors`       
+`eu.she-a.color` should be used instead of `m.color`       
 
 `eu.she-a.powerlevels_style` should be used instead of `m.powerlevels_style`
 
