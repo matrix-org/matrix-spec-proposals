@@ -55,6 +55,7 @@ when copying the profile into an outgoing message.
 strings. If a message starts with one of the strings, the prefix is removed and
 that profile is used for the message. Prefixes are checked in order such that
 all prefixes of the first profile take priority over the second profile.
+Prefixes are case-sensitive.
 
 Using prefixes doesn't require extra whitespace or any special characters, but
 the prefix itself can contain those. For example, `cat:meow` would not match any
