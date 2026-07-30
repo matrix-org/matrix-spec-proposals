@@ -90,11 +90,13 @@ per room setting and is mitigated by [the name disambiguation algorithm](https:/
 
 ## Alternatives
 
-One alternative is setting only one hex value for the color but that was dismissed as it reduces the pool of
-potential colors that a client might have to choose from when there is poor visibility resulting in a less
-personalized experience, or makes them use colors that are less relevant to the user's taste in coloring, such
-as completely ignoring the lightness for a dark color making it light, which would result in a fully different color
-(i.e. a color that has chosen navy blue because they are using a light theme might have no wish to have a baby blue color for dark theme usecases 
+  One alternative is setting only one hex value for the color but that was dismissed as it reduces the pool of
+potential colors, a client might have to choose from when there is poor visibility resulting in a less
+personalized experience. Or, makes them use colors that are less relevant to the user's taste in coloring
+
+ For example this could result in completely ignoring the lightness for a dark color making it light, which would result in a fully different color
+
+  (i.e. a user that has chosen navy blue because they are using a light theme might have no wish to have a baby blue color for dark theme usecases 
 and a user that has chosen an orange color would not want a brown color when using a light theme).
 
 ## Security considerations
