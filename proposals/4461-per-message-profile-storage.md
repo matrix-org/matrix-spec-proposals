@@ -22,23 +22,49 @@ parameters on spaces.
 {
   "type": "m.per_message_profiles",
   "content": {
-    "meow": {
-      "id": "cat",
-      "displayname": "Cat 🐈️"
-    },
-    "mrrp": {
-      "id": "black_cat",
-      "displayname": "🐈‍⬛",
-      "avatar_url": "mxc://maunium.net/hgXsKqlmRfpKvCZdUoWDkFQo"
-    }
+    "profiles": [
+      {
+        "id": "cat",
+        "displayname": "Cat 🐈️",
+        "trigger": {
+          "prefix": ["meow-", "cat: "]
+        }
+      },
+      {
+        "id": "black_cat",
+        "displayname": "🐈‍⬛",
+        "avatar_url": "mxc://maunium.net/hgXsKqlmRfpKvCZdUoWDkFQo",
+        "trigger": {
+          "prefix": ["mrrp:"]
+        }
+      }
+    ]
   }
 }
 ```
 
-A client could then have a `/profile` command to pick a profile when sending
-a message, such that `/profile mrrp hello` turns into
+`id`, `displayname` and `avatar_url` come from MSC4144 and are used as-is when
+sending a message.
 
-```
+`trigger` is a new field, which defines ways to use the profile conveniently.
+It's defined as an object to allow future extensibility, such as suffix matches
+or other kinds of triggers. It's intended to be private and MUST be excluded
+when copying the profile into an outgoing message.
+
+`prefix` is the only trigger defined by this MSC. If a message starts with one
+of the prefix triggers, that profile is used for the message. Prefixes are
+checked in order such that all prefixes of the first profile take priority over
+the second profile.
+
+Using prefixes doesn't require extra whitespace or any special characters, but
+the prefix itself can contain those. For example, `cat:meow` would not match any
+of the profiles above, only `cat: meow` would. Clients MAY trim out additional
+leading whitespace after removing the matched prefix.
+
+For example, with the profiles above, if the user types `mrrp:hello`, it would
+send the following message event:
+
+```json
 {
   "type": "m.room.message",
   "content": {
@@ -71,13 +97,20 @@ There are various other places where profiles could be stored, like
 or multiple account data events. This proposal uses a single account
 data event for simplicity.
 
+Instead of an array, the event could be a map of shortcode to profile. However,
+that would require duplicating the content if the user wants multiple prefixes
+for the same profile. It would also not allow extensibility for triggers.
+
 ## Security considerations
 This proposal only adds a way to store reusable profile data.
 Security considerations with per-message profiles are covered in [MSC4144]
 
 ## Unstable prefix
-`fi.mau.msc4461.per_message_profiles` can be used instead of
+`fi.mau.msc4461.per_message_profiles.v2` can be used instead of
 `m.per_message_profiles` in global account data.
+
+`trigger` doesn't have a prefix as it's only contained inside the already
+prefixed account data event, and it must not be sent in actual messages.
 
 ## Dependencies
 This MSC builds on [MSC4144], which at the time of writing has not yet been
