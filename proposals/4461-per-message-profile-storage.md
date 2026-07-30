@@ -27,7 +27,7 @@ parameters on spaces.
         "id": "cat",
         "displayname": "Cat 🐈️",
         "trigger": {
-          "prefix": ["meow-", "cat: "]
+          "prefix": ["meow ", "cat: "]
         }
       },
       {
