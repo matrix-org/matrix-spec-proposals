@@ -64,7 +64,7 @@ slot_id = {application_type}#{application_slot_id} (= state_key)
 
 `application_type` is the application's globally unique identifier. This identifier is defined
 by the application's specification and MUST follow the [Common Namespaced Identifier Grammar].
-In the case of MSC4196, that would be `m.call`.
+In the case of [MSC4196], that would be `m.call`.
 
 `application_slot_id` is the application-specific slot ID and enables applications to support
 multiple parallel application instances per room. Again, the allowed values are defined by
@@ -173,7 +173,8 @@ Within `m.rtc.member` events, `content` contains the following properties:
   - `published` (array): An array of objects describing the transports on which the member is
     publishing media.
     - `type`: (required, string): The globally unique transport identifier. MUST follow the
-      [Common Namespaced Identifier Grammar] but without the namespacing requirements.
+      [Common Namespaced Identifier Grammar] but without the namespacing requirements. For an
+      [MSC4195] transport, this would be `livekit`.
     - Optionally includes further properties specific to the transport `type`. The concrete properties
       are defined by the transport's specification. This could, for instance, include WebSocket URLs.
   - `can_subscribe` (array): An array of transport types that the member is able to subscribe to.
