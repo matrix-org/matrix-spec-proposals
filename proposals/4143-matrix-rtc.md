@@ -58,7 +58,7 @@ from slot membership, which is introduced [below] and typically requires lower p
 [below]: #membership
 
 A slot is always associated with one specific application, by way of its slot ID. The slot ID is
-used as the `state_key` of the `m.rtc.slot` event and is constructed as follows:
+used as the `state_key` of the `m.rtc.slot` event and MUST be constructed as follows:
 
 ```json5
 slot_id = {application_type}#{application_slot_id} (= state_key)
@@ -66,18 +66,22 @@ slot_id = {application_type}#{application_slot_id} (= state_key)
 
 `application_type` is the application's globally unique identifier. This identifier is defined
 by the application's specification and MUST follow the [Common Namespaced Identifier Grammar].
+In the case of [MSC4196], that would be `m.call`.
 
 `application_slot_id` is the application-specific slot ID and enables applications to support
 multiple parallel application instances per room. Again, the allowed values are defined by
 the application's specification and MUST follow the [Common Namespaced Identifier Grammar]
-but this time without the namespacing requirements[^nohash]. Additionally, the values should
+but this time without the namespacing requirements[^nohash]. Additionally, the values SHOULD
 be predictable for clients given that slots act like virtual addresses where members
 are allowed to meet.
 
 As an example, the default slot ID for the calling application from [MSC4196] is `m.call#ROOM`.
 
-The grammar for forming slot IDs MUST NOT be used to parse the components out of a slot ID.
-It exists only to namespace the `state_key`, and could be modified in a future proposal.
+By prescribing a deterministic grammar for slot IDs, we avoid the need to define extra criteria for
+conflict resolution. If two admins race to open the same slot, they will send state events with the
+same `state_key`, enabling the state of the slot to be decided by state resolution. The grammar MUST
+NOT be used to parse the components out of a slot ID, however, as it could be modified in a future
+proposal.
 
 [Common Namespaced Identifier Grammar]: https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar
 
@@ -133,13 +137,10 @@ required on closed slots but may be kept around for convenience to simplify re-o
 The semantics of open and closed slots for actual slot membership are described in the membership event
 section [below].
 
-Slots may follow different lifecycles depending on the use case. For instance, a long-lived slot
-that is kept open continually could power a Discord-style experience where members can hop on
-and hop off as desired. Scheduled conference meetings, in turn, could benefit from a time-bounded
-slot that is only opened when the meeting starts and closed again afterwards.
-
-For the time being, slots will have to be created manually. A future proposal may change the
-defaults for newly created rooms to provide slots for standard RTC applications.
+Slots do not close automatically. A slot that is deliberately long-lived could be used to
+create a Discord-style experience where members hop on and off as desired. A conferencing
+or meeting-centric client might close its slots at the end of the meeting. A future
+proposal might change how slots are automatically managed.
 
 ### Membership
 
@@ -176,7 +177,8 @@ Within `m.rtc.member` events, `content` contains the following properties:
   defined in each transport's specification.
   - `published` (array): An array of objects describing the transports on which the member is
     publishing media.
-    - `type`: (required, string): The [MSC4519]-registered transport `type`.
+    - `type`: (required, string): The [MSC4519]-registered transport `type`. For an [MSC4195]
+      transport, this would be `livekit`.
     - Optionally includes further properties specific to the transport `type`. The concrete properties
       are defined by the transport's specification. This could, for instance, include WebSocket URLs.
       The transport's specification would be as per its [MSC4519] registration.
