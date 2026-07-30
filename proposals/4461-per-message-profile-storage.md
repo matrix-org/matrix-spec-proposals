@@ -43,7 +43,7 @@ parameters on spaces.
 }
 ```
 
-`id`, `displayname` and `avatar_url` come from MSC4144 and are used as-is when
+`id`, `displayname` and `avatar_url` come from MSC4144 and are copied as-is when
 sending a message.
 
 `trigger` is a new field, which defines ways to use the profile conveniently.
@@ -51,10 +51,10 @@ It's defined as an object to allow future extensibility, such as suffix matches
 or other kinds of triggers. It's intended to be private and MUST be excluded
 when copying the profile into an outgoing message.
 
-`prefix` is the only trigger defined by this MSC. If a message starts with one
-of the prefix triggers, that profile is used for the message. Prefixes are
-checked in order such that all prefixes of the first profile take priority over
-the second profile.
+`prefix` is the only trigger defined by this MSC. It contains an array of
+strings. If a message starts with one of the strings, the prefix is removed and
+that profile is used for the message. Prefixes are checked in order such that
+all prefixes of the first profile take priority over the second profile.
 
 Using prefixes doesn't require extra whitespace or any special characters, but
 the prefix itself can contain those. For example, `cat:meow` would not match any
