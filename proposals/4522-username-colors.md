@@ -16,11 +16,11 @@ For standardization:
  - per-account colors, profiles may have an optional `m.color_preference` field object relying on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133).
  - per-room colors may be set through a `m.color_preference` field within the `m.room.member` state event
 
-If a custom color is wished to be set for an ID of a PMP it may be set through a `m.color_preference` field within the 
+If a custom color is wished to be set for an ID of a Per-Message Profiles (PMP) it may be set through a `m.color_preference` field within the 
 `m.per_message_profile` of the message
 
   The `m.color_preference` object contains 2 fields for the potential colors to be displayed but are named by the theme kind that the name/message is to be displayed over, 
-the `on_dark` value represents the color that should be used when the client uses a dark theme (ie the color itself shoulds be bright) and `on_light` on light themes (ie the color itself should be dark).
+the `on_dark` value represents the color that should be used when the client uses a dark theme (ie the color itself should be bright) and `on_light` on light themes (ie the color itself should be dark).
 
 The field within the extended profile can be for example:
 ```json
@@ -72,11 +72,11 @@ The `m.color_preference` for PMPs may look for example:
 
   The color fields must be a hex color (#RGB or #RRGGBB) for consistency and ease of use for the end-user.
 
-  A client may adjust the final displayed color to accomodate theming, technical and accessibility requirements.
+  A client may adjust the final displayed color to accommodate theming, technical and accessibility requirements.
 However, The client should preserve the hue where possible, and may alter the Saturation/Chroma/Lightness.
   
-  For example a terminal-based client might have a very limited color pallete and might end up compressing 
-all the color options set by the users to a 8-32 selection and that client could still be compliant with the 
+  For example a terminal-based client might have a very limited color palette and might end up compressing 
+all the color options set by the users to an 8-32 selection and that client could still be compliant with the 
 msc as it would be within its limitations.
 
 ## Potential issues
@@ -85,14 +85,17 @@ msc as it would be within its limitations.
 either choosing the color for the opposite theme if it fits better or refusing both and going one step lower
 whenever that is detected (ie so it would ignore the PMP color and use the per-room color)
 
-  A user may choose to mimique the color of a moderator of a room for impersonation reasons, but this may be easily detected as a 
+  A user may choose to mimic the color of a moderator of a room for impersonation reasons, but this may be easily detected as a 
 per room setting and is mitigated by [the name disambiguation algorithm](https://spec.matrix.org/latest/client-server-api/#calculating-the-display-name-for-a-user)
 
 ## Alternatives
 
 One alternative is setting only one hex value for the color but that was dismissed as it reduces the pool of
-potential colors that a client might have to choose from when there is poor visiblity resulting in a less
-personalized experience.
+potential colors that a client might have to choose from when there is poor visibility resulting in a less
+personalized experience, or makes them use colors that are less relevant to the user's taste in coloring, such
+as completely ignoring the lightness for a dark color making it light, which would result in a fully different color
+(i.e. a color that has chosen navy blue because they are using a light theme might have no wish to have a baby blue color for dark theme usecases 
+and a user that has chosen an orange color would not want a brown color when using a light theme).
 
 ## Security considerations
 
