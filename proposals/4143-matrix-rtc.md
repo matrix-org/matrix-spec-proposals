@@ -64,6 +64,7 @@ slot_id = {application_type}#{application_slot_id} (= state_key)
 
 `application_type` is the application's globally unique identifier. This identifier is defined
 by the application's specification and MUST follow the [Common Namespaced Identifier Grammar].
+In the case of MSC4196, that would be `m.call`.
 
 `application_slot_id` is the application-specific slot ID and enables applications to support
 multiple parallel application instances per room. Again, the allowed values are defined by
