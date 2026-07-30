@@ -132,13 +132,10 @@ required on closed slots but may be kept around for convenience to simplify re-o
 The semantics of open and closed slots for actual slot membership are described in the membership event
 section [below].
 
-Slots may follow different lifecycles depending on the use case. For instance, a long-lived slot
-that is kept open continually could power a Discord-style experience where members can hop on
-and hop off as desired. Scheduled conference meetings, in turn, could benefit from a time-bounded
-slot that is only opened when the meeting starts and closed again afterwards.
-
-For the time being, slots will have to be created manually. A future proposal may change the
-defaults for newly created rooms to provide slots for standard RTC applications.
+Slots do not close automatically. A slot that is deliberately long-lived could be used to
+create a Discord-style experience where members hop on and off as desired. A conferencing
+or meeting-centric client might close its slots at the end of the meeting. A future
+proposal might change how slots are automatically managed.
 
 ### Membership
 
