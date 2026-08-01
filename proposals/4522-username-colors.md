@@ -67,7 +67,7 @@ The `m.color_preference` for PMPs may look for example:
    - PMP color, 
    - per-room color, 
    - account profile color, 
-   - [MSC3949](https://github.com/ajbura/matrix-spec-proposals/blob/power-level-tag/proposals/3949-power-level-tag.md) colors if the client implements this MSC, 
+   - [MSC3949](https://github.com/matrix-org/matrix-spec-proposals/pull/3949) colors if the client implements this MSC, 
    - default fallback that a client SHOULD have
 
   The color fields must be a hex color (#RGB or #RRGGBB) for consistency and ease of use for the end-user.
@@ -96,8 +96,22 @@ personalized experience. Or, makes them use colors that are less relevant to the
 
  For example this could result in completely ignoring the lightness for a dark color making it light, which would result in a fully different color
 
-  (i.e. a user that has chosen navy blue because they are using a light theme might have no wish to have a baby blue color for dark theme usecases 
-and a user that has chosen an orange color would not want a brown color when using a light theme).
+  (i.e. a user that has chosen navy blue because they are using a light theme might have no wish to have a baby blue color for dark theme usecases, a user that has chosen an orange color might not want a brown color when using a light theme, a user selecting a pastel pink name in a dark theme might not want a murky pink in a light theme).
+
+  Another potential change would be the usage of a standard different from 24bit RGB, and while there are substantial benefits to many other standards 
+in their respective usecases, 24bit RGB is the most interoperable color standard, being supported by ANSI for terminal clients, natively by browsers, and by
+most platforms that support other color standards. So, by choosing a color standard other than RGBG (or CYMK but, no, CYMK is not an option for this), many 
+clients would have to devise conversion algorithms for their platform or implement entire color libraries for a very limited scope.            
+  Another alternative in this situation is to not set a color standard but that would result in applications needing to understand dozens of standards only for one
+setting, which would increase the cost unreasonably, requiring either to be able to convert between every existant standard and the client's prefered one or to 
+be able to process directly every color standard
+
+  Lastly, the standard could allow a user to set an arbitrary amount of prefered colors in an array that a client might choose from in the form:
+  ```json
+  m.preferred_colors = ["#ffd9f5", "#440000", "#460333"]
+  ```
+  And while that method would be a very pleasant and elegant way to set colors, it would present an increased cost of implementation, allowing arbitrarily long lists of 
+colors across 3 of the stages of the order of precedence.
 
 ## Security considerations
 
@@ -113,4 +127,4 @@ This MSC builds on:
  - [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133) for per-account colors,
  - [MSC4144](https://github.com/matrix-org/matrix-spec-proposals/pull/4144) for the per-message-profile object, 
 
-And wishes that more clients would implement [MSC3949](https://github.com/ajbura/matrix-spec-proposals/blob/power-level-tag/proposals/3949-power-level-tag.md) or some other standard powerlevel specific customization
+And wishes that more clients would implement [MSC3949](https://github.com/matrix-org/matrix-spec-proposals/pull/3949) or some other standard powerlevel specific customization
