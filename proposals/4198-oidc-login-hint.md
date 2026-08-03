@@ -30,7 +30,7 @@ prefix-char = %x21-39 / %x3B-7E ; VCHAR excluding ":"
 value = 1*VCHAR
 ```
 
-### The `mxid` hint
+### The `mxid` hint type
 
 This MSC specifies a hint that contains the user's [MXID].
 The prefix for this hint is `mxid` (all lowercase) and the value is the Matrix user ID as specified in the
@@ -43,9 +43,10 @@ It SHOULD then parse the domain, discover the homeserver and its auth metadata (
 register itself with the homeserver ([OAuth 2.0 API Client registration]) and start the appropriate authorization flow,
 all in one step.
 
-Alternatively, this MAY also be used when the user is already logged in and the client already knows the user's MXID
-when requesting additional scopes (when more granular scopes are defined in a future proposal)
-or when redirecting to the homeserver's account management UI.
+Alternatively, this MAY also be used when the user is already logged in and the client already knows the user's MXID.
+For example when requesting additional scopes (when more granular scopes are defined in a future proposal),
+when redirecting to the homeserver's account management UI,
+or provided to a new device through [MSC4108] QR code login.
 
 To improve the UX in these cases, the MXID MAY be sent to the homeserver in the ways defined below, following the format
 specified above using the `mxid` hint type.
@@ -89,6 +90,28 @@ https://account.example.com/oauth2/auth?
 With the line breaks removed and values properly encoded:
 ```
 https://account.example.com/oauth2/auth?client_id=s6BhdRkqt3&response_type=code&response_mode=fragment&redirect_uri=https%3A%2F%2Fapp.example.com%2Foauth2-callback&scope=urn%3Amatrix%3Aclient%3Aapi%3A*+urn%3Amatrix%3Aclient%3Adevice%3AAAABBBCCCDDD&state=ewubooN9weezeewah9fol4oothohroh3&code_challenge=72xySjpngTcCxgbPfFmkPHjMvVDl2jW1aWP7-J6rmwU&code_challenge_method=S256&login_hint=mxid%3A%40example-user%3Aexample.com
+```
+
+### Usage in device authorization flow
+
+To use a login hint with the [OAuth 2.0 API Device authorization flow], a `login_hint` parameter is added to the device authorization request body using the format defined above.
+
+Similarly to the authorization code flow, homeservers SHOULD assist users to complete the login flow with the correct
+account and clients MUST be prepared to handle users signing in with a different user account than expected.
+
+#### Example device authorization request
+
+Expanding on the example device authorization request shown in [OAuth 2.0 API Device authorization flow],
+with the following additional parameters:
+
+- `login_hint` set to `mxid:@example-user:example.com`
+
+```
+POST /oauth2/device HTTP/1.1
+Host: account.example.com
+Content-Type: application/x-www-form-urlencoded
+
+client_id=s6BhdRkqt3&scope=urn%3Amatrix%3Aclient%3Aapi%3A%2A%20urn%3Amatrix%3Aclient%3Adevice%3AAABBBCCCDDD&login_hint=mxid%3A%40example-user%3Aexample.com
 ```
 
 ### Usage in account management
@@ -179,13 +202,13 @@ and public like a work email.
 
 ## Unstable prefix
 
-For the authorization request we are borrowing the existing OIDC parameter so an unstable prefix isn't necessary.
+For the authorization code request we are borrowing the existing OIDC parameter so an unstable prefix isn't necessary.
 
-For the account management request, `org.matrix.msc4198.login_hint` should be used instead of `login_hint` while in
-development.
+For the device authorization request and account management request, `org.matrix.msc4198.login_hint` should be used
+instead of `login_hint` while in development.
 
 The server metadata field `org.matrix.msc4198.login_hint_types_supported` should be used instead of
-`org.matrix.login_hint_types_supported`
+`org.matrix.login_hint_types_supported` while in development.
 
 ## Dependencies
 
@@ -197,4 +220,6 @@ None.
 [OAuth 2.0 API Server metadata discovery]: https://spec.matrix.org/v1.19/client-server-api/#server-metadata-discovery
 [OAuth 2.0 API Client registration]: https://spec.matrix.org/v1.19/client-server-api/#client-registration
 [OAuth 2.0 API Authorization code flow]: https://spec.matrix.org/v1.19/client-server-api/#authorisation-code-flow
+[OAuth 2.0 API Device authorization flow]: https://spec.matrix.org/v1.19/client-server-api/#device-authorisation-flow
 [OAuth 2.0 API Account management]: https://spec.matrix.org/v1.19/client-server-api/#oauth-20-account-management
+[MSC4108]: https://github.com/matrix-org/matrix-spec-proposals/pull/4108
