@@ -152,8 +152,8 @@ However, requiring servers to transmit Canonical JSON is currently believed to
 be technically infeasible, as discussed below.
 
 Having implementations sign and hash the data on the wire would mean that
-servers could at least get as far as agreeing on whether an event was correctly
-signed, even if their JSON parsers then treat the event differently. However,
+servers could at least get as far as agreeing on whether the event bytes were correctly
+signed, even if their JSON parsers then treat the parsed event differently. However,
 it is exactly this property — that events are accepted even if they are parsed
 differently — that we must avoid, since once again it allows attackers to
 create split-brains.
