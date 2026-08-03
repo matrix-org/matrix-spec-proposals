@@ -64,8 +64,8 @@ The client MAY inform the user about ending up on a different account than inten
 
 #### Example authorization request
 
-Expanding on the example authorization request shown in [OAuth 2.0 API Authorization code flow] (broken down into multiple lines for
-readability),
+Expanding on the example authorization request shown in [OAuth 2.0 API Authorization code flow] (broken down into multiple
+lines for readability),
 with the following additional parameters:
 
 - `login_hint` set to `mxid:@example-user:example.com`
@@ -143,10 +143,13 @@ TBD
 
 ## Alternatives
 
-One alternative would be to only include the localpart (e.g. `login_hint=example-user`),
-as the domain is redundant information for the homeserver itself.
-However, the lack of a prefix has the potential to make adding and distinguishing additional future formats difficult
-and using the full MXID builds on top of existing concepts within the spec.
+One obvious alternative would be to only include the MXID (e.g. `login_hint=@example-user:example.com`)
+or just the localpart (e.g. `login_hint=example-user`) since the domain is redundant information for the homeserver itself.
+However, the lack of a prefix has the potential to make adding and distinguishing additional future formats difficult.
+
+Another option would be to use something that most upstream OIDC providers use, like a plain username (localpart) or email.
+This would allow transparently passing the hint value upstream and might work with most of them but not for all of them.
+There is also no guarantee that the user's matrix localpart or email is the same as their upstream username or email.
 
 
 ## Security considerations
