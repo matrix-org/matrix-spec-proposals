@@ -1,7 +1,6 @@
 # MSC4198: Usage of OIDC login_hint
 
-This proposal builds on the [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api) that was
-added in v1.15 of the spec.
+This proposal builds on the [OAuth 2.0 API] that was added in v1.15 of the spec.
 
 There are times when a client already knows or has asked for the user's identity before redirecting them to the homeserver's
 account management interface to log in or to manage their devices. It would be useful to pass this information along to
@@ -44,7 +43,7 @@ Example valid hint value: `mxid:@example-user:example.com`
 A client MAY start the login flow by asking the user for their MXID.
 It SHOULD then parse the domain, discover the homeserver and its auth metadata ([OAuth 2.0 API Server metadata discovery]),
 register itself with the homeserver ([OAuth 2.0 API Client registration])
-and send the user to the authorization endpoint ([OAuth 2.0 API Login flow]), all in one step.
+and send the user to the authorization endpoint ([OAuth 2.0 API Authorization code flow]), all in one step.
 
 Alternatively, this MAY also be used when the user is already logged in and the client is requesting additional scopes
 (when more granular scopes are defined in a future proposal).
@@ -65,7 +64,7 @@ The client MAY inform the user about ending up on a different account than inten
 
 #### Example authorization request
 
-Expanding on the example authorization request shown in [OAuth 2.0 API Login flow] (broken down into multiple lines for
+Expanding on the example authorization request shown in [OAuth 2.0 API Authorization code flow] (broken down into multiple lines for
 readability),
 with the following additional parameters:
 
@@ -89,9 +88,10 @@ With the line breaks removed and values properly encoded:
 https://account.example.com/oauth2/auth?client_id=s6BhdRkqt3&response_type=code&response_mode=fragment&redirect_uri=https%3A%2F%2Fapp.example.com%2Foauth2-callback&scope=urn%3Amatrix%3Aclient%3Aapi%3A*+urn%3Amatrix%3Aclient%3Adevice%3AAAABBBCCCDDD&state=ewubooN9weezeewah9fol4oothohroh3&code_challenge=72xySjpngTcCxgbPfFmkPHjMvVDl2jW1aWP7-J6rmwU&code_challenge_method=S256&login_hint=mxid%3A%40example-user%3Aexample.com
 ```
 
-### Usage in [MSC4191] account management
+### Usage in account management
 
-We also add the `login_hint` query parameter for the [MSC4191] `account_management_uri` using the same format.
+We also add the `login_hint` query parameter for the `account_management_uri` in [OAuth 2.0 API Account management]
+using the same format.
 
 For example, if `@example-user:example.com` wishes to delete the device `ABCDEFGH` where the advertised
 `account_management_uri` was `https://account.example.com/myaccount` the client could open a link to
@@ -170,11 +170,12 @@ development.
 
 ## Dependencies
 
-This MSC builds on [MSC4191] (which at the time of writing has not yet been accepted into the spec).
+None.
 
 [OpenID Connect Core 1.0]: https://openid.net/specs/openid-connect-core-1_0.html
-[MXID]: https://spec.matrix.org/v1.11/appendices/#user-identifiers
-[OAuth 2.0 API Server metadata discovery]: https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery
-[OAuth 2.0 API Client registration]: https://spec.matrix.org/v1.15/client-server-api/#client-registration
-[OAuth 2.0 API Login flow]: https://spec.matrix.org/v1.15/client-server-api/#login-flow
-[MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
+[MXID]: https://spec.matrix.org/v1.19/appendices/#user-identifiers
+[OAuth 2.0 API]: https://spec.matrix.org/v1.19/client-server-api/#oauth-20-api
+[OAuth 2.0 API Server metadata discovery]: https://spec.matrix.org/v1.19/client-server-api/#server-metadata-discovery
+[OAuth 2.0 API Client registration]: https://spec.matrix.org/v1.19/client-server-api/#client-registration
+[OAuth 2.0 API Authorization code flow]: https://spec.matrix.org/v1.19/client-server-api/#authorisation-code-flow
+[OAuth 2.0 API Account management]: https://spec.matrix.org/v1.19/client-server-api/#oauth-20-account-management
