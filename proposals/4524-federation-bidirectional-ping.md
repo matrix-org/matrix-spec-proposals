@@ -186,7 +186,7 @@ this sort of proposal to be accepted into the specification, it belongs.
 
 There is a clear desire for a mechanism like this - `conduwuit` implemented a system that allows
 administrators to "ping" a remote server, querying their version info, which can reveal
-common connectivity issues. This has then been retained in descendent softwares. There are also
+common connectivity issues. This has then been retained in descendent software. There are also
 several non-server tools that exist for troubleshooting federation problems, including:
 
 * [matrix.org's `matrix-federation-tester`](https://github.com/matrix-org/matrix-federation-tester)
