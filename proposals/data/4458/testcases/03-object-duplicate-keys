@@ -1,0 +1,6 @@
+# An object with duplicate keys
+{"a": 1, "a": 2}
+---
+REJECT
+{"a":1}
+{"a":2}

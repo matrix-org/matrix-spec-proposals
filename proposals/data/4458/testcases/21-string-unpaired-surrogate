@@ -1,0 +1,4 @@
+# Strings containing unpaired surrogates must be rejected. New for MSC 4458.
+"a \ud83d z"
+---
+REJECT

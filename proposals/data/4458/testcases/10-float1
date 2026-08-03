@@ -1,0 +1,5 @@
+# Input with floating point may be truncated or rejected. New for MSC 4458.
+1.5
+---
+REJECT
+1

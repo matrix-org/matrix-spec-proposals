@@ -1,0 +1,6 @@
+# Negative zero should be resolved. The non-broken part of 11-exponent.
+{
+    "a": -0
+}
+---
+{"a":0}

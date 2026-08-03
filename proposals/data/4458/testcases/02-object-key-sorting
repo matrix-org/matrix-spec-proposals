@@ -1,0 +1,7 @@
+# Advanced sorting of object keys: BMP keys sort before non-BMP keys.
+{
+   "😀": "smiley face",
+   "\uFB33": "dalet"
+}
+---
+{"דּ":"dalet","😀":"smiley face"}
