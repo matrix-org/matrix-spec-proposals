@@ -38,19 +38,22 @@ The prefix for this hint is `mxid` (all lowercase) and the value is the Matrix u
 
 Example valid hint value: `mxid:@example-user:example.com`
 
-### Usage in authorization requests
-
-A client MAY start the login flow by asking the user for their MXID.
+A client MAY start a login flow by asking the user for their MXID.
 It SHOULD then parse the domain, discover the homeserver and its auth metadata ([OAuth 2.0 API Server metadata discovery]),
-register itself with the homeserver ([OAuth 2.0 API Client registration])
-and send the user to the authorization endpoint ([OAuth 2.0 API Authorization code flow]), all in one step.
+register itself with the homeserver ([OAuth 2.0 API Client registration]) and start the appropriate authorization flow,
+all in one step.
 
-Alternatively, this MAY also be used when the user is already logged in and the client is requesting additional scopes
-(when more granular scopes are defined in a future proposal).
+Alternatively, this MAY also be used when the user is already logged in and the client already knows the user's MXID
+when requesting additional scopes (when more granular scopes are defined in a future proposal)
+or when redirecting to the homeserver's account management UI.
 
-To improve the UX of this flow, the MXID MAY be sent to the homeserver with the authorization request in the OPTIONAL
-`login_hint` query parameter from [OpenID Connect Core 1.0], following the format specified above using the `mxid` hint
-type.
+To improve the UX in these cases, the MXID MAY be sent to the homeserver in the ways defined below, following the format
+specified above using the `mxid` hint type.
+
+### Usage in authorization code flow
+
+To use a login hint with the [OAuth 2.0 API Authorization code flow],
+the `login_hint` query parameter is added to the authorization request using the format defined above.
 
 Despite the `login_hint` parameter being defined in the OpenID Connect specification, homeservers supporting this proposal
 MUST handle the parameter even without the `openid` scope.
@@ -97,7 +100,8 @@ For example, if `@example-user:example.com` wishes to delete the device `ABCDEFG
 `account_management_uri` was `https://account.example.com/myaccount` the client could open a link to
 `https://account.example.com/myaccount?action=org.matrix.device_delete&device_id=ABCDEFGH&login_hint=mxid%3A%40example-user%3Aexample.com`.
 
-Similarly to the authorization request, the homeserver SHOULD assist the user to the account the action was intended for.
+Similarly to the authorization request, the homeserver SHOULD assist the user to perform the action with the account
+it was intended for.
 
 ### Additional authentication server metadata
 
