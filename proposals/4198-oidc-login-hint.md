@@ -99,6 +99,15 @@ For example, if `@example-user:example.com` wishes to delete the device `ABCDEFG
 
 Similarly to the authorization request, the homeserver SHOULD assist the user to the account the action was intended for.
 
+### Additional authentication server metadata
+
+This proposal introduces a new optional field in the authentication
+[server metadata discovery][OAuth 2.0 API Server metadata discovery]:
+
+* `org.matrix.login_hint_types_supported`: a JSON array of login hint types that the server supports
+
+Example: `"org.matrix.login_hint_types_supported": ["mxid"]`
+
 ### Examples of homeserver assistance
 
 These are just some examples of what the homeserver could do. None of these are required.
@@ -170,6 +179,9 @@ For the authorization request we are borrowing the existing OIDC parameter so an
 
 For the account management request, `org.matrix.msc4198.login_hint` should be used instead of `login_hint` while in
 development.
+
+The server metadata field `org.matrix.msc4198.login_hint_types_supported` should be used instead of
+`org.matrix.login_hint_types_supported`
 
 ## Dependencies
 
