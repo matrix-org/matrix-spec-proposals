@@ -318,7 +318,7 @@ sending. If the power level situation has changed at the time the delay passes, 
 
 #### Rate-limiting at the point of sending
 
-Further to the rate limiting of the API endpoints, the homeserver SHOULD apply rate limiting to the sending
+In addition to the rate limiting of the API endpoints, the homeserver SHOULD apply rate limiting to the sending
 of delayed messages at the point that they are inserted into the DAG.
 
 This is to provide mitigation against the [High Volume of Messages](
