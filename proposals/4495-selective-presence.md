@@ -30,6 +30,10 @@ communities, private rooms, and DMs, while reducing the load from federating pre
 
 ## Proposal
 
+The [Presence module] of the Client-Server API and the [Presence section] of the Server-Server API are adjusted as
+follows. Implementations of Matrix spec versions containing these features MUST support their datums, endpoints, and
+associated behaviours, unless they are explicitly declared to be OPTIONAL.
+
 ### User Presence Sharing Preferences
 
 A new [`account_data`] entry, `m.presence.sharing`, is stored for modification by clients and use by homeservers.
@@ -51,9 +55,9 @@ No glob resolution is supported for any key in a presence sharing map.
 
 The string values of these presence sharing maps may be any of the following:
 * `"deny"`: Explicitly forbid sending presence to the entity  
-  The `"deny"` state MUST NOT be specified for room IDs under the `"rooms"` object.
+  Server names under the `"servers"` object MUST **only** use the `"deny"` state.
 * `"allow"`: Permit sharing presence with the entity  
-  The `"allow"` state MUST NOT be specified for entire homeservers under the `"servers"` object.
+  Room IDs under the `"rooms"` object MUST **only** use the `"allow"` state.
 
 Sample `m.presence.sharing` account data event:
 ```json
@@ -123,19 +127,19 @@ presence in a room with a `presence_sharing` value of `"forbid"`.
 ### Modifications to the [`m.presence` EDU]
 
 The federation [User Presence Update] type is modified to include:
-* An optional map, `recipients`, containing two arrays of [User IDs][mxid-format] belonging to the destination
+* An OPTIONAL map, `recipients`, containing two arrays of [User IDs][mxid-format] belonging to the destination
   server, `add` and `delete`.
-* A pair of integer identifiers, `stream_id` and `prev_id`, which are unique per `user_id`. These values do not need to
-  be sequential or in any particular order, only unique.
+* A pair of integer identifiers, a REQUIRED `stream_id` and OPTIONAL `prev_id`, which are unique per `user_id`. These
+  values do not need to be sequential or in any particular order, only unique.
 
 The `add` and `delete` arrays of `recipients` represent an incremental update to a user's recipient user set,
 adding and removing users respectively. A server MUST NOT send updates lacking a populated `add` to a destination
 homeserver after their last user is updated out of the recipient set.
 
 `stream_id` and `prev_id` form a sequence representing the state of the user's recipient user set, similar to the
-behaviour of the [Device List Update] type. `recipients` may only be present if `prev_id` is present. If a user's
-`stream_id` is replaced but no changes are relevant to the receiving homeserver, the sending server uses empty `add`
-and `delete` lists.
+behaviour of the [Device List Update] type. `prev_id` MUST be present if `recipients` is present. If a user's
+`stream_id` is replaced but no changes are relevant to the receiving homeserver, the sending server uses empty `add` and
+`delete` lists.
 
 `m.presence` EDU (as received by `example.com`):
 ```json
@@ -163,7 +167,7 @@ and `delete` lists.
 
 #### Dispatch Algorithm
 
-The **recipient user set** of a user's presence transition is determined as follows:
+The **recipient user set** of a user's presence transition MUST be determined as follows:
 1. Include all members of rooms both **listed as `"allow"`** in the user's `m.presence.sharing` configuration and
    with an `m.room.presence_sharing` state event with `presence_sharing` set to `"suggest"`. Servers MUST NOT
    include rooms that do not satisfy this criteria.
@@ -188,7 +192,7 @@ recipients in these updates, with `prev_id` set to the last `stream_id` sent to 
 
 #### Inbound Processing
 
-When a server receives a `m.presence` EDU over federation, servers follow these rules for distributing the presence
+When a server receives a `m.presence` EDU over federation, servers MUST follow these rules for distributing the presence
 change over both `/sync` and `/_matrix/client/v3/presence/{userId}/status`:
 * **`stream_id` missing:** Servers SHOULD distribute the presence transition to every local user that shares a room
   with the `user_id` of the EDU, following current presence behaviour.
@@ -205,11 +209,11 @@ origin server.
 
 ### Server-Server Endpoint `GET /_matrix/federation/v1/query/presence_recipients`
 
-Servers that do not recognise a `stream_id` or `prev_id` in an incoming `m.presence` EDU need a way to ask the
-origin server for the user's latest `stream_id` and a snapshot of its recipient user set. This proposal introduces
-a new federation endpoint to address this need. If a server cannot determine the proper recipient user set \- for
-example, if this endpoint returns an error \- it SHOULD be assumed to be empty (`[]`) until the server can fetch
-the full set.
+Servers that do not recognise a `stream_id` or `prev_id` in an incoming `m.presence` EDU need a way to ask the origin
+server for the user's latest `stream_id` and a snapshot of its recipient user set. This proposal introduces a new
+REQUIRED federation endpoint to address this need. If a server cannot determine the proper recipient user set \- for
+example, if this endpoint returns an error \- it SHOULD be assumed to be empty (`[]`) until the server can fetch the
+full set.
 
 <table>
   <tbody>
@@ -431,6 +435,8 @@ None.
 [`m.presence` EDU]: https://spec.matrix.org/v1.18/server-server-api/#definition-mpresence
 [User Presence Update]: https://spec.matrix.org/v1.18/server-server-api/#definition-mpresence_user-presence-update
 [Device List Update]: https://spec.matrix.org/v1.18/server-server-api/#definition-mdevice_list_update_device-list-update
+[Presence module]: https://spec.matrix.org/v1.19/client-server-api/#presence
+[Presence section]: https://spec.matrix.org/v1.19/server-server-api/#presence
 [mxid-format]: https://spec.matrix.org/v1.18/appendices/#user-identifiers
 [roomid-format]: https://spec.matrix.org/v1.18/appendices/#room-ids
 [servername-format]: https://spec.matrix.org/v1.18/appendices/#server-name
