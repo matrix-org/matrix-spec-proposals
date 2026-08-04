@@ -49,7 +49,8 @@ sending a message.
 `trigger` is a new field, which defines ways to use the profile conveniently.
 It's defined as an object to allow future extensibility, such as suffix matches
 or other kinds of triggers. It's intended to be private and MUST be excluded
-when copying the profile into an outgoing message.
+when copying the profile into an outgoing message. Specifying triggers is not
+required.
 
 `prefix` is the only trigger defined by this MSC. It contains an array of
 strings. If a message starts with one of the strings, the prefix is removed and
