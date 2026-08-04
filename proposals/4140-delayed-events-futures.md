@@ -346,17 +346,6 @@ proposal shouldn't affect how that verification works because those other propos
 need to account for eventual consistency anyway, which may appear as a delayed event or
 attached to a disjointed part of the DAG.
 
-### Conflicting delayed state events
-
-A delayed state event can overwrite other state events that were sent in between the delayed event
-being scheduled and it being sent. Whether or not this is problematic strongly depends on the
-use case, though. When the overwrite is undesired, a possible remedy could be to cancel the scheduled
-delayed event when a conflicting new state event is sent into the room. Alternatively, it might be
-possible to avoid the conflict in the first place by using separate `state_key`s or by not relying on
-state events to begin with. Additionally, this type of race condition can also happen without delayed
-events due to federation delay. Potentially addressing this situation is, therefore, left to a future
-proposal.
-
 ### Inability to filter and paginate delayed events
 
 `GET /_matrix/client/v1/delayed_events` lacks request parameters for filtering and pagination. It also
