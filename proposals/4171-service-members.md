@@ -36,6 +36,11 @@ service members from `m.heroes` on the server side, but that may also cause
 other issues.
 
 ## Alternatives
+Element had documented the `io.element.functional_members` event in
+<https://github.com/element-hq/element-meta/blob/develop/spec/functional_members.md>,
+which was only discovered after this MSC was written. The MSC is just describing
+the same thing with different words.
+
 ### Inverted user list
 The state event could be inverted to list real members instead of service
 members. This approach was not chosen for backwards-compatibility reasons: if
