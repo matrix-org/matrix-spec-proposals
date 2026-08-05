@@ -53,6 +53,18 @@ The server could read the state event and filter `m.heroes` (and possibly other
 places) based on it. This approach was rejected as filtering client side is
 easier and has less risk of bugs: <https://github.com/element-hq/synapse/pull/17866#issuecomment-2454813498>.
 
+### Indicator in profile
+Bots could indicate themselves in their profile or member event, as suggested
+in [MSC4105](https://github.com/matrix-org/matrix-spec-proposals/pull/4015).
+This would have multiple downsides:
+
+* If the flag is only in the global profile, it would be hard to find.
+* It's possible to have a DM with a bot where the bot is important, while also
+  having the bot be a part of a DM with some other user. A global flag would
+  make it harder to properly handle both cases.
+* If the flag is in the member event, it would need careful management to avoid
+  being overwritten by global profile updates.
+
 ### Canonical DMs
 The use cases of this proposal would be solved by canonical DMs. For example,
 [MSC2199] defines "unimportant" users which would be excluded from room name
