@@ -214,18 +214,9 @@ REQUIRED federation endpoint to address this need. If a server cannot determine 
 example, if this endpoint returns an error \- it SHOULD be assumed to be empty (`[]`) until the server can fetch the
 full set.
 
-<table>
-  <tbody>
-    <tr>
-      <th scope="row">Rate limited:</th>
-      <td>No</td>
-    </tr>
-    <tr>
-      <th scope="row">Requires authentication:</th>
-      <td>Yes</td>
-    </tr>
-  </tbody>
-</table>
+| Rate limited | Requires authentication |
+|--------------|-------------------------|
+| No           | Yes                     |
 
 #### Request
 
