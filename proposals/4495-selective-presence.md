@@ -39,9 +39,9 @@ associated behaviours, unless they are explicitly declared to be OPTIONAL.
 A new [`account_data`] entry, `m.presence.sharing`, is stored for modification by clients and use by homeservers.
 
 This event contains four properties:
-* The boolean `share_locally` enables sharing presence with all users with mutual rooms on the local homeserver
+* The OPTIONAL boolean `share_locally` enables sharing presence with all users with mutual rooms on the local homeserver
   (default `false`)
-* Three **presence sharing map** objects, mapping one of several entity types to presence sharing behaviour:
+* Three OPTIONAL **presence sharing map** objects, mapping one of several entity types to presence sharing behaviour:
   1. `users` mapping [User IDs][mxid-format] (default `{}`)
   2. `rooms` mapping [Room IDs][roomid-format] (default `{}`)
   3. `servers` mapping [Server Names][servername-format] (default `{}`)
@@ -74,9 +74,9 @@ Sample `m.presence.sharing` account data event:
 
 ### Room Presence Sharing Hints
 
-A new room state event is introduced, `m.room.presence_sharing`. This state event contains one field,
+A new room state event is introduced, `m.room.presence_sharing`. This state event contains one OPTIONAL field,
 `presence_sharing`, which is a string with two possible values: `"suggest"` and `"forbid"`. If the event is not
-present, the room is treated as though its value is `"forbid"` by default.
+present, or the field is missing, the room is treated as though its value is `"forbid"` by default.
 
 Servers MUST NOT include rooms with a `presence_sharing` value of `"forbid"` when they calculate a user's recipient
 user set, even if the user `"allow"`s presence to be shared with the room.
@@ -85,12 +85,11 @@ The `m.room.presence_sharing` hint SHOULD be [transferred upon room upgrade][roo
 
 #### Presence Sharing Prompts
 
-A new [`account_data`] entry, `m.presence.prompted`, is introduced to improve the user experience for clients with
-presence sharing prompts. To allow users to dismiss a prompt on one client and have this register across all of
-their clients, so that they do not have to answer the prompt several times, the following standard properties are
-used:
-* `users`: An array of [User IDs][mxid-format] (default `[]`)
-* `rooms`: An array of [Room IDs][roomid-format] (default `[]`)
+A new OPTIONAL [`account_data`] entry, `m.presence.prompted`, is introduced to improve the user experience for clients
+with presence sharing prompts. To allow users to dismiss a prompt on one client and have this register across all of
+their clients, so that they do not have to answer the prompt several times, the following standard properties are used:
+* `users`: An OPTIONAL array of [User IDs][mxid-format] (default `[]`)
+* `rooms`: An OPTIONAL array of [Room IDs][roomid-format] (default `[]`)
 
 Sample `m.presence.prompted` account data event:
 ```json
