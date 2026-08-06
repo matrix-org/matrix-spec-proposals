@@ -9,14 +9,8 @@ a method for storing reusable profiles is needed.
 
 ## Proposal
 A new `m.per_message_profiles` account data event is introduced. The event
-content is a map from a user-defined profile "shortcode" to the per-message
-profile data that gets sent in events. All fields inside the profile object
-are defined by [MSC4144].
-
-The shortcode is an arbitrary user-defined string, which can be used as a key
-when selecting a profile to use. Arbitrary unicode is allowed, but spaces
-SHOULD NOT be used, as clients that use a command-based UI might split
-parameters on spaces.
+contains a list of [MSC4144] profiles, plus a `trigger` field for ways to use
+the profile.
 
 ```json
 {
