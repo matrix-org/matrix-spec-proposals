@@ -162,7 +162,7 @@ Where the `action` is `send`, the homeserver SHOULD apply rate limiting to provi
 For all `action`s, the homeserver SHOULD apply rate limiting to provide mitigation against the
 [Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threat.
 
-If no delayed event with the specified `delay_id` can be found,
+If no delayed event for the requesting user with the specified `delay_id` can be found,
 the homeserver will respond with HTTP 404
 and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
 with an `errcode` of `M_NOT_FOUND`.
@@ -210,7 +210,7 @@ A new authenticated Client-Server API endpoint at
 `GET /_matrix/client/v1/delayed_events/{delay_id}` responds with
 details on the delayed event with the specified `delay_id`.
 
-If no delayed event with the specified `delay_id` exists,
+If no delayed event for the requesting user with the specified `delay_id` exists,
 or it does exist but had been scheduled by a user other than the one requesting this endpoint,
 the homeserver will respond with HTTP 404
 and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
