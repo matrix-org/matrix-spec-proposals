@@ -1,4 +1,4 @@
-# MSCxxxx: Paginated Sync
+# MSC4525: Paginated Sync
 
 This is a possible path towards further simplifying simplified sliding sync (SSS), based on ideas
 from Erik and others as captured in the Alternatives section of
@@ -242,8 +242,8 @@ sending no token at all.
 ## Unstable prefix
 
 While this MSC is unstable, the endpoint is `POST
-/_matrix/client/unstable/org.matrix.paginated_sync/sync` (to be renamed once an MSC number is
-assigned), advertised via the `org.matrix.paginated_sync` flag in `/_matrix/client/versions`.
+/_matrix/client/unstable/org.matrix.msc4525/sync`, advertised via the `org.matrix.msc4525` flag in
+`/_matrix/client/versions`.
 
 ## Dependencies
 
