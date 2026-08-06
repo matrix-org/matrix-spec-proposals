@@ -15,10 +15,9 @@ most of the remaining pathologies:
   set out to fix. In practice servers defend themselves by expiring the connection
   (`M_UNKNOWN_POS`) instead...
 
-* **...and connection expiry is brutal.** When a connection expires (after ~30 minutes offline, or
-  when too many updates have stacked up), the client starts from scratch: it re-sends the full
-  request, re-downloads account data, push rules, read receipts, and re-grows its ranges over the
-  entire room list, re-fetching a page of rooms it almost entirely already has. All of that
+* **...and connection expiry is very disruptive.** When a connection expires (after ~30 minutes 
+  offline, or when too many updates have stacked up), the client starts from scratch: it re-sends the full request, re-downloads account data, push rules, read receipts, and re-grows its ranges 
+  over the entire room list, re-fetching a page of rooms it almost entirely already has. All of that
   bandwidth and battery is spent recovering state the client never lost.
 
 * **`timeline_limit: 1` blows holes in the timeline.** To keep list responses small, clients run
@@ -63,18 +62,20 @@ plus a room config that applies to all rooms:
 | `page_size` | `int` | Yes | The maximum number of rooms to return in this response. Clients might use a small value (e.g. 20) on the first request of a connection so the app renders quickly, then a larger one (e.g. 100) to drain the rest. |
 | `limit` | `int` | Yes | The maximum number of *new* timeline events to return per room, per response. If a room has more new events than this, the server returns the most recent `limit` of them with `limited: true` and a `prev_batch`, and the client uses `/messages` to fill the gap if it cares. |
 | `history` | `int` | No | The number of most-recent timeline events to return for a room which has not previously been sent on this connection (e.g. 1). This exists to make cold starts fast: one event per room is enough to order the room list and show a preview, and the client back-fills anything more via `/messages`. Defaults to `limit`. |
-| `required_state` | `RequiredStateRequest` | No | As MSC4186, but specified once, top-level, and applied to every room returned. |
-| `extensions` | `{string: ExtensionConfig}` | No | As MSC4186. |
+| `required_state` | `RequiredStateRequest` | No | As MSC4186, but specified once, top-level, and applied to every room returned. MUST be identical on every request of a connection: the server always uses the value from the *current* request and never has to remember, diff, or re-send state because the config changed. A client that wants different state starts a new connection - which is cheap, see "No connection expiry, no errors" below. |
+| `extensions` | `{string: ExtensionConfig}` | No | As MSC4186, minus the per-extension `lists`/`rooms` scoping fields - with no lists or subscriptions there is nothing for them to scope. An enabled extension applies to the rooms in the response (plus its global parts, e.g. global account data, as before). |
 
 The three integers are *not* sticky: they apply to the request they are sent in, and the client
-can vary them freely between requests (there is no cross-request state to disagree about).
+can vary them freely between requests. `required_state` is the opposite - fixed for the life of
+the connection - and either way each request is self-describing: the only cross-request state the
+server keeps is which rooms it has sent, and up to where.
 
 ### Response body
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `pos` | `string` | Yes | As MSC4186. |
-| `rooms` | `{string: RoomResult}` | No | As MSC4186, minus the `lists` and `expanded_timeline` fields. |
+| `rooms` | `{string: RoomResult}` | No | As MSC4186, minus the `lists`, `expanded_timeline` and `num_live` fields. (`num_live` is derivable here: a previously-sent room only ever receives events newer than the client's position, so its whole timeline is live; a never-sent room (`initial: true`) is all-historical.) |
 | `pending` | `int` | No | The number of further rooms with undelivered updates which did not fit into `page_size`. Absent means 0. May be approximate. While this is non-zero the client should immediately sync again to drain the backlog; the server ignores `timeout` in this state and responds immediately. |
 | `total_rooms` | `int` | No | The total number of rooms in the user's account (the MSC4186 server-side list: joined, invited, knocked, plus kicked/banned). Lets the client show sync progress on a cold start. |
 | `extensions` | `{string: ExtensionResult}` | No | As MSC4186. |
@@ -88,7 +89,11 @@ new since". Each request is then:
 1. Compute the set of rooms with updates the connection hasn't yet received (or, on the first
    request, all rooms in the server-side list). This is the same set MSC4186 computes; there is
    just no range/filter/subscription applied to it.
-2. Order it by most recent activity (the MSC4186 activity ordering), most recent first.
+2. Order it most recently active first. Unlike MSC4186, this ordering is *advisory*: nothing
+   indexes into it (there are no ranges), so its only effect is which rooms the client hears
+   about first, and clients order their room lists locally (from `bump_stamp` / their own latest
+   events). MSC4186's exact-ordering semantics are therefore unnecessary; the server SHOULD lead
+   with recent activity and that is the whole requirement.
 3. Take the first `page_size` rooms. Anything left over is reported in `pending` and delivered on
    subsequent requests.
 4. For each room: if it has been sent on this connection before, return up to `limit` events newer
@@ -126,7 +131,7 @@ so the client's first fast page stays fast. (Servers MAY use other schemes, e.g.
 `page_size × limit` event budget across more rooms with fewer events each; the requirement is
 only that no room's updates are deferred indefinitely.)
 
-#### No connection expiry
+#### No connection expiry, no errors
 
 MSC4186 servers expire connections partly for resource reasons but mostly as a pressure valve:
 "there is too much to send down, it's cheaper to start again". Paginated sync removes the
@@ -136,6 +141,13 @@ limits. If a server does discard per-connection state, degradation is graceful: 
 forgotten about simply come down as never-sent (`initial: true` with `history` events) - there is
 no equivalent of re-growing ranges, and extensions re-send their data as they do on any initial
 sync.
+
+Because of this, `M_UNKNOWN_POS` is removed from the API entirely. A `pos` the server does not
+recognise - expired, forged, issued to a different device, whatever - is simply treated as
+absent (after authentication, and taking nothing on trust from the token): the connection starts
+afresh and rooms are re-sent as never-sent. The client has **no error path to implement**: no
+expiry detection, no session-restart logic, no "must not process responses after expiring"
+rules. Every response is handled the same way.
 
 #### History is `/messages`'s job
 
@@ -196,9 +208,11 @@ storing more server-side; raise `timeline_limit` and accept bigger list response
 adds surface area to what is already the most subtle part of the API, whereas most-recent-first
 paging makes the pathologies structurally impossible and *removes* surface area. The simplicity
 delta is the point: an implementation of this MSC is an MSC4186 implementation minus lists,
-ranges, filters, subscriptions, per-room config-change detection (the server remembering each
-room's previously-requested `timeline_limit` to implement `expanded_timeline`) and connection
-expiry, plus a sort, a truncate, and a counter.
+ranges, filters, subscriptions, per-room config-change detection (the server remembering and
+diffing each room's previously-requested `timeline_limit`/`required_state` to implement
+`expanded_timeline` and required-state expansion), extension scoping, `num_live`, connection
+expiry and the client-side error path, plus a sort, a truncate, and a counter. The per-connection
+state a server keeps reduces to a single map: room ID to the position it has been sent up to.
 
 [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575)-style op-based windows
 were already rejected by MSC4186 for complexity; this continues in the same direction.
@@ -209,6 +223,12 @@ As MSC4186. Bounded response sizes if anything help here: a malicious or broken 
 longer construct requests (huge ranges, many lists) whose responses are expensive for the server
 to assemble; the per-request work is capped by `page_size × limit` however the account is shaped.
 Servers should still cap the number of connections per device and rate-limit as usual.
+
+MSC4186 requires rejecting a `pos` issued to another user with `M_UNKNOWN_POS`, to stop a stolen
+token granting capabilities. This proposal's treat-as-absent rule satisfies the same goal more
+simply: possession of a `pos` grants nothing, because the server takes nothing on trust from it -
+an unrecognised token yields a fresh connection scoped to the *authenticated* user, same as
+sending no token at all.
 
 ## Unstable prefix
 
