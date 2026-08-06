@@ -116,9 +116,6 @@ Retry-After: 1200
 }
 ```
 
-As a special case, if this limit has been set to 0 such that scheduling delayed events is disallowed entirely,
-the homeserver will instead respond with HTTP 403 and a standard error response with an `errcode` of `M_FORBIDDEN`.
-
 #### Delayed event limits as a capability
 
 The values of both the maximum allowed delay and the maximum allowed number of scheduled events are advertised as a
