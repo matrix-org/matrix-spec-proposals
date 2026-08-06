@@ -1,5 +1,15 @@
 # MSCxxxx: Paginated Sync
 
+This is a possible path towards further simplifying simplified sliding sync (SSS), based on ideas
+from Erik and others as captured in the Alternatives section of
+[MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186). This was deliberately 
+descoped from consideration in MSC4186 given we'd already proven tuned implementations of SSS and 
+we wanted to prioritise shipping the demonstrated benefits in the spec, rather than further 
+delaying the new sync API by moving the goalposts yet again.
+
+However, MSC4186 has now passed FCP, and should land in Matrix 2.0 (at last). So, we might as well
+start thinking about another round of improvements.
+
 ## Problem
 
 [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) (Simplified Sliding
@@ -8,26 +18,27 @@ and sync time became independent of account size. However, having run it in prod
 Element X clients for a while, the sliding-window model itself has turned out to be the source of
 most of the remaining pathologies:
 
-* **Incremental responses are unbounded.** Once the client has grown its range to cover the whole
+* Incremental responses are unbounded: Once the client has grown its range to cover the whole
   account (e.g. `[0, 2600]`), an incremental sync must return *every* room with updates since the
   `pos` token, in one response. If the client has been offline overnight, that response can be
   enormous and slow to compute, which is exactly the failure mode of `/v3/sync` that sliding sync
   set out to fix. In practice servers defend themselves by expiring the connection
   (`M_UNKNOWN_POS`) instead...
 
-* **...and connection expiry is very disruptive.** When a connection expires (after ~30 minutes 
-  offline, or when too many updates have stacked up), the client starts from scratch: it re-sends the full request, re-downloads account data, push rules, read receipts, and re-grows its ranges 
+* ...and connection expiry is very disruptive: When a connection expires (after ~30 minutes 
+  offline, or when too many updates have stacked up), the client starts from scratch: it re-sends 
+  the full request, re-downloads account data, push rules, read receipts, and re-grows its ranges 
   over the entire room list, re-fetching a page of rooms it almost entirely already has. All of that
   bandwidth and battery is spent recovering state the client never lost.
 
-* **`timeline_limit: 1` blows holes in the timeline.** To keep list responses small, clients run
-  their lists with a timeline limit of 1. This means that whenever more than one event has arrived
-  in a room since the last response, the room comes down gappy (`limited: true`), the client
-  throws away its cached timeline connectivity, and has to back-paginate to stitch the gap - even
-  though the server had the intervening events sitting right there. For E2EE rooms this also
-  degrades the ability to eagerly decrypt what arrived.
+* `timeline_limit: 1` blows holes in the timeline: To keep list responses small when initially
+  growing the all_rooms list, clients run their lists with a timeline limit of 1. This means that
+  whenever more than one event has arrived in a room since the last response, the room comes down
+  gappy (`limited: true`), the client throws away its cached timeline connectivity, and has to
+  back-paginate to stitch the gap - even though the server had the intervening events sitting right
+  there. For E2EE rooms this also degrades the ability to eagerly decrypt what arrived.
 
-* **The client can drive the API wrong.** Ranges, multiple lists, list filters, room
+* It's too easy for the client to drive the API wrong: Ranges, multiple lists, list filters, room
   subscriptions, and `timeline_limit`/`required_state` changes between requests (whose deltas the
   server computes against the per-room request config it remembered from previous requests, c.f.
   `expanded_timeline`) form a large surface area where client and server state can disagree.
@@ -84,29 +95,30 @@ server keeps is which rooms it has sent, and up to where.
 
 The server maintains, per connection, the position up to which each room has been sent - exactly
 the bookkeeping MSC4186 servers already do to compute "has this room been sent before, and what's
-new since". Each request is then:
+new since". For each sync request:
 
 1. Compute the set of rooms with updates the connection hasn't yet received (or, on the first
    request, all rooms in the server-side list). This is the same set MSC4186 computes; there is
    just no range/filter/subscription applied to it.
+
 2. Order it most recently active first. Unlike MSC4186, this ordering is *advisory*: nothing
    indexes into it (there are no ranges), so its only effect is which rooms the client hears
    about first, and clients order their room lists locally (from `bump_stamp` / their own latest
    events). MSC4186's exact-ordering semantics are therefore unnecessary; the server SHOULD lead
    with recent activity and that is the whole requirement.
+
 3. Take the first `page_size` rooms. Anything left over is reported in `pending` and delivered on
    subsequent requests.
+
 4. For each room: if it has been sent on this connection before, return up to `limit` events newer
    than what the client has, setting `limited: true` and a `prev_batch` if events were dropped.
    If it has never been sent, return the most recent `history` events with `initial: true`, a
    `prev_batch`, and `limited: true` if the room has more history. `required_state`, `bump_stamp`,
    `name`, `heroes`, counts etc. are all as MSC4186.
 
-That's the whole API.
-
 Because a room the client has already received only ever comes down with events *newer* than what
 the client has, and gaps are explicit per-room (`limited` + `prev_batch`), the response to any
-request is bounded by roughly `page_size × limit` events regardless of how long the client has
+request is bounded by roughly `page_size * limit` events regardless of how long the client has
 been away. Catch-up after a week offline is the same shape as catch-up after ten seconds: a few
 pages of the most recently active rooms, oldest news elided behind per-room gaps.
 
@@ -128,10 +140,10 @@ rooms whose undelivered updates are *oldest*, filling the rest most-recent-first
 every pending room is delivered within a bounded number of pages while keeping the top of the
 page hot, and - unlike schemes that widen the page - never returns more than `page_size` rooms,
 so the client's first fast page stays fast. (Servers MAY use other schemes, e.g. spreading a
-`page_size × limit` event budget across more rooms with fewer events each; the requirement is
+`page_size * limit` event budget across more rooms with fewer events each; the requirement is
 only that no room's updates are deferred indefinitely.)
 
-#### No connection expiry, no errors
+#### No connection expiry
 
 MSC4186 servers expire connections partly for resource reasons but mostly as a pressure valve:
 "there is too much to send down, it's cheaper to start again". Paginated sync removes the
@@ -214,14 +226,11 @@ diffing each room's previously-requested `timeline_limit`/`required_state` to im
 expiry and the client-side error path, plus a sort, a truncate, and a counter. The per-connection
 state a server keeps reduces to a single map: room ID to the position it has been sent up to.
 
-[MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575)-style op-based windows
-were already rejected by MSC4186 for complexity; this continues in the same direction.
-
 ## Security considerations
 
 As MSC4186. Bounded response sizes if anything help here: a malicious or broken client can no
 longer construct requests (huge ranges, many lists) whose responses are expensive for the server
-to assemble; the per-request work is capped by `page_size × limit` however the account is shaped.
+to assemble; the per-request work is capped by `page_size * limit` however the account is shaped.
 Servers should still cap the number of connections per device and rate-limit as usual.
 
 MSC4186 requires rejecting a `pos` issued to another user with `M_UNKNOWN_POS`, to stop a stolen
@@ -238,4 +247,4 @@ assigned), advertised via the `org.matrix.paginated_sync` flag in `/_matrix/clie
 
 ## Dependencies
 
-Builds on MSC4186 (connections, room results, activity ordering, extensions), which is merged.
+Builds on MSC4186 (connections, room results, activity ordering, extensions), which has passed FCP.
