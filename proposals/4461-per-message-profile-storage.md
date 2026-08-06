@@ -23,7 +23,7 @@ match. The event can be used both in global account data and room account data.
         "id": "cat",
         "displayname": "Cat 🐈️",
         "triggers": [
-          {"prefix": "meow ", "suffix": " meow"}
+          {"prefix": "meow ", "suffix": " meow"},
           {"prefix": "cat: "}
         ]
       },
