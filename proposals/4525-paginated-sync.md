@@ -16,7 +16,7 @@ start thinking about another round of improvements.
 Sync) successfully fixed initial sync: the client asks for a window of rooms ordered by activity,
 and sync time became independent of account size. However, having run it in production in the
 Element X clients for a while, the sliding-window model itself has turned out to be the source of
-most of the remaining pathologies:
+most of the remaining problems:
 
 * Incremental responses are unbounded: Once the client has grown its range to cover the whole
   account (e.g. `[0, 2600]`), an incremental sync must return *every* room with updates since the
@@ -214,17 +214,22 @@ reset that takes the other 2,599 rooms' state with it.
 
 ## Alternatives
 
-Stay with MSC4186 and patch each pathology individually: cap incremental response sizes by
-splitting them (this proposal, but bolted onto the range machinery); keep sessions alive by
-storing more server-side; raise `timeline_limit` and accept bigger list responses. Each patch
-adds surface area to what is already the most subtle part of the API, whereas most-recent-first
-paging makes the pathologies structurally impossible and *removes* surface area. The simplicity
-delta is the point: an implementation of this MSC is an MSC4186 implementation minus lists,
+We could stay with MSC4186 and work around each problem individually: cap incremental response sizes
+by splitting them (this proposal, but bolted onto the range machinery); keep sessions alive by
+storing more server-side; raise `timeline_limit` and accept bigger list responses. Each patch adds
+surface area to what is already the most subtle part of the API, whereas most-recent-first paging
+makes the problems structurally impossible and *removes* surface area.  Instead, the simplicity of
+this MSC is the point: an implementation of this MSC is an MSC4186 implementation minus lists,
 ranges, filters, subscriptions, per-room config-change detection (the server remembering and
 diffing each room's previously-requested `timeline_limit`/`required_state` to implement
-`expanded_timeline` and required-state expansion), extension scoping, `num_live`, connection
-expiry and the client-side error path, plus a sort, a truncate, and a counter. The per-connection
-state a server keeps reduces to a single map: room ID to the position it has been sent up to.
+`expanded_timeline` and required-state expansion), extension scoping, `num_live`, connection expiry
+and the client-side error path, plus a sort, a truncate, and a counter. The per-connection state a
+server keeps reduces to a single map: room ID to the position it has been sent up to.
+
+On the other hand, something which SSS removed which feels increasingly painful is the ability to
+delta compress responses or requests - for instance, we have no way of sending an incremental
+update to account_data, or avoid re-sending filter configuration.  One option could be to carefully
+reintroduce that in this MSC.
 
 ## Security considerations
 
