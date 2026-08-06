@@ -29,11 +29,13 @@ most of the remaining pathologies:
   degrades the ability to eagerly decrypt what arrived.
 
 * **The client can drive the API wrong.** Ranges, multiple lists, list filters, room
-  subscriptions, sticky parameters, and `timeline_limit` changes (with `expanded_timeline`
-  semantics) form a large surface area where client and server state can disagree. Several of the
-  nastiest sliding sync bugs have been "the client's model of the window differs from the
-  server's". Subscriptions exist purely because a room outside the ranges gets no updates; lists
-  exist purely to grow coverage of the account. Both are workarounds for the window model.
+  subscriptions, and `timeline_limit`/`required_state` changes between requests (whose deltas the
+  server computes against the per-room request config it remembered from previous requests, c.f.
+  `expanded_timeline`) form a large surface area where client and server state can disagree.
+  Several of the nastiest sliding sync bugs have been "the client's model of the window differs
+  from the server's". Subscriptions exist purely because a room outside the ranges gets no
+  updates; lists exist purely to grow coverage of the account. Both are workarounds for the
+  window model.
 
 This MSC proposes **Paginated Sync**: a dialect of MSC4186 which keeps its connection model, room
 result schema, and extensions, but replaces lists, ranges, subscriptions and expanding timelines
@@ -116,13 +118,13 @@ and a bigger one for the drain; nothing else changes.
 Most-recent-first ordering has a starvation hazard: if more than `page_size` rooms have constant
 traffic, a quiet room's single new message could sit behind the noisy rooms indefinitely, since
 the noisy rooms re-earn their place at the top of the ordering on every request. Servers MUST
-prevent this. The recommended approach: treat `page_size × limit` as the response's overall event
-budget, and when the pending-room set exceeds `page_size`, reduce the per-room event count below
-`limit` (to a floor of 1) and return correspondingly more rooms, so that every room with pending
-updates is delivered within a bounded number of responses. The client has already declared - via
-`page_size × limit` - the total response size it can handle; how the server spreads that budget
-across rooms is the server's business. (Servers MAY use other schemes, e.g. ageing pending rooms
-up the ordering; the requirement is only that no room's updates are deferred indefinitely.)
+prevent this. The recommended approach: reserve a slice of each page (say a quarter) for the
+rooms whose undelivered updates are *oldest*, filling the rest most-recent-first. This guarantees
+every pending room is delivered within a bounded number of pages while keeping the top of the
+page hot, and - unlike schemes that widen the page - never returns more than `page_size` rooms,
+so the client's first fast page stays fast. (Servers MAY use other schemes, e.g. spreading a
+`page_size × limit` event budget across more rooms with fewer events each; the requirement is
+only that no room's updates are deferred indefinitely.)
 
 #### No connection expiry
 
@@ -194,7 +196,8 @@ storing more server-side; raise `timeline_limit` and accept bigger list response
 adds surface area to what is already the most subtle part of the API, whereas most-recent-first
 paging makes the pathologies structurally impossible and *removes* surface area. The simplicity
 delta is the point: an implementation of this MSC is an MSC4186 implementation minus lists,
-ranges, filters, subscriptions, sticky request state, config-change detection and connection
+ranges, filters, subscriptions, per-room config-change detection (the server remembering each
+room's previously-requested `timeline_limit` to implement `expanded_timeline`) and connection
 expiry, plus a sort, a truncate, and a counter.
 
 [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575)-style op-based windows
