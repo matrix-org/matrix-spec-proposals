@@ -8,7 +8,7 @@ response. Instead, such data is left to "extensions", which clients opt into ind
 This MSC defines the extension for typing notifications, so that clients using sliding sync can show
 typing indicators in rooms.
 
-Supersedes [MSC3961](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/ssext-typing/proposals/3961-sliding-sync-typing.md).
+Supersedes [MSC3961](https://github.com/matrix-org/matrix-spec-proposals/pull/3961).
 
 # Proposal
 
