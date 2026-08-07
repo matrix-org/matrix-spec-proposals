@@ -112,10 +112,19 @@ likely not a problem, as it's only edited directly by humans (as opposed to
 something like `m.direct`, which clients may update in the background).
 
 ## Alternatives
-There are various other places where profiles could be stored, like
-[rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/4201)
-or multiple account data events. This proposal uses a single account
-data event for simplicity.
+There are various other user-local places where profiles could be stored. Some
+options that weren't chosen:
+
+* Dedicated [profile rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/4201)
+  for each profile.
+  * Rejected as it's much more complicated
+* State events in rooms
+  * Normal users can't send custom state events in most rooms, plus it would
+    require duplicating profiles in each room.
+* Multiple account data events (à la Sable's original implementation)
+  * The only benefit would be avoiding race conditions if the user modifies
+    profiles from multiple clients at once, which isn't really worth the extra
+    complication.
 
 Instead of an array, the event could be a map of shortcode to profile. However,
 that would require duplicating the content if the user wants multiple prefixes
