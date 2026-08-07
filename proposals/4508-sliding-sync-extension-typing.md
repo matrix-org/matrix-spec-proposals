@@ -17,7 +17,7 @@ A new sliding sync extension is added, with the extension key `typing`.
 ## Common extension semantics
 
 [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) defines the `extensions`
-request field as a map from extension key to an extension config, but leaves the format of the
+request field as a map from extension key to an `ExtensionConfig`, but leaves the format of the
 config to the MSCs defining each extension. As this is the first such MSC, it defines the following
 semantics, which are expected to be common to all extensions. Future extension MSCs may reference
 this definition rather than redefine them.
@@ -29,7 +29,7 @@ this definition rather than redefine them.
 > needs the latest state (rather than all updates), while for to-device messages the client must
 > (eventually) receive every missed to-device message in order.
 
-All extensions include the following fields:
+All extensions include the following fields as members of their `ExtensionConfig`:
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
@@ -57,7 +57,8 @@ with older servers.
 Some extensions apply on a per-room basis, of which this is the first. We define the generic
 per-room semantics here.
 
-The per-room extensions include the following fields (as well as the ones above):
+The per-room extensions include the following fields as members of their `ExtensionConfig` (as well
+as the ones above):
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
@@ -119,7 +120,7 @@ The `typing` extension takes no arguments beyond the common ones:
 ## Extension response
 
 If the extension is enabled, the server MAY include a `typing` section in the `extensions` response
-field, with the following format:
+field. The `ExtensionResult` has the following format:
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
