@@ -143,8 +143,9 @@ The `typing` extension takes no arguments beyond the common ones:
 
 ## Extension response
 
-If the extension is enabled, the server MAY include a `typing` section in the `extensions` response
-field. The `ExtensionResult` has the following format:
+If the extension is enabled, the server MUST include a `typing` section in the `extensions` response
+field whenever it has typing data to send (as described under [Semantics](#semantics) below). It MAY
+omit the section when there is nothing to send. The `ExtensionResult` has the following format:
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
