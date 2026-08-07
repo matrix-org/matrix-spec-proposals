@@ -258,11 +258,10 @@ The experimental implementations of
 Element X) have supported this extension with the unprefixed `typing` key on the
 `/_matrix/client/unstable/org.matrix.simplified_msc3575/sync` endpoint.
 
-Until this MSC is accepted, implementations MUST use `org.matrix.msc4508.typing` (substituting this
-proposal's MSC number) as the extension key on the stable
-[MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) endpoint. The unprefixed
-`typing` key remains in use on the unstable `org.matrix.simplified_msc3575` endpoint for
-compatibility with existing implementations.
+Until this MSC is accepted, implementations MUST use `org.matrix.msc4508.typing` as the extension
+key on the stable [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) endpoint.
+The unprefixed `typing` key remains in use on the unstable `org.matrix.simplified_msc3575` endpoint
+for compatibility with existing implementations.
 
 Per the common extension semantics above, servers advertise support for this extension in
 `unstable_features` of
