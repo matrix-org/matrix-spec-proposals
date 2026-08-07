@@ -62,6 +62,20 @@ As with unknown fields elsewhere in the client-server API, servers MUST ignore e
 they do not recognise (rather than rejecting the request), so that newer clients remain compatible
 with older servers.
 
+Since an ignored extension is indistinguishable from an enabled extension that has no data to send,
+extension MSCs MUST define both an unstable and a stable feature flag in
+[`/_matrix/client/versions`](https://spec.matrix.org/latest/client-server-api/#get_matrixclientversions)
+`unstable_features`, so that clients can detect support for an individual extension. Per convention
+the stable flag is the unstable flag with `.stable` appended. Servers SHOULD advertise the stable
+flag once they support the extension as specified, without waiting until they advertise the spec
+version that contains it.
+
+> [!NOTE]
+>
+> Feature flags allow a client to detect that a server does not implement an extension at all. They
+> do not help a client that has mistyped an extension key, which the server will silently ignore as
+> above.
+
 ## Common per-room extension semantics
 
 Some extensions apply on a per-room basis, of which this is the first. We define the generic
@@ -238,6 +252,16 @@ proposal's MSC number) as the extension key on the stable
 [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) endpoint. The unprefixed
 `typing` key remains in use on the unstable `org.matrix.simplified_msc3575` endpoint for
 compatibility with existing implementations.
+
+Per the common extension semantics above, servers advertise support for this extension in
+`unstable_features` of
+[`/_matrix/client/versions`](https://spec.matrix.org/latest/client-server-api/#get_matrixclientversions):
+
+- `org.matrix.msc4508` while this MSC is unstable, covering both the `org.matrix.msc4508.typing` key
+  on the stable endpoint and the unprefixed `typing` key on the unstable endpoint; and
+- `org.matrix.msc4508.stable` once the server supports the extension as specified here, under the
+  unprefixed `typing` key on the stable endpoint, until it advertises the spec version containing
+  this MSC.
 
 # Appendix
 
