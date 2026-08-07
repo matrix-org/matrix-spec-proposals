@@ -35,12 +35,22 @@ All extensions include the following fields as members of their `ExtensionConfig
 | - | - | - | - |
 | `enabled` | `bool` | No | Whether the extension is enabled. Defaults to `false`. The server only processes the extension if this is `true`. |
 
-Extension MSCs MUST address the behaviour when an extension that was absent or disabled is later
-enabled on an existing connection. Extensions SHOULD leave the behaviour up to server
-implementations unless there is a client UX need, as clients SHOULD enable the extensions they need
-at the beginning of the connection. This gives the server flexibility to track extension data
-efficiently, regardless of whether extensions are toggled. Servers MUST allow toggling extensions,
-even if they only send newly changed data, and MUST NOT reject the request.
+Extension MSCs MUST address the behaviour when an extension is enabled partway through an existing
+connection. There are two distinct cases:
+
+- The extension is enabled for the first time on the connection, having been absent or disabled on
+  every previous request. Clients may choose to defer an extension deliberately to allow the initial
+  request to complete faster.
+- The extension is re-enabled having previously been enabled and then disabled on the same
+  connection. The client has whatever data it received before disabling the extension, but that data
+  is stale by an unknown amount.
+
+Extensions MUST support the former case of deferring first enablement. However, extensions SHOULD
+leave the behaviour in the latter case up to server implementations unless there is a client UX
+need, as clients SHOULD enable the extensions they need towards the beginning of the connection.
+This gives the server flexibility to track extension data efficiently, regardless of whether
+extensions are toggled. In either case servers MUST allow extensions to be toggled, even if they
+only send newly changed data, and MUST NOT reject the request.
 
 Extension MSCs MUST specify the expected behaviour of clients when the sliding sync connection is
 reset (via `M_UNKNOWN_POS`).
@@ -165,9 +175,11 @@ For the rooms that remain:
   state. This applies on an initial sync (no `pos`), when the room first comes into scope on the
   connection, and when it re-enters scope after having dropped out (e.g. after falling out of a
   list's range). As a minor optimisation, the server MAY omit the room if there are no users typing
-  and the previously sent state (if any) was also empty. If the extension is enabled partway through
-  a connection, the server MAY omit this initial data for rooms already in scope, per the common
-  extension semantics above.
+  and the previously sent state (if any) was also empty.
+- If the extension is enabled partway through a connection after having been disabled, the server
+  MAY omit this initial data for rooms already in scope, per the common extension semantics above.
+  Clients therefore MUST discard any typing state they hold for in-scope rooms when they enable the
+  extension partway through a connection.
 - On an incremental sync, an in-scope room is included if its typing state has changed since the
   previous request's `pos`.
 
