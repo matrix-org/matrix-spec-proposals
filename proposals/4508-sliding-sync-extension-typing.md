@@ -189,8 +189,7 @@ For the rooms that remain:
 - Whenever a room enters scope on a connection, the server MUST send the room's current typing
   state. This applies on an initial sync (no `pos`), when the room first comes into scope on the
   connection, and when it re-enters scope after having dropped out (e.g. after falling out of a
-  list's range). As a minor optimisation, the server MAY omit the room if there are no users typing
-  and the previously sent state (if any) was also empty.
+  list's range). As a minor optimisation, the server MAY omit the room if there are no users typing.
 - If the extension is enabled partway through a connection after having been disabled, the server
   MAY omit this initial data for rooms already in scope, per the common extension semantics above.
   Clients therefore MUST discard any typing state they hold for in-scope rooms when they enable the
@@ -215,7 +214,7 @@ Typing is pure "latest state" data: each `m.typing` event replaces the previous 
 rather than building on it. When a room (re-)enters scope, the server brings the client up-to-date
 by sending the room's current typing state; it never has to replay the individual updates the room
 missed while out of scope. Consequently, the server does not need to track which typing state it has
-previously sent on a connection (unless it wants to use the omission optimisation described above).
+previously sent on a connection.
 
 # Potential issues
 
