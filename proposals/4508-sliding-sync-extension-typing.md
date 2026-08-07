@@ -149,11 +149,15 @@ omit the section when there is nothing to send. The `ExtensionResult` has the fo
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
-| `rooms` | `{string: Event}` | No | A map of room ID to the `m.typing` ephemeral event for that room. |
+| `rooms` | `{string: TypingUpdate}` | No | A map of room ID to the current typing state of that room. |
 
-The value for each room is the same `m.typing` event that would appear in the room's
-`ephemeral.events` array in a [`/v3/sync`
-response](https://spec.matrix.org/v1.17/client-server-api/#typing-notifications), e.g.:
+where a `TypingUpdate` is:
+
+| Name | Type | Required | Comment |
+| - | - | - | - |
+| `user_ids` | `[string]` | Yes | The users currently typing in the room. |
+
+For example:
 
 ```jsonc
 {
@@ -161,10 +165,7 @@ response](https://spec.matrix.org/v1.17/client-server-api/#typing-notifications)
         "typing": {
             "rooms": {
                 "!abcd:example.com": {
-                    "type": "m.typing",
-                    "content": {
-                        "user_ids": ["@alice:example.com", "@bob:example.com"]
-                    }
+                    "user_ids": ["@alice:example.com", "@bob:example.com"]
                 }
             }
         }
@@ -172,8 +173,13 @@ response](https://spec.matrix.org/v1.17/client-server-api/#typing-notifications)
 }
 ```
 
-As in `/v3/sync`, the `user_ids` field contains the complete list of users currently typing in that
-room: it replaces, rather than updates, any typing state the client previously had for the room.
+As in [`/v3/sync`](https://spec.matrix.org/v1.17/client-server-api/#typing-notifications), the
+`user_ids` field contains the complete list of users currently typing in that room: it replaces,
+rather than updates, any typing state the client previously had for the room.
+
+Note that, unlike `/v3/sync`, the typing state is *not* wrapped in an `m.typing` ephemeral event
+with `type` and `content` fields. The extension can only ever carry typing notifications, so the
+wrapper conveys no information.
 
 ## Semantics
 
@@ -210,9 +216,9 @@ A change in typing state of an in-scope room counts as an update for the purpose
 it causes a waiting `/sync` request to return, even if there is nothing else to send. This can
 result in a response whose `rooms` section is empty but whose `typing` extension section is not.
 
-Typing is pure "latest state" data: each `m.typing` event replaces the previous state for the room,
-rather than building on it. When a room (re-)enters scope, the server brings the client up-to-date
-by sending the room's current typing state; it never has to replay the individual updates the room
+Typing is pure "latest state" data: each update replaces the previous state for the room, rather
+than building on it. When a room (re-)enters scope, the server brings the client up-to-date by
+sending the room's current typing state; it never has to replay the individual updates the room
 missed while out of scope. Consequently, the server does not need to track which typing state it has
 previously sent on a connection.
 
@@ -229,6 +235,11 @@ The common extension arguments (`enabled`, `lists`, `rooms`) could be defined in
 "extensions framework" MSC that each extension MSC depends on, rather than in this one. That adds an
 extra MSC to the process for little benefit; instead this MSC defines them in a way that later
 extension MSCs can reference.
+
+The response could send the typing state as a full `m.typing` ephemeral event (i.e. wrapped in
+`type` and `content` fields), matching the shape used in `/v3/sync` and the experimental
+implementation. That would let clients reuse an existing code path for parsing the event, but the
+wrapper is redundant when the extension can only carry one type of data.
 
 # Security considerations
 
@@ -270,3 +281,5 @@ Per the common extension semantics above, servers advertise support for this ext
 Differences from the experimental implementation of simplified sliding sync in Synapse v1.151.0.
 
 1. Removed the special value `"*"` from the common room extension fields.
+2. The per-room value in the response is now a bare object with a `user_ids` field, rather than a
+   full `m.typing` ephemeral event with `type` and `content` fields.
