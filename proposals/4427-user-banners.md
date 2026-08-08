@@ -28,8 +28,7 @@ We add a new field to represent banners:
 
 Clients can then use this field to load user banners.
 
-The `m.banner_url` field MUST be an MXC URI. External URIs/URLs, i.e 
-to image hosting services, should not be used.
+The `m.banner_url` field MUST be an MXC URI.
 
 It is recommended that clients stick to a horizontal aspect ratio, 
 like 3:1 or 2.8:1.
