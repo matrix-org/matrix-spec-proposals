@@ -29,7 +29,9 @@ most of the remaining problems:
   offline, or when too many updates have stacked up), the client starts from scratch: it re-sends 
   the full request, re-downloads account data, push rules, read receipts, and re-grows its ranges 
   over the entire room list, re-fetching a page of rooms it almost entirely already has. All of that
-  bandwidth and battery is spent recovering state the client never lost.
+  bandwidth and battery is spent recovering state the client never lost.  Moreover, the UX of
+  "timeline resets" on clients can be bad if they throw away their timeline view/cache; this removes
+  the concept of timeline resets entirely.
 
 * `timeline_limit: 1` blows holes in the timeline: To keep list responses small when initially
   growing the all_rooms list, clients run their lists with a timeline limit of 1. This means that
