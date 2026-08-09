@@ -23,7 +23,7 @@ match. The event can be used both in global account data and room account data.
         "id": "cat",
         "displayname": "Cat 🐈️",
         "triggers": [
-          {"prefix": "meow ", "suffix": " meow"},
+          {"prefix": "meow ", "suffix": " meow", "keep_trigger": true},
           {"prefix": "cat: "}
         ]
       },
@@ -53,9 +53,9 @@ outgoing message. Specifying triggers is not required.
 Each trigger can contain one or more conditions. This MSC defines two: `prefix`
 and `suffix`, which require the input text to start with or end with the
 specified string respectively. When a trigger matches, the relevant prefix
-and/or suffix is removed from the text. If both are present, the input must both
-start with the prefix and end with the suffix to match, and the prefix and
-suffix must not overlap.
+and/or suffix is removed from the text, unless the `keep_trigger` field is set
+to `true`. If both are present, the input must both start with the prefix and
+end with the suffix to match, and the prefix and suffix must not overlap.
 
 Triggers are checked in order such that all triggers of the first profile take
 priority over the second profile. Per-room profiles always take priority over
