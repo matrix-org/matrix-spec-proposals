@@ -141,7 +141,7 @@ Security considerations with per-message profiles are covered in [MSC4144]
 `triggers` doesn't have a prefix as it's only contained inside the already
 prefixed account data event, and it must not be sent in actual messages.
 
-### Earlier reversions
+### Earlier revisions
 `fi.mau.msc4461.per_message_profiles.v2` used a different format for triggers
 and only defined prefixes. It can be found at [8a8cfa7](https://github.com/matrix-org/matrix-spec-proposals/blob/8a8cfa7c0e94cd58f540ca4233a5a25fe80b7a61/proposals/4461-per-message-profile-storage.md).
 
