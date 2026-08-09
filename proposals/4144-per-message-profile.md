@@ -193,6 +193,9 @@ Some users want to be able to switch between profiles quickly, which would be
 much easier using this MSC. Currently easiest way is to have multiple accounts,
 which has other benefits, but is much more cumbersome to manage.
 
+To enable this use case, [MSC4461](https://github.com/matrix-org/matrix-spec-proposals/pull/4461)
+allows users to store reusable profiles in account data.
+
 ## Potential issues
 Implementing encrypted avatars could cause difficulty for clients that assume
 that avatars are always unencrypted mxc URIs.
