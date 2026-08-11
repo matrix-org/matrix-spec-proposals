@@ -220,6 +220,9 @@ However, this does not need to be guaranteed, particularly when catching up send
 (either after a network partition or to a newly-joined server) at the same time as new sticky events
 are being created in real-time.
 
+When a sticky event was sent by a [user who has been erased](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3accountdeactivate),
+servers SHOULD NOT send it to other homeservers as part of catch-up.
+
 ## Potential issues
 
 ### Time
