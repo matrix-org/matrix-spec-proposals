@@ -87,6 +87,8 @@ is added to the Client-Server API (core spec):
 }
 ```
 
+The endpoint requires authentication to permit different transports to be returned to different users.
+
 `rtc_transports` is required and MUST be an array of objects with at least a registered `type`. Types
 not in the registry are not permitted. Additional properties/schema are as per the specification for
 the `type`.
