@@ -93,6 +93,8 @@ The endpoint requires authentication to permit different transports to be return
 not in the registry are not permitted. Additional properties/schema are as per the specification for
 the `type`.
 
+If there are no transports available to the user, `rtc_transports` MUST be an empty array.
+
 ### Exception: MSC4195
 
 Because MSC4195 has been used to test the unstable implementation of MSC4143 and has no unstable
