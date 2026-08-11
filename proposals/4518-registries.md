@@ -24,7 +24,8 @@ Registries MUST only consist of optional functionality for a Matrix implementati
 governance to manage additions, removals, and changes. The precise deployment of a registry is left
 as an editorial detail - a GitHub repo with a bunch of Markdown docs is just as equally suitable as
 `https://spec.matrix.org/registry/whatever`. Registries nominally operate outside of the versioned
-specification, but MAY be included in the versioned spec for editorial ease, versioning, and visibility.
+specification, but MAY be included in the versioned spec (`https://spec.matrix.org/vX.Y/registry/whatever`)
+for editorial ease, versioning, and visibility.
 
 **Note**: Required (non-optional) functionality MUST be placed into the main specification rather than
 a registry.
