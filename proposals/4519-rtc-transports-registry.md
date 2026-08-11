@@ -28,11 +28,15 @@ A new "MatrixRTC Transports" registry is created with the following information:
 * A link to the specification for that transport, per MSC4143.
 
 `stable` transports are added/changed/removed through normal MSCs. `unstable` transports are automatically
-added when a new proposal is opened which introduce a transport. They MUST have a `type` of `msc0000.{stable_type}`
-and implementations MUST use the "Unstable Prefix" identifiers from the proposal rather than any
-stable identifiers. For example, MSC4195's `livekit` type would have an unstable registration of
-`msc4195.livekit`, using unstable identifiers. Later, if accepted, `livekit` can be registered as a
-stable `type` with stable identifiers in its specification.
+added when a new proposal is opened which introduce a transport. They by default have a `type` of `msc0000.{stable_type}`,
+but MAY be extended upon per the MSC's "Unstable Prefix" section provided they maintain the `msc0000`
+prefix. For example, if a proposal changes substantially after the registration was made, the proposal 
+might suggest using `msc0000.livekit.v2`.
+
+Like with regular unstable implementation, `unstable` transport implementations MUST use the "Unstable
+Prefix" section of the relevant MSC. For example, if the transport introduces `/new_endpoint`, then
+implementations would use `/unstable/org.example.msc0000/new_endpoint` in the `msc0000.whatever`
+transport. `/v1/new_endpoint` could only be used in the `whatever` transport (the `stable` type).
 
 Twelve months after the FCP acceptance of the MSC the unstable type is automatically removed from the
 registry. Early removal is possible if the public federation has adopted the stable type sooner than
