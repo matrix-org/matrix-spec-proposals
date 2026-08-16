@@ -102,7 +102,7 @@ This is what lets a profile have moderators (e.g. at power level 50, able to red
 abusive members) without those moderators being able to reassign or strip the profile's ownership out
 from under its actual owner.
 
-`m.social.profile_user_id` is the inverse of `m.social.profile_room_id` (see Profile/Group
+`m.social.profile_user_id` is the inverse of `m.social.profile_room` (see Profile/Group
 discoverability, below): that field lives on a user's own account and points at a room, while
 `m.social.profile_user_id` lives on the room and points back at a user. This matters because a profile
 room's `m.room.create` `creator` is not always the person the profile is *of*: a room created by a
@@ -111,19 +111,36 @@ profile room for a fediverse account) will have the bridge's own bot as `creator
 profile represents. `m.social.profile_user_id` lets that room assert its true intended owner regardless
 of who technically created it, which `creator` alone cannot do.
 
-Like `m.social.profile_room_id`, `m.social.profile_user_id` is self-asserted; see Security considerations
+Like `m.social.profile_room`, `m.social.profile_user_id` is self-asserted; see Security considerations
 for how a client can corroborate it.
 
 ### Profile/Group discoverability
 
-A new user profile key, `m.social.profile_room_id`, whose value is the room ID of the user's profile
-room:
+A new user profile key, `m.social.profile_room`, whose value is a block naming the room ID of the
+user's profile room and the servers to try when resolving it:
 
 ```json
-PUT /_matrix/client/v3/profile/{userId}/m.social.profile_room_id
+PUT /_matrix/client/v3/profile/{userId}/m.social.profile_room
 
-{ "m.social.profile_room_id": "!theirprofileroom:example.org" }
+{
+  "m.social.profile_room": {
+    "room_id": "!theirprofileroom:example.org",
+    "via": ["example.org"]
+  }
+}
 ```
+
+**Mandatory**
+
+- `room_id`: the profile room's room ID.
+
+**Optional**
+
+- `via` (RECOMMENDED): a list of servers to try when resolving `room_id`, the same convention
+  `m.space.child` uses (see [Routing](https://spec.matrix.org/latest/appendices/#routing)). Room IDs
+  aren't routable on their own; without `via`, a client whose own homeserver has no existing path to
+  `room_id` (e.g., it has never seen that room before) may be unable to resolve the profile room at
+  all.
 
 This relies on [profile fields beyond `displayname`/`avatar_url`](https://spec.matrix.org/latest/client-server-api/#profiles),
 added to the Client-Server API in Matrix 1.16 (originally proposed as MSC4133), which is what makes
@@ -138,14 +155,14 @@ service, a room alias convention, or a shared space to find it. It also gives a 
   otherwise disrupting it) by clearing the field.
 
 A room being of type `m.social.profile` does **not** by itself mean it is "the" official profile of
-its creator. `m.social.profile_room_id` (set on the candidate user's own account) and
+its creator. `m.social.profile_room` (set on the candidate user's own account) and
 `m.social.profile_user_id` (set on the room itself, see Profile rooms, above) are the authoritative
 signals a client should use to decide "this is user X's current profile," ideally checked together
 (see Security considerations). A profile-typed room's `type` and `m.room.create` `creator` are only a
 weaker, best-effort fallback signal (useful for legacy clients, or while neither of these fields has
 propagated yet), not a substitute for either.
 
-`m.social.profile_room_id` only helps discover *a specific person's* profile once you already know who
+`m.social.profile_room` only helps discover *a specific person's* profile once you already know who
 you're looking for. To discover new profiles and groups more generally, this proposal relies on the
 public room directory: profile and group rooms can be published to a server's room directory (via the
 existing `PUT /_matrix/client/v3/directory/list/room/{roomId}` visibility mechanism, same as any other
@@ -251,15 +268,20 @@ aggregation, bundling, or thread-rollup behavior, only the identifier-naming con
 - `displayname`: snapshot of the referenced post's author's display name at reference time, for nicer
   default rendering. Clients MUST fall back to the bare `sender` Matrix ID when it is absent, the same
   as Matrix already does anywhere else a display name is unset.
+- `via` (RECOMMENDED): a list of servers to try when resolving `room_id`, the same convention
+  `m.space.child` uses (see [Routing](https://spec.matrix.org/latest/appendices/#routing)). Room IDs
+  aren't routable on their own; without `via`, a viewer whose homeserver has no existing path to
+  `room_id` may be unable to resolve the live event at all, even with permission to see it.
 
-`sender` is mandatory, and `content`/`displayname` are RECOMMENDED, precisely so this kind of post
+`sender` is mandatory, and `content`/`displayname`/`via` are RECOMMENDED, precisely so this kind of post
 doesn't require viewers to fetch the referenced event to render or attribute it: the person viewing it
 in their feed may not share a room with the referenced post's author at all, e.g., reposting a post
 from a public group into your own profile, or replying to a post in a room the replier's own followers
 have never joined. Clients SHOULD still attempt to resolve the live referenced event (via `event_id` +
-`room_id`) where accessible, to support "view original", live reaction counts, or detecting that it has
-since been edited or redacted, falling back to the embedded copy when it isn't reachable, or to a bare
-placeholder linking to the event when no embedded copy was sent either.
+`room_id`, routed through `via` when present) where accessible, to support "view original", live
+reaction counts, or detecting that it has since been edited or redacted, falling back to the embedded
+copy when it isn't reachable, or to a bare placeholder linking to the event when no embedded copy was
+sent either.
 
 ### Quote Posts
 
@@ -282,6 +304,7 @@ Also known as:
       "rel_type": "m.social.repost",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
+      "via": ["example.org"],
       "sender": "@bob:example.org",
       "displayname": "Bob",
       "content": {
@@ -315,18 +338,23 @@ Rather than an empty (or absent) outer `body`, the outer `body` MUST contain onl
 ([MSC1704](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1704-matrix.to-permalinks.md))
 or a `matrix:` URI
 ([MSC2312](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/2312-matrix-uri.md)),
-pointing at the same event referenced by `m.social.relates_to`:
+pointing at the same event referenced by `m.social.relates_to`. Both URI forms support the same `via`
+routing parameter as `m.social.relates_to`'s own `via` field (see
+[Routing](https://spec.matrix.org/latest/appendices/#routing)); the permalink SHOULD include it,
+carrying the same servers, for the same reason: a viewer's homeserver may have no existing path to
+`room_id` otherwise.
 
 ```json
 {
   "type": "m.social.post",
   "content": {
     "msgtype": "m.text",
-    "body": "https://matrix.to/#/!originalroom:example.org/$original:example.org",
+    "body": "https://matrix.to/#/!originalroom:example.org/$original:example.org?via=example.org",
     "m.social.relates_to": {
       "rel_type": "m.social.repost",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
+      "via": ["example.org"],
       "sender": "@bob:example.org",
       "content": {
         "msgtype": "m.text",
@@ -383,6 +411,7 @@ has its own content:
       "rel_type": "m.social.reply",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
+      "via": ["example.org"],
       "sender": "@bob:example.org",
       "displayname": "Bob",
       "content": {
@@ -441,12 +470,13 @@ everyone else:
     "body": "This is exactly what I was talking about:\n\n🔁 reposted Bob's post:\n> This is the original post being reposted",
     "m.social.body": "This is exactly what I was talking about:",
     "format": "org.matrix.custom.html",
-    "formatted_body": "This is exactly what I was talking about:<p>🔁 reposted <a href=\"https://matrix.to/#/@bob:example.org\">Bob</a>'s <a href=\"https://matrix.to/#/!originalroom:example.org/$original:example.org\">post</a></p><blockquote>This is the original post being reposted</blockquote>",
+    "formatted_body": "This is exactly what I was talking about:<p>🔁 reposted <a href=\"https://matrix.to/#/@bob:example.org\">Bob</a>'s <a href=\"https://matrix.to/#/!originalroom:example.org/$original:example.org?via=example.org\">post</a></p><blockquote>This is the original post being reposted</blockquote>",
     "m.social.formatted_body": "This is exactly what I was talking about:",
     "m.social.relates_to": {
       "rel_type": "m.social.repost",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
+      "via": ["example.org"],
       "sender": "@bob:example.org",
       "displayname": "Bob",
       "content": {
@@ -477,6 +507,7 @@ content directly than a bare link. Set `content_inline: true` and omit `relates_
       "rel_type": "m.social.repost",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
+      "via": ["example.org"],
       "sender": "@bob:example.org",
       "content_inline": true
     }
@@ -506,7 +537,7 @@ self-explanatory version, not the clean duplicate:
     "body": "🔁 reposted Bob's post:\n> Look at this cat!",
     "m.social.body": "Look at this cat!",
     "format": "org.matrix.custom.html",
-    "formatted_body": "<p>🔁 reposted <a href=\"https://matrix.to/#/@bob:example.org\">Bob</a>'s <a href=\"https://matrix.to/#/!originalroom:example.org/$original:example.org\">post</a></p><blockquote>Look at this cat!</blockquote>",
+    "formatted_body": "<p>🔁 reposted <a href=\"https://matrix.to/#/@bob:example.org\">Bob</a>'s <a href=\"https://matrix.to/#/!originalroom:example.org/$original:example.org?via=example.org\">post</a></p><blockquote>Look at this cat!</blockquote>",
     "m.social.formatted_body": "Look at this cat!",
     "url": "mxc://example.org/catpicture",
     "info": {
@@ -519,6 +550,7 @@ self-explanatory version, not the clean duplicate:
       "rel_type": "m.social.repost",
       "event_id": "$original:example.org",
       "room_id": "!originalroom:example.org",
+      "via": ["example.org"],
       "sender": "@bob:example.org",
       "displayname": "Bob",
       "content_inline": true
@@ -670,7 +702,7 @@ still on a non-compliant or Phase-1 client, at the cost of a longer transition p
   it, without forcing every implementation into that failure mode.
 - **A separate `m.social.in_reply_to` block mirroring `m.social.repost_of`'s original shape**, instead
   of unifying both into `m.social.relates_to` with a `rel_type` field. Rejected: reposts and cross-posted
-  replies need the exact same fields (`event_id`, `room_id`, `sender`, optional `content`/`displayname`)
+  replies need the exact same fields (`event_id`, `room_id`, `sender`, optional `content`/`displayname`/`via`)
   for the exact same reason, rendering a cross-room reference without requiring room membership; the
   only real difference is what the relationship *means*, which a `rel_type` field captures far more cheaply
   than a second, near-identical block would.
@@ -735,13 +767,13 @@ event as a reply at all.
 
 ## Security considerations
 
-- **`m.social.profile_room_id` and `m.social.profile_user_id` are both self-asserted, unauthenticated
-  claims.** Nothing stops a user from pointing their `m.social.profile_room_id` at a room they don't
+- **`m.social.profile_room` and `m.social.profile_user_id` are both self-asserted, unauthenticated
+  claims.** Nothing stops a user from pointing their `m.social.profile_room` at a room they don't
   own or aren't even a member of, and nothing stops whoever holds sufficient power level in a room from
   setting its `m.social.profile_user_id` to any user ID, including one who has never heard of the room.
   Clients SHOULD treat either field alone as a hint rather than proof of ownership. The strongest
   corroboration this proposal offers is checking that the two agree in both directions: the room's
-  `m.social.profile_user_id` names a user whose own `m.social.profile_room_id` points back at that same
+  `m.social.profile_user_id` names a user whose own `m.social.profile_room`'s `room_id` points back at that same
   room. Requiring agreement in both directions is harder to fake than either field alone, since it
   needs control of both the claimed user's account and sufficient power level in the room, though it is
   still not cryptographic proof. Clients MAY additionally fall back to checking the room's
@@ -795,7 +827,7 @@ all under the `org.matrix.msc4501.social.` namespace:
 | `m.social.relates_to`             | `org.matrix.msc4501.social.relates_to`            |
 | `m.social.repost`                 | `org.matrix.msc4501.social.repost`                |
 | `m.social.reply`                  | `org.matrix.msc4501.social.reply`                 |
-| `m.social.profile_room_id`        | `org.matrix.msc4501.social.profile_room_id`       |
+| `m.social.profile_room`           | `org.matrix.msc4501.social.profile_room`          |
 | `m.social.profile_user_id`        | `org.matrix.msc4501.social.profile_user_id`       |
 | `m.social.body`                   | `org.matrix.msc4501.social.body`                  |
 | `m.social.formatted_body`         | `org.matrix.msc4501.social.formatted_body`        |
@@ -803,10 +835,10 @@ all under the `org.matrix.msc4501.social.` namespace:
 *(This mirrors how MSC3639 itself moved from `org.matrix.msc3639.*` unstable identifiers to
 `m.social.*` on acceptance; the same rename will happen here if/when this proposal is accepted.)*
 
-The `m.social.profile_room_id` profile field additionally depends on the implementing homeserver
+The `m.social.profile_room` profile field additionally depends on the implementing homeserver
 supporting per-key profile fields, part of the Client-Server API since Matrix 1.16; clients should
 check the server's supported spec versions (`/_matrix/client/versions`) before relying on
-`m.social.profile_room_id` being writable/readable.
+`m.social.profile_room` being writable/readable.
 
 ## Dependencies
 
@@ -814,7 +846,7 @@ This MSC builds on the following:
 
 - [Per-key profile fields](https://spec.matrix.org/latest/client-server-api/#profiles), part of the
   Client-Server API since Matrix 1.16 (originally proposed as MSC4133): the profile discoverability
-  mechanism (`m.social.profile_room_id`) depends on this.
+  mechanism (`m.social.profile_room`) depends on this.
 - [MSC4221](https://github.com/matrix-org/matrix-spec-proposals/pull/4221) (Room Banners), not yet
   accepted into the spec at the time of writing: used for `m.room.banner` in Profile rooms and Group
   rooms, above. Without it, profile/group rooms still have a name, avatar, and topic, just no banner
