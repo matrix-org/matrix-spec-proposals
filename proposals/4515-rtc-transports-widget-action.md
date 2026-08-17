@@ -120,5 +120,7 @@ advertised.
 
 ## Dependencies
 
-This MSC builds on [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) (which at the
-time of writing have not yet been accepted into the spec).
+This MSC builds on [MSC4519](https://github.com/matrix-org/matrix-spec-proposals/pull/4519) (which at the
+time of writing has not yet been accepted into the spec).
+
+Also, in practice, widgets should be formally included in the spec before this MSC gets included.
