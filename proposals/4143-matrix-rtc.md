@@ -619,7 +619,7 @@ infrastructure. Alternatives that were considered and discarded include:
   service provider for the RTC transport infrastructure. This is difficult to achieve across federation,
   however, since all members joined to a slot would need an account with the same external service
   provider.
-* Client-provided transports – Clients themself could define and operate transport infrastructure such as
+* Client-provided transports – Clients themselves could define and operate transport infrastructure such as
   SFUs. This is problematic because most users rely on a relatively small number of popular clients.
   Consequently, a low number of transport backends would have to cover the majority of traffic which makes
   the system harder to scale and raises questions around cost, governance, and accountability for
