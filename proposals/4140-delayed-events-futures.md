@@ -616,7 +616,6 @@ stable endpoints for sending and managing delayed events.
 None.
 
 [^eventId]: An event's ID is computed from its [reference hash](https://spec.matrix.org/v1.18/rooms/v11/#event-ids)
-which is obtained by combining several event properties including `origin_server_ts`. The latter is
-only available once the event has actually been sent, however. Since scheduled delayed events may be
-cancelled or re-scheduled, the `origin_server_ts` and, thus, the event ID cannot be determined ahead
-of time.
+which is obtained by combining several event properties including `origin_server_ts`, `prev_events`, and `auth_events`.
+Those properties are available only once the event has actually been sent, however. Since scheduled delayed events may be
+cancelled or re-scheduled, those properties and, thus, the event ID cannot be determined ahead of time.
