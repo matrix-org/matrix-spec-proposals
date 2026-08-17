@@ -25,8 +25,6 @@ Matrix client can schedule "delayed events" which will be sent into a room at a 
 the homeserver. This includes APIs for scheduling delayed events and managing scheduled delayed
 events.
 
-[Selective Forwarding Units (SFUs)]: https://trueconf.com/blog/wiki/sfu
-
 ## Proposal
 
 The following operations are added to the Client-Server API:
@@ -355,7 +353,8 @@ that only allows to interact with the [delayed event management endpoints](#mana
 on that specific `delay_id`.
 This would require those endpoints to be unauthenticated, but for the `delay_id` to serve as their access token instead.
 
-With this, an SFU that tracks the current client connection state could be given the power to control the delayed event.
+With this, a [Selective Forwarding Unit (SFU)](https://trueconf.com/blog/wiki/sfu)
+that tracks the current client connection state could be given the power to control the delayed event.
 The client would share the `delay_id` and other possibly required details (such as its homeserver's server name),
 so that the SFU can call the `POST /delayed_events/{delay_id}/restart` endpoint while a user is connected
 and can call the `POST /delayed_events/{delay_id}/send` endpoint once the user disconnects.
