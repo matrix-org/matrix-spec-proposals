@@ -1,17 +1,18 @@
 # MSC4515: RTC Transports discovery for widgets
 
 Widgets embedded in a room may need to know which real-time communication (RTC) backends the homeserver
-offers, for example to join a call.
-[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) Matrix RTC offers a way for clients
-to discover the available transports through a new authenticated Client-Server endpoint, **GET**
-`/_matrix/client/v1/rtc/transports`.
+offers in order to join MatrixRTC sessions
+([MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)).
+[MSC4519: MatrixRTC Transports Registry](https://github.com/matrix-org/matrix-spec-proposals/pull/4519)
+offers a way for clients to discover the available transports through a new authenticated
+Client-Server endpoint, **GET** `/_matrix/client/v1/rtc/transports`.
 
 Given that this new endpoint is authenticated, widgets cannot access it directly: they need a new widget
 action to get the information by delegating to the client.
 
 ## Proposal
 
-The widget API is extended with one new interface to access the discovery of RTC transports. The client must
+The widget API is extended with one new action to access the discovery of RTC transports. The client must
 approve the `rtc_transports` capability before the action can be used.
 
 To trigger the action to get the configuration, widgets will use a new fromWidget request with the action
@@ -30,7 +31,7 @@ To trigger the action to get the configuration, widgets will use a new fromWidge
 If the widget did not get approved for the `rtc_transports` capability, the client MUST send an error
 response (as required currently by the capabilities system for widgets).
 
-Upon reception of the action, the hosting client should call **GET** `/_matrix/client/v1/rtc/transports`
+Upon receipt of the action, the hosting client should call **GET** `/_matrix/client/v1/rtc/transports`
 and forward the response body verbatim to the widget under the `response` field.
 
 **Success Response**
@@ -53,13 +54,14 @@ and forward the response body verbatim to the widget under the `response` field.
 ```
 
 The `rtc_transports` field follows the same format as
-[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), that is:
+[MSC4519](https://github.com/matrix-org/matrix-spec-proposals/pull/4519), that is:
 
 - `rtc_transports` (required, array): Array of objects describing the transports the homeserver supports.
-    - `type`: (required, string): The globally unique transport identifier. MUST follow the Common
-      Namespaced Identifier Grammar but without the namespacing requirements.
+    - `type`: (required, string): The globally unique transport identifier. MUST be an
+      [Opaque Identifier](https://spec.matrix.org/v1.19/appendices/#opaque-identifiers) registered
+      in the MatrixRTC Transports Registry.
     - Optionally includes further properties specific to the transport type. The concrete properties are
-      defined by the transport's specification.
+      defined by the transport's registered specification.
 
 
 **Error Response**
@@ -87,13 +89,14 @@ The `error` envelope follows the standard widget API error format. At least two 
 
 ## Potential issues
 
-**Staleness**. This is a one-shot fetch with no push/refresh (unlike MSC3846's watch_turn_servers). If
+**Staleness**. This is a one-shot fetch with no push/refresh (unlike
+[MSC3846](https://github.com/matrix-org/matrix-spec-proposals/pull/3846)'s watch_turn_servers). If
 infrastructure rotates, the widget must re-request. This is intentional: RTC transports are quite stable.
 
 ## Alternatives
 
 Instead of adding a new capability, maybe the `get_rtc_transports` could be granted automatically if the
-widget is allowed to send rtc member events. There are no other examples of such mechanism, so we choose
+widget is allowed to send RTC member events. There are no other examples of such mechanism, so we choose
 to keep the "one action ↔ one capability". If needed the client consent policy could merge several
 capability in a single check for users.
 
