@@ -595,6 +595,7 @@ Whilst the MSC is unstable:
   instead of the `POST /_matrix/client/v1/delayed_events/{delay_id}/{action}` endpoints.
 - `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used
   instead of the `GET /_matrix/client/v1/delayed_events` endpoint.
+- `ORG.MATRIX.MSC4140_DELAY_TOO_LARGE` should be used instead of `M_DELAY_TOO_LARGE`.
 - `org.matrix.msc4140.delay_id` should be used instead of `delay_id` as the key in `unsigned` event data.
 - `org.matrix.msc4140.delayed_events` should be used instead of the `m.delayed_events` capability name.
 
