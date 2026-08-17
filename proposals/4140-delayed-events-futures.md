@@ -227,24 +227,16 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
   last restarted.
 - `content` - Required. The content of the delayed event.
   This is the body of the original `PUT` request, not a preview of the full event after sending.
-- `error` - Present only for finalised events that were cancelled due to an error.
-  The [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
-  of the error that prevented the delayed event from being sent.
-- `event_id` - The `event_id` this event got in case it was sent.
-- `finalised_ts` - The timestamp (as Unix time in milliseconds) when the event was finalised;
-  absent if it is still scheduled.
-  Using [timestamp massaging](https://spec.matrix.org/v1.18/application-service-api/#timestamp-massaging)
-  does not affect the value of this field.
-
-Whether a delayed event is still scheduled, or has been sent, failed to be sent due to an error, or was cancelled
-can be determined by examining which of the optional fields are present in the response object:
-
-- If `finalised_ts` is absent, then the delayed event is still scheduled.
-- Otherwise, if `event_id` is present, then the delayed event has been sent.
-  - If `finalised_ts` < `delayed_since_ts` + `delay_ms`, then the event was sent manually by
-    [the `/send` endpoint](#managing-scheduled-delayed-events); otherwise, it was sent on its scheduled send time.
-- Otherwise, if `error` is present, then the delayed event failed to be sent (and was descheduled) due to an error.
-- Otherwise, the delayed event was cancelled by [the `/cancel` endpoint](#managing-scheduled-delayed-events).
+- `finalised` - Present only for finalised events. An object with fields describing how the delayed event was finalised:
+  - `error` - Present only for finalised events that were cancelled due to an error.
+    The [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
+    of the error that prevented the delayed event from being sent.
+  - `event_id` - The `event_id` this event got in case it was sent.
+    It is therefore mutually exclusive with `error`, and
+    absent for delayed events cancelled by [the `/cancel` endpoint](#managing-scheduled-delayed-events).
+  - `finalised_ts` - Required. The timestamp (as Unix time in milliseconds) when the event was finalised.
+    Using [timestamp massaging](https://spec.matrix.org/v1.18/application-service-api/#timestamp-massaging)
+    does not affect the value of this field.
 
 #### Getting a list of delayed events
 
