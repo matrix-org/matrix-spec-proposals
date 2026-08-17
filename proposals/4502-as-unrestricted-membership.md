@@ -18,11 +18,11 @@ available to both users and application services.
 A new Client-Server endpoint `GET /_matrix/client/v3/rooms/{roomId}/is_joined` is introduced. The
 endpoint accepts the following query parameters:
 
-- `user_id` (string): A [user identifier].
+- `mxid` (string): A [user identifier].
 - `server_name` (string): A [server name].
 
 Exactly one of these parameters can be supplied at the same time. If both or none are given, the
-server MUST respond with HTTP 400 / `M_MISSING_PARAM`. If either `roomId`, `user_id` or `server_name`
+server MUST respond with HTTP 400 / `M_MISSING_PARAM`. If either `roomId`, `mxid` or `server_name`
 contain invalid values, the server MUST respond with HTTP 400 / `M_INVALID_PARAM`.
 
 If all parameters are valid, the server checks whether the supplied user identifier or server name
