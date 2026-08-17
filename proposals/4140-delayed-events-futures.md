@@ -292,6 +292,11 @@ Additionally, a homeserver MAY discard finalised delayed events that have been r
 The `delay_id` of a sent delayed event MUST be included in the resulting room event's `unsigned` data
 if, and only if, the client being given the event (e.g. over `/sync` or `/messages`) is authenticated as the event's sender.
 
+#### Event content is evaluated at the point of sending
+
+At the time of scheduling a delayed event, the homeserver MUST validate that the event is well-formed, lest the event
+has no chance to be successfully sent into a room upon its scheduled send time.
+
 #### Power levels are evaluated at the point of sending
 
 Power levels are evaluated for each event only once the delay has occurred and it will be distributed/inserted into the
