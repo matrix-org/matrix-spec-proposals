@@ -242,7 +242,9 @@ A new authenticated Client-Server API endpoint at
 `GET /_matrix/client/v1/delayed_events` responds with
 a list of details about scheduled delayed events owned by the requesting user.
 
-Delayed events are returned in chronological order of their intended send time, which is `delayed_since_ts` + `delay_ms`.
+Delayed events are returned in ascending chronological order of their intended send time
+(i.e. starting from the soonest delayed event to be sent),
+where the send time is calculated from `delayed_since_ts` + `delay_ms`.
 
 On success, the response is HTTP 200 and a JSON object containing the following fields:
 
