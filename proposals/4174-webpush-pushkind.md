@@ -216,8 +216,15 @@ code is not one intended.
 
 ## Unstable prefix
 
-All implementations are expected to remain in non-production environments
-while this proposal is considered unstable. No prefix is defined.
+| Stable identifier | Purpose | Unstable identifier |
+| ----------------- | ------- | ------------------- |
+| `m.webpush` | Capability advertising support for Web Push | `org.matrix.msc4174.webpush` |
+| `webpush` | Pusher kind for encrypted Web Push notifications | `org.matrix.msc4174.webpush` |
+| `M_EXPIRED_ACTIVATION_TOKEN` | Error returned when the activation token has expired | `ORG.MATRIX.MSC4174_EXPIRED_ACTIVATION_TOKEN` |
+| `M_UNKNOWN_ACTIVATION_TOKEN` | Error returned when the activation token is not known | `ORG.MATRIX.MSC4174_UNKNOWN_ACTIVATION_TOKEN` |
+
+The stable endpoint `/_matrix/client/v3/pushers/ack` will use the unstable identifier
+`/_matrix/client/unstable/org.matrix.msc4174/pushers/ack`.
 
 
 ## Dependencies
