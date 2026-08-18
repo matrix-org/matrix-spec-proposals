@@ -135,11 +135,11 @@ neither `application_type` nor `application_slot_id` can contain the `#` charact
 
 A slot is opened by sending an `m.rtc.slot` state event with `status = "open"`, a valid application
 object and, if needed, a valid encryption object as per the JSON schema above. Any slot that
-doesn't fulfill these requirements is closed. To explicitly close an open slot, the associated `m.rtc.slot`
-state event is updated with `status = "closed"`. The `application` and `encryption` objects are not
-required on closed slots but may be kept around for convenience to simplify re-opening the slot.
-The semantics of open and closed slots for actual slot membership are described in the membership event
-section [below].
+doesn't fulfill these requirements MUST be treated as closed. To explicitly close an open slot, the
+associated `m.rtc.slot` state event is updated with `status = "closed"`. The `application` and `encryption`
+objects are not required on closed slots but may be kept around for convenience to simplify re-opening
+the slot. The semantics of open and closed slots for actual slot membership are described in the membership
+event section [below].
 
 Slots do not close automatically. A slot that is deliberately long-lived could be used to
 create a Discord-style experience where members hop on and off as desired. A conferencing
