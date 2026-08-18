@@ -185,9 +185,9 @@ and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/
 with an `errcode` of `M_UNKNOWN`.
 
 If the action is `send` and the delayed event is unable to be sent due to an error,
-the homeserver will respond with that error (e.g. HTTP 403
+the homeserver will respond with that error (e.g. HTTP 400
 and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
-with an `errcode` of `M_FORBIDDEN` if the user doesn't have permission to send the event at the time of sending,
+with an `errcode` of `M_DUPLICATE_ANNOTATION` if the event is an attempt to send a duplicate annotation,
 or HTTP 429 if the user has exceeded rate limits for sending room events at that time),
 as if the request had been to send the event as a non-delayed event with either the `/send` or `/state` endpoint.
 The homeserver SHOULD keep the delayed event scheduled, to account for the fact that the cause of the error
