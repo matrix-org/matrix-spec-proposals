@@ -196,16 +196,6 @@ and to allow retries of the `send` action until then.
 
 ### Getting delayed events
 
-A set of new authenticated Client-Server API endpoints allows clients to look up
-both scheduled and finalised delayed events owned by the requesting user.
-
-The homeserver SHOULD apply rate limiting to these endpoints to provide mitigation against the
-[Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threat.
-They most likely require (dependent on the implementation) serialization steps
-and can be used to slow down the homeserver.
-
-#### Getting a single delayed event
-
 A new authenticated Client-Server API endpoint at
 `GET /_matrix/client/v1/delayed_events/{delay_id}` responds with
 details on the delayed event with the specified `delay_id`.
@@ -215,6 +205,11 @@ or it does exist but had been scheduled by a user other than the one requesting 
 the homeserver will respond with HTTP 404
 and a [standard error response](https://spec.matrix.org/v1.18/client-server-api/#standard-error-response)
 with an `errcode` of `M_NOT_FOUND`.
+
+The homeserver SHOULD apply rate limiting to this endpoint to provide mitigation against the
+[Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threat,
+as the endpoint most likely requires (dependent on the implementation) serialization steps
+and can be used to slow down the homeserver.
 
 On success, the homeserver will respond with HTTP 200 and a JSON object containing the following fields:
 
@@ -237,45 +232,6 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
   - `finalised_ts` - Required. The timestamp (as Unix time in milliseconds) when the event was finalised.
     Using [timestamp massaging](https://spec.matrix.org/v1.18/application-service-api/#timestamp-massaging)
     does not affect the value of this field.
-
-#### Getting a list of delayed events
-
-A new authenticated Client-Server API endpoint at
-`GET /_matrix/client/v1/delayed_events` responds with
-a list of details about scheduled delayed events owned by the requesting user.
-
-Delayed events are returned in ascending chronological order of their intended send time
-(i.e. starting from the soonest delayed event to be sent),
-where the send time is calculated from `delayed_since_ts` + `delay_ms`.
-
-On success, the response is HTTP 200 and a JSON object containing the following fields:
-
-- `delayed_events` - An array of objects describing delayed events owned by the requesting user.
-  These objects contain the same fields as the object returned by
-  [the single-item lookup](#getting-a-single-delayed-event),
-  except for the fields exclusive to finalised delayed events (`error`, `event_id`, and `finalised_ts`).
-
-```http
-200 OK
-Content-Type: application/json
-
-{
-  "delayed_events": [
-    {
-      "delay_id": "...",
-      "room_id": "!roomid:example.com",
-      "type": "m.room.message",
-      "delay_ms": 5500,
-      "delayed_since_ts": 1721732853284,
-      "content": {
-        "msgtype": "m.text",
-        "body": "I am now offline"
-      }
-    },
-    ...
-  ]
-}
-```
 
 #### Retention of finalised delayed events
 
@@ -336,13 +292,6 @@ enable a client to verify that an event was *actually* sent by the sender's devi
 proposal shouldn't affect how that verification works because those other proposals will
 need to account for eventual consistency anyway, which may appear as a delayed event or
 attached to a disjointed part of the DAG.
-
-### Inability to filter and paginate delayed events
-
-`GET /_matrix/client/v1/delayed_events` lacks request parameters for filtering and pagination. This could be
-limiting in some cases. A future proposal such as [MSC4486] may extend the endpoint to support those use cases.
-
-[MSC4486]: https://github.com/matrix-org/matrix-spec-proposals/pull/4486
 
 ## Alternatives
 
@@ -559,6 +508,21 @@ For application services, this information would need to be pushed via transacti
 However, this is not strictly necessary for delayed events to be usable, and may thus be discussed in a separate MSC
 in the interest of keeping this MSC focused on the core functionality of delayed events.
 
+### Bulk lookup endpoint
+
+There could be a new Client-Server API endpoint to allow clients to retrieve a list of their delayed events,
+instead of only a single delayed event at a time.
+
+Such an endpoint was originally part of this proposal,
+but it incurred complexity in having to define parameters for filtering and pagination,
+lest the endpoint would be defined with incomplete functionality.
+
+As the core use case for this MSC (VoIP signaling) has no need for bulk lookup,
+and because the functionality of bulk lookup is merely a convenience feature,
+it has been offloaded to [MSC4486] to be fully specified later.
+
+[MSC4486]: https://github.com/matrix-org/matrix-spec-proposals/pull/4486
+
 ## Security considerations
 
 ### Authentication
@@ -592,8 +556,8 @@ Whilst the MSC is unstable:
   instead of the `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` endpoint.
 - `POST /_matrix/client/unstable/org.matrix.msc4140/delayed_events/{delay_id}/{action}` should be used
   instead of the `POST /_matrix/client/v1/delayed_events/{delay_id}/{action}` endpoints.
-- `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used
-  instead of the `GET /_matrix/client/v1/delayed_events` endpoint.
+- `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events/{delay_id}` should be used
+  instead of the `GET /_matrix/client/v1/delayed_events/{delay_id}` endpoint.
 - `ORG.MATRIX.MSC4140_DELAY_TOO_LARGE` should be used instead of `M_DELAY_TOO_LARGE`.
 - `org.matrix.msc4140.delay_id` should be used instead of `delay_id` as the key in `unsigned` event data.
 - `org.matrix.msc4140.delayed_events` should be used instead of the `m.delayed_events` capability name.
