@@ -399,9 +399,9 @@ distributed among session members. Other devices, even if in the room, never get
 
 #### Distributing keys
 
-When joining a slot, clients generate a 32-byte cryptographically secure key. They then share
-the key with other clients joined to the slot by sending encrypted to-device messages of the
-type `m.rtc.encryption_key`.
+When joining a slot, clients generate a 32-byte key by using a cryptographically secure pseudorandom
+number generator. They then share the key with other clients joined to the slot by sending encrypted
+to-device messages of the type `m.rtc.encryption_key`.
 
 The recipient devices are determined from the `m.rtc.member` events that are considered to be
 joined to the slot. The conditions for considering a member joined were given
