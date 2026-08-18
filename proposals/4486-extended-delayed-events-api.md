@@ -292,16 +292,9 @@ None.
 
 ## Unstable prefix
 
-| Stable identifier | Purpose           | Unstable identifier             |
-|-------------------|-------------------|---------------------------------|
-| `from_ts`         | Query parameter   | `org.matrix.msc4486.from_ts`    |
-| `to_ts`           | Query parameter   | `org.matrix.msc4486.to_ts`      |
-| `dir`             | Query parameter   | `org.matrix.msc4486.dir`        |
-| `from`            | Query parameter   | `org.matrix.msc4486.from`       |
-| `room_id`         | Query parameter   | `org.matrix.msc4486.room_id`    |
-| `type`            | Query parameter   | `org.matrix.msc4486.type`       |
-| `status`          | Query parameter   | `org.matrix.msc4486.status`     |
-| `next_batch`      | Response property | `org.matrix.msc4486.next_batch` |
+Whilst the MSC is unstable,
+`GET /_matrix/client/unstable/org.matrix.msc4486/delayed_events` should be used
+instead of the `GET /_matrix/client/v1/delayed_events` endpoint.
 
 Servers may advertise support for the feature by listing `org.matrix.msc4486` in the
 `unstable_features` section of the response to [`GET /_matrix/client/versions`].
