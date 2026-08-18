@@ -105,7 +105,7 @@ Content-Type: application/json
       "room_id": "!roomid:example.com",
       "type": "m.room.message",
       "delay": 5500,
-      "running_since": 1721732853284,
+      "delayed_since_ts": 1721732853284,
       "content": {
         "msgtype": "m.text",
         "body": "I am now offline"
@@ -117,7 +117,7 @@ Content-Type: application/json
       "type": "m.rtc.member",
       "state_key": "@user:example.com_DEVICEID",
       "delay": 5000,
-      "running_since": 1721732853284,
+      "delayed_since_ts": 1721732853284,
       "content": {
         "application": "m.call",
         "call_id": "",
@@ -129,9 +129,11 @@ Content-Type: application/json
       "room_id": "!another-roomid:example.com",
       "type": "m.room.message",
       "delay": 5000,
-      "running_since": 1721732853280,
-      "finalised_ts": 1721732854280,
-      "event_id": "$abcabca",
+      "delayed_since_ts": 1721732853280,
+      "finalised": {
+        "finalised_ts": 1721732854280,
+        "event_id": "$abcabca"
+      },
       "content": {
         "body": "I have something important to say",
         "msgtype": "m.text"
@@ -142,9 +144,11 @@ Content-Type: application/json
       "room_id": "!another-roomid:example.com",
       "type": "m.room.message",
       "delay": 2000,
-      "running_since": 1721732854280,
-      "finalised_ts": 1721732856280,
-      "event_id": "$xyzyxyz",
+      "delayed_since_ts": 1721732854280,
+      "finalised": {
+        "finalised_ts": 1721732856280,
+        "event_id": "$xyzyxyz"
+      },
       "content": {
         "body": "Hello, everyone!",
         "msgtype": "m.text"
@@ -155,12 +159,14 @@ Content-Type: application/json
       "room_id": "!another-roomid:example.com",
       "type": "m.room.message",
       "delay": 2000,
-      "running_since": 1721732853280,
+      "delayed_since_ts": 1721732853280,
       "content": {
         "body": "hello, every body!",
         "msgtype": "m.text"
       },
-      "finalised_ts": 1721732853780,
+      "finalied": {
+        "finalised_ts": 1721732853780
+      }
     }
   ],
   "next_batch": "b12345"
@@ -184,7 +190,7 @@ Content-Type: application/json
       "type": "m.room.topic",
       "state_key": "",
       "delay": 5000,
-      "running_since": 1721732853280,
+      "delayed_since_ts": 1721732853280,
       "content": {
         "topic": "This is a brand new room"
       }
@@ -195,7 +201,7 @@ Content-Type: application/json
       "type": "m.room.topic",
       "state_key": "",
       "delay": 15000,
-      "running_since": 1721732853280,
+      "delayed_since_ts": 1721732853280,
       "content": {
         "topic": "This room is not as new"
       }
@@ -206,7 +212,7 @@ Content-Type: application/json
       "type": "m.room.topic",
       "state_key": "",
       "delay": 20000,
-      "running_since": 1721732853280,
+      "delayed_since_ts": 1721732853280,
       "content": {
         "topic": "What an old room this is"
       }
@@ -231,15 +237,18 @@ Content-Type: application/json
       "type": "m.room.member",
       "state_key": "@new-user:example.com",
       "delay": 5000,
-      "running_since": 1721732853280,
+      "delayed_since_ts": 1721732853280,
       "content": {
         "membership": "invite",
         "reason": "You should be in this room by now"
       },
-      "error": {
-        "errcode": "M_LIMIT_EXCEEDED",
-        "error": "Too many requests",
-        "retry_after_ms": 2000
+      "finalised": {
+        "finalised_ts": 1721732855280,
+        "error": {
+          "errcode": "M_LIMIT_EXCEEDED",
+          "error": "Too many requests",
+          "retry_after_ms": 2000
+        }
       }
     },
     {
@@ -248,14 +257,17 @@ Content-Type: application/json
       "type": "m.room.member",
       "state_key": "@wanted-user:example.com",
       "delay": 5000,
-      "running_since": 1721732854280,
+      "delayed_since_ts": 1721732854280,
       "content": {
         "membership": "join",
         "reason": "You just have to be in this room"
       },
-      "error": {
-        "errcode": "M_FORBIDDEN",
-        "error": "Cannot force another user to join."
+      "finalised": {
+        "finalised_ts": 1721732859280,
+        "error": {
+          "errcode": "M_FORBIDDEN",
+          "error": "Cannot force another user to join."
+        }
       }
     },
     {
@@ -264,14 +276,17 @@ Content-Type: application/json
       "type": "m.room.topic",
       "state_key": "@temporary-user:example.com",
       "delay": 5000,
-      "running_since": 1721732855280,
+      "delayed_since_ts": 1721732855280,
       "content": {
         "membership": "leave",
         "reason": "Your time is up"
       },
-      "error": {
-        "errcode": "M_FORBIDDEN",
-        "error": "You do not have a high enough power level to kick from this room."
+      "finalised": {
+        "finalised_ts": 11721732860280,
+        "error": {
+          "errcode": "M_FORBIDDEN",
+          "error": "You do not have a high enough power level to kick from this room."
+        }
       }
     },
   ]
