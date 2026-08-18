@@ -1,23 +1,38 @@
-# MSC4486: Filtering & pagination for listing delayed events
+# MSC4486: Listing delayed events with filtering & pagination
 
-[MSC4140] introduces the endpoint `GET /_matrix/client/v1/delayed_events` for listing delayed
-events. This API doesn't offer any parameters for filtering the returned results. It just responds
-with all of the user's scheduled delayed events. This could be suboptimal in some cases.
+[MSC4140] introduces the endpoint `GET /_matrix/client/v1/delayed_events/{delay_id}`
+for retrieving data on a single delayed event that had been scheduled by the requesting client's account.
+This API is cumbersome for querying more than one delayed event at a time.
 
 When a client maintains a large number of delayed events, it may be interested in querying events in
 a certain room or within a specific time window. Additionally, the client may want to list events in
-pages to progressively disclose them to the user during scrolling. The endpoint from [MSC4140]
-forces the client to load all events which could be unnecessarily slow and resource-intensive.
+pages to progressively disclose them to the user during scrolling. The single-item endpoint from [MSC4140]
+forces the client to load events one at a time which could be unnecessarily slow and resource-intensive,
+and may become out-of-sync if delayed events end up being sent between some of the single-item queries made.
 
 Separately, a client may want to also list finalised delayed events. A usecase for this could be to
 check for delayed events that failed to be sent in order to take subsequent action such as sending
-or scheduling new events. This is impossible with the endpoint from [MSC4140] and currently requires
-knowledge of the `delay_id`s.
+or scheduling new events. This is impossible with the endpoint from [MSC4140] without
+knowledge of their `delay_id`s, which is currently known only to the client that had scheduled those delayed events.
 
-The present proposal addresses these shortcomings by extending the existing API with filtering and
-pagination capabilities.
+The present proposal addresses these shortcomings by extending the existing API with a bulk-lookup endpoint
+with filtering and pagination capabilities.
 
 ## Proposal
+
+A new authenticated Client-Server API endpoint at
+`GET /_matrix/client/v1/delayed_events` responds with
+a list of details about delayed events owned by the requesting user.
+
+Delayed events are returned in ascending chronological order of their intended send time
+(i.e. starting from the soonest delayed event to be sent),
+where the send time is calculated from `delayed_since_ts` + `delay_ms`
+(where those fields are as defined in [MSC4140]).
+
+The homeserver SHOULD apply rate limiting to this endpoint to provide mitigation against the
+[Resource Exhaustion](https://spec.matrix.org/v1.18/appendices/#threat-resource-exhaustion) threat,
+as the endpoint most likely requires (dependent on the implementation) serialization steps
+and can be used to slow down the homeserver.
 
 To filter results to include only delayed events with a scheduled send time within a specific time
 range, the query parameters `from_ts` and `to_ts` are introduced, which are Unix timestamps that
@@ -45,6 +60,32 @@ If any query parameter is set to an unsupported value, the homeserver will respo
 a [standard error response] with an `errcode` of `M_INVALID_PARAM`.
 
 On success, the response is HTTP 200 and a JSON object containing the following fields:
+
+- `delayed_events` - An array of objects describing delayed events owned by the requesting user.
+  These objects contain the same fields as the object returned by
+  [the single-item lookup](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/expiring-events-keep-alive/proposals/4140-delayed-events-futures.md#getting-delayed-events).
+
+```http
+200 OK
+Content-Type: application/json
+
+{
+  "delayed_events": [
+    {
+      "delay_id": "...",
+      "room_id": "!roomid:example.com",
+      "type": "m.room.message",
+      "delay_ms": 5500,
+      "delayed_since_ts": 1721732853284,
+      "content": {
+        "msgtype": "m.text",
+        "body": "I am now offline"
+      }
+    },
+    ...
+  ]
+}
+```
 
 ### Examples
 
