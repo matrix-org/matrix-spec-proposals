@@ -339,9 +339,8 @@ attached to a disjointed part of the DAG.
 
 ### Inability to filter and paginate delayed events
 
-`GET /_matrix/client/v1/delayed_events` lacks request parameters for filtering and pagination. It also
-doesn't allow querying finalised delayed events. This could be limiting in some cases. A future proposal
-such as [MSC4486] may extend the endpoint to support those use cases.
+`GET /_matrix/client/v1/delayed_events` lacks request parameters for filtering and pagination. This could be
+limiting in some cases. A future proposal such as [MSC4486] may extend the endpoint to support those use cases.
 
 [MSC4486]: https://github.com/matrix-org/matrix-spec-proposals/pull/4486
 
