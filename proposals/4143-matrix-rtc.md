@@ -375,7 +375,8 @@ Conversely, MatrixRTC encryption MUST NOT be used in unencrypted rooms. This is 
 encryption mechanism introduced in this proposal is not well suited for unencrypted rooms. A future MSC
 may introduce another mechanism that lends itself better to unencrypted rooms.
 
-The only available encryption mechanism for now is `m.per_member`.
+The only available encryption mechanism for now is `m.per_member` which is defined in the remainder of
+this section.
 
 ```json5
 {
