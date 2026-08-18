@@ -371,10 +371,6 @@ Use of encryption in MatrixRTC is REQUIRED in encrypted rooms. This means that `
 MUST be encrypted and `m.rtc.slot` events MUST contain an `encryption` object when sent in an encrypted
 room. Member / slot events that violate these conditions MUST be considered left / closed.
 
-Conversely, MatrixRTC encryption MUST NOT be used in unencrypted rooms. This is because the specific
-encryption mechanism introduced in this proposal is not well suited for unencrypted rooms. A future MSC
-may introduce another mechanism that lends itself better to unencrypted rooms.
-
 The only available encryption mechanism for now is `m.per_member` which is defined in the remainder of
 this section.
 
@@ -514,6 +510,15 @@ with
          ├────── delay (5s) ───────┤                                      ├────── delay ...
          ├─────────────────── grace (10s) ───────────────────┤            ├────── grace ...
 ```
+
+#### Encrypted sessions in unencrypted rooms
+
+MatrixRTC encryption MUST NOT be used in unencrypted rooms. This is because the specific encryption
+mechanism introduced above is not well suited for unencrypted rooms. In an unencrypted room, events
+are not authenticated. As a result, the device ID of RTC members cannot be obtained from `m.rtc.member`
+events directly. Including the device ID in the member event's `content` isn't sufficient either. Due to
+the absence of event authentication, a malicious homeserver could just forge member events to capture
+keys. A future MSC may introduce another mechanism that lends itself better to unencrypted rooms.
 
 ## Potential issues
 
