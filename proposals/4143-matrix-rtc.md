@@ -614,24 +614,6 @@ This was meant to assist in reconstructing historical sessions efficiently. Howe
 turned out to not be helpful because finding the slot as well as other members' member events
 still required manual history traversal while employing timestamp overlap logic.
 
-### Transport provisioning models
-
-This proposal requires the server-side Matrix deployment to also provide the MatrixRTC transport
-infrastructure. Alternatives that were considered and discarded include:
-
-* A transport system separate from Matrix accounts – Users could obtain an account with a separate
-  service provider for the RTC transport infrastructure. This is difficult to achieve across federation,
-  however, since all members joined to a slot would need an account with the same external service
-  provider.
-* Client-provided transports – Clients themselves could define and operate transport infrastructure such as
-  SFUs. This is problematic because most users rely on a relatively small number of popular clients.
-  Consequently, a low number of transport backends would have to cover the majority of traffic which makes
-  the system harder to scale and raises questions around cost, governance, and accountability for
-  infrastructure maintenance.
-* Centralized infrastructure – A single shared service could provide transport infrastructure for all
-  MatrixRTC users. This creates a single point of failure though. It's also unclear what entity would
-  operate such a service.
-
 ### Key distribution via room events
 
 Earlier iterations of this MSC used encrypted room events to distribute per-member encryption
