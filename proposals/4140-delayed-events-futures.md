@@ -349,7 +349,7 @@ limiting in some cases. A future proposal such as [MSC4486] may extend the endpo
 ### Delegating scheduled delayed events
 
 It is useful for external services to also interact with scheduled delayed events.
-If a client disconnects, an external service can be the best source to send the delayed event/"last will".
+If a client has insufficient connectivity, an external service can be the best source to send the delayed event/"last will".
 
 To permit this, the `delay_id` that uniquely identifies a delayed event could also behave as a scoped access token
 that only allows to interact with the [delayed event management endpoints](#managing-scheduled-delayed-events)
