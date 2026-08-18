@@ -30,3 +30,7 @@ Compared to these simple replies, for threads it's important to keep all of the 
 ## Security considerations
 
 None.
+
+## Unstable prefix
+
+The room version is `org.matrix.msc4530.12` based on room version 12.
