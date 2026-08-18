@@ -248,6 +248,12 @@ Additionally, a homeserver MAY discard finalised delayed events that have been r
 The `delay_id` of a sent delayed event MUST be included in the resulting room event's `unsigned` data
 if, and only if, the client being given the event (e.g. over `/sync` or `/messages`) is authenticated as the event's sender.
 
+#### No `transaction_id` in `unsigned` event data
+As a delayed event is uniquely identified by its sender and `delay_id`,
+it is redundant to further distinguish it with the `transaction_id` used in the request to schedule it.
+As such, the resulting room event of any sent delayed event MUST NOT have a `transaction_id` in its `unsigned` data
+or elsewhere, unlike non-delayed events which do include `transaction_id` in `unsigned` for their sender.
+
 #### Event content is evaluated at the point of sending
 
 At the time of scheduling a delayed event, the homeserver MUST validate that the event is well-formed, lest the event
