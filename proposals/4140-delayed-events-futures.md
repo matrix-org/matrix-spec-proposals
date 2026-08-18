@@ -274,7 +274,9 @@ could schedule a large volume of events ahead of time without exceeding a rate l
 but has specified a `delay_ms` that corresponds to a common point of time in the future.
 
 If a delayed event fails to be sent at its scheduled send time due to a rate limit failure,
-the homeserver SHOULD NOT retry sending the event. Instead, the event will be stored as a finalised delayed event
+the homeserver SHOULD NOT retry sending the event, lest the server incurs the load of working around rate limits
+despite the intention of rate limits being to reduce server load.
+Instead, the event will be stored as a finalised delayed event
 with its `error` field set, available to be retrieved by a client for the user who requested the event.
 It then becomes the user's responsibility to fetch this error and retry sending the event as appropriate.
 
