@@ -115,7 +115,7 @@ Retry-After: 1200
 
 The values of both the maximum allowed delay and the maximum allowed number of scheduled events are advertised as a
 [capability](https://spec.matrix.org/v1.18/client-server-api/#capabilities-negotiation) named `m.delayed_events`, via
-the values of fields named `max_delay_ms` and `max_scheduled` respectively.
+the values of non-negative integer valued fields named `max_delay_ms` and `max_scheduled` respectively.
 For any of these limits enforced by the server, its representative field MUST be present in the capability.
 If the server doesn't enforce one of these limits, its representative field MUST be absent from the capability.
 If the server enforces none of these limits, the capability MAY be omitted entirely instead of having an empty body.
