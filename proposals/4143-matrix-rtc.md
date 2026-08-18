@@ -415,16 +415,13 @@ The schema for `m.rtc.encryption_key` to-device messages is as follows:
 // Unencrypted content of OlmPayload shown, but in reality this would be an encrypted message
 
 {
-    "room_id": "{room_id}",
-    "member_id": "{member_id}",
-    "media_key": {
-      "index": {index},
-      "key": "{encoded_key}",
-    },
-"index": <index>,
-"key": "{encoded_key}",
-},
-"format": 0
+  "room_id": "{room_id}",
+  "member_id": "{member_id}",
+  "media_key": {
+    "index": <index>,
+    "key": "{encoded_key}",
+  },
+  "format": 0
 }
 ```
 
