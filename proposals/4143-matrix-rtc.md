@@ -448,7 +448,7 @@ clients verify that the sender and device that was used to send the member event
 and device of the to-device message. Otherwise the message MUST be discarded.
 
 In keeping with [MSC4153: Exclude non-cross-signed devices][MSC4153], clients SHOULD also discard
-`m.rtc.encryption_key` events when the sending device is not cross-signed.
+`m.rtc.encryption_key` events when the sending device is not cross-signed by its owner.
 
 [MSC4153]: https://github.com/matrix-org/matrix-spec-proposals/pull/4153
 
