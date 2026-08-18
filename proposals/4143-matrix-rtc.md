@@ -42,9 +42,13 @@ This proposal also doesn't cover notifications for RTC sessions. These are consi
 protocol and are described in [MSC4075: MatrixRTC notifications & call ringing][MSC4075] and
 [MSC4310: MatrixRTC decline m.rtc.decline][MSC4310].
 
+Finally, deprecation of the [legacy VoIP system] in the spec is covered by [MSC4531].
+
+[legacy VoIP system]: https://spec.matrix.org/v1.18/client-server-api/#voice-over-ip
 [MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
 [MSC4310]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
 [MSC4519]: https://github.com/matrix-org/matrix-spec-proposals/pull/4519
+[MSC4531]: https://github.com/matrix-org/matrix-spec-proposals/pull/4531
 
 ## Proposal
 
