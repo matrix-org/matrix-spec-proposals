@@ -112,9 +112,9 @@ Retry-After: 1200
 }
 ```
 
-As a special case, if the homeserver has set either of these limits such that scheduling delayed events is disallowed
-(i.e. it sets the maximum allowed delay to 0 seconds, or a limit of 0 scheduled delayed events per user), it MAY respond
-to event scheduling requests with HTTP 403 and a standard error response with an `errcode` of `M_FORBIDDEN`.
+If the feature is disabled on the server via configuration, the homeserver SHOULD instead respond with HTTP 403 and
+a [standard error response](https://spec.matrix.org/v1.19/client-server-api/#standard-error-response)
+with an `errcode` of `M_FORBIDDEN`.
 
 #### Delayed event limits as a capability
 
