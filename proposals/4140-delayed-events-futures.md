@@ -255,7 +255,7 @@ it is redundant to further distinguish it with the `transaction_id` used in the 
 As such, the resulting room event of any sent delayed event MUST NOT have a `transaction_id` in its `unsigned` data
 or elsewhere, unlike non-delayed events which do include `transaction_id` in `unsigned` for their sender.
 
-#### Event content is evaluated at the point of sending
+#### Event content is evaluated at the point of scheduling
 
 At the time of scheduling a delayed event, the homeserver MUST validate that the event is well-formed, lest the event
 has no chance to be successfully sent into a room upon its scheduled send time.
