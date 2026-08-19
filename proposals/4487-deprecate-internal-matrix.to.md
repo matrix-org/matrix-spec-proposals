@@ -25,7 +25,7 @@ Sending matrix.to URLs over Matrix is deprecated.
 
 Clients SHALL instead generate `matrix:` URIs when it is clear that:
 
-- a reference to a Matrix entity (room alias, room ID, event within a room, user ID) is going to be sent over Matrix,
+- a reference ("pill") to a Matrix entity (room alias, room ID, event within a room, user ID) is going to be sent over Matrix,
   i.e. via message event, and
 - unless breaking user intent, i.e. manually pasted links would not convert while tab-completed IDs would.
 
