@@ -430,7 +430,7 @@ The schema for `m.rtc.encryption_key` to-device messages is as follows:
   - `index` (required, number): The rolling index of the key to distinguish it from other keys. The
     value MUST be between 0 and 255 inclusive. WebRTC-based transports may use this as the `keyID`
     field of [SFrame](https://www.w3.org/TR/webrtc-encoded-transform/#sframe) headers.
-  - `format` (required, srting): The format in which the key was exported. Only `m.base64` is allowed
+  - `format` (required, string): The format in which the key was exported. Only `m.base64` is allowed
     for now and implies that the key's raw bytes were encoded using unpadded base64.
 
 Upon receipt, clients SHOULD discard any `m.rtc.encryption_key` events that were sent in cleartext.
