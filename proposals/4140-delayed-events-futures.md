@@ -262,7 +262,7 @@ if, and only if, the client being given the event (e.g. over `/sync` or `/messag
 #### No `transaction_id` in `unsigned` event data
 As a delayed event is uniquely identified by its sender and `delay_id`,
 it is redundant to further distinguish it with the `transaction_id` used in the request to schedule it.
-As such, the resulting room event of any sent delayed event MUST NOT have a `transaction_id` in its `unsigned` data
+As such, the resulting room event of any sent delayed event SHOULD NOT have a `transaction_id` in its `unsigned` data
 or elsewhere, unlike non-delayed events which do include `transaction_id` in `unsigned` for their sender.
 
 #### Event content is evaluated at the point of scheduling
