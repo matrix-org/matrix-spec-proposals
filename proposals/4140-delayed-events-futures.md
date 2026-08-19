@@ -234,9 +234,18 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
 
 #### Retention of finalised delayed events
 
+When a delayed event becomes finalised, the homeserver retains it for lookup via the
+`GET /_matrix/client/v1/delayed_events/{delay_id}` endpoint for a limited time.
+Finalised delayed events are retained so that clients may inspect the status of delayed events that were expected to be
+sent but were not.
+This allows clients to discover if a delayed event was cancelled by another client or failed to be sent due to an error,
+and in the latter case, what the error was.
+Clients may then decide whether to reattempt sending/scheduling the event or not, as appropriate.
+
 The amount of finalised events that stay on the homeserver can be chosen by the homeserver.
 The recommended strategy is to retain finalised events for up to 7 days or 1000 events per user,
 whichever occurs first.
+Retention is limited to prevent server resource exhaustion from having to store too many finalised delayed events.
 
 There is no guarantee for a client that events will be available
 if they exceed the limits of their homeserver.
