@@ -221,14 +221,15 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
   last restarted.
 - `content` - Required. The content of the delayed event.
   This is the body of the original `PUT` request, not a preview of the full event after sending.
-- `finalised` - Present only for finalised events. An object with fields describing how the delayed event was finalised:
-  - `error` - Present only for finalised events that were cancelled due to an error.
+- `finalised` - Present only for finalised delayed events.
+  An object with fields describing how the delayed event was finalised:
+  - `error` - Present only for finalised delayed events that were cancelled due to an error.
     The [standard error response](https://spec.matrix.org/v1.19/client-server-api/#standard-error-response)
     of the error that prevented the delayed event from being sent.
   - `event_id` - The `event_id` this event got in case it was sent.
     It is therefore mutually exclusive with `error`, and
     absent for delayed events cancelled by [the `/cancel` endpoint](#managing-scheduled-delayed-events).
-  - `finalised_ts` - Required. The timestamp (as Unix time in milliseconds) when the event was finalised.
+  - `finalised_ts` - Required. The timestamp (as Unix time in milliseconds) when the delayed event was finalised.
     Using [timestamp massaging](https://spec.matrix.org/v1.19/application-service-api/#timestamp-massaging)
     does not affect the value of this field.
 
@@ -242,8 +243,8 @@ This allows clients to discover if a delayed event was cancelled by another clie
 and in the latter case, what the error was.
 Clients may then decide whether to reattempt sending/scheduling the event or not, as appropriate.
 
-The amount of finalised events that stay on the homeserver can be chosen by the homeserver.
-The recommended strategy is to retain finalised events for up to 7 days or 1000 events per user,
+The amount of finalised delayed events that stay on the homeserver can be chosen by the homeserver.
+The recommended strategy is to retain finalised delayed events for up to 7 days or 1000 events per user,
 whichever occurs first.
 Retention is limited to prevent server resource exhaustion from having to store too many finalised delayed events.
 
@@ -497,7 +498,7 @@ the client could send a `DELETE` request to an endpoint representing a target de
 
 This feels more elegant, but it doesn't feel like a good suggestion for how the other actions are mapped.
 Also, `DELETE` suggests that the target resource will be truly deleted, but this is at odds with how
-cancelling a delayed event has it retained as a finalised event for later lookup.
+cancelling a delayed event has it retained as a finalised delayed event for later lookup.
 
 ### Alternative to `delayed_since_ts` field
 
