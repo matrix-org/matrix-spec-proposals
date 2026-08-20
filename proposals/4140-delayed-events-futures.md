@@ -20,6 +20,12 @@ resulting in reliable call membership status for other participants.
 
 [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
 
+Yet another use case is the ability to schedule changes to room state,
+which would otherwise have to be made manually or via an external bot or service at the desired time of change.
+This can implement concepts such as expiring rooms (by kicking a set of users after a specified time)
+or limited-time call rooms (by scheduling the removal of [MatrixRTC
+slots](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#slots)).
+
 This proposal caters to the use cases described above and introduces a mechanism by which a
 Matrix client can schedule "delayed events" which will be sent into a room at a later time by
 the homeserver. This includes APIs for scheduling delayed events and managing scheduled delayed
