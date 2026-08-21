@@ -318,6 +318,17 @@ proposal shouldn't affect how that verification works because those other propos
 need to account for eventual consistency anyway, which may appear as a delayed event or
 attached to a disjointed part of the DAG.
 
+### Use cases blocked by server configuration
+
+Some of the uses cases for delayed events mentioned in this proposal may not function properly depending on
+server-imposed limits on how delayed events may be used.
+For example, if the server limits users to only a single scheduled delayed event at a time,
+then a client would fail to schedule any action that requires multiple delayed events
+(such as expiring rooms, which requires scheduling a `m.room.member` event for each user that should be kicked).
+
+Thus, clients should consult the [delayed event limits capability](#delayed-event-limits-as-a-capability)
+before attempting to use delayed events in a manner that the server would not allow.
+
 ## Alternatives
 
 ### Delegating scheduled delayed events
