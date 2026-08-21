@@ -1,4 +1,4 @@
-# MSCXXXX: Revised Social Presence
+# MSC4532: Revised Social Presence
 
 Presence and its features have remained largely untouched since its inception. Performance issues have deterred users
 and operators alike from presence to the point that extensions of its features are now being proposed within completely
@@ -342,18 +342,18 @@ available by tracking a user's presence state transitions.
 
 | Stable Identifier        | Purpose                                                                           | Unstable Identifier                                         |
 | ------------------------ | --------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `active`                 | [User Presence Update] `presence` value for a user that is online and active      | `org.continuwuity.presence_v2.mscXXXX.active`               |
-| `idle`                   | [User Presence Update] `presence` value for a user that is online and inactive    | `org.continuwuity.presence_v2.mscXXXX.idle`                 |
-| `busy`                   | [User Presence Update] `presence` value for a user that is online and unreachable | `org.continuwuity.presence_v2.mscXXXX.busy`                 |
-| `status`                 | [User Presence Update] extensible object for conveying status information         | `org.continuwuity.presence_v2.mscXXXX.status`               |
-| `m.presence.persistent`  | Account data event for allowing clients to set a persistent global presence state | `org.continuwuity.presence_v2.mscXXXX.presence.persistent`  |
+| `active`                 | [User Presence Update] `presence` value for a user that is online and active      | `org.continuwuity.presence_v2.msc4532.active`               |
+| `idle`                   | [User Presence Update] `presence` value for a user that is online and inactive    | `org.continuwuity.presence_v2.msc4532.idle`                 |
+| `busy`                   | [User Presence Update] `presence` value for a user that is online and unreachable | `org.continuwuity.presence_v2.msc4532.busy`                 |
+| `status`                 | [User Presence Update] extensible object for conveying status information         | `org.continuwuity.presence_v2.msc4532.status`               |
+| `m.presence.persistent`  | Account data event for allowing clients to set a persistent global presence state | `org.continuwuity.presence_v2.msc4532.presence.persistent`  |
 
 
-Servers may advertise support for Revised Social Presence by listing `org.continuwuity.presence_v2.mscXXXX` in the
+Servers may advertise support for Revised Social Presence by listing `org.continuwuity.presence_v2.msc4532` in the
 `unstable_features` section of the response to [`GET /_matrix/client/versions`][cs-versions].
 
 Once this proposal completes FCP, servers may advertise support for the stable identifiers by listing
-`org.continuwuity.presence_v2.mscXXXX.stable` in `unstable_features`; clients may use this while they are waiting for
+`org.continuwuity.presence_v2.msc4532.stable` in `unstable_features`; clients may use this while they are waiting for
 the server to adopt a version of the spec that includes it.
 
 [^1]: See [MSC4426], which proposes an extension to the presence status feature without extending presence at all,
