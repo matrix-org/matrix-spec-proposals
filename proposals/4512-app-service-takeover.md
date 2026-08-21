@@ -50,9 +50,9 @@ as usual. If authorization succeeds, the server proxies the request to the same 
 Any "hop-by-hop" headers as defined by [RFC 2616] MUST be stripped both before forwarding the
 request to the service and before streaming the response back to the requesting client.
 
-Additionally, the `Authorization` header MUST be stripped on the forwarded request. Instead, the
-server supplies the User ID of the requesting client to the application service in a new request
-header `X-Matrix-User-Identifier`.
+Additionally, the `Authorization` header MUST be stripped from the incoming request. Instead, the
+server authenticates the proxied request with the application service's `hs_token` and supplies the
+User ID of the requesting client to the application service in a new request header `X-Matrix-User-Identifier`.
 
 ### Proxying server-server requests
 
@@ -66,9 +66,9 @@ anchored on `proxy_url` and streams the response back to the requesting server.
 Any "hop-by-hop" headers as defined by \[RFC2616\] MUST be stripped both before forwarding the
 request to the service and before streaming the response back to the requesting server.
 
-Additionally, the `Authorization` header MUST be stripped on the forwarded request. Instead, the
-server supplies the server name of the requesting server to the application service in a new request
-header `X-Matrix-Origin`.
+Additionally, the `Authorization` header MUST be stripped from the incoming request. Instead, the
+server authenticates the proxied request with the application service's `hs_token` and supplies the
+server name of the requesting server to the application service in a new request header `X-Matrix-Origin`.
 
 ### Sending server-server requests
 
