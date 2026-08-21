@@ -194,11 +194,11 @@ or if the `action` is `cancel` and the delayed event has already been sent,
 the homeserver will respond with HTTP 409.
 
 If the action is `send` and the delayed event is unable to be sent due to an error,
-the homeserver will respond with that error (e.g. HTTP 400
-and a [standard error response](https://spec.matrix.org/v1.19/client-server-api/#standard-error-response)
-with an `errcode` of `M_DUPLICATE_ANNOTATION` if the event is an attempt to send a duplicate annotation,
-or HTTP 429 if the user has exceeded rate limits for sending room events at that time),
-as if the request had been to send the event as a non-delayed event with either the `/send` or `/state` endpoint.
+the homeserver will respond with the same HTTP status code
+and [standard error response](https://spec.matrix.org/v1.19/client-server-api/#standard-error-response)
+that would have been given had the request been to send the event as a non-delayed event with either the
+`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}` or
+`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}` endpoint.
 The homeserver SHOULD keep the delayed event scheduled, to account for the fact that the cause of the error
 may resolve by the time of the delayed event's scheduled send time,
 and to allow retries of the `send` action until then.
