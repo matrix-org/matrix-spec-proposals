@@ -1,4 +1,4 @@
-# Widget State Event Proposal
+# MSC4411: Widget State Event Proposal
 This MSC splits [MSC1236](https://github.com/matrix-org/matrix-spec-proposals/issues/3803) into two.
 - One responsible for the widget state event.
 - And one for the postmessage api.
@@ -39,7 +39,7 @@ The scope is to define a widget for a single room only. We want to define a simp
  - `url`: The actual widget url where the widget is loaded from. This also takes the role as the widget type parameter. Most per room and per user fields are available through the widget api [MSC4412](https://github.com/matrix-org/matrix-spec-proposals/pull/4412) so the urls should be very short.
  - `avatar_url` The icon used to render the widget in the client list.
 
-Url template parameters are excluded. Additional per user and per room data are exposed via widget api. 
+Url template parameters are excluded. Additional per user and per room data are exposed via widget api.
 This has an advantage that it also solves the reactive data, example: theme, language. If the theme is passed over widget api
 it can be updated reactively. For additional room level metadata can be hardcoded from URL. This emplies that a widget
 that relies on per user data has to use widget api. This MSC values simplicty for the basic building blocks more then
