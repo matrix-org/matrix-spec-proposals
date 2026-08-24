@@ -54,7 +54,7 @@ For both actions the following rules apply:
       }
    },
    "response": {
-      "jwt": "thejwt",
+      "jwt": "thejwt"
    }
 }
 ```
@@ -80,9 +80,11 @@ For both actions the following rules apply:
 }
 ```
 
-The error response matters here in particular: it is how the widget learns that the homeserver does not
-support delegated delayed leave and that the widget has to keep refreshing the delayed event itself
-(heartbeat).
+The error response matters here in particular:
+[MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195) defines no fallback for
+homeservers that do not implement `delegate_delayed_leave`, so the widget has to detect this from the
+`matrix_api_error` (an HTTP 404 with `M_UNRECOGNIZED`) and keep refreshing the delayed leave event
+itself (heartbeat).
 
 ## Potential issues
 
@@ -111,6 +113,11 @@ While this MSC is not yet included in the spec, implementations should prefix al
 identifiers with `org.matrix.msc4533.`, that is `org.matrix.msc4533.rtc_livekit_get_token` and
 `org.matrix.msc4533.rtc_livekit_delegate_delayed_leave`. Clients and widgets should only call or support
 these actions if a widget API version of `org.matrix.msc4533` is advertised.
+
+While [MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195) is itself unstable, the
+client delegates to its unstable endpoints, that is
+`/_matrix/client/unstable/io.element.msc4195/rtc/livekit/get_token` and
+`/_matrix/client/unstable/io.element.msc4195/rtc/livekit/delegate_delayed_leave`.
 
 ## Dependencies
 
