@@ -1,4 +1,4 @@
-# MSCXXXX: MatrixRTC widget actions for authenticated livekit realted endpoints
+# MSC4533: MatrixRTC widget actions for authenticated livekit realted endpoints
 
 Widgets embedded in a room may need to join MatrixRTC sessions and call the related livekit specific CS-api endpoints
 ([MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)).
@@ -107,10 +107,10 @@ behalf"). Precedent for high level VoIP APIs exists with
 ## Unstable prefix
 
 While this MSC is not yet included in the spec, implementations should prefix all action and capability
-identifiers with `org.matrix.mscXXXX.`, that is `org.matrix.msc4515.get_rtc_transports`,
-`org.matrix.mscXXXX.rtc_livekit_get_token` and
-`org.matrix.mscXXXX.rtc_livekit_delegate_delayed_leave`. Clients and widgets should only call or support
-these actions if a widget API version of `org.matrix.mscXXXX` is advertised.
+identifiers with `org.matrix.msc4533.`, that is `org.matrix.msc4515.get_rtc_transports`,
+`org.matrix.msc4533.rtc_livekit_get_token` and
+`org.matrix.msc4533.rtc_livekit_delegate_delayed_leave`. Clients and widgets should only call or support
+these actions if a widget API version of `org.matrix.msc4533` is advertised.
 
 ## Dependencies
 
