@@ -1,20 +1,20 @@
-# MSC4533: MatrixRTC widget actions for authenticated livekit realted endpoints
+# MSC4533: MatrixRTC widget actions for authenticated LiveKit related endpoints
 
-Widgets embedded in a room may need to join MatrixRTC sessions and call the related livekit specific CS-api endpoints
-([MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)).
-To do so they depend on authenticated Client-Server endpoints:
+Widgets embedded in a room may need to join MatrixRTC sessions
+([MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)) over LiveKit
+([MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195)). To do so they depend on two
+authenticated Client-Server API endpoints:
 
-- **POST** `/_matrix/client/v1/rtc/livekit/get_token` to obtain the jwt token for the SFU
+- **POST** `/_matrix/client/v1/rtc/livekit/get_token` to obtain the JWT for the SFU.
 - **POST** `/_matrix/client/v1/rtc/livekit/delegate_delayed_leave` to hand the session's delayed leave
-  event over to the server
-  ([MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195)).
+  event over to the server.
 
 Widgets never hold an access token, so they cannot call these endpoints themselves: the hosting client
 has to do it on their behalf.
 
 ## Proposal
 
-The widget API is extended with three new `fromWidget` actions. Each action delegates exactly one
+The widget API is extended with two new `fromWidget` actions. Each action delegates exactly one
 endpoint and is gated behind its own capability:
 
 | Action | Capability | Delegated endpoint |
@@ -22,16 +22,18 @@ endpoint and is gated behind its own capability:
 | `rtc_livekit_get_token` | `rtc_livekit_get_token` | **POST** `/_matrix/client/v1/rtc/livekit/get_token` |
 | `rtc_livekit_delegate_delayed_leave` | `rtc_livekit_delegate_delayed_leave` | **POST** `/_matrix/client/v1/rtc/livekit/delegate_delayed_leave` |
 
-For the two actions the following rules apply:
+For both actions the following rules apply:
 
 - If the widget was not approved for the corresponding capability, the client MUST reject the request
   with an error response and MUST NOT call the endpoint.
 - Otherwise the client calls the delegated endpoint, using the action's `data` verbatim as the request
-  body (`data` is empty for `get_rtc_transports`, which has no body).
+  body.
 - On success the client forwards the endpoint's response body verbatim under `response`.
-- On failure the client responds with the standard widget API `error` envelope instead. Using the
-  ` matrix_api_error?: { http_status, http_headers, url, response: { errcode, error, ... } } } }` structure.
-  This allows the widget to determin if this endpoint is unsupported by the HS.
+- On failure the client responds with the standard widget API `error` envelope, that is
+  `{ "error": { "message": "...", "matrix_api_error"?: { "http_status", "http_headers", "url",
+  "response": { "errcode", "error" } } } }`. When the delegated call itself failed, the client MUST
+  include the `matrix_api_error` details, so that the widget can determine whether the endpoint is
+  unsupported by the homeserver.
 
 ### `rtc_livekit_get_token`
 
@@ -53,7 +55,6 @@ For the two actions the following rules apply:
    },
    "response": {
       "jwt": "thejwt",
-      "url": "wss://matrix-rtc.example.com/livekit/sfu"
    }
 }
 ```
@@ -107,16 +108,16 @@ behalf"). Precedent for high level VoIP APIs exists with
 ## Unstable prefix
 
 While this MSC is not yet included in the spec, implementations should prefix all action and capability
-identifiers with `org.matrix.msc4533.`, that is `org.matrix.msc4515.get_rtc_transports`,
-`org.matrix.msc4533.rtc_livekit_get_token` and
+identifiers with `org.matrix.msc4533.`, that is `org.matrix.msc4533.rtc_livekit_get_token` and
 `org.matrix.msc4533.rtc_livekit_delegate_delayed_leave`. Clients and widgets should only call or support
 these actions if a widget API version of `org.matrix.msc4533` is advertised.
 
 ## Dependencies
 
-This MSC builds on [MSC4519](https://github.com/matrix-org/matrix-spec-proposals/pull/4519) and
-[MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195), neither of which has been
-accepted into the spec at the time of writing.
+This MSC builds on [MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195), which
+has not been accepted into the spec at the time of writing.
 
-It is also a sibling MSC to: [MSC4515](https://github.com/matrix-org/matrix-spec-proposals/pull/4515)
+It is a sibling MSC to [MSC4515](https://github.com/matrix-org/matrix-spec-proposals/pull/4515), which
+delegates the RTC transports discovery endpoint in the same way.
+
 Also, in practice, widgets should be formally included in the spec before this MSC gets included.
