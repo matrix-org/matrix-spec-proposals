@@ -29,15 +29,26 @@ The scope is to define a widget for a single room only. We want to define a simp
   "type": "m.widget",
   "state_key": "some-uuid",
   "content": {
+    // copied widget data
     "name": "some-widget-name", // required
     "url": "https://custom.widget.app/widget", // required
     "avatar_url": "mxc://anAvatar", // optional
+    "version": 00.0.0,
+    // optional
+    "matrix_app_registry": "matrix-registry://feed"
   }
 }
 ```
+
+
+
+
  - `name`: The widget name SHOULD be treated similar to a room name. It should be meaningful to all room members. It is expected to be the same string on all clients independent of localization.
  - `url`: The actual widget url where the widget is loaded from. This also takes the role as the widget type parameter. Most per room and per user fields are available through the widget api [MSC4412](https://github.com/matrix-org/matrix-spec-proposals/pull/4412) so the urls should be very short.
  - `avatar_url` The icon used to render the widget in the client list.
+ - `version` the currently in used version
+ - `matrix_app_registry` is a endpoint in which all versions of an app are listed. Its primary purpose is to verify the correctness of the other fields. (url, version and avatar_url)
+   Matrix apps can also be added without a registry endpoint. But then it is not possible find out if two app room installations are the same or not.
 
 Url template parameters are excluded. Additional per user and per room data are exposed via widget api.
 This has an advantage that it also solves the reactive data, example: theme, language. If the theme is passed over widget api
