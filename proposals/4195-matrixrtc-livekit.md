@@ -94,14 +94,19 @@ The mechanism for advertising available RTC transports by homeservers is already
 [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
 
 The homeserver announces available LiveKit Transport as a JSON object with the following fields:
+
 * `type` — required `string`: this MUST be `livekit`  
+* `url` - required `string`: WebSocket URL of the LiveKit SFU. This enables running more than one SFU
+  per homeserver.
 
 An example for  `GET /_matrix/client/v1/rtc/transports`
+
 ```json5
 {
   "rtc_transports": [
     {
-      "type": "livekit"
+      "type": "livekit",
+      "url": "ws://livekit.example.com
     }
   ]
 }
@@ -120,14 +125,17 @@ Other clients in the same MatrixRTC slot discover and subscribe to each other’
 to the published media.
 
 Field Descriptions:
-* `type` — required `string`: this MUST be `"livekit"`  
 
-```
+* `type` — required `string`: this MUST be `"livekit"`  
+* `url` - required `string`: WebSocket URL of the LiveKit SFU.
+
+```json5
 {
   // rest of the m.rtc.member event
   "rtc_transports": [
     {
-      "type": "livekit"
+      "type": "livekit",
+      "url": "ws://livekit.example.com
     }
   ]
 }
@@ -198,6 +206,7 @@ fields:
 
   * `server_name` — `string`: the [server name](https://spec.matrix.org/v1.19/appendices/#server-name)
     of the `m.rtc.member` event's `sender`. Defaults to the server's own server name if omitted.
+  * `url` - required `string`: WebSocket URL of the LiveKit SFU.
   * `room_id` — required `string`: the Matrix room ID where the `m.rtc.member` event is present. 
   * `slot_id` — required `string`: the slot ID from the `m.rtc.member` event.
   * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
@@ -207,6 +216,7 @@ POST /_matrix/client/v1/rtc/livekit/get_token HTTP/1.1
 
 {
   "server_name": "example.com",
+  "url": "ws://livekit.example.com,
   "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
   "member": {
@@ -220,9 +230,8 @@ Upon receiving the request, the server verifies that the requesting user is join
 identified by `room_id`. If the user is not joined, the request MUST be rejected with HTTP 401 /
 `M_UNAUTHORIZED`.
 
-If `server_name` is the server's own name, it obtains a token from its own SFU and if successful
-returns an HTTP `200 OK` response is returned with `Content-Type: application/json`. The response body
-contains:
+If `server_name` is the server's own name and `url` matches one of the server's own SFUs, it obtains a
+token from that SFU. If successful, the server returns an HTTP `200 OK` response with `Content-Type: application/json`. The response body contains:
 
 * `jwt` — `string`: the JWT token to use for authentication with the SFU.  
 * `url` — `string`: the URL of the LiveKit SFU to use for the given slot.
@@ -240,6 +249,7 @@ If `server_name` points to a remote server, the server triggers a `POST` request
 Server-Server endpoint `/_matrix/federation/v1/rtc/livekit/get_token`. The `Content-Type` of the
 request is `application/json` and the JSON body contains the following fields:
 
+  * `url` - required `string`: WebSocket URL of the LiveKit SFU.
   * `room_id` — required `string`: the Matrix room ID where the `m.rtc.member` event is present.  
   * `slot_id` — required `string`: the slot ID from the `m.rtc.member` event.  
   * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
@@ -248,6 +258,7 @@ request is `application/json` and the JSON body contains the following fields:
 POST /_matrix/federation/v1/rtc/livekit/get_token HTTP/1.1
 
 {
+  "url": "ws://livekit.example.com,
   "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
   "member": {
@@ -261,8 +272,8 @@ The receiving server verifies that the requesting server is joined to the room i
 If either the receiving server or the requesting server are not joined, the request MUST be rejected with
 HTTP 401 / `M_UNAUTHORIZED`.
 
-Otherwise, the receiving server obtains a token from its own SFU and if successful
-returns an HTTP `200 OK` response is returned with `Content-Type: application/json`. The response body
+Otherwise, if `url` matches one of the receiving server's SFUs, it obtains a token from that SFU. If successful,
+an HTTP `200 OK` response is returned with `Content-Type: application/json`. The response body
 contains:
 
 * `jwt` — `string`: the JWT token to use for authentication with the SFU.  
