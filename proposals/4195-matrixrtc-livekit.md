@@ -227,8 +227,8 @@ POST /_matrix/client/v1/rtc/livekit/get_token HTTP/1.1
 ```
 
 Upon receiving the request, the server verifies that the requesting user is joined to the room
-identified by `room_id`. If the user is not joined, the request MUST be rejected with HTTP 401 /
-`M_UNAUTHORIZED`.
+identified by `room_id`. If the user is not joined, the request MUST be rejected with HTTP 403 /
+`M_FORBIDDEN`.
 
 If `server_name` is the server's own name and `url` matches one of the server's own SFUs, it obtains a
 token from that SFU. If successful, the server returns an HTTP `200 OK` response with `Content-Type: application/json`. The response body contains:
@@ -270,7 +270,7 @@ POST /_matrix/federation/v1/rtc/livekit/get_token HTTP/1.1
 
 The receiving server verifies that the requesting server is joined to the room identified by `room_id`.
 If either the receiving server or the requesting server are not joined, the request MUST be rejected with
-HTTP 401 / `M_UNAUTHORIZED`.
+HTTP 403 / `M_FORBIDDEN`.
 
 Otherwise, if `url` matches one of the receiving server's SFUs, it obtains a token from that SFU. If successful,
 an HTTP `200 OK` response is returned with `Content-Type: application/json`. The response body
