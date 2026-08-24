@@ -237,14 +237,12 @@ If `server_name` is the server's own name and `url` matches one of the server's 
 token from that SFU. If successful, the server returns an HTTP `200 OK` response with `Content-Type: application/json`. The response body contains:
 
 * `jwt` — `string`: the JWT token to use for authentication with the SFU.  
-* `url` — `string`: the URL of the LiveKit SFU to use for the given slot.
 
 ```http
 HTTP/1.1 200 OK
 
 {
-  "jwt": "thejwt",
-  "url": "wss://matrix-rtc.example.com/livekit/sfu"
+  "jwt": "thejwt"
 }
 ```
 
@@ -283,14 +281,12 @@ an HTTP `200 OK` response is returned with `Content-Type: application/json`. The
 contains:
 
 * `jwt` — `string`: the JWT token to use for authentication with the SFU.  
-* `url` — `string`: the URL of the LiveKit SFU to use for the given slot.
 
 ```http
 HTTP/1.1 200 OK
 
 {
-  "jwt": "thejwt",
-  "url": "wss://matrix-rtc.example.com/livekit/sfu"
+  "jwt": "thejwt"
 }
 ```
 
