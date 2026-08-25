@@ -144,6 +144,23 @@ For example, the following specifies a maximum allowed delay of 24 hours and a p
 }
 ```
 
+If the capability is absent, clients SHOULD assume that delayed events are disabled / not supported by the server,
+i.e. that the capability is functionally equivalent to the following:
+
+```json
+{
+  "capabilities": {
+    "m.delayed_events": {
+      "max_delay_ms": 0,
+      "max_scheduled": 0
+    }
+  }
+}
+```
+
+Note that a server may explicitly communicate a lack of support for delayed events by setting any field of the
+capability to `0`, as it is sufficient for either limit to be 0 to effectively disable delayed events.
+
 ### Managing scheduled delayed events
 
 A set of new authenticated Client-Server API endpoints at
