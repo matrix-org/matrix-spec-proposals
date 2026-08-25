@@ -19,6 +19,8 @@ A new [encryptable account data][] value, `m.profile_annotations`, is stored in 
 be a mapping between valid user MXIDs and annotations stored on that user. Within a user, the `m.text` property
 represents a textual annotation ("note") on that user, with the object holding an ordered array as defined by [MSC1767][].
 
+Clients MUST ignore and **preserve** unknown fields within profile annotations.
+
 `m.profile_annotations`:
 
 ```json
@@ -53,9 +55,8 @@ Account data is last-write-wins. The usage of one account data entry representin
 rare scenarios (although this tradeoff was accepted to keep the behavior similar to existing state like `m.direct`).
 
 #### Clients that lack support for Encrypted Account Data
-
-If clients lack support for Encrypted Account Data, an edit to one singular entry will risk overwriting all other
-profile annotations.
+If clients lack support for Encrypted Account Data, an edit to one singular entry might risk overwriting all other
+profile annotations. For this reason, clients are instructed to avoid overwriting fields they do not understand.
 
 ## Alternatives
 
