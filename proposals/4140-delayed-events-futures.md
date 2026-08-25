@@ -278,13 +278,21 @@ or elsewhere, unlike non-delayed events which do include `transaction_id` in `un
 At the time of scheduling a delayed event, the homeserver MUST validate that the event is well-formed, lest the event
 has no chance to be successfully sent into a room upon its scheduled send time.
 
-#### Power levels are evaluated at the point of sending
+#### Auth rule evaluation
 
-Power levels are evaluated for each event only once the delay has occurred and it will be distributed/inserted into the
-DAG. This implies a delayed event can fail if it violates power levels at the time the delay passes.
+When a server comes to send a scheduled event it MUST construct the final event based on the state
+of the room at the time of sending (NOT when it is scheduled), as if the client itself sent the
+event. In particular, the server MUST check the event is authorized to be sent based on the state at
+the time the server sends the event.
 
-Conversely, it's also possible to successfully schedule an event that the user has no permission to send at the time of
-sending. If the power level situation has changed at the time the delay passes, the event can even reach the DAG.
+The server SHOULD also check the event could be sent when it is scheduled and reject the request if
+not. In particular, servers SHOULD check the sender is in the room (or otherwise authorized to send
+the event) to avoid storing events for rooms the user is not in.
+
+> [!NOTE]
+>
+> Servers do not need to reevaluate the auth checks for delayed events in a room when the state
+> changes, it can defer checks until the event comes to be sent.
 
 #### Rate-limiting at the point of sending
 
