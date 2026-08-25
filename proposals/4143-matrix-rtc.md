@@ -465,8 +465,9 @@ accepting a small window in which joining or leaving members could decrypt media
 slightly outside their actual membership period in exchange for fewer key rotations.
 
 As an example, let's assume a client applies the time interval `delay = 5s` between rotating a key
-and starting to use it for encryption. When members leave during `delay`, the client
-could schedule another rotation for when `delay` has elapsed. This coalesces multiple member
+and starting to use it for encryption. When any members leave in the `delay` time window
+following a key rotation, the client could collect all leavers within that window and then
+schedule another rotation once `delay` has elapsed. This coalesces multiple member
 changes into a single rotation and avoids excessive key rotations when multiple leaves
 occur in short succession.
 
