@@ -76,6 +76,29 @@ This is a client-to-client mechanism carried over the existing
 [account data](https://spec.matrix.org/v1.18/client-server-api/#client-config) endpoints; servers
 need no knowledge of this proposal.
 
+The server never needs to read the event, so it can be encrypted. [MSC4483] defines encrypted
+account data, in which the content of designated events is encrypted with a key held in secret
+storage. If it is accepted, this proposal declares `m.profile_overrides` encryptable, and a client
+MAY store the event in the encrypted form:
+
+```json
+{
+  "type": "m.profile_overrides",
+  "content": {
+    "encrypted": {
+      "iv": "...",
+      "ciphertext": "...",
+      "mac": "..."
+    }
+  }
+}
+```
+
+The plaintext is the `content` described above, and encryption changes nothing else in this
+proposal. A client implementing it without [MSC4483] finds no key in the encrypted form that is a
+valid user ID, so under the rules above it ignores the event and displays real profiles, as though
+it implemented neither proposal.
+
 ## Potential issues
 
 The event is rewritten in full for every change, so simultaneous edits from two clients can lose one
@@ -91,6 +114,11 @@ point, but it does mean a user will not notice when the underlying name changes.
 
 Clients that do not implement this proposal display real profiles, which is a safe degradation,
 though a user running two clients may then see different names in each.
+
+If the event is encrypted under [MSC4483], a client implementing this proposal but not that one
+cannot read the overrides. Worse, if the user edits an override on such a client, it rewrites the
+event in plaintext and every encrypted override is lost. Encryption also ties the event to secret
+storage, so a user who resets their identity loses their overrides.
 
 ## Alternatives
 
@@ -123,6 +151,14 @@ and `avatar_url` belong to the user rather than to any room, and extended profil
 follows the shape of the thing being overridden, and leaves room-level personalisation to the
 proposals above.
 
+[MSC4441] stores private free-text notes about users in a global account data map of the same
+shape, and lists name and avatar overrides as a possible later extension. The two do different
+jobs. An override replaces something a user may declare about themselves: a name, an avatar, a
+timezone. A note is something others say about a user that the user would not declare, so it
+corresponds to no profile field, and inventing one for it would let a user pre-write a note
+about themselves. Each event therefore mirrors the thing it describes: profile fields here,
+annotations there. A client may implement either or both.
+
 Finally, servers could rewrite profiles before serving them, which would extend the feature to
 clients that do not implement it. That would require every server to participate. It would also hide
 the real profile from clients that need it, such as when composing a mention, and put a
@@ -130,22 +166,27 @@ presentational concern in the server.
 
 ## Security considerations
 
-The user's homeserver can read their account data, so the labels they choose are visible to a server
-administrator, and a label like "therapist" or "work" gives away plenty. Clients SHOULD NOT present
-the feature as private from the homeserver. The overridden user learns nothing: nothing is sent to
-them and no room state changes.
+The user's homeserver can read their account data, so unless the event is encrypted under
+[MSC4483], the labels they choose are visible to a server administrator, and a label like
+"therapist" or "work" gives away plenty. Clients SHOULD NOT present the feature as private from the
+homeserver in that case. Encryption narrows the exposure but does not remove it: an overridden
+`avatar_url` points at unencrypted media, and the server can see it being fetched. The overridden
+user learns nothing either way: nothing is sent to them and no room state changes.
 
 ## Unstable prefix
 
 While this MSC is not considered stable, `m.profile_overrides` should be referred to as
 `org.matrix.msc4529.profile_overrides`. Clients SHOULD prefer the stable event type where both are
 present, and may use it as soon as this proposal is accepted, since no feature negotiation is
-involved.
+involved. [MSC4483] uses the event type as the encryption info, so ciphertext created under the
+unstable type must be re-encrypted when migrating to the stable one.
 
 ## Dependencies
 
-None.
+None. The use of [MSC4483] is optional and nothing here waits on its acceptance.
 
   [MSC1769]: https://github.com/matrix-org/matrix-spec-proposals/pull/1769
   [MSC3015]: https://github.com/matrix-org/matrix-spec-proposals/pull/3015
   [MSC4431]: https://github.com/matrix-org/matrix-spec-proposals/pull/4431
+  [MSC4441]: https://github.com/matrix-org/matrix-spec-proposals/pull/4441
+  [MSC4483]: https://github.com/matrix-org/matrix-spec-proposals/pull/4483
