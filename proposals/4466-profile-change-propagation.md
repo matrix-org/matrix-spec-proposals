@@ -5,18 +5,23 @@ SHOULD](https://spec.matrix.org/v1.18/client-server-api/#events-on-change-of-pro
 a `m.room.member` event to every room that user is in which updates the `displayname` or `avatar_url`
 field in their previous membership event. This behavior may not be desirable to users who have changed
 their per-room `displayname`/`avatar_url` in a large number of rooms, as the new membership events will
-overwrite any per-room changes. Additionally, especially in the case of users in several hundred rooms
-or more, the sudden load spike from sending a massive number of state events very fast [can negatively
-affect](https://forgejo.ellis.link/continuwuation/continuwuity/issues/1205) the sending server. This proposal
-describes a method for clients to limit the rooms in which the server will send these events, or suppress them
-entirely. This proposal also clarifies what keys the server should preserve when sending these membership events.
+overwrite any per-room changes.
+
+This proposal describes a simple method for clients to control how the server sends profile update membership
+events. Clients may ask the server to suppress the events entirely and manage updating the user's membership events
+manually. Alternatively, they may ask the server to only send the events to rooms where the user has not overridden
+their `displayname` and `avatar_url`. This functionality is provided both as a convenience for client developers and to
+improve the reliability and lessen the possible the bandwidth impact of this common use case, which would otherwise
+require clients to manually send potentially hundreds of state events at once.
+
+This proposal also clarifies what keys the server should preserve when sending these membership events.
 
 ## Proposal
 
 A new query parameter `propagate_to` is introduced on [`PUT /_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.18/client-server-api/#put_matrixclientv3profileuseridkeyname)
 and [`DELETE /_matrix/client/v3/profile/{userId}/{keyName}`](https://spec.matrix.org/v1.18/client-server-api/#delete_matrixclientv3profileuseridkeyname).
 Its behavior is only defined if `{keyName}` is `displayname` or `avatar_url`; the server MUST ignore it, if it is
-present, for any other value of `{keyName}`. Three values are defined for `propagate_to`, which change the server's
+present, for any other value of `{keyName}`.    Three values are defined for `propagate_to`, which change the server's
 behavior when sending an updated `m.room.member` event:
 
 - `all`: The server MUST send a `m.room.member` event for `{userId}` to every room that `{userId}` has a `join`
@@ -47,6 +52,25 @@ Example for the behavior of `unchanged`:
 | Alice Margatroid                     | Alice "Nickname" Margatroid      | Alice                        | Unchanged from Alice "Nickname" Margatroid, because `displayname` in room membership is different from displayname in global profile |
 | Alice Margatroid                     | Alice Margatroid                 | Alice                        | Changed to Alice, because `displayname` in room membership is identical to `displayname` in global profile                           |
 
+Additionally, a new `propagate_to` query parameter is introduced on on `PUT /_matrix/client/v3/profile/{userId}`
+([MSC4437](https://github.com/matrix-org/matrix-spec-proposals/pull/4437)). This query parameter has the same
+acceptable values and same behavior as the `propagate_to` query parameter on the `PUT
+/_matrix/client/v3/profile/{userId}/{keyName}` endpoint, with the following caveats:
+
+- If the query parameter
+is set to `unchanged`, the server MUST consider both `displayname` and `avatar_url` when checking `{userId}`'s
+current membership. If only one field would need to be changed or deleted according to the `unchanged` logic,
+the server MUST send a membership event to that room which changes or deletes _only_ that field. If both fields
+need to be changed or deleted, the server MUST send events which update _both_ fields.
+- If the query parameter
+is set to `all`, or the query parameter is set to `unchanged` and both `displayname` and `avatar_url` were updated,
+the server SHOULD only send a single `m.room.member` event that changes or deletes both fields.
+
+The [key copying rules](#key-copying-rules) MUST also be followed when sending membership events in response to
+a request to this endpoint.
+
+If the `propagate_to` query parameter is not provided, the server MUST behave as if it were set to `all`, in
+keeping with the current behavior of MSC4437.
 
 ### Key copying rules
 
@@ -64,34 +88,7 @@ a method to give a reason for a profile change, and describing such a method is 
 
 Future MSCs which add new fields to the content of `m.room.member` events may specify additional rules.
 
-### Extensions to MSC4437
-
-For servers which implement
-[MSC4437](https://github.com/beeper/matrix-spec-proposals/blob/replace-entire-profile/proposals/4437-replace-entire-profile.md),
-this proposal introduces a new `propagate_to` query parameter on `PUT /_matrix/client/v3/profile/{userId}`.
-
-This query parameter has the same acceptable values and same behavior as for the existing `PUT
-/_matrix/client/v3/profile/{userId}/{keyName}` endpoint, with the following caveats:
-- If the query parameter
-is set to `unchanged`, the server MUST consider both `displayname` and `avatar_url` when checking `{userId}`'s
-current membership. If only one field would need to be changed or deleted according to the `unchanged` logic,
-the server MUST send a membership event to that room which changes or deletes _only_ that field. If both fields
-need to be changed or deleted, the server MUST send events which update _both_ fields.
-- If the query parameter
-is set to `all`, or the query parameter is set to `unchanged` and both `displayname` and `avatar_url` were updated,
-the server SHOULD only send a single `m.room.member` event that changes or deletes both fields.
-
-The [key copying rules](#key-copying-rules) MUST also be followed when sending membership events in response to
-a request to this endpoint.
-
-If the `propagate_to` query parameter is not provided, the server MUST behave as if it were set to `all`, in
-keeping with the current behavior of MSC4437.
-
 ## Potential issues
-
-If `propagate_to` is set to `unchanged`, the server will need to access state information for
-every room which the user is currently joined to. Since the server should already have this information in its
-database, the effort required to perform this task is deemed to be acceptable.
 
 No method is provided by this MSC for clients to specify a list of rooms to send a `m.room.member` event in. A client
 may implement this easily by updating the user's global profile without sending any events (setting `propagate_to`
@@ -113,7 +110,10 @@ an implementation of this proposal with little effort.
 
 ## Security considerations
 
-None.
+This MSC's impact on security is at most a subset of what was already possible using the existing profile
+system. Users can still send large numbers of state events to their joined rooms by changing their display name
+or avatar repeatedly, but this was already possible with the existing endpoints, and this MSC in fact
+allows well-behaved users and clients to lessen the number of state events the server sends on their behalf.
 
 ## Unstable prefix
 
@@ -131,8 +131,6 @@ unstable endpoint. Servers may use the `computer.gingershaped.msc4466.msc4437_ex
 that they support the extensions.
 
 ## Dependencies
-This proposal depends on MSC4133, which is already in the specification.
+This proposal depends on MSC4133, which is already in the specification, and MSC4437, which is proposed for FCP.
 
-This proposal supersedes MSC4069.
-
-This proposal extends MSC4437, but may be partially implemented without it.
+This proposal supersedes MSC4069. 
