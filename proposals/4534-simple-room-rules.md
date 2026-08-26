@@ -10,25 +10,29 @@ explicitly accept them.
 
 A new state event `m.room.rules` is defined, with an empty state key and these top-level keys in `content`:
 
-| Key                  | Type                      | Purpose                                                                                                 |
-| -------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `rules`              | object (extensible event) | The room's rules, formatted as an [extensible event].                                                   |
-| `require_acceptance` | bool                      | If true, clients MUST show the user the rules when they first join the room, as outlined below.         |
-| `version`            | number                    | A monotonically increasing integer, used in the `m.room.rules.accepted` account data as outlined below. |
-| `delegate_to`        | object                    | An object with one key, `room`, specifying a room ID to delegate rules to.                              |
+| Key                  | Type                      | Required? | Purpose                                                                                                 |
+| -------------------- | ------------------------- | --------- | ------------------------------------------------------------------------------------------------------- |
+| `rules`              | object (extensible event) | no        | The room's rules, formatted as an [extensible event].                                                   |
+| `require_acceptance` | bool                      | no        | If true, clients MUST show the user the rules when they first join the room, as outlined below.         |
+| `version`            | number                    | yes       | A monotonically increasing integer, used in the `m.room.rules.accepted` account data as outlined below. |
+| `delegate_to`        | object                    | no        | An object with one required key, `room`, specifying a room ID to delegate rules to.                     |
 
 [extensible event]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
 
-If `rules` is not present, clients MUST NOT treat the room as defining rules.
+If `rules` is not present, the room has no rules. Clients should behave as if no `m.room.rules` event exists.
+
+If `require_acceptance` is not present, clients should assume it to be `false`.
+
+If `delegate_to` is not present, delegation is disabled. `delegate_to` MUST have a `room` subkey if it is present.
 
 Clients SHOULD show `m.room.rules` events in the timeline, with a message along the lines of "Alice updated the
 room's rules (_view_)."
 
 A new room-scoped account data event `m.room.rules.accepted` is defined, with these top-level keys:
 
-| Key                     | Type   | Purpose                                 |
-| ----------------------- | ------ | --------------------------------------- |
-| `last_accepted_version` | number | The last accepted version of the rules. |
+| Key                     | Type   | Required? | Purpose                                 |
+| ----------------------- | ------ | --------- | --------------------------------------- |
+| `last_accepted_version` | number | yes       | The last accepted version of the rules. |
 
 ### Accepting rules
 
