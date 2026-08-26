@@ -457,6 +457,9 @@ the members have changed. This limits the impact of compromised keys.
 In order to account for the delivery latency of to-device messages, clients SHOULD add a short
 delay after sending a new key before starting to use it. Otherwise, receiving members may
 be unable to decrypt the sender's streams temporarily. The RECOMMENDED delay duration is 5 seconds.
+Similarly, clients SHOULD store received keys even if they cannot identify the associated
+`m.rtc.member` event in order to account for the to-device message arriving before the membership
+event.
 
 Furthermore, resending to-device messages to all members can be expensive when multiple
 members join and/or leave in short succession. To mitigate this, clients MAY apply
