@@ -8,7 +8,7 @@ explicitly accept them.
 
 ## Proposal
 
-A new state event `m.room.rules` is defined, with these top-level keys:
+A new state event `m.room.rules` is defined, with an empty state key and these top-level keys in `content`:
 
 | Key                  | Type                      | Purpose                                                                                                 |
 | -------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -126,4 +126,4 @@ While this MSC is unstable, implementations should use the following identifiers
 
 ## Dependencies
 
-This MSC depends on MSC1767 (extensible events).
+This MSC depends on [MSC1767](https://github.com/matrix-org/matrix-spec-proposals/pull/1767) (extensible events).
