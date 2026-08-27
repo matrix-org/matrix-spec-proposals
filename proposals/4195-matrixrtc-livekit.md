@@ -651,7 +651,7 @@ leakage about users, rooms, or federation trust relationships.
 
 Assuming that this is accepted at the same time as
 [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) no unstable prefix is
-required for the `livekit` type indentifier as it will only be accessed via some other unstable prefix.
+required for the `livekit` type identifier as it will only be accessed via some other unstable prefix.
 
 Apart from this, the endpoints introduced should be referred to as follows:
 
