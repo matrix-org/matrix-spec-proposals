@@ -155,8 +155,9 @@ chosen transports.
 `m.rtc.member` events MUST be sent as sticky events as per [MSC4354: Sticky Events][MSC4354]. This
 results in the same delivery guarantee that state events have which is highly desirable for RTC
 experiences. At the same time, it avoids the drawbacks associated with state events. Further details
-on this can be found in [MSC4354]. Clients MUST also implement the ephemeral map algorithm as defined
-in the addendum of [MSC4354] to construct a state-like store of membership events.
+on this can be found in [MSC4354]. The RECOMMENDED sticky duration is 1 hour. Clients MUST also
+implement the ephemeral map algorithm as defined in the addendum of [MSC4354] to construct a
+state-like store of membership events.
 
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
 
