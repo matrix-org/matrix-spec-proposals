@@ -188,7 +188,11 @@ Within `m.rtc.member` events, `content` contains the following properties:
       are defined by the transport's specification. This could, for instance, include WebSocket URLs.
       The transport's specification would be as per its [MSC4519] registration.
   - `can_subscribe` (array): An array of transport types that the member is able to subscribe to.
-    Other members can use this as cue for deciding which transports to use to accommodate this member.
+    Since publishing transorts will usually incur a certain performance cost on the client, clients
+    SHOULD strive to only publish transports that are actually required, using `can_subscribe` as cue.
+    Given that the only currently known transport is [MSC4195], the question of choosing transports
+    is academic for now. A future MSC that introdcues the second transport type will have to cover
+    any required negotiation or consensus mechanism to agree on transports.
 - `leave_reason` (object): If `membership = leave`, optionally provides context on why the client left.
   This SHOULD only be used by clients if the user has actually attempted to join the slot before.
   This ensures that the `leave_reason` reflects a real join lifecycle rather
