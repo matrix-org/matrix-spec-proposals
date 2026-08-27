@@ -513,9 +513,9 @@ or through other means such as by (ab)using typing notification EDUs.
 
 ### `M_MAX_DELAYED_EVENTS_EXCEEDED` instead of `M_LIMIT_EXCEEDED`
 
-A new error code `M_MAX_DELAYED_EVENTS_EXCEEDED` could be introduced instead of reusing the existing `M_LIMIT_EXCEEDED`
+A new `errcode` of `M_MAX_DELAYED_EVENTS_EXCEEDED` could be introduced instead of reusing the existing `M_LIMIT_EXCEEDED`
 code. This would allow clients to better distinguish delayed event scheduling limits from other resource limits.
-Given that other resource limits are currently not differentiated via separate error codes in the API either,
+Given that other resource limits are currently not differentiated via separate `errcode`s in the API either,
 reusing `M_LIMIT_EXCEEDED` seems reasonable though.
 
 ### Naming
