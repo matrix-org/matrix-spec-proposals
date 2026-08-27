@@ -1,41 +1,45 @@
-# MSC4195: MatrixRTC Transport Using LiveKit Backend
+# MSC4195: LiveKit transport for MatrixRTC
 
-This MSC defines a LiveKit-based transport for MatrixRTC, allowing clients to publish and subscribe
-to real-time media via LiveKit SFUs while maintaining Matrix-native session and membership
-semantics.
+[MSC4143] introduces MatrixRTC as an extensible framework for real-time communication in Matrix.
+MatrixRTC uses so called transports to transfer the actual RTC data between RTC members. This
+proposal introduces a transport based on the [LiveKit] Selective Forwarding Unit (SFU). The SFU
+intelligently relays RTC data between members without them having to connect to each other directly.
 
-This proposal defines a new [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
-compliant MatrixRTC Transport using [LiveKit](https://github.com/livekit/livekit) Selective
-Forwarding Units (SFUs).
+The LiveKit SFU is integrated into Matrix in a multi-SFU configuration. In this setup, a homeserver
+may operate one or more SFUs. RTC members always publish their RTC data to a local SFU and announce
+their SFU choice via their `m.rtc.member` event. Other members then subscribe to the RTC data on the
+publishing member's SFU – which might be different from the SFU they're publishing on themselves.
+The homeserver provides mechanisms for discovering local SFUs and for acquiring access tokens for
+both local and remote SFUs. This approach removes the need for an SFU election process and allows
+servers to guard access to their SFUs.
 
-In real-time communication environments, managing media streams among multiple participants can be
-complex. This transport proposal uses a **Multi-SFU approach** where each participant publishes
-their media directly to a LiveKit SFU, while others subscribe to streams they need. This removes the
-need for an SFU election and preserves clear ownership of media.
-
-Example for two participants from different homeservers A and B
+The example below illustrates how two members from different homeservers A and B publish and
+subscribe to each other's RTC streams.
 
 ```
-      +------------------+
-      |  Participant A   |
-      |  (Matrix Client) |
-      +------------------+
-        |             ^
-        |             |
-        | publishes   | subscribes
-        v             |
-      +-------+  +-------+
-      | SFU A |  | SFU B |
-      +-------+  +-------+
-        |             ^
-        |             |
-        | subscribes  | publishes
-        v             |
-      +------------------+
-      |  Participant B   |
-      |  (Matrix Client) |
-      +------------------+
+                  ┌─────────────────────────────────┐
+          ┌───────┤            Client A             │◀──────┐
+          │       └──┬──────────────────────────────┘       │
+          │          │                                      │
+  publish │          │ discover SFU                         │ subscribe
+          │          │ get SFU authorisation                │
+          │          │                                      │
+          ▼          ▼                                      │
+      ┌───────┐ ┌──────────┐   federation  ┌──────────┐ ┌───┴───┐
+      │ SFU A │ │ Server A │◀─────────────▶│ Server B │ │ SFU B │
+      └───┬───┘ └──────────┘               └──────────┘ └───────┘
+          │                                      ▲          ▲
+          │                                      │          │
+subscribe │                         discover SFU │          │ publish
+          │                get SFU authorisation │          │
+          │                                      │          │
+          │       ┌──────────────────────────────┴──┐       │
+          └──────▶│            Client B             ├───────┘
+                  └─────────────────────────────────┘
 ```
+
+[MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
+[LiveKit]: https://github.com/livekit/livekit
 
 ## Proposal
 
