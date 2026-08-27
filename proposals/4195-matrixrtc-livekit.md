@@ -43,8 +43,58 @@ subscribe │                         discover SFU │          │ publish
 
 ## Proposal
 
-This MSC defines the **LiveKit RTC Transport**, which can appear as one of the **RTC Transports**
-offered by a homeserver and being used as transport by clients, as per [MSC4519](https://github.com/matrix-org/matrix-spec-proposals/pull/4519).
+A new transport type `m.livekit` is introduced. Homeservers that support this transport announce it
+to clients by including a dedicated object in the response of the`/_matrix/client/v1/rtc/transports`
+endpoint from [MSC4519]. The object has the following schema:
+
+- `type` (required, string): The transport's type identifier. MUST be `m.livekit`.
+- `url` (required, string): The SFU's WebSocket URL. This allows differentiating SFUs when the
+  server operates more than one SFU.
+
+Below is an example of a response from `/_matrix/client/v1/rtc/transports`:
+
+```json5
+{
+  "transports": [{
+    "type": "m.livekit",
+    "url": "ws://livekit.example.com"
+  }]
+}
+```
+
+Once a client decides to publish media under a discovered transport, it includes the same object
+in the `transports` array of its respective `m.rtc.member` event. This gives other clients in the
+same RTC slot, the information required to subscribe to the published media.
+
+Below is an example of an appropriate membership event:
+
+```json5
+{
+  "type": "m.rtc.member",
+  "content": {
+    "slot_id": "...",
+    "member": {
+      "id": "{member_id}",
+      "membership": "join"
+    },
+    "application": {
+      ...
+    },
+    "transports": {
+      "published": [{
+        "type": "m.livekit",
+        "url": "ws://livekit.example.com"
+      }],
+      "can_subscribe": [ "m.livekit" ]
+    },
+    "sticky_key": "{member_id}"
+  },
+  ...
+}
+```
+
+[MSC4519]: https://github.com/matrix-org/matrix-spec-proposals/pull/4519
+
 
 ### Canonical JSON Serialization
 
@@ -86,64 +136,6 @@ The resulting value is opaque to the MatrixRTC application. Within the LiveKit n
 to limit the number of active LiveKit SFU connections. 
 
 The `livekit_alias` is shared with clients as part of their JWT token issued by the server.
-
-### Transport type: `livekit`
-
-This section defines the JSON format for the LiveKit SFU Transport, covering both homeserver-side
-advertisement and client-side consumption.
-
-#### Transport Advertisement (homeserver)
-
-The mechanism for advertising available RTC transports by homeservers is already defined in
-[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
-
-The homeserver announces available LiveKit Transport as a JSON object with the following fields:
-
-* `type` — required `string`: this MUST be `livekit`  
-* `url` - required `string`: WebSocket URL of the LiveKit SFU. This enables running more than one SFU
-  per homeserver.
-
-An example for  `GET /_matrix/client/v1/rtc/transports`
-
-```json5
-{
-  "rtc_transports": [
-    {
-      "type": "livekit",
-      "url": "ws://livekit.example.com
-    }
-  ]
-}
-```
-
-#### Transport Usage (client)
-
-The mechanism for discovering available RTC transports by clients is already defined in
-[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143).
-
-Clients declare the RTC Transport(s) they use to publish RTC data in their `m.rtc.member` state
-event by adding a JSON object to the `rtc_transports` array.
-
-Other clients in the same MatrixRTC slot discover and subscribe to each other’s media by inspecting
-`m.rtc.member` events. Clients use this information to connect to the appropriate SFU and subscribe
-to the published media.
-
-Field Descriptions:
-
-* `type` — required `string`: this MUST be `"livekit"`  
-* `url` - required `string`: WebSocket URL of the LiveKit SFU.
-
-```json5
-{
-  // rest of the m.rtc.member event
-  "rtc_transports": [
-    {
-      "type": "livekit",
-      "url": "ws://livekit.example.com
-    }
-  ]
-}
-```
 
 ### Additions to the Client-Server and Server-Server API
 
