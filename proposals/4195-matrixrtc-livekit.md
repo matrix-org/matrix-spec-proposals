@@ -206,7 +206,7 @@ of that event and takes `url` from the respective `transports` array element in 
 Below is an example of a token request for the `m.rtc.membership` example given further up.
 
 ```http
-POST /_matrix/client/v1/rtc/livekit/get_token HTTP/1.1
+POST /_matrix/client/v1/rtc/livekit/get_token
 
 {
   "server_name": "example.com",
@@ -229,7 +229,7 @@ generates a token for the SFU and responds with HTTP 200 and a JSON object with 
 property `jwt` holding the token.
 
 ```http
-HTTP/1.1 200 OK
+200 OK
 
 {
   "jwt": "thejwt"
@@ -241,7 +241,7 @@ the `/get_token` federation endpoint on that server. The body of the request con
 object received in the client request but with `server_name` omitted. An example is given below:
 
 ```http
-POST /_matrix/federation/v1/rtc/livekit/get_token HTTP/1.1
+POST /_matrix/federation/v1/rtc/livekit/get_token
 
 {
   "url": "ws://livekit.example.com,
@@ -262,7 +262,7 @@ Otherwise, the remote server generates a token for its SFU and returns it in the
 used for the Client-Server endpoint.
 
 ```http
-HTTP/1.1 200 OK
+200 OK
 
 {
   "jwt": "thejwt"
@@ -273,24 +273,26 @@ The origin server then forwards the token to its client as above.
 
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 
+### Optional delegated delayed leave events
 
-### Optional Delegated MatrixRTC Membership Lifecycle Tracking using Cancellable Delayed Events
+As described in [MSC4143], clients SHOULD use delayed events to implement a "deadman switch"
+for precise MatrixRTC membership tracking. This involves scheduling a delayed leave event and
+periodically restarting it. If the client unexpectedly loses connectivity, the server triggers
+the sending of the leave event once the delay expires. However, relying on clients to restart
+the delayed event can be error-prone in adverse network conditions, particularly due to TCP
+connection instability.
 
-As described in [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), clients
-SHOULD use cancellable delayed events to implement a "deadman switch" for precise MatrixRTC
-membership tracking. This involves sending a disconnect event ahead of the connect event as a
-delayed event with a reasonable timeout (e.g., 15--30 seconds), and periodically restart the
-delayed event's timer. If the timer expires due to a missing restart, the disconnect event is
-automatically emitted, marking the participant as disconnected and ensuring accurate session state
-even in cases of sudden disconnection, crashes, or network failures. However, relying on clients to
-restart the delayed event timer can be error-prone in adverse network conditions, particularly due to
-TCP connection instability.
+The LiveKit SFU, on the other hand, maintains authoritative knowledge of each member's real-time
+connection state through its WebSocket connections. Additionally, the SFU is able to trigger
+[webhooks] upon connection state changes. These features can be used to create a delegation
+mechanism for delayed leave events on the homeserver. A client first schedules its delayed leave
+event and then delegates management of the event to its homeserver. The homeserver keeps restarting
+the event while the participant is connected to the SFU and triggers sending the event once it finds the
+participant disconnected from the SFU. This mechanism allows for higher reliability and accuracy
+when compared to client-maintained delayed leave events.
 
-Since the LiveKit SFU, which is tied to the homeserver, already maintains authoritative knowledge of
-each participant's connection state, the management of cancellable delayed events MAY be delegated
-to the homeserver. This delegation allows the RTC transport layer to accurately manage and
-maintain MatrixRTC membership lifecycles across transient disconnects, ensuring a consistent and
-reliable view of session state.
+The following sequence diagram illustrates the conceptual procedure which is described in more detail
+below.
 
 ```mermaid
 sequenceDiagram
@@ -303,96 +305,101 @@ sequenceDiagram
         participant L as 📡 LiveKit SFU
     end
 
-    U->>H: Send m.rtc.member event<br>to join session
-    activate H
-    H-->>U: ​
-    deactivate H
-  
     U->>H: Schedule delayed m.rtc.member event<br>to leave session
     activate H
-    H-->>U: ​
+    H-->>U: ​Confirm scheduling
     deactivate H
-  
-    Note over U,L: Obtain SFU token and URL as shown in the chart above
-  
-    U->>L: Publish media stream
   
     U->>H: /delegate_delayed_leave
     activate H
     H-->>U: Confirm delegation
-    H->>H: Reschedule delayed<br>leave event
-    H->>H: Reschedule delayed<br>leave event
-    H->>H: Reschedule delayed<br>leave event
+
+    H->>L: Wait for connection
+    L-->>H: Participant connected
+    
+    H->>H: Restart delayed<br>leave event
+    H->>H: Restart delayed<br>leave event
+
+    H->>L: Sanity check connection state
+    L-->>H: Participant still connected
+
+    H->>H: Restart delayed<br>leave event
   
     U->>U: Loses connectivity
   
-    L->>H: Trigger disconnect webhook
+    L->>H: Participant disconnected webhook
     H->>H: Trigger sending<br>leave event
     deactivate H
 ```
 
-#### Request
+Clients delegate delayed leave events to their homeserver by `POST`ing to a new authenticated endpoint
+`/_matrix/client/v1/rtc/livekit/delegate_delayed_leave`. The body of the request contains a JSON
+object with the following schema:
 
-The delegation is carried out by making a `POST` request to a new authenticated endpoint
-`/_matrix/client/v1/rtc/livekit/delegate_delayed_leave`.
+- `room_id` (required, `string`): The room ID in which the delayed `m.rtc.member` event was scheduled.
+- `slot_id` (required, `string`): The contents of the `slot_id` property of the `m.rtc.member` event.
+- `member_id` (required, `string`): The `member.id` property of the `m.rtc.member` event.
+- `delay_id` (required, `string`): The delayed event ID obtained when scheduling the `m.rtc.member` event.
 
-The `Content-Type` of the request is `application/json` and the JSON body contains the following
-fields:
-
-  * `room_id` — required `string`: the Matrix room ID where the `m.rtc.member` event is present.  
-  * `slot_id` — required `string`: the slot ID from the `m.rtc.member` event.  
-  * `member` — required `object`: the contents of the `member` field from the `m.rtc.member` event.
-  * `delay_id` — required `string`: the delayed event id of the MatrixRTC member leave event.
+Below is an example of a request:
 
 ```http
-POST /_matrix/client/v1/rtc/livekit/delegate_delayed_leave HTTP/1.1
+POST /_matrix/client/v1/rtc/livekit/delegate_delayed_leave
 
 {
   "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
-  "member": {
-    "id": "xyzABCDEF10123",
-    "claimed_device_id": "DEVICEID"
-  },
+  "member_id": "id",
   "delay_id": "1234567890"
 }
 ```
 
-When delegating delayed events, Clients SHOULD NOT use values smaller than 1 hour for the `delay_timeout`
-to avoid unnecessarily frequent restarts of the delayed event. Servers MAY reject requests when the delegated
-event has a timeout below 1 hour with `M_BAD_JSON`.
+When scheduling delayed events that are meant to be delegated, clients SHOULD use a `delay_timeout` of
+at least 1 hour. This avoids unnecessarily frequent restarts of the delayed event. Servers MAY reject
+delegation requests with HTTP 400 / `M_INVALID_PARAM` when the delegated event has a lower timeout.
 
-#### Successful response
-
-The server MUST only maintain a single delegated event per `room_id`, `slot_id`,
-`member` and MXID. Requests to delegate a different `delay_id` MUST invalidate earlier
-delegations for the same parameters.
-
-If the delegation request is successful, an HTTP `200 OK` response is returned with
-`Content-Type: application/json`. The response body contains an empty JSON object
-for future extension.
+Otherwise, if the request parameters are valid, the server responds with HTTP 200 and an empty JSON
+object to confirm the delegation.
 
 ```http
-HTTP/1.1 200 OK
+200 OK
 
 {}
 ```
 
-Once the homeserver observes the client's SFU connection (either by receiving a
-[webhook](https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/)
-from the SFU or by polling the connection status from the SFU), identified by
-the LiveKit room `livekit_alias` and the LiveKit identity as specified in the next section
-(`base64(SHA256(JSON.serialize([user_id, claimed_device_id, member.id])))`), it SHOULD issue
-a restart of the delayed event.
+The server then derives the LiveKit room alias and LiveKit participant identity from the `room_id`,
+`slot_id` and `member_id` parameters as well as the request's authorization as described above. The
+server then waits for the participant to connect to the SFU. How long the server waits before giving
+up is left as an implementation detail. If it waits longer than the delegated event's `delay_timeout`,
+it MUST restart the event periodically and with sufficient headroom to the expiration time.
 
-It then starts a timer corresponding to the delayed event's `delay_timeout`. The timer is periodically
-restarted while the client remains connected with sufficient headroom (e.g., 80% of `delay_timeout`) to
-ensure the restart occurs well before `delay_timeout` expires. If the homeserver detects that the client
-has disconnected  before the timer is restarted (either by receiving a
-[webhook](https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/)
-from the SFU or by polling the connection status from the SFU), the server MUST trigger sending of the
-delegated delayed leave event. This ensures that the MatrixRTC membership state remains accurate and
-consistent, even in the presence of network interruptions or client crashes.
+Once the server observes the LiveKit particpant's connection on the SFU, it MUST begin (or continue)
+restarting the delayed event periodically – again, with sufficient headroom. The server then continues
+to monitor the participants connection state. Once the server detects that the participant has
+disconnected, it MUST trigger the sending of the delegated leave event.
+
+For maximum reliability, it is RECOMMENDED to use a combination of polling and listening to SFU [webhooks]
+to monitor for SFU (dis)connections.
+
+The server MUST only maintain a single delegated event per `room_id`, `slot_id`, `member` and MXID.
+Requests to delegate a different `delay_id` MUST invalidate earlier delegations for the same parameters.
+
+[webhooks]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### LiveKit JWT Permission Grants
 
