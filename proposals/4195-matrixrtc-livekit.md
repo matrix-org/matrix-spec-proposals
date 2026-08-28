@@ -271,6 +271,43 @@ used for the Client-Server endpoint.
 
 The origin server then forwards the token to its client as above.
 
+#### Access token properties
+
+Different properties and grants can be applied when generating tokens using LiveKit's SDKs. Servers need
+to ensure these are set appropriately so that clients can connect correctly and securely. In particular,
+servers MUST apply the following settings:
+
+- `sub`: The LiveKit participant identity, derived as described above.
+- `video.room`: The LiveKit room name, derived as described above.
+- `video.roomCreate`: Always `true`. This allows clients to create the LiveKit room if it doesn't yet
+  exist on the SFU.
+- `video.roomJoin`: Always `true`. This enables clients to join the LiveKit room if it exists.
+- `video.canPublish`: `true` if the token was requested by a local user. `false` otherwise. This enforces
+  the multi-SFU configuration and ensures clients can only publish RTC data on a local SFU.
+- `video.canSubscribe`: Always `true`. This lets clients subscribe to RTC data on both local and
+  remote SFUs.
+- `video.canUpdateOwnMetadata`: Always `true`. This lets clients update their own metadata. The latter is
+  a single string that can store any data.
+
+Below is an example of a LiveKit JWT for a local user:
+
+```json5
+{
+  "exp": 1726764439,
+  "iss": "API2bYPYMoVqjcE",
+  "nbf": 1726760839,
+  "sub": "{livekit_participant_identity}",
+  "video": {
+    "room": "{livekit_room_name}",
+    "roomCreate": true,
+    "roomJoin": true,
+    "canPublish": true,
+    "canSubscribe": true,
+    "canUpdateOwnMetadata": true
+  }
+}
+```
+
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 
 ### Optional delegated delayed leave events
@@ -386,73 +423,6 @@ Requests to delegate a different `delay_id` MUST invalidate earlier delegations 
 
 [webhooks]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### LiveKit JWT Permission Grants
-
-As well as being a valid [LiveKit JWT](https://docs.livekit.io/home/get-started/authentication/) the
-following constraints are applied:
-
-- `sub`: This is the pseudonymous LiveKit participant identity as described above.  
-- `video`.`room`: `livekit_alias` as defined above
-
-In a Multi-SFU setup, where participants may publish to one SFU and consume from others, the JWT
-SHOULD encode access permissions according to the user’s homeserver and their relationship to
-the MatrixRTC backend.
-
-The permissions SHOULD be just sufficient for the MatrixRTC application to operate in a LiveKit
-room. Permissions SHOULD be scoped according to the user’s role (publishing or subscribing) and
-their relationship to the MatrixRTC backend. All users MUST be able to join the LiveKit room for
-which they are authorised. The `roomCreate` permission SHOULD only be granted to users who are
-related to the MatrixRTC backend and are allowed to publish media.
-
-Example for publishing RTC data using a full-access grant:
-```json5
-{
-  "exp": 1726764439,
-  "iss": "API2bYPYMoVqjcE",
-  "nbf": 1726760839,
-  "sub": "xyzABCDEF0123",    // member.id
-  "video": {
-    "canPublish": true,
-    "canSubscribe": true,
-    "room": "base64(SHA256(JSON.serialize([\"!gIpOlaUSrXBmgtveWK:call.ems.host\", \"m.call#ROOM\"])))",
-    "roomCreate": true,
-    "roomJoin": true
-  }
-}
-```
-
-Example for subscribing RTC data with restricted-access grant
-
-```json5
-{
-  "exp": 1726764439,
-  "iss": "API2bYPYMoVqjcE",
-  "nbf": 1726760839,
-  "sub": "xyzABCDEF0123",    // member.id
-  "video": {
-    "canPublish": false,
-    "canSubscribe": true,
-    "room": "base64(SHA256(JSON.serialize([\"!gIpOlaUSrXBmgtveWK:call.ems.host\", \"m.call#ROOM\"])))",
-    "roomCreate": false,
-    "roomJoin": true
-  }
-}
-```
 
 ### End-to-end encryption
 
