@@ -369,7 +369,9 @@ members to agree on key material, at a minimum. To support this, MatrixRTC provi
 for establishing shared key material between members. Transports can then define how to actually use
 this key material, which may involve deriving further secrets from it. The concrete mechanism for
 agreeing on the shared key material within a slot is prescribed through the `encryption` object in
-`m.rtc.slot` events.
+`m.rtc.slot` events. This approach avoids each transport having to design a new key agreement and
+distribution procedure. The small downside is that the generic shared key material needs to have enough
+entropy to be suitable for any transport.
 
 [existing mechanisms]: https://spec.matrix.org/v1.19/client-server-api/#end-to-end-encryption
 
@@ -401,7 +403,7 @@ distributed among session members. Other devices, even if in the room, never get
 
 #### Distributing keys
 
-When joining a slot, clients generate a 32-byte key by using a cryptographically secure pseudorandom
+When joining a slot, clients generate a 32-byte key by using a cryptographically secure random
 number generator. They then share the key with other clients joined to the slot by sending encrypted
 to-device messages of the type `m.rtc.encryption_key`.
 
