@@ -123,7 +123,7 @@ performed using the following steps:
 livekit_room_name = Base64( SHA256( Canonicalize( [ room_id, slot_id ] ) ) )
 ```
 
-This procedure ensures that each MatrixRTC slot unambigously maps to one LiveKit room on
+This procedure ensures that each MatrixRTC slot unambiguously maps to one LiveKit room on
 each involved SFU. As a result, the number of WebSocket connections required to participate
 in an RTC session scales with the number of participating SFUs which should commonly mean
 the number of participating homeservers. This is much more efficient for clients compared to
@@ -176,7 +176,7 @@ to RTC streams. The LiveKit SFU requires an access token in the form of a JWT fo
 In order to enable additional access control checks, responsibility for issuing these tokens is
 assigned to home servers.
 
-Servers can [generate] the tokens by using one of the LiveKit SDKs and inputing a set of parameters
+Servers can [generate] the tokens by using one of the LiveKit SDKs and inputting a set of parameters
 including the LiveKit room name and the LiveKit participant identifier. The procedure also requires
 secrets agreed upon between the homeserver and the respective SFU. This means homeservers can
 only generate tokens for their own SFUs. To allow clients to request tokens for both local and
@@ -410,7 +410,7 @@ server then waits for the participant to connect to the SFU. How long the server
 up is left as an implementation detail. If it waits longer than the delegated event's `delay_timeout`,
 it MUST restart the event periodically and with sufficient headroom to the expiration time.
 
-Once the server observes the LiveKit particpant's connection on the SFU, it MUST begin (or continue)
+Once the server observes the LiveKit participant's connection on the SFU, it MUST begin (or continue)
 restarting the delayed event periodically – again, with sufficient headroom. The server then continues
 to monitor the participants connection state. Once the server detects that the participant has
 disconnected, it MUST trigger the sending of the delegated leave event.
