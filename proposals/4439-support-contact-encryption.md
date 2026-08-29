@@ -55,6 +55,20 @@ anyone responsible for the Matrix homeserver itself. This is a tool to aid in di
 
 Additionally, this helps obtain per-contact granularity in contrast to just one "this is our security team's key."
 
+## Security considerations
+
+Alongside [RFC 9116](https://datatracker.ietf.org/doc/html/rfc9116#name-security-considerations), this proposal comes
+alongside the following security considerations, most of which being true for the rest of the fields in `support`:
+
+* The `.well-known/matrix/support` file could be compromised by an attacker. The file is not currently signed by the
+  homeserver, and it must be trusted as it is. It could be possible to add a signature in the future, similar to
+  `security.txt`.
+* The information contained within the file could be stale and out of date. It is the responsibility of a homeserver's
+  operator to keep the information current.
+* Control by other users or departments. In larger enterprise or multi-user environments, an unauthorized user with
+  access could edit or otherwise control the support record to change the listed PGP key. The same is true for all other
+  well-known files, however.
+
 ## Unstable prefix
 
 While this proposal is unstable, `pgp_key` should be referred to as `dev.zirco.msc4439.pgp_key`.
