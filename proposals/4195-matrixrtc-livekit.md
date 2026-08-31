@@ -65,8 +65,8 @@ Below is an example of a response from `/_matrix/client/v1/rtc/transports`:
 ```
 
 Once a client decides to publish media under a discovered transport, it includes the same object
-in the `transports` array of its respective `m.rtc.member` event. This gives other clients in the
-same RTC slot, the information required to subscribe to the published media.
+in the `transports.published` array of its respective `m.rtc.member` event. This gives other clients
+in the same RTC slot, the information required to subscribe to the published media.
 
 Below is an example of an appropriate membership event:
 
