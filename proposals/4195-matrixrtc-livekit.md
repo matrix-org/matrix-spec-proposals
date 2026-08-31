@@ -562,7 +562,7 @@ from Matrix’s goals or limit interoperability. This is mitigated by the follow
 
 ### Canonical JSON variations
 
-The procedures for deriving LiveKit room names and LiveKit participant identifiers involve [Canonical JSON].
+The procedures for deriving LiveKit room names and LiveKit participant identities involve [Canonical JSON].
 As an alternative, the hashing inputs could be concatenated with a suitable delimiter such as `|`. This
 is prone to delimiter injection, however. As an example, the inputs `("a|b", "c")` and `("a", "b|c")`
 both produce the concatenation `"a|b|c"` and, hence, the same hash. Using JSON arrays and Canonical JSON
@@ -576,12 +576,46 @@ would likely result in a higher chance of implementation errors.
 
 ## Security considerations
 
-### Pseudonymity
+### Kicking users from the SFU on room leave
 
-The LiveKit participant identity is a function of one's Matrix user ID, device ID, and session
-membership ID; if all of these values are known or otherwise predictable to the SFU then there is
-effectively no guarantee of pseudonymity. Therefore clients must be careful to use randomly
-generated session membership IDs with sufficient entropy.
+Since MatrixRTC sessions are tied to Matrix rooms, servers should to take care that client connections
+to the SFU don't exceed past the point where a user leaves the associated room. This is important
+because otherwise a malicious user being kicked from a room might continue to be connected to an
+ongoing RTC session related to the room. To prevent this, servers SHOULD remove any associated LiveKit
+participant identities from the related LiveKit rooms when a user leaves a Matrix room.
+
+It should be noted, that removing a participant from a LiveKit room also revokes their access token
+in the cloud version of LiveKit. This is _not_ the case in the self-hosted version, however. Homeservers
+that rely on a self-hosted LiveKit instance should issue access tokens with a sufficiently short TTL
+to mitigate this.
+
+### Reducing metadata leakage to the SFU
+
+With SFUs always being tied to homeservers under this proposal, two principal deployment models exist
+on the server side. On the one hand, the SFU can be self-hosted. This means the homeserver operator is
+also the SFU operator and hiding metadata known to the homeserver from the SFU has limited value. On
+the other hand, the LiveKit deployment can also be outsourced, for instance, by using [LiveKit Cloud].
+This introduces another entity with access to only the SFU into the threat model. In order to handle
+the latter case, this proposal takes steps to hide metadata known to the homeserver from the SFU where
+possible.
+
+For one thing, [LiveKit room names] are pseudonymised which prevents the SFU from learning about room
+or slot IDs. If the same slot is used repeatedly for a meeting, the SFU could still apply heuristics to
+establish a connection between RTC sessions and the room. The addition of the server-side salt described
+above, eliminates this leak, too.
+
+For another, [LiveKit participant identities] are pseudonymised as well which prevents the SFU from
+correllating SFU participants with Matrix users. The identity derivation process involves the value of
+`member.id` which clients change every time they join a slot. As a result, the SFU is unable to track
+Matrix users across different calls and no further salting is required.
+
+The LiveKit SFU and the homeserver necessarily form a high trust relationship. In order for the homeserver
+to extend SFU access tokens, secrets need to be agreed upon between the homeserver and the SFU. This
+is a one-time configuration step, however. No networking is required between the homeserver and the
+SFU to generate access tokens.
+
+[LiveKit Cloud]: https://cloud.livekit.io
+[LiveKit participant identities]: #liveKit-participant-identities
 
 ### Error handling and information disclosure
 
