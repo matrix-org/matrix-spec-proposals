@@ -597,7 +597,7 @@ would likely result in a higher chance of implementation errors.
 ### Kicking users from the SFU on room leave
 
 Since MatrixRTC sessions are tied to Matrix rooms, servers should take care that client connections
-to the SFU don't exceed past the point where a user leaves the associated room. This is important
+to the SFU don't exceed past the point where a user leaves the associated Matrix room. This is important
 because otherwise a malicious user being kicked from a room might continue to be connected to an
 ongoing RTC session related to the room. To prevent this, servers SHOULD remove any associated LiveKit
 participant identities from the related LiveKit rooms when a user leaves a Matrix room.
