@@ -370,12 +370,12 @@ Below is an example of a LiveKit JWT for a local user:
 
 ### Optional delegated delayed leave events
 
-As described in [MSC4143], clients SHOULD use delayed events to implement a "deadman switch"
-for precise MatrixRTC membership tracking. This involves scheduling a delayed leave event and
-periodically restarting it. If the client unexpectedly loses connectivity, the server triggers
-the sending of the leave event once the delay expires. However, relying on clients to restart
-the delayed event can be error-prone in adverse network conditions, particularly due to TCP
-connection instability.
+As described in [MSC4143], clients SHOULD use delayed events as per [MSC4140] to implement a
+"deadman switch" for precise MatrixRTC membership tracking. This involves scheduling a delayed
+leave event and periodically restarting it. If the client unexpectedly loses connectivity, the
+server triggers the sending of the leave event once the delay expires. However, relying on clients
+to restart the delayed event can be error-prone in adverse network conditions, particularly due
+to TCP connection instability.
 
 The LiveKit SFU, on the other hand, maintains authoritative knowledge of each member's real-time
 connection state through its WebSocket connections. Additionally, the SFU is able to trigger
@@ -481,6 +481,7 @@ Requests to delegate a different `delay_id` MUST invalidate earlier delegations 
 
 It is RECOMMENDED that servers apply rate limiting to the delegation endpoint.
 
+[MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 [webhooks]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/
 
 
