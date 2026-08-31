@@ -534,6 +534,20 @@ the Flutter SDK (see [livekit/client-sdk-flutter#974](https://github.com/livekit
 Upstream implementation efforts such as [livekit/rust-sdks#796](https://github.com/livekit/rust-sdks/issues/796)
 will be required to close these gaps.
 
+### Lack of per-sender authentication
+
+LiveKit's frame-level encryption is based on [SFrame], which by design does not authenticate the
+sender of individual frames. A participant who has obtained another member's current `media_key` —
+including a colluding SFU operator — could therefore forge frames that appear to originate from that
+member. This is an inherent limitation of SFrame rather than something introduced by this proposal.
+Its practical impact is reduced by [MSC4143]'s requirement that clients rotate the key whenever the
+set of members joined to a slot changes, which follows the SFrame specification's [own recommendation]
+for achieving forward secrecy.
+
+[SFrame]: https://www.ietf.org/archive/id/draft-ietf-sframe-enc-04.html
+[not authenticate]: https://www.ietf.org/archive/id/draft-ietf-sframe-enc-04.html#name-no-per-sender-authentication
+[own recommendation]: https://www.ietf.org/archive/id/draft-ietf-sframe-enc-04.html#name-key-management-2
+
 ### Reliance on the LiveKit protocol implementations
 
 While being open source, LiveKit is developed and maintained by a commercial entity and is not an
