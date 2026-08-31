@@ -125,11 +125,11 @@ livekit_room_name = Base64( SHA256( Canonicalize( [ room_id, slot_id ] ) ) )
 ```
 
 This procedure ensures that each MatrixRTC slot unambiguously maps to one LiveKit room on
-each involved SFU. As a result, the number of WebSocket connections required to participate
-in an RTC session scales with the number of participating SFUs which should commonly mean
-the number of participating homeservers. This is much more efficient for clients compared to
-using separate LiveKit rooms per MatrixRTC member where the number of required WebSocket
-connections would scale with the number of session members.
+each involved SFU. As a result, the number of connections (WebSocket + WebRTC) required to
+participate in an RTC session scales with the number of participating SFUs which should
+commonly mean the number of participating homeservers. This is much more efficient for
+clients compared to using separate LiveKit rooms per MatrixRTC member where the number
+of required WebSocket connections would scale with the number of session members.
 
 For improved metadata protection, servers MAY add a `salt` generated from a cryptographically
 secure random number generator to the input JSON array when deriving LiveKit room names.
