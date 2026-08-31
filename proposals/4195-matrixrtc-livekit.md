@@ -512,79 +512,15 @@ of `media_key.index` as per [MSC4143].
 
 ## Potential issues
 
-### Source of `truly_random_bits` for Pseudonymous `livekit_alias` Derivation
+### Client-provided salts for LiveKit room names
 
-Clients that publish their media through the same SFU and use the same `slot_id` within a given
-Matrix room are considered to share the same LiveKit room (`livekit_alias`), which minimizes the
-number of active LiveKit SFU connections.
-
-The derivation of the LiveKit room alias is defined as:
-`livekit_alias = base64(SHA256(JSON.serialize([room_id, slot_id, truly_random_bits])))`.
-
-This construction is part of the proposal and ensures that aliases remain pseudonymous while still
-being deterministically derived for a given Matrix room and MatrixRTC slot. The open consideration
-is the source of the `truly_random_bits` used in the derivation.
-
-Two approaches are possible:
-
-1. **Client-provided `truly_random_bits`**
-  * Requires coordination between clients sharing the same `slot_id` within a Matrix room to ensure
-    they use identical random bits; otherwise, different `livekit_alias` values maybe derived and
-    fragment the session.
-  * As described in the MatrixRTC slots section of
-    [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), slots are the intended
-    mechanism for sharing state between clients. However, slots are **unencrypted** and subject to
-    state resolution. Therefore, they are not suitable for holding truly random bits`.
-  * While tie-breaking `truly random bits` derived from `m.rtc.member` events (e.g., within the
-    `rtc_transports` field) ensures that the data is encrypted shared state, it is subject to
-    client-side consensus and may flip over time. Overall, it does **not** improve the reliability
-    of propagating and converging those random bits.
-  * Requires the removal of the `room_id` field from the access request, which prevents additional
-    access checks, such as verifying that the user is actually part of the claimed Matrix room.
-2. **Server-provided random bits**
-  * The server generates and persists the `truly_random_bits` for each `(room_id,
-    slot_id)` tuple
-  * Guarantees consistent alias derivation across clients without requiring client-side
-    coordination.
-  * The benefit of improved pseudonymity only applies if the server is
-    operated separately from the actual LiveKit SFU.
-  * Preserves the `room_id` in the access request, allowing additional access checks, such as
-    verifying that the user is actually part of the claimed Matrix room.
-
-Given that pseudonymous LiveKit participant IDs already exist, the design prioritizes **reliability
-over additional pseudonymity** by using server-provided random bits, ensuring
-consistent `livekit_alias` across clients while enabling additional access checks.
-
-### Reliance on the LiveKit Protocol and Implementation
-
-A concern has been raised regarding the reliance of this MSC on the LiveKit protocol, which is
-developed and maintained by a commercial entity rather than a formal standards body. This creates a
-theoretical risk that future development or licensing changes by LiveKit, Inc. could diverge from
-Matrix’s goals or limit interoperability.
-
-This consideration was already discussed during the design of the MatrixRTC backend, and several
-factors help to mitigate the concern:
-* **Protocol openness**: The LiveKit protocol and reference implementation are released under the
-  [Apache 2.0 License](https://github.com/livekit/livekit/blob/master/LICENSE), which allows for
-  forking and independent evolution. If LiveKit’s direction or license were to change, Matrix could
-  adopt the current protocol version and evolve it independently under an open governance model.
-* **No lock-in at the Matrix level**: MatrixRTC defines a generic transport abstraction (see
-  [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)), allowing for the
-  definition of additional or alternative transport types in the future without breaking
-  compatibility.
-* **Extensibility**: Because the LiveKit protocol is open source, nothing prevents the Matrix
-  community from implementing additional functionality — such as Cascading SFUs or other
-  federation-oriented features — on top of the existing protocol if required. While this has been
-  discussed with the LiveKit team and they did not object in principle, such extensions are not
-  expected to depend on their involvement.
-* **Implementation pragmatism**: The choice of LiveKit was primarily pragmatic—to accelerate
-  development and deployment of a functioning multi-SFU solution—rather than to establish a
-  permanent dependency. The current multi-SFU model also reduces the importance of features such as
-  Cascading SFUs that might otherwise require protocol changes.
-
-In summary, this MSC’s reliance on LiveKit represents a practical implementation path rather than a
-long-term commitment to a specific third-party protocol. The current design remains open to future
-evolution toward a Matrix-native or jointly standardized MatrixRTC transport.
+The method for mapping MatrixRTC sessions to [LiveKit room names] includes an optional server-side
+salt. Instead of doing this on the server, clients could generate this salt to reduce metadata  
+shared with the server. This is complicated, however, because it would require clients to coordinate
+in order to agree on the same salt. A natural place to maintain the salt with little to no client
+coordination is the `m.rtc.slot` state event. While state events are not encryptable, this still
+shares the salt with the homeserver, however. Maintaining the salt on the homeserver is a compromise
+that leaks some metadata to the homeserver but still hides it from the SFU.
 
 ### Lack of HKDF support in some LiveKit client SDKs
 
@@ -593,12 +529,30 @@ the Flutter SDK (see [livekit/client-sdk-flutter#974](https://github.com/livekit
 Upstream implementation efforts such as [livekit/rust-sdks#796](https://github.com/livekit/rust-sdks/issues/796)
 will be required to close these gaps.
 
-### Missing .well-known documents
+### Reliance on the LiveKit protocol implementations
 
-As per the current spec, publishing the location of the client-server API in a .well-known document is
-not mandatory. Consequently, resolving the URL using .well-known discovery can fail. This should usually
-only occur in corporate setups and private federations though. Implementations MAY allow hardcoding the
-mapping from server name to client-server API URL to address these cases.
+While being open source, LiveKit is developed and maintained by a commercial entity and is not an
+open standard. As a result, future development or licensing changes by LiveKit, Inc could diverge
+from Matrix’s goals or limit interoperability. This is mitigated by the following factors:
+
+- Protocol openness: The LiveKit protocol and reference implementation are released under the
+  [Apache 2.0 License] which allows for forking and independent evolution. If LiveKit’s direction
+  or license were to change, Matrix could adopt the current protocol version and evolve it
+  independently under an open governance model.
+* No lock-in at the Matrix level: As per [MSC4143], transports in MatrixRTC are a generic abstraction
+  that allows definiting additional or alternative transport types in the future without breaking
+  compatibility.
+* Extensibility: Because the LiveKit protocol is open source, nothing prevents the Matrix community
+  from implementing additional functionality (such as cascading SFUs or other federation-oriented
+  features) on top of the existing protocol if required. While this has been discussed with the
+  LiveKit team and they did not object in principle, such extensions are not expected to depend on
+  their involvement.
+* Implementation pragmatism: The choice of LiveKit is pragmatic and helps accelerate development
+  and deployment of a functioning multi-SFU solution without necessarily establishing a permanent
+  dependency. The current multi-SFU model also reduces the importance of features such as cascading
+  SFUs that might otherwise require protocol changes.
+
+[Apache 2.0 License]: https://github.com/livekit/livekit/blob/master/LICENSE
 
 ## Alternatives
 
