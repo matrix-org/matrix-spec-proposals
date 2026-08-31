@@ -426,20 +426,33 @@ Requests to delegate a different `delay_id` MUST invalidate earlier delegations 
 
 ### End-to-end encryption
 
-End-to-end encryption is mapped into the LiveKit frame level encryption mechanism described
-[here](https://github.com/livekit/livekit/issues/1035).
+[MSC4143] introduced the `m.per_member` mechanism for letting clients generate a generic per-member secret
+that is distributed to other clients via `m.rtc.encryption_key` to-deivce messages.
 
-Where a shared password is used by the application it is used as the `string` input to the LiveKit
-key derivation function (which uses PBKDF2) and all participants use the same derived key for
-encryption and decryption.
+```json5
+{
+  "room_id": "{room_id}",
+  "member_id": "{member_id}",
+  "media_key": {
+    "index": <index>,
+    "key": "{encoded_key}",
+    "format": "m.base64"
+  }
+}
+```
 
-Where a per-participant key is used it is imported as the byte array input to the LiveKit key
-derivation function (which uses HKDF). The `index` field of the `m.rtc.encryption_keys` event is
-used as the key index for the key provider.
+To map this secret into LiveKit's frame-level [encryption] mechanism, clients use LiveKit's SDKs to implement
+a [custom key provider]. The secret in `media_key.key` is then used as the raw byte input to LiveKit's HKDF-based
+key derivation function, keyed by `media_key.index` and associated with the respective LiveKit participant identity
+derived as described [above].
 
-On receipt of the `m.rtc.encryption_keys` event the application can associate the received key with
-the LiveKit participant identity by calculating the pseudonymous LiveKit participant identity as
-described above.
+Clients MUST use a keyring size of 256 when initialising the custom key provider to align with the [0, 255] range
+of `media_key.index` as per [MSC4143].
+
+[encryption]: https://docs.livekit.io/transport/encryption/
+[custom key provider]: https://docs.livekit.io/transport/encryption/start/#custom-key-provider
+[above]: #liveKit-participant-identities
+
 
 ## Potential issues
 
