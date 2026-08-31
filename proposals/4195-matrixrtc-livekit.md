@@ -50,8 +50,8 @@ to clients by including a dedicated object in the response of the`/_matrix/clien
 endpoint from [MSC4519]. The object has the following schema:
 
 - `type` (required, string): The transport's type identifier. MUST be `m.livekit`.
-- `url` (required, string): The SFU's WebSocket URL. This allows differentiating SFUs when the
-  server operates more than one SFU.
+- `url` (required, string): The SFU's WebSocket URL. Clients use this URL to connect to the SFU
+  via one of LiveKit's [client SDKs].
 
 Below is an example of a response from `/_matrix/client/v1/rtc/transports`:
 
@@ -96,6 +96,7 @@ Below is an example of an appropriate membership event:
 ```
 
 [MSC4519]: https://github.com/matrix-org/matrix-spec-proposals/pull/4519
+[client SDKs]: https://docs.livekit.io/transport/sdk-platforms/
 
 ### Mapping MatrixRTC members to LiveKit
 
@@ -146,8 +147,8 @@ amount of metadata exposed to the SFU.
 
 LiveKit participant identities are derived by both homeservers and clients. Homeservers require
 the identity to generate LiveKit access tokens (see [below]). Clients use the identity to map
-MXIDs to LiveKit participants, for instance, to display a user name and avatar on a video stream.
-To avoid exposing unnecessary metadata to the SFU, the derivation process uses the following steps:
+MXIDs to LiveKit participants. To avoid exposing unnecessary metadata to the SFU, the derivation
+process uses the following steps:
 
 1. Construct a JSON array containing the `sender` and `member.id` properties from the `m.rtc.member`
    event (in that precise order).
@@ -270,6 +271,61 @@ used for the Client-Server endpoint.
 ```
 
 The origin server then forwards the token to its client as above.
+
+The sequence chart below illustrates how two users from different homeservers discover SFUs and obtain
+tokens for both publishing and subscribing to RTC streams.
+
+```mermaid
+sequenceDiagram
+    autonumber
+
+    participant U as 🧑 Alice
+
+    box floralwhite alice.com
+        participant H as 🏢 Homeserver
+        participant L as 📡 LiveKit SFU
+    end
+
+    box floralwhite bob.com
+        participant L1 as 📡 LiveKit SFU
+        participant H1 as 🏢 Homeserver
+    end
+
+    participant U1 as 👨 Bob
+
+    U->>H: Discover LiveKit SFU
+    activate H
+    H-->>U: Return SFU WebSocket URL
+    deactivate H
+
+    U->>H: Request SFU access token
+    activate H
+    H-->>U: If authorised, return access token
+    deactivate H
+
+    U->>L: Connect to SFU and start publishing
+    activate L
+
+    U->>H: Publish SFU URL in m.rtc.member event
+
+    Note over U1,L1: Publishing analogous to Alice (steps 1-6)
+
+    U1->>H1: Discover Alice's SFU from<br/>her m.rtc.member event
+
+    U1->>H1: Request access token for Alice's SFU
+    activate H1
+    H1->>H: Request SFU access token
+    activate H
+    H-->>H1: If authorised, return access token
+    deactivate H
+    H1-->>U1: Return access token
+    deactivate H1
+
+    U1->>L: Connect to Alice's SFU and start subscribing
+    deactivate L
+
+    Note over U,L: Subscribing analogous to Bob (steps 7-13)
+```
 
 #### Access token properties
 
@@ -427,7 +483,7 @@ Requests to delegate a different `delay_id` MUST invalidate earlier delegations 
 ### End-to-end encryption
 
 [MSC4143] introduced the `m.per_member` mechanism for letting clients generate a generic per-member secret
-that is distributed to other clients via `m.rtc.encryption_key` to-deivce messages.
+that is distributed to other clients via `m.rtc.encryption_key` to-device messages.
 
 ```json5
 {
