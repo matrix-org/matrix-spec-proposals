@@ -584,17 +584,17 @@ generated session membership IDs with sufficient entropy.
 Implementations of the `/get_token` endpoint SHOULD take care not to disclose sensitive internal
 details through error messages.
 
-Error responses should use generic `"errcode"` values and short, human-readable `"error"`
+Error responses should use generic `errcode` values and short, human-readable `error`
 descriptions that are suitable for client display or logging. Specifically:
-* Validation or authorisation failures MUST NOT reveal information about whether a particular Matrix
+
+- Validation or authorisation failures MUST NOT reveal information about whether a particular Matrix
   user, device, or room exists.
-* Server-side or federation validation errors (for example, OpenID token verification failures)
-  SHOULD be reported as `M_UNAUTHORIZED` or `M_FORBIDDEN` without including internal validation
-  results or upstream responses.
-* Detailed diagnostic information (e.g., reasons for policy rejection, internal stack traces, or
+- Server-side or federation validation errors SHOULD be reported as `M_UNAUTHORIZED` or `M_FORBIDDEN`
+  without including internal validation results or upstream responses.
+- Detailed diagnostic information (e.g., reasons for policy rejection, internal stack traces, or
   upstream HTTP responses) MUST NOT be exposed to clients, but MAY be logged on the server side for
   audit and debugging purposes.
-* If rate limiting is applied, the inclusion of a numeric `retry_after_ms` value is acceptable, but
+- If rate limiting is applied, the inclusion of a numeric `retry_after_ms` value is acceptable, but
   other details of rate limiting policy SHOULD NOT be exposed.
 
 This ensures that error responses remain useful for clients while preventing potential metadata
@@ -602,11 +602,11 @@ leakage about users, rooms, or federation trust relationships.
 
 ## Unstable prefix
 
-Assuming that this is accepted at the same time as
-[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) no unstable prefix is
-required for the `livekit` type identifier as it will only be accessed via some other unstable prefix.
+Assuming that this proposal is accepted at the same time as [MSC4143] no unstable prefix is
+required for the `livekit` type identifier as it will only be accessed via some other unstable
+prefix.
 
-Apart from this, the endpoints introduced should be referred to as follows:
+Apart from this, the endpoints introduced above should be referred to as follows:
 
 - `/_matrix/client/v1/rtc/livekit/get_token` -> `/_matrix/client/unstable/io.element.msc4195/rtc/livekit/get_token`
 - `/_matrix/federation/v1/rtc/livekit/get_token` -> `/_matrix/federation/unstable/io.element.msc4195/rtc/livekit/get_token`
@@ -614,32 +614,20 @@ Apart from this, the endpoints introduced should be referred to as follows:
 
 ## Dependencies
 
-This MSC builds on [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) (which
-at the time of writing has not yet been accepted into the spec).
+This proposal depends on [MSC4143] and [MSC4519].
 
-This MSC additionally requires [MSC4519](https://github.com/matrix-org/matrix-spec-proposals/pull/4519)
-to be accepted.
+## Appendix: hash derivation test vectors
 
-## Appendix: Hash Derivation Test Vectors
+Below are provided verified test vectors for the LiveKit room name and LiveKit participant identity, derived as
+described above. Further test vectors can be obtained with the following shell commands.
 
-This appendix provides **verified test vectors** for:
-
-* `livekit_alias`
-* pseudonymous LiveKit participant identity
-
-All hashes are computed as:
-
-`base64(SHA256(JSON.serialize([...]))`
-
-Where `JSON.serialize` uses **Matrix canonical JSON** as defined in:  
-https://spec.matrix.org/v1.18/appendices/#canonical-json
-
----
-
-### Test Vectors
+```sh
+printf '%s' "${CANONICAL_JSON}" | openssl dgst -sha256 # SHA-256 (hex)
+printf '%s' "${CANONICAL_JSON}" | openssl dgst -sha256 -binary | openssl base64 -A | tr -d '=' # Base64 (unpadded)
+```
 
 | Case | Input (logical) | Canonical JSON | SHA-256 (hex) | Base64 (unpadded) |
-|------|------------------|----------------|---------------|-------------------|
-| LiveKit alias (no random bits) | `["!roomid:example.com", "slot1234"]` | `["!roomid:example.com","slot1234"]` | `3bce37ed6dfe8e6ccc563a083f7b4dc1b9be5f11d093688aa4e03b6aac37a927` | `O8437W3+jmzMVjoIP3tNwbm+XxHQk2iKpOA7aqw3qSc` |
-| LiveKit alias (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
-| Participant identity | `["@alice:example.com", "DEVICE123", "memberABC"]` | `["@alice:example.com","DEVICE123","memberABC"]` | `27e4f8e6d1abbb173e1eb50ea89265c90495df79bbdbc0a67b8fafb7cfd25ab5` | `J+T45tGruxc+HrUOqJJlyQSV33m728Cme4+vt8/SWrU` |
+|------|-----------------|----------------|---------------|-------------------|
+| LiveKit room alias (no random bits) | `["!roomid:example.com", "slot1234"]` | `["!roomid:example.com","slot1234"]` | `3bce37ed6dfe8e6ccc563a083f7b4dc1b9be5f11d093688aa4e03b6aac37a927` | `O8437W3+jmzMVjoIP3tNwbm+XxHQk2iKpOA7aqw3qSc` |
+| LiveKit room alias (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
+| LiveKit participant identity | `["@alice:example.com", "DEVICE123", "memberABC"]` | `["@alice:example.com","DEVICE123","memberABC"]` | `337567b0b5eb91bc480c83573bae2ef0f6731720fd6581624142d1d9db21598b` | `M3VnsLXrkbxIDINXO64u8PZzFyD9ZYFiQULR2dshWYs` |
