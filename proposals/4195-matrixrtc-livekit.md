@@ -616,6 +616,11 @@ to extend SFU access tokens, secrets need to be agreed upon between the homeserv
 is a one-time configuration step, however. No networking is required between the homeserver and the
 SFU to generate access tokens.
 
+Apart from this the homeserver relies on the SFU to truthfully respond to connection status checks
+and to carry out on-demand room removals. A malicious SFU operator could fake these. Due to the
+pseudonymization described above, they would not be able to relate RTC data to Matrix rooms or users,
+however. In unencrypted RTC sessions, the SFU operator of course has full access to the RTC streams.
+
 [LiveKit Cloud]: https://cloud.livekit.io
 [LiveKit participant identities]: #liveKit-participant-identities
 
