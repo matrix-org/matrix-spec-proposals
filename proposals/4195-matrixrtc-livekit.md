@@ -59,7 +59,7 @@ Below is an example of a response from `/_matrix/client/v1/rtc/transports`:
 {
   "transports": [{
     "type": "m.livekit",
-    "url": "ws://livekit.example.com"
+    "url": "wss://livekit.example.com"
   }]
 }
 ```
@@ -85,7 +85,7 @@ Below is an example of an appropriate membership event:
     "transports": {
       "published": [{
         "type": "m.livekit",
-        "url": "ws://livekit.example.com"
+        "url": "wss://livekit.example.com"
       }],
       "can_subscribe": [ "m.livekit" ]
     },
@@ -213,7 +213,7 @@ POST /_matrix/client/v1/rtc/livekit/get_token
 
 {
   "server_name": "example.com",
-  "url": "ws://livekit.example.com",
+  "url": "wss://livekit.example.com",
   "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
   "member_id": "xyzABCDEF10123"
@@ -247,7 +247,7 @@ object received in the client request but with `server_name` omitted. An example
 POST /_matrix/federation/v1/rtc/livekit/get_token
 
 {
-  "url": "ws://livekit.example.com",
+  "url": "wss://livekit.example.com",
   "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
   "member_id": "xyzABCDEF10123"
