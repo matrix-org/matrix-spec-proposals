@@ -607,7 +607,7 @@ establish a connection between RTC sessions and the room. The addition of the se
 above, eliminates this leak, too.
 
 For another, [LiveKit participant identities] are pseudonymised as well which prevents the SFU from
-correllating SFU participants with Matrix users. The identity derivation process involves the value of
+correlating SFU participants with Matrix users. The identity derivation process involves the value of
 `member.id` which clients change every time they join a slot. As a result, the SFU is unable to track
 Matrix users across different calls and no further salting is required.
 
