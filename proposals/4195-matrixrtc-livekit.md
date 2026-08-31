@@ -186,6 +186,8 @@ remote SFUs, a new pair of authenticated Client-Server and Server-Server endpoin
 - `POST /_matrix/client/v1/rtc/livekit/get_token`
 - `POST /_matrix/federation/v1/rtc/livekit/get_token`
 
+The server SHOULD apply rate limiting to both of these endpoints.
+
 To request a token, a client `POST`s to `/get_token` including in the body a JSON object with the
 following schema:
 
@@ -476,6 +478,8 @@ to monitor for SFU (dis)connections.
 
 The server MUST only maintain a single delegated event per `room_id`, `slot_id`, `member` and MXID.
 Requests to delegate a different `delay_id` MUST invalidate earlier delegations for the same parameters.
+
+It is RECOMMENDED that servers apply rate limiting to the delegation endpoint.
 
 [webhooks]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/
 
