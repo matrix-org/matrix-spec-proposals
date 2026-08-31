@@ -584,10 +584,12 @@ because otherwise a malicious user being kicked from a room might continue to be
 ongoing RTC session related to the room. To prevent this, servers SHOULD remove any associated LiveKit
 participant identities from the related LiveKit rooms when a user leaves a Matrix room.
 
-It should be noted, that removing a participant from a LiveKit room also revokes their access token
+It should be noted, that removing a participant from a LiveKit room also [revokes] their access token
 in the cloud version of LiveKit. This is _not_ the case in the self-hosted version, however. Homeservers
 that rely on a self-hosted LiveKit instance should issue access tokens with a sufficiently short TTL
 to mitigate this.
+
+[revokes]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-revocation
 
 ### Reducing metadata leakage to the SFU
 
