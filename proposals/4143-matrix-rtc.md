@@ -183,7 +183,7 @@ Within `m.rtc.member` events, `content` contains the following properties:
   - `published` (array): An array of objects describing the transports on which the member is
     publishing media.
     - `type`: (required, string): The [MSC4519]-registered transport `type`. For an [MSC4195]
-      transport, this would be `livekit`.
+      transport, this would be `m.livekit`.
     - Optionally includes further properties specific to the transport `type`. The concrete properties
       are defined by the transport's specification. This could, for instance, include WebSocket URLs.
       The transport's specification would be as per its [MSC4519] registration.
