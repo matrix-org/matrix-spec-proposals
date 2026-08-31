@@ -46,7 +46,7 @@ subscribe │                         discover SFU │          │ publish
 ### Discovering and announcing transports
 
 A new transport type `m.livekit` is introduced. Homeservers that support this transport announce it
-to clients by including a dedicated object in the response of the`/_matrix/client/v1/rtc/transports`
+to clients by including a dedicated object in the response of the `/_matrix/client/v1/rtc/transports`
 endpoint from [MSC4519]. The object has the following schema:
 
 - `type` (required, string): The transport's type identifier. MUST be `m.livekit`.
@@ -110,7 +110,7 @@ from [MSC4143].
 #### LiveKit room names
 
 LiveKit room names are derived by homeservers and shared with clients as part of the
-LiveKit access token issued by the homeserver (see [below]). To ensures a baseline of
+LiveKit access token issued by the homeserver (see [below]). To ensure a baseline of
 pseudonymity and avoid exposing unnecessary metadata to the SFU, the derivation is
 performed using the following steps:
 
@@ -143,7 +143,7 @@ LiveKit participants have left the LiveKit room. This ensures that a different L
 room is used for the next MatrixRTC session in the same slot and further reduces the
 amount of metadata exposed to the SFU.
 
-### LiveKit participant identities
+#### LiveKit participant identities
 
 LiveKit participant identities are derived by both homeservers and clients. Homeservers require
 the identity to generate LiveKit access tokens (see [below]). Clients use the identity to map
@@ -167,8 +167,8 @@ is not required here.
 [LiveKit rooms]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/rooms/
 [LiveKit participants]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/participants/
 [below]: #acquiring-livekit-access-tokens
-[Canonical JSON]: (https://spec.matrix.org/v1.18/appendices/#canonical-json)
-[unpadded base64]: https://spec.matrix.org/v1.17/appendices/#unpadded-base64
+[Canonical JSON]: https://spec.matrix.org/v1.19/appendices/#canonical-json
+[unpadded base64]: https://spec.matrix.org/v1.19/appendices/#unpadded-base64
 
 ### Acquiring LiveKit access tokens
 
@@ -239,7 +239,7 @@ property `jwt` holding the token.
 }
 ```
 
-If, converserly, `server_name` points to a remote server, the server triggers a `POST` request to
+If, conversely, `server_name` points to a remote server, the server triggers a `POST` request to
 the `/get_token` federation endpoint on that server. The body of the request contains the same JSON
 object received in the client request but with `server_name` omitted. An example is given below:
 
@@ -326,7 +326,7 @@ sequenceDiagram
     U1->>L: Connect to Alice's SFU and start subscribing
     deactivate L
 
-    Note over U,L: Subscribing analogous to Bob (steps 7-13)
+    Note over U,L: Subscribing analogous to Bob (steps 7-12)
 ```
 
 #### Access token properties
@@ -402,7 +402,7 @@ sequenceDiagram
 
     U->>H: Schedule delayed m.rtc.member event<br>to leave session
     activate H
-    H-->>U: ​Confirm scheduling
+    H-->>U: Confirm scheduling
     deactivate H
   
     U->>H: /delegate_delayed_leave
@@ -449,9 +449,9 @@ POST /_matrix/client/v1/rtc/livekit/delegate_delayed_leave
 }
 ```
 
-When scheduling delayed events that are meant to be delegated, clients SHOULD use a `delay_timeout` of
-at least 1 hour. This avoids unnecessarily frequent restarts of the delayed event. Servers MAY reject
-delegation requests with HTTP 400 / `M_INVALID_PARAM` when the delegated event has a lower timeout.
+When scheduling delayed events that are meant to be delegated, clients SHOULD use a delay of at least
+1 hour. This avoids unnecessarily frequent restarts of the delayed event. Servers MAY reject delegation
+requests with HTTP 400 / `M_INVALID_PARAM` when the delegated event has a lower timeout.
 
 Otherwise, if the request parameters are valid, the server responds with HTTP 200 and an empty JSON
 object to confirm the delegation.
@@ -465,8 +465,8 @@ object to confirm the delegation.
 The server then derives the LiveKit room alias and LiveKit participant identity from the `room_id`,
 `slot_id` and `member_id` parameters as well as the request's authorization as described above. The
 server then waits for the participant to connect to the SFU. How long the server waits before giving
-up is left as an implementation detail. If it waits longer than the delegated event's `delay_timeout`,
-it MUST restart the event periodically and with sufficient headroom to the expiration time.
+up is left as an implementation detail. If it waits longer than the delegated event's delay, it MUST
+restart the event periodically and with sufficient headroom to the expiration time.
 
 Once the server observes the LiveKit participant's connection on the SFU, it MUST begin (or continue)
 restarting the delayed event periodically – again, with sufficient headroom. The server then continues
@@ -511,8 +511,7 @@ of `media_key.index` as per [MSC4143].
 
 [encryption]: https://docs.livekit.io/transport/encryption/
 [custom key provider]: https://docs.livekit.io/transport/encryption/start/#custom-key-provider
-[above]: #liveKit-participant-identities
-
+[above]: #livekit-participant-identities
 
 ## Potential issues
 
@@ -525,6 +524,8 @@ in order to agree on the same salt. A natural place to maintain the salt with li
 coordination is the `m.rtc.slot` state event. While state events are not encryptable, this still
 shares the salt with the homeserver, however. Maintaining the salt on the homeserver is a compromise
 that leaks some metadata to the homeserver but still hides it from the SFU.
+
+[LiveKit room names]: #livekit-room-names
 
 ### Lack of HKDF support in some LiveKit client SDKs
 
@@ -648,7 +649,7 @@ leakage about users, rooms, or federation trust relationships.
 ## Unstable prefix
 
 Assuming that this proposal is accepted at the same time as [MSC4143] no unstable prefix is
-required for the `livekit` type identifier as it will only be accessed via some other unstable
+required for the `m.livekit` type identifier as it will only be accessed via some other unstable
 prefix.
 
 Apart from this, the endpoints introduced above should be referred to as follows:
@@ -675,4 +676,4 @@ printf '%s' "${CANONICAL_JSON}" | openssl dgst -sha256 -binary | openssl base64 
 |------|-----------------|----------------|---------------|-------------------|
 | LiveKit room alias (no random bits) | `["!roomid:example.com", "slot1234"]` | `["!roomid:example.com","slot1234"]` | `3bce37ed6dfe8e6ccc563a083f7b4dc1b9be5f11d093688aa4e03b6aac37a927` | `O8437W3+jmzMVjoIP3tNwbm+XxHQk2iKpOA7aqw3qSc` |
 | LiveKit room alias (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
-| LiveKit participant identity | `["@alice:example.com", "DEVICE123", "memberABC"]` | `["@alice:example.com","DEVICE123","memberABC"]` | `337567b0b5eb91bc480c83573bae2ef0f6731720fd6581624142d1d9db21598b` | `M3VnsLXrkbxIDINXO64u8PZzFyD9ZYFiQULR2dshWYs` |
+| LiveKit participant identity | `["@alice:example.com", "memberABC"]` | `["@alice:example.com","DEVICE123","memberABC"]` | `337567b0b5eb91bc480c83573bae2ef0f6731720fd6581624142d1d9db21598b` | `M3VnsLXrkbxIDINXO64u8PZzFyD9ZYFiQULR2dshWYs` |
