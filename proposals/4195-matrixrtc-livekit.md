@@ -100,12 +100,12 @@ Below is an example of an appropriate membership event:
 
 ### Mapping MatrixRTC members to LiveKit
 
-LiveKit encapsulates RTC sessions in so called [LiveKit rooms]. Within a LiveKit room,
-[LiveKit participants] can publish and subscribe to RTC data streams through a WebSocket
-connection that is guarded with an access token. A LiveKit room is identified by a unique
-room "name" string while a LiveKit participant is identified by a unique "identity" string.
-These LiveKit primitives need to be mapped to the `m.rtc.member` events for MatrixRTC members
-from [MSC4143].
+LiveKit encapsulates RTC sessions in so-called [LiveKit rooms]. Within a LiveKit room,
+[LiveKit participants] use a WebSocket signaling connection that is guarded with an
+access token. Publishing and subscribing to RTC streams then happens over WebRTC.
+A LiveKit room is identified by a unique room "name" string while a LiveKit participant
+is identified by a unique "identity" string. These LiveKit primitives need to be mapped
+to the `m.rtc.member` events for MatrixRTC members from [MSC4143].
 
 #### LiveKit room names
 
