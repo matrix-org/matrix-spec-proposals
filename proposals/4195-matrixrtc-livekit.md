@@ -556,34 +556,19 @@ from Matrix’s goals or limit interoperability. This is mitigated by the follow
 
 ## Alternatives
 
-### String concatenation of hashing inputs
+### Canonical JSON variations
 
-Instead of using canonical JSON, the hashing inputs could be concatenated with a suitable delimiter
-such as `|`. This is prone to delimiter injection, however. As an example, the inputs `("a|b", "c")`
-and `("a", "b|c")` both produce the concatenation `"a|b|c"` and, hence, the same hash. Using JSON
-arrays and Canonical JSON serialisation avoids this problem. Since the Canonical JSON serialisation
-of string arrays is trivial, this doesn't meaningfully increase implementation complexity.
+The procedures for deriving LiveKit room names and LiveKit participant identifiers involve [Canonical JSON].
+As an alternative, the hashing inputs could be concatenated with a suitable delimiter such as `|`. This
+is prone to delimiter injection, however. As an example, the inputs `("a|b", "c")` and `("a", "b|c")`
+both produce the concatenation `"a|b|c"` and, hence, the same hash. Using JSON arrays and Canonical JSON
+avoids this problem. Since the Canonical JSON serialisation of string arrays is trivial, this also doesn't
+meaningfully increase implementation complexity.
 
-### JSON objects as hashing inputs
-
-Instead of JSON arrays, JSON objects could be used for the hashing inputs. This would reduce the
-chances of accidentally using the wrong order of array elements. On the downside, however, the
-Canonical JSON serialisation of objects is significantly more complex than for arrays. Overall,
-this would likely result in a higher chance of implementation errors.
-
-### Combination of token request and delegation
-
-Instead of using separate endpoints, the token request and the delegation of the delayed disconnect
-event could be combined in a single endpoint. This creates a race condition, however. As per
-[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), the disconnect event
-carries a relation to the associated join event. This means a client would have to send its join
-event before requesting an SFU token. The associated Livekit room will only be created when the
-token is requested though. As a result, a client on another homeserver could attempt to connect to
-the SFU in the meantime. Since the Livekit room doesn't yet exist, this would result in an error.
-Separating the endpoints avoids this issue.
-
-Additionally, a joint endpoint introduces the problem of having to handle the case where one of
-the two operations succeeds but the other fails.
+Furthermore, instead of JSON arrays, JSON objects could be used for the hashing inputs. This would reduce
+the chances of accidentally using the wrong order of array elements. On the downside, however, the
+Canonical JSON serialisation for objects is significantly more complex than for arrays. Overall, this
+would likely result in a higher chance of implementation errors.
 
 ## Security considerations
 
