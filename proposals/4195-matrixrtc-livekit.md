@@ -462,11 +462,13 @@ object to confirm the delegation.
 {}
 ```
 
-The server then derives the LiveKit room alias and LiveKit participant identity from the `room_id`,
-`slot_id` and `member_id` parameters as well as the request's authorization as described above. The
-server then waits for the participant to connect to the SFU. How long the server waits before giving
-up is left as an implementation detail. If it waits longer than the delegated event's delay, it MUST
-restart the event periodically and with sufficient headroom to the expiration time.
+The server derives the LiveKit room alias and LiveKit participant identity from the `room_id`,
+`slot_id` and `member_id` parameters as well as the request's authorization as described above.
+
+The server then waits for the participant to connect to the SFU. How long the server waits before
+giving up is left as an implementation detail. If the waiting duration exceeds the delegated event's
+delay, the server MUST restart the event periodically and with sufficient headroom to the expiration
+time.
 
 Once the server observes the LiveKit participant's connection on the SFU, it MUST begin (or continue)
 restarting the delayed event periodically – again, with sufficient headroom. The server then continues
