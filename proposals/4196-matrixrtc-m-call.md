@@ -1,14 +1,26 @@
-# MSC4196: MatrixRTC voice and video calling application `m.call`
+# MSC4196: Voice and video calling application for MatrixRTC
+
+[MSC4143] introduces MatrixRTC as an extensible framework for real-time communication in Matrix.
+MatrixRTC uses so called transports to transfer the RTC data between RTC members. Transports are
+then used in what MatrixRTC calls applications to build user experiences for concrete use cases.
+
+This proposal introduces a MatrixRTC application for voice and video calling that is able to power
+a variety of calling use cases including but not limited to classical 1-on-1 and group calling
+as well as Discord-style [Voice Channels]. The application is compatible with the [LiveKit] transport
+introduced in [MSC4195].
+
+Note that call ringing and notifications are not in scope for this proposal. These are covered
+in [MSC4075] and [MSC4310].
+
+[MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
+[Voice Channels]: https://support.discord.com/hc/en-us/articles/19583625604887-Voice-Channels-FAQs
+[LiveKit]: https://github.com/livekit/livekit
+[MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
+[MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
+[MSC4310]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
+
 
 ## Proposal
-
-We define a **MatrixRTC application** of type `m.call` for real-time calling, designed to support
-the following use cases:
-
-* **1:1 calls in direct messages (DMs)** – Private, peer-to-peer conversations.  
-* **Huddles** – Adding a call to an existing room for spontaneous group discussions.  
-* **Persistent “social” rooms** – Discord-style voice or video spaces that are fixed in type but act
-  as a permanent hangout, where users can drop in and out freely, similar to a pub or watercooler.
 
 ### MatrixRTC Slots for voice and video calling
 
