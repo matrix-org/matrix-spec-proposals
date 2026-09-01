@@ -89,58 +89,17 @@ Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
 }
 ```
 
+When leaving a slot, [MSC4143] allows clients to optionally provide context with regards to the
+reason for leaving in the `leave_reason` property of their `m.rtc.member` event. For `m.call`
+applications, the generic `leave_reason.code` values provided in [MSC4143] are extended with
+the following additional codes:
 
-### Ending a Call and Post-Connect Error Handling
+- `transport_error`: The client failed to negotiate a connection over the chosen transport
+  (e.g. due to an ICE/DTLS setup failure).
+- `media_error`: The client failed to capture or transmit audio and/or video after joining.
+- `codec_mismatch`: The client could not decode/encode the call media.
+- `encryption_error`: The client failed to set up end-to-end encryption for the media channel.
 
-Participation in a call is ended by disconnecting the MatrixRTC slot, as defined in
-[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143). The
-**`disconnect_reason`** field is used to provide further details about the disconnection and can
-also be used for structured error handling.
-
-A valid `m.rtc.member` event, as a prerequisite for disconnecting from a slot, has the following
-schema:
-
-```
-// event type: "m.rtc.member"
-{
-  "slot_id": "m.call.ROOM",
-  "sticky_key": "xyzABCDEF0123",
-  "m.relates_to":{                  // SHOULD
-    rel_type: "m.reference",
-    event_id: "$connect_event_id"
-  },
-  // Optional
-  "disconnect_reason": { 
-    "class": "server_error",
-    "reason": "ice_failed",
-    "description": "Failed to establish peer-to-peer connection via ICE",
-  }
-}
-```
-
-**Field explanations:**
-
-* `slot_id` — The slot this member belongs to.  
-* `m.relates_to` —  The `m.relates_to` field optionally references the initial connect event  
-* `sticky_key` — Same as above  
-* `disconnect_reason` as defined below
-
-`disconnect_reason` **field explanations:**
-
-| Class | Example Reason | Description / When Used |
-| ----- | ----- | ----- |
-| `user_action` | `hangup` | Participant intentionally ended the call after joining. |
-|  | `switch_device` | User moved the session to another device mid-call. |
-| `client_error` | `media_error` | Failed to capture or transmit audio/video after joining. |
-|  | `transport_failure` | Local ICE/DTLS setup failed despite a successful `m.rtc.member` event. |
-|  | `encryption_error` | Failed to set up E2EE for the media channel after connecting. |
-| `server_error` | `ice_failed` | ICE negotiation could not complete due to network/server issues. |
-|  | `dtls_failed` | DTLS handshake failed. |
-|  | `network_error` | Temporary network outage caused the connection to drop. |
-| `redirection` | `call_transferred` | Call was redirected to another slot, device, or user. |
-|  | `moved_temporarily` | Session temporarily moved (e.g., server migration). |
-| `permanent_failure` | `codec_mismatch` | Participant cannot decode/encode the call media. |
-|  | `unsupported_features` | Session requested unsupported capabilities. |
 
 ### Call Ringing Using `m.rtc.notification` room event
 
