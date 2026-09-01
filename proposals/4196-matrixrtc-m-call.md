@@ -156,7 +156,7 @@ creation though.
 
 ### Metadata leakage through intent
 
-Some users might not be comforable with disclosing whether their camera is on or off via
+Some users might not be comfortable with disclosing whether their camera is on or off via
 the `intent` property on `m.rtc.member` events. Given that any room member can join the
 slot, this information is effectively obtainable by all room members anyway though. In either
 case, users can opt not to fill `intent` given that it is an optional property.
