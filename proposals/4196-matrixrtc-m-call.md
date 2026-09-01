@@ -58,7 +58,7 @@ When clients create rooms with `preset = private_chat` in [`/createRoom`], they 
 include an open `m.rtc.slot` event for `m.call` in `initial_state`. Clients MAY let the user
 override this default behaviour.
 
-As per [MSC4143], encryption of MatrixRTC sessions is mandatory in encryption rooms and forbidden
+As per [MSC4143], encryption of MatrixRTC sessions is mandatory in encrypted rooms and forbidden
 in unencrypted rooms. Therefore, if [`m.room.encryption`] is also present in `initial_state`, the
 `encryption` content block on the initial slot event MUST be set to `{ "type": "m.per_member" }`.
 Otherwise, the `encryption` property MUST be omitted.
