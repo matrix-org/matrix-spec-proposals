@@ -134,7 +134,6 @@ the following additional codes:
 - `codec_mismatch`: The client could not decode/encode the call media.
 - `encryption_error`: The client failed to set up end-to-end encryption for the media channel.
 
-
 ## Potential issues
 
 ## Alternatives
@@ -143,10 +142,9 @@ the following additional codes:
 
 ## Unstable prefix
 
-The `m.call` application type is already within unstable prefixed entries (i.e.
-`org.matrix.msc4143.rtc.member`) and as such doesn't need its own unstable prefix.
+No unstable prefix is needed for `m.call` because it is only used inside the `m.rtc.slot`
+and `m.rtc.member` events that are themselves guarded by the unstable prefix from [MSC4143].
 
 ## Dependencies
 
-This MSC builds on [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) and
-[MSC4354](https://github.com/matrix-org/matrix-spec-proposals/pull/4354).
+This proposal depends on [MSC4143] and [MSC4195].
