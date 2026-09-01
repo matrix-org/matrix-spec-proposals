@@ -121,7 +121,8 @@ When a client joins an `m.call` slot where all other members have set their `int
 the joining client SHOULD not publish a video track by default. It MAY allow the user to overrule
 this initial setting both before and after joining though. If the other members use different
 intents or have not disclosed their intent, the joining client SHOULD assume the session to
-represent a video call.
+represent a video call. This does *not* imply that the client should enter the call with video
+enabled, however (see [below]).
 
 When leaving a slot, [MSC4143] allows clients to optionally provide context with regards to the
 reason for leaving in the `leave_reason` property of their `m.rtc.member` event. For `m.call`
@@ -133,6 +134,8 @@ the following additional codes:
 - `media_error`: The client failed to capture or transmit audio and/or video after joining.
 - `codec_mismatch`: The client could not decode/encode the call media.
 - `encryption_error`: The client failed to set up end-to-end encryption for the media channel.
+
+[below]: #faking-intent
 
 ### Usage with the LiveKit transport from [MSC4195]
 
