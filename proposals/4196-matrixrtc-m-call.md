@@ -134,6 +134,24 @@ the following additional codes:
 - `codec_mismatch`: The client could not decode/encode the call media.
 - `encryption_error`: The client failed to set up end-to-end encryption for the media channel.
 
+### Usage with the LiveKit transport from [MSC4195]
+
+As of writing, the only known MatrixRTC transport is the `m.livekit` transport from [MSC4195].
+Clients can use the mechanisms from [MSC4195] for obtaining WebSocket URLs and access tokens
+for the LiveKit SFUs involved in a MatrixRTC session. The URLs and tokens can be used with one
+of the [LiveKit SDKs] to [publish] a user's own audio and video (including [screensharing]) and
+to [subscribe] to other member's published audio and video.
+
+Note that future transports might lack some or all of these capabilities. Therefore, the `m.call`
+application is explicitly only deemed compatible with the `m.livekit` transport for now. If a
+future MSC introduces another transport, that MSC will have to evaluate the transport's fitness
+for use in `m.call`.
+
+[LiveKit SDKs]: https://docs.livekit.io/transport/sdk-platforms/
+[publish]: https://docs.livekit.io/transport/media/publish/
+[screensharing]: https://docs.livekit.io/transport/media/screenshare/
+[subscribe]: https://docs.livekit.io/transport/media/subscribe/
+
 ## Potential issues
 
 ### Multiple slots per room
