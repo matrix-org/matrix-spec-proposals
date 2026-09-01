@@ -79,7 +79,7 @@ but this time without the namespacing requirements[^nohash]. Additionally, the v
 be predictable for clients given that slots act like virtual addresses where members
 are allowed to meet.
 
-As an example, the default slot ID for the calling application from [MSC4196] is `m.call#ROOM`.
+As an example, the default slot ID for the calling application from [MSC4196] is `m.call#room`.
 
 By prescribing a deterministic grammar for slot IDs, we avoid the need to define extra criteria for
 conflict resolution. If two admins race to open the same slot, they will send state events with the
