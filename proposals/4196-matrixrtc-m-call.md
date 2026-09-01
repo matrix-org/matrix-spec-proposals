@@ -25,6 +25,8 @@ A new MatrixRTC application type `m.call` is introduced. For now, only a single 
 per room is supported. This is sufficient for the majority of use cases and avoids the risk of two
 competing slots being opened for the same call when room administrators race.
 
+### Slot events
+
 The `m.call` application instance MUST use an application-specific slot ID of `ROOM`. The full
 slot ID as per [MSC4143], thus, becomes:
 
@@ -52,69 +54,41 @@ an open `m.rtc.slot` event for the `m.call` application:
 }
 ```
 
+### Membership events
 
-### MatrixRTC Member JSON Object for Application `m.call`
+The schema for the `application` content block in `m.rtc.member` events that are joined to `m.call`
+slots, looks as follows:
 
-A valid `m.rtc.member` state event with **application type** `m.call` includes the standard fields
-defined in [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143), **plus
-additional fields specific to `m.call`**:
+- `type` (string, required): MUST be `m.call`.
+- `intent` (string): One of `audio`, `video`. Optionally discloses whether the member intends to
+  join the session with audio only or with audio and video. Clients SHOULD set this field when joining
+  and update it as they en- or disable their video stream. This gives other members a hint as to whether
+  the session presents an audio or video call. 
 
-```
+Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
+
+```json5
 {
-  "application": {
-    "type": "m.call",
-    // additional fields for m.call:
-    "m.call.id": UUID                                 // optional
-    "m.call.intent": "voice" | "video" | "any-value"  // optional
+  "type": "m.rtc.member",
+  "content": {
+    "slot_id": "m.call#ROOM", // = m.rtc.slot state_key
+    "member": {
+      "id": "xyzABCDEF0123",
+      "membership": "join"
+    },
+    "application": {
+      "type": "m.call",
+      "intent": "video"
+    },
+    "transports": {
+      ...
+    },
+    "sticky_key": "xyzABCDEF0123", // = member.id
   },
+  ...
 }
 ```
 
-**Field Description**
-
-| Field | Type | Required | Description |
-| :---- | :---- | ----- | :---- |
-| `type` | string | ✅ | Must be `"m.call"`. Identifies the application type. |
-| `m.call.id` | string | ⚪ | Optional call ID of the session. Serves as a unique identifier for the call instance. |
-| `m.call.intent` | string | ⚪ | Optional hint expressing the intended use-case of the session, e.g., `"voice"`, `"video"`, or `"spatial-audio"`. This field is **informational only** and non-authoritative, reflecting the participant's perception of the session. |
-
-Participants MAY include a `m.call.intent` field to express the intended use-case of their `m.call`
-session (e.g. `"voice"`, `"video"`, `"spatial-audio"`). Because of Matrix decentralisation, this
-field is purely informational and non-authoritative, serving only as a hint about how the
-participant perceives the session.
-
-The following is an example of a well-formed `m.rtc.member` event for a participant joining a
-room-level call (`m.call#ROOM`) using the `m.call` application type:
-
-```
-// event type: "m.rtc.member"
-{
-  "slot_id": "m.call#ROOM",
-  "member": {
-    "id": "xyzABCDEF0123"                             // UUID, unique participation instance
-    "claimed_device_id": "DEVICEID",
-    "claimed_user_id": "@user:matrix.domain"
-  },
-  "sticky_key": "xyzABCDEF0123"                       // same as member.id 
-  "application": {
-    "type": "m.call",
-    // additional fields for m.call:
-    "m.call.id": UUID
-    "scope": "m.room"
-    "m.call.intent": "voice" | "video" | "any-value"  // optional
-  },
-  "m.relates_to":{                                    // Reference to original join event; omit if first event
-    rel_type: "m.reference",
-    event_id: "$connect_event_id"
-  },
-  "rtc_transports": [
-    { /* TRANSPORT_1 details */ }
-  ],
-  "versions": [
-    "v0"
-  ],
-}
-```
 
 ### Ending a Call and Post-Connect Error Handling
 
