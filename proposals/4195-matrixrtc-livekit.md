@@ -594,13 +594,14 @@ would likely result in a higher chance of implementation errors.
 
 ## Security considerations
 
-### Kicking users from the SFU on room leave
+### Kicking users from the SFU on room leave/ban
 
 Since MatrixRTC sessions are tied to Matrix rooms, servers should take care that client connections
-to the SFU don't exceed past the point where a user leaves the associated Matrix room. This is important
-because otherwise a malicious user being kicked from a room might continue to be connected to an
-ongoing RTC session related to the room. To prevent this, servers SHOULD remove any associated LiveKit
-participant identities from the related LiveKit rooms when a user leaves a Matrix room.
+to the SFU don't exceed past the point where a user is no longer joined to the associated Matrix room.
+This is important because otherwise a malicious user being kicked from a room might continue to be
+connected to an ongoing RTC session related to the room. To prevent this, servers SHOULD remove any
+associated LiveKit participant identities from the related LiveKit rooms when a user leaves or is
+banned from a Matrix room.
 
 It should be noted, that removing a participant from a LiveKit room also [revokes] their access token
 in the cloud version of LiveKit. This is _not_ the case in the self-hosted version, however. Homeservers
