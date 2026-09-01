@@ -136,9 +136,37 @@ the following additional codes:
 
 ## Potential issues
 
+### Multiple slots per room
+
+More advanced calling experiences might have a need for more than one slot per room, for instance,
+for breakout sessions. This was consciously left out of scope in this proposal. A future MSC
+may devise a scheme for letting clients negotiate which slot to use when multiple are present in
+a room.
+
 ## Alternatives
 
+### Injecting `m.rtc.slot` events on the server
+
+Instead of having clients pass in the initial `m.rtc.slot` event via `initial_state` on
+[`/createRoom`] requests, this logic could also be implemented by the server. This would
+further complicate the already complex steps the server has to run through during room
+creation though.
+
 ## Security considerations
+
+### Metadata leakage through intent
+
+Some users might not be comforable with disclosing whether their camera is on or off via
+the `intent` property on `m.rtc.member` events. Given that any room member can join the
+slot, this information is effectively obtainable by all room members anyway though. In either
+case, users can opt not to fill `intent` given that it is an optional property.
+
+### Faking intent
+
+A malicious user could set `intent = video` without actually publishing their video stream
+to trick another user into joining the call with their camera on. To mitigate this, clients
+SHOULD default to joining with video disabled regardless of the `intent` values of other
+members. They MAY allow users to override the default setting though.
 
 ## Unstable prefix
 
