@@ -25,7 +25,7 @@ A new MatrixRTC application type `m.call` is introduced. For now, only a single 
 per room is supported. This is sufficient for the majority of use cases and avoids the risk of two
 competing slots being opened for the same call when room administrators race.
 
-### Slot events
+### Slot event
 
 The `m.call` application instance MUST use an application-specific slot ID of `ROOM`. The full
 slot ID as per [MSC4143], thus, becomes:
@@ -53,6 +53,34 @@ an open `m.rtc.slot` event for the `m.call` application:
   ...
 }
 ```
+
+When clients create rooms with `preset = private_chat` in [`/createRoom`], they SHOULD by default
+include an open `m.rtc.slot` event for `m.call` in `initial_state`. Clients MAY let the user
+override this default behaviour.
+
+As per [MSC4143], encryption of MatrixRTC sessions is mandatory in encryption rooms and forbidden
+in unencrypted rooms. Therefore, if [`m.room.encryption`] is also present in `initial_state`, the
+`encryption` content block on the initial slot event MUST be set to `{ "type": "m.per_member" }`.
+Otherwise, the `encryption` property MUST be omitted.
+
+The default [power levels] assigned during room creation prevent room members other than the room
+creator from sending state events. Including the slot event at room creation time, ensures that
+room members are able to have calls in the room without depending on a room administrator to send
+the slot event later.
+
+For the same reason, homeservers SHOULD include `m.rtc.slot` events for `m.call` applications in
+the set of state events that are replicated during [room upgrades].
+
+Including `m.rtc.slot` events in `initial_state` is not required when other `preset` values are
+used in [`/createRoom`]. With the `trusted_private_chat` preset, all room members get the same power
+level as the room creator. Thus, they can send the `m.rtc.slot` event themselves when needed. In
+rooms that use the `public_chat` preset, in turn, enabling calls by default is usually not desired
+due to the open-access nature and the potentially large size of such rooms.
+
+[`/createRoom`]: https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3createroom
+[`m.room.encryption`]: https://spec.matrix.org/v1.18/client-server-api/#mroomencryption
+[power levels]: https://spec.matrix.org/v1.18/client-server-api/#mroompower_levels
+[room upgrades]: https://spec.matrix.org/v1.18/client-server-api/#server-behaviour-21
 
 ### Membership events
 
@@ -106,12 +134,6 @@ the following additional codes:
 - `codec_mismatch`: The client could not decode/encode the call media.
 - `encryption_error`: The client failed to set up end-to-end encryption for the media channel.
 
-
-### Defaults
-
-[The createRoom preset
-option](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3createroom)
-`trusted_private_chat` should enable a default room slot `m.call#ROOM` for the application `m.call`.
 
 ## Potential issues
 
