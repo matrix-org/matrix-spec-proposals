@@ -101,29 +101,6 @@ the following additional codes:
 - `encryption_error`: The client failed to set up end-to-end encryption for the media channel.
 
 
-### Call Ringing Using `m.rtc.notification` room event
-
-A valid `m.rtc.notification` event for a MatrixRTC session with application `m.call` MAY have the
-following fields in addition to the fields defined in
-[MSC4075](https://github.com/matrix-org/matrix-spec-proposals/pull/4075):
-- `m.call.intent`
-
-```
-// event type: "m.rtc.notification"
-{
-  "type":"m.rtc.notification",  // org.matrix.msc4075.rtc.notification
-  "content": {
-    "sender_ts": 1752583130365,
-    "lifetime": 30000,
-    "m.mentions": {"user_ids": [], "room": true | false},
-    "m.relates_to": {"rel_type":"m.reference", "event_id":"$rtc_member_event_id"},
-    "notification_type": "ring | notification",
-    // additional fields for m.call:
-    "m.call.intent": "voice" | "video" | "any-value"  // optional, 
-  }
-}
-```
-
 ### Handling of `m.call.intent`
 
 Clients SHOULD infer a “voice” `m.call.intent` as a voice call, and “video” as a voice and video
