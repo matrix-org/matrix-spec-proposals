@@ -91,7 +91,7 @@ To implement these properties, servers MUST:
 * Ensure sticky events are **delivered** to clients via `/sync` in a new section of the sync response,
   regardless of whether the sticky event falls within the timeline limit of the request.
   If there are too many sticky events to deliver at once, they will be delivered in subsequent `/sync` responses instead.
-* Soft-failure **checks** MUST be re-evaluated when the membership state changes for a user with unexpired sticky events.[^softfail]
+* **Re-evaluate soft-failure** of soft-failed unexpired sticky events when the membership state of the sender changes.[^softfail]
 * History visibility **checks** MUST NOT be applied to sticky events. Any joined user is authorised to see sticky events
   for the duration they remain sticky.[^hisvis]
 
@@ -484,7 +484,7 @@ Servers mostly lazy load timeline events, and will rely on clients hitting `/mes
 hits`/backfill` to request events from federated servers.  
 [^sync]: Normal timeline events do not always appear in the sync response if the event is more than `timeline_limit` events away.  
 [^softfail]: Not all servers will agree on soft-failure status due to the check considering the “current state” of the room.
-To ensure all servers agree on which events are sticky, we need to re-evaluate this rule when the current room state changes.
+To ensure all servers agree on which events are sticky, we need to re-evaluate soft-failed status when the current room state changes.
 This becomes particularly important when room state is rolled back. For example, if Charlie sends some sticky event E and
 then Bob kicks Charlie, but concurrently Alice kicks Bob then whether or not a receiving server would accept E would depend
 on whether they saw “Alice kicks Bob” or “Bob kicks Charlie”. If they saw “Alice kicks Bob” then E would be accepted. If they
