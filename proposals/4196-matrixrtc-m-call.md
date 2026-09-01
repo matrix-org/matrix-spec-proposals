@@ -19,20 +19,39 @@ in [MSC4075] and [MSC4310].
 [MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
 [MSC4310]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
 
-
 ## Proposal
 
-### MatrixRTC Slots for voice and video calling
+A new MatrixRTC application type `m.call` is introduced. For now, only a single instance of `m.call`
+per room is supported. This is sufficient for the majority of use cases and avoids the risk of two
+competing slots being opened for the same call when room administrators race.
 
-For voice and video calling, MatrixRTC defines **a room-level slot model** to represent calls that
-are scoped to a Matrix room and shared among its participants:
+The `m.call` appliation instance MUST use an application-specific slot ID of `ROOM`. The full
+slot ID as per [MSC4143], thus, becomes:
 
-* **`slot_id`: `m.call#ROOM` — Room-level call slot**  
-  Represents a call instance associated with the entire room. This slot is **managed by a user with
-  sufficient power level** and is intended for calls where **any room member is welcome to join**.
-  Ownership of the call is **shared** — it does not depend on who initiated it. This slot type is
-  also suitable for **1:1 direct message (DM) calls**, including use cases resembling traditional
-  **telephone-style calling semantics**.  
+```
+slot_id = {application_type}#{application_slot_id} = m.call#ROOM (= state_key)
+``` 
+
+No further parameters are required in the slot-level `application` object. Here is an example for
+an open `m.rtc.slot` event for the `m.call` application:
+
+```json5
+{
+  "type": "m.rtc.slot",
+  "state_key": "m.call#ROOM", // = slot_id
+  "content": {
+    "status": "open",
+    "application": {
+      "type": "m.call",
+    },
+    "encryption": {
+      "type": "m.per_member",
+    }
+  },
+  ...
+}
+```
+
 
 ### MatrixRTC Member JSON Object for Application `m.call`
 
