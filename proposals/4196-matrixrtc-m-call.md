@@ -25,7 +25,7 @@ A new MatrixRTC application type `m.call` is introduced. For now, only a single 
 per room is supported. This is sufficient for the majority of use cases and avoids the risk of two
 competing slots being opened for the same call when room administrators race.
 
-The `m.call` appliation instance MUST use an application-specific slot ID of `ROOM`. The full
+The `m.call` application instance MUST use an application-specific slot ID of `ROOM`. The full
 slot ID as per [MSC4143], thus, becomes:
 
 ```
