@@ -27,11 +27,11 @@ competing slots being opened for the same call when room administrators race.
 
 ### Slot event
 
-The `m.call` application instance MUST use an application-specific slot ID of `ROOM`. The full
+The `m.call` application instance MUST use an application-specific slot ID of `room`. The full
 slot ID as per [MSC4143], thus, becomes:
 
 ```
-slot_id = {application_type}#{application_slot_id} = m.call#ROOM (= state_key)
+slot_id = {application_type}#{application_slot_id} = m.call#room (= state_key)
 ``` 
 
 No further parameters are required in the slot-level `application` object. Here is an example for
@@ -40,7 +40,7 @@ an open `m.rtc.slot` event for the `m.call` application:
 ```json5
 {
   "type": "m.rtc.slot",
-  "state_key": "m.call#ROOM", // = slot_id
+  "state_key": "m.call#room", // = slot_id
   "content": {
     "status": "open",
     "application": {
@@ -99,7 +99,7 @@ Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
 {
   "type": "m.rtc.member",
   "content": {
-    "slot_id": "m.call#ROOM", // = m.rtc.slot state_key
+    "slot_id": "m.call#room", // = m.rtc.slot state_key
     "member": {
       "id": "xyzABCDEF0123",
       "membership": "join"
