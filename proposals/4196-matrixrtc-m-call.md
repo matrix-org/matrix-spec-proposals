@@ -63,7 +63,7 @@ slots, looks as follows:
 - `intent` (string): One of `audio`, `video`. Optionally discloses whether the member intends to
   join the session with audio only or with audio and video. Clients SHOULD set this field when joining
   and update it as they en- or disable their video stream. This gives other members a hint as to whether
-  the session presents an audio or video call. 
+  the session presents an audio or video call.
 
 Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
 
@@ -89,6 +89,12 @@ Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
 }
 ```
 
+When a client joins an `m.call` slot where all other members have set their `intent` to `audio`,
+the joining client SHOULD not publish a video track by default. It MAY allow the user to overrule
+this initial setting both before and after joining though. If the other members use different
+intents or have not disclosed their intent, the joining client SHOULD assume the session to
+represent a video call.
+
 When leaving a slot, [MSC4143] allows clients to optionally provide context with regards to the
 reason for leaving in the `leave_reason` property of their `m.rtc.member` event. For `m.call`
 applications, the generic `leave_reason.code` values provided in [MSC4143] are extended with
@@ -100,18 +106,6 @@ the following additional codes:
 - `codec_mismatch`: The client could not decode/encode the call media.
 - `encryption_error`: The client failed to set up end-to-end encryption for the media channel.
 
-
-### Handling of `m.call.intent`
-
-Clients SHOULD infer a “voice” `m.call.intent` as a voice call, and “video” as a voice and video
-call. 
-
-Clients SHOULD NOT submit a video track if the user has requested a “voice” call initially, although
-this is a soft limitation and users may choose to upgrade to include a video track later in the
-call.
-
-If the intent is not understood, the default value of “video” should be assumed (both voice and
-video tracks may be expected).
 
 ### Defaults
 
