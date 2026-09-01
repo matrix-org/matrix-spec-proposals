@@ -377,7 +377,8 @@ entropy to be suitable for any transport.
 
 Use of encryption in MatrixRTC is REQUIRED in encrypted rooms. This means that `m.rtc.member` events
 MUST be encrypted and `m.rtc.slot` events MUST contain an `encryption` object when sent in an encrypted
-room. Member / slot events that violate these conditions MUST be considered left / closed.
+room. Member / slot events that violate these conditions MUST be considered left / closed. Similarly,
+clients MUST ignore unencrypted RTC streams when connected to an encrypted slot.
 
 The only available encryption mechanism for now is `m.per_member` which is defined in the remainder of
 this section.
@@ -651,6 +652,15 @@ restrictions. This would allow them to engage in "shadow sessions" in the room t
 by other, conforming clients in the room. While this undermines the authoritativeness of slots, it
 does not impact conforming clients in any way. RTC application and transport designers should be
 aware that slots don't provide access control, however, and adopt appropriate measures.
+
+### Unmappable RTC streams
+
+Clients SHOULD notify their users about the existence of RTC streams (or, if appliable, identities) that
+cannot be mapped to an `m.rtc.member` event in the slot. Such streams can signal an eavesdropping or
+impersonation attack which is why it is important to not blanketly ignore them. The way the client
+notifies the user is left as an implementation detail. In a video conferencing application, for instance,
+rendering a blank tile with some warning text could be sufficient. A plain label explaining the situation
+could also be acceptable.
 
 ### Discoverability of RTC infrastructure
 
