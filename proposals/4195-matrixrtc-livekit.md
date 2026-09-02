@@ -651,8 +651,9 @@ above, eliminates this leak, too.
 
 For another, [LiveKit participant identities] are pseudonymised as well which prevents the SFU from
 correlating SFU participants with Matrix users. The identity derivation process involves the value of
-`member.id` which clients change every time they join a slot. As a result, the SFU is unable to track
-Matrix users across different calls and no further salting is required.
+`member.id` which, as per [MSC4143], is non-deterministic and changed every time a client joins a slot.
+As a result, the SFU is unable to track Matrix users across different calls and no further salting is
+required.
 
 The LiveKit SFU and the homeserver necessarily form a high trust relationship. In order for the homeserver
 to extend SFU access tokens, secrets need to be agreed upon between the homeserver and the SFU. This
