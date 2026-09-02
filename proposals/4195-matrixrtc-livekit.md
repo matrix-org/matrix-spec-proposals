@@ -472,7 +472,7 @@ time.
 
 Once the server observes the LiveKit participant's connection on the SFU, it MUST begin (or continue)
 restarting the delayed event periodically – again, with sufficient headroom. The server then continues
-to monitor the participants connection state. Once the server detects that the participant has
+to monitor the participant's connection state. Once the server detects that the participant has
 disconnected, it MUST trigger the sending of the delegated leave event.
 
 For maximum reliability, it is RECOMMENDED to use a combination of polling and listening to SFU [webhooks]
