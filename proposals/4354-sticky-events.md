@@ -298,7 +298,7 @@ This early proposal had a similar overall feature set as this proposal but with 
 
 Servers could broadcast different values for the same key to different servers, causing the map to not converge:
 the Byzantine Broadcast problem. Matrix already has a data structure to agree on shared state: the room DAG.
-As such, this led to the prototype to the current proposal. By putting the data into the DAG, other servers
+As such, this led to the current proposal. By putting the data into the DAG, other servers
 can talk to each other via it to see if they have been told different values. When combined with a simple
 conflict resolution algorithm (which works because there is [no need for coordination](https://arxiv.org/abs/1901.01930)),
 this provides a way for clients to agree on the same values. Note that in practice this needs servers to *eagerly*
