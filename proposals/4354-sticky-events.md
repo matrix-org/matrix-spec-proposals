@@ -1,7 +1,8 @@
 # MSC4354: Sticky Events
 
-MatrixRTC currently relies on allowing any user (PL0) to send `org.matrix.msc3401.call`
-and `org.matrix.msc3401.call.member` state events into the room
+MatrixRTC currently relies on allowing any user (PL0) to send the `org.matrix.msc3401.call`
+and `org.matrix.msc3401.call.member` state events from
+[MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) into the room
 for sending per-user per-device state. MatrixRTC wants to be able to share a temporary state to all
 users in a room to indicate whether the given client is in the call or not. 
 
