@@ -499,8 +499,9 @@ object to confirm the delegation.
 {}
 ```
 
-The server derives the LiveKit room alias and LiveKit participant identity from the `room_id`,
-`slot_id` and `member_id` parameters as well as the request's authorization as described above.
+The server derives the LiveKit room alias and LiveKit participant identity as described above from
+the `room_id`, `slot_id` and `member_id` parameters as well as the user's Matrix ID as derived from
+the request's access token.
 
 The server then waits for the participant to connect to the SFU. How long the server waits before
 giving up is left as an implementation detail. If the waiting duration exceeds the delegated event's
