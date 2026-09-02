@@ -210,10 +210,12 @@ as a form of sending old but unexpired sticky events, and so this proposal only 
 
 Sending these old events will potentially increase the number of forward extremities in the room for the receiving server. This may impact state resolution
 performance if there are many forward extremities. Servers MAY send dummy events to remove forward extremities (Synapse has the
-option to do this since 2019). Alternatively, servers MAY choose not to add old sticky events to their forward extremities, but
+[option] to do this since 2019). Alternatively, servers MAY choose not to add old sticky events to their forward extremities, but
 this A) reduces eventual delivery guarantees by reducing the frequency of transitive delivery of events, B) reduces the convergence
 rate when implementing ephemeral maps (see "Addendum: Implementing an ephemeral map"), as that relies on servers referencing sticky
 events from other servers.
+
+[option]: https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html?highlight=dummy#dummy_events_threshold
 
 Servers SHOULD (best-effort) send sticky events to other homeservers in the order they were created on the server
 (stream ordering / based on `origin_server_ts`).
