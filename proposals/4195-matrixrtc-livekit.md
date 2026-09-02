@@ -639,6 +639,19 @@ would likely result in a higher chance of implementation errors.
 
 ## Security considerations
 
+### Resource abuse
+
+Homeservers preemptively create LiveKit rooms when SFU tokens are requested by both local and remote
+users. Thus, any Matrix room member is able to trigger the creation of an associated LiveKit room.
+LiveKit rooms themselves are lightweight, however, and applying rate limitting on the `/get_token`
+endpoints further mitigates this problem.
+
+Users publishing and subscribing to RTC data within LiveKit rooms has a larger resource impact
+though. Any Matrix room member is able to connect to an associated LiveKit room and publish and/or
+subscribe to media streams. Again, rate limitting the `/get_token` endpoints mitigates this concern.
+Servers MAY apply additional countermeasures such as limitting the maximum allowed lifetime of LiveKit
+rooms or restricting SFU access to trusted users and/or servers.
+
 ### Kicking users from the SFU on room leave/ban
 
 Since MatrixRTC sessions are tied to Matrix rooms, servers should take care that client connections
