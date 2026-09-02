@@ -155,6 +155,9 @@ If a sticky event appears in the timeline section of the `/sync` response (`time
 it MUST NOT be included in the `sticky.events` section.
 This ensures we minimise duplication in the `/sync` response JSON.
 
+Servers MAY limit the number of sticky events in the `sticky.events` section; in that case a limit of 100
+is suggested.
+
 **Interaction with `RoomFilter`:** The `RoomFilter` does not apply to the `sticky.events` section, as it is neither `timeline` nor `state`.
 However, the `timeline` filter MUST be applied before applying the deduplication logic above.
 In other words, if a sticky event would normally appear in both the `timeline.events` section and the `sticky.events` section,
@@ -168,7 +171,8 @@ how many milliseconds until the sticky event expires. This provides a way to red
 and their connected clients. Clients SHOULD use this value to determine when the sticky event expires.
 
 When the user joins a room, the server MUST include all unexpired sticky events for that room in their subsequent
-sync response.
+sync response(s). The server MAY exceed the suggested 100 sticky event limit to do this, or MAY spread these
+out across multiple sequential sync responses.
 
 ### Rate limits
 
