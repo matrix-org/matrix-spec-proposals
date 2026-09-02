@@ -500,14 +500,14 @@ Otherwise, the server responds with HTTP 200 and an empty JSON object to confirm
 {}
 ```
 
-The server derives the LiveKit room alias and LiveKit participant identity as described above from
-the `room_id`, `slot_id` and `member_id` parameters as well as the user's Matrix ID as derived from
-the request's access token.
+The server then takes the user's Matrix ID (as resolved from the request's access token) as well as the
+`room_id`, `slot_id` and `member_id` parameters from the request body to derive the LiveKit room alias
+and LiveKit participant identity. The procedure for this was given [earlier].
 
-The server then waits for the participant to connect to the SFU. How long the server waits before
-giving up is left as an implementation detail. If the waiting duration exceeds the delegated event's
-delay, the server MUST restart the event periodically and with sufficient headroom to the expiration
-time.
+Following that, the server waits for the participant to connect to the room on the SFU. How long the
+server waits before giving up is left as an implementation detail. If the waiting duration exceeds the
+delegated event's delay, the server MUST restart the event periodically and with sufficient headroom to
+the expiration time.
 
 Once the server observes the LiveKit participant's connection on the SFU, it MUST begin (or continue)
 restarting the delayed event periodically – again, with sufficient headroom. The server then continues
@@ -523,6 +523,7 @@ Requests to delegate a different `delay_id` MUST invalidate earlier delegations 
 It is RECOMMENDED that servers apply rate limiting to the delegation endpoint.
 
 [MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
+[earlier]: #mapping-matrixrtc-members-to-livekit
 [webhooks]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/
 
 
