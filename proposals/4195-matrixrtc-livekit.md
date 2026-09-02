@@ -216,7 +216,7 @@ that a token obtained for publishing on a local SFU also allows the bearer to su
 in the same LiveKit room on that SFU. As a result, clients only need to issue one token request per
 SFU involved in the session.
 
-Below is an example of a token request for the `m.rtc.membership` example given further up.
+Below is an example of a token request for the `m.rtc.member` example given further up.
 
 ```http
 POST /_matrix/client/v1/rtc/livekit/get_token
