@@ -188,7 +188,7 @@ remote SFUs, a new pair of authenticated Client-Server and Server-Server endpoin
 
 The server SHOULD apply rate limiting to both of these endpoints.
 
-To request a token, a client `POST`s to `/get_token` including in the body a JSON object with the
+To request a token, a client `POST`s to the `/get_token` client endpoint including in the body a JSON object with the
 following schema:
 
 - `server_name` (string): The [server name](https://spec.matrix.org/v1.19/appendices/#server-name)
