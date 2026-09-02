@@ -363,7 +363,6 @@ servers MUST apply the following settings:
 - `exp`: When using a self-hosted LiveKit SFU, servers SHOULD use a sufficiently short expiration time (`exp`)
   because [token revocation] is a LiveKit Cloud feature only. Otherwise, the expiration time is less
   significant because the SFU [proactively refreshes tokens] via a client's WebSocket signalling connection.
-  Servers SHOULD rely on the default expiration time of 6 hours used in LiveKit's SDKs.
 - `nbf`: The current time. This is required because LiveKit Cloud uses the token's not-before (`nbf`)
   timestamp in [token revocation].
 - `video.room`: The LiveKit room name, derived as described above.
