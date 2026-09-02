@@ -163,10 +163,12 @@ Within `m.rtc.member` events, `content` contains the following properties:
 
 - `slot_id` (required, string): The `state_key` of the slot that is being joined.
 - `member` (required, object): Information to identify the member.
-  - `id` (required, string): Identifier to distinguish multiple members, even for the same user
-    and device and across different slots and rooms. MUST be unique for each join of the same user.
-    This means that clients need to use a different identifier when leaving and then rejoining a slot,
-    and that the identifier must be unique across different devices.
+  - `id` (required, string): Identifier to distinguish multiple members. MUST be unique for the
+    same user across different devices, slots and rooms. MUST also be unique for each join of the
+    same user. This means that clients need to use a different identifier when leaving and then
+    rejoining a slot. Since transports may use member IDs to pseudonymize members against external
+    services, member IDs MUST be generated using a cryptographically secure random number generator
+    so that they are non-deterministic.
   - `membership` (required, string): The intended membership status. One of `join`, `leave`.
 - `application` (object): Describes the application that is running in the slot. REQUIRED if `membership = join`.
   - `type` (required, string): The application's globally unique identifier; same as in `m.rtc.slot`.
