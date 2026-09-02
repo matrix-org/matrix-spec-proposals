@@ -7,12 +7,12 @@ The SFU intelligently relays RTC data between members without them having to con
 directly.
 
 The LiveKit SFU is integrated into Matrix in a multi-SFU configuration. In this setup, a homeserver
-may operate one or more SFUs. RTC members always publish their RTC data to a local SFU and announce
-their SFU choice via their `m.rtc.member` event. Other members then subscribe to the RTC data on the
-publishing member's SFU – which might be different from the SFU they're publishing on themselves.
-The homeserver provides mechanisms for discovering local SFUs and for acquiring access tokens for
-both local and remote SFUs. This approach removes the need for an SFU election process and allows
-servers to guard access to their SFUs.
+may operate one or more SFUs. RTC members always publish their RTC data to a local SFU managed by
+their homeserver and announce their SFU choice via their `m.rtc.member` event. Other members then
+subscribe to the RTC data on the publishing member's SFU – which might be different from the SFU
+they're publishing on themselves. The homeserver provides mechanisms for discovering local SFUs
+and for acquiring access tokens for both local and remote SFUs. This approach removes the need for
+an SFU election process and allows servers to guard access to their SFUs.
 
 The example below illustrates how two members from different homeservers A and B publish and
 subscribe to each other's RTC streams.
