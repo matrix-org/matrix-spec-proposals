@@ -490,8 +490,10 @@ When scheduling delayed events that are meant to be delegated, clients SHOULD us
 1 hour. This avoids unnecessarily frequent restarts of the delayed event. Servers MAY reject delegation
 requests with HTTP 400 / `M_INVALID_PARAM` when the delegated event has a lower timeout.
 
-Otherwise, if the request parameters are valid, the server responds with HTTP 200 and an empty JSON
-object to confirm the delegation.
+If the server cannot find the delayed event based on the `delay_id` or if it can find the delayed event
+but it belongs to another room or user, the delegation request MUST be rejected with HTTP 400 / `M_INVALID_PARAM`.
+
+Otherwise, the server responds with HTTP 200 and an empty JSON object to confirm the delegation.
 
 ```http
 200 OK
