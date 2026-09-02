@@ -342,7 +342,7 @@ sequenceDiagram
     U1->>L: Connect to Alice's SFU and start subscribing
     deactivate L
 
-    Note over U,L: Subscribing analogous to Bob (steps 7-12)
+    Note over U,H1: Subscribing analogous to Bob (steps 7-12)
 ```
 
 #### Access token properties
