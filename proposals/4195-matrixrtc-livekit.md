@@ -397,6 +397,17 @@ Below is an example of a LiveKit JWT for a local user:
 }
 ```
 
+#### Kicking users from the SFU on room leave/ban
+
+A MatrixRTC session is tied to exactly one Matrix room and exactly one LiveKit room per SFU involved
+in the session. Access to LiveKit rooms is guarded by LiveKit access tokens. This means that it would
+be desirable to couple the lifetime of LiveKit tokens to the period of room membership. This is important
+because a malicious user being kicked from a Matrix room could otherwise continue to be connected to an
+ongoing RTC session related to the room. To prevent this, servers SHOULD remove any associated LiveKit
+participant identities from the related LiveKit rooms when a user leaves or is banned from a Matrix room.
+Note that this doesn't obsolete the recommendation to use sufficiently short-lived access tokens in
+self-hosted LiveKit deployments given in the previous section.
+
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 [later]: #access-token-properties
 [creating]: https://docs.livekit.io/reference/other/roomservice-api/#createroom
@@ -651,15 +662,6 @@ though. Any Matrix room member is able to connect to an associated LiveKit room 
 subscribe to media streams. Again, rate limitting the `/get_token` endpoints mitigates this concern.
 Servers MAY apply additional countermeasures such as limitting the maximum allowed lifetime of LiveKit
 rooms or restricting SFU access to trusted users and/or servers.
-
-### Kicking users from the SFU on room leave/ban
-
-Since MatrixRTC sessions are tied to Matrix rooms, servers should take care that client connections
-to the SFU don't exceed past the point where a user is no longer joined to the associated Matrix room.
-This is important because otherwise a malicious user being kicked from a room might continue to be
-connected to an ongoing RTC session related to the room. To prevent this, servers SHOULD remove any
-associated LiveKit participant identities from the related LiveKit rooms when a user leaves or is
-banned from a Matrix room.
 
 ### Reducing metadata leakage to the SFU
 
