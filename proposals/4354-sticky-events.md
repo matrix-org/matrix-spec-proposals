@@ -397,7 +397,7 @@ sequenceDiagram
 
 There is no mechanism for sticky events to expire earlier than their timeout value. To remove entries in the map, clients SHOULD
 send another sticky event with just `content.sticky_key` set, with all the other application-specific fields omitted. Redacting
-sticky events are an alternative way to do this, although this loses the `content.sticky_key` property so clients will need to
+sticky events is an alternative way to do this, although this loses the `content.sticky_key` property so clients will need to
 remember the sticky event ID to know which sticky key was affected.
 
 When clients create multiple events with the same `sticky_key`, they SHOULD use the same sticky duration as the previous
