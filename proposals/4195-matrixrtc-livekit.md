@@ -231,7 +231,7 @@ POST /_matrix/client/v1/rtc/livekit/get_token
 ```
 
 Upon receiving the request, the server verifies that the requesting user is joined to the room
-identified by `room_id`. If the user is not joined, the request MUST be rejected with HTTP 403 /
+identified by `room_id`. If the user is not joined, or the server doesn't know the room, the request MUST be rejected with HTTP 403 /
 `M_FORBIDDEN`.
 
 If `server_name` is the server's own name and `url` does not match one of the server's own SFUs,
