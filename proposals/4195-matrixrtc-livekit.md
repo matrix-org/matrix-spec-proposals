@@ -345,7 +345,7 @@ Different properties and grants can be applied when generating tokens using Live
 to ensure these are set appropriately so that clients can connect correctly and securely. In particular,
 servers MUST apply the following settings:
 
-- `sub`: The LiveKit participant identity, derived as described above.
+- `sub`: The LiveKit participant identity of the user that requested the token, derived as described above.
 - `video.room`: The LiveKit room name, derived as described above.
 - `video.roomCreate`: Always `true`. This allows clients to create the LiveKit room if it doesn't yet
   exist on the SFU.
