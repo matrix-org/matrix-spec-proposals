@@ -276,10 +276,14 @@ Upon receiving the request, the remote server verifies that the origin server is
 identified by `room_id`. If the origin server is not joined or the remote server doesn't know the room,
 the request MUST be rejected with HTTP 403 / `M_FORBIDDEN`.
 
-If `url` does not match one of the receiving server's own SFUs, the request is rejected with
+If `url` does not match one of the remote server's own SFUs, the request is rejected with
 HTTP 400 / `M_INVALID_PARAM`.
 
-Otherwise, the remote server generates a token for its SFU and returns it in the same response format
+HTTP 403 / `M_FORBIDDEN` and HTTP 400 / `M_INVALID_PARAM` errors from the remote server MUST be relayed
+back to the client by the origin server. Any other error MUST result in HTTP 502 / `M_UNKNOWN` in
+the client response.
+
+If no errors occured, the remote server generates a token for its SFU and returns it in the same response format
 used for the Client-Server endpoint.
 
 ```http
