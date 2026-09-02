@@ -74,6 +74,7 @@ Below is an example of an appropriate membership event:
 ```json5
 {
   "type": "m.rtc.member",
+  "sender": "@alice:alice.com",
   "content": {
     "slot_id": "the_id",
     "member": {
