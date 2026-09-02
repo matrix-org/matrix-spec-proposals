@@ -248,9 +248,8 @@ requires *both* the sending client to think the receiver is joined (so we encryp
 receiving server to think the sender is joined (so it passes auth checks). Unencrypted events only strictly
 require the receiving server to think the sender is joined.
 
-The lack of historical room key sharing may make some encrypted sticky events undecryptable when new users join the room. 
-[MSC4268: Sharing room keys for past messages](https://github.com/matrix-org/matrix-spec-proposals/pull/4268) would
-help with this.
+The prior lack of historical room key sharing that could make some encrypted sticky events undecryptable when new users join the room
+has been alleviated with [MSC4268: Sharing room keys for past messages](https://github.com/matrix-org/matrix-spec-proposals/pull/4268).
 
 ### Spam
 
