@@ -251,12 +251,18 @@ property `jwt` holding the token.
 
 If, conversely, `server_name` points to a remote server, the server triggers a `POST` request to
 the `/get_token` federation endpoint on that server. The body of the request contains the same JSON
-object received in the client request but with `server_name` omitted. An example is given below:
+object received in the client request with the following differences:
+
+- `server_name` is omitted since it is equal to the receiving server's own server name.
+- An additional REQUIRED property `user_id` is included and holds the requesting user's Matrix ID.
+
+An example of the request is given below:
 
 ```http
 POST /_matrix/federation/v1/rtc/livekit/get_token
 
 {
+  "user_id": "@alice:alice.com",
   "url": "wss://livekit.example.com",
   "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
