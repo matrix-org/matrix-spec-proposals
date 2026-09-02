@@ -233,13 +233,15 @@ POST /_matrix/client/v1/rtc/livekit/get_token
 ```
 
 Upon receiving the request, the server verifies that the requesting user is joined to the room
-identified by `room_id`. If the user is not joined, or the server doesn't know the room, the request MUST be rejected with HTTP 403 /
-`M_FORBIDDEN`.
+identified by `room_id`. If the user is not joined, or the server doesn't know the room, the request
+MUST be rejected with HTTP 403 / `M_FORBIDDEN`.
 
 If `server_name` is the server's own name and `url` does not match one of the server's own SFUs,
 the request is rejected with HTTP 400 / `M_INVALID_PARAM`.
 
 If `server_name` is the server's own name and `url` matches one of the server's own SFUs, the server
+derives the associated LiveKit room name and ensures that the room exists, [creating] it if needed.
+This is REQUIRED because otherwise clients won't be able to connect to the room. The server then
 generates a token for the SFU and responds with HTTP 200 and a JSON object with a single required
 property `jwt` holding the token.
 
@@ -283,8 +285,8 @@ HTTP 403 / `M_FORBIDDEN` and HTTP 400 / `M_INVALID_PARAM` errors from the remote
 back to the client by the origin server. Any other error MUST result in HTTP 502 / `M_UNKNOWN` in
 the client response.
 
-If no errors occured, the remote server generates a token for its SFU and returns it in the same response format
-used for the Client-Server endpoint.
+If no errors occurred, the remote server ensures the room exists and generates a token for its SFU,
+returning it in the same response format used for the Client-Server endpoint.
 
 ```http
 200 OK
@@ -359,8 +361,10 @@ servers MUST apply the following settings:
 
 - `sub`: The LiveKit participant identity of the user that requested the token, derived as described above.
 - `video.room`: The LiveKit room name, derived as described above.
-- `video.roomCreate`: Always `true`. This allows clients to create the LiveKit room if it doesn't yet
-  exist on the SFU.
+- `video.roomCreate`: Always `false`. This grant, somewhat [counterintuitively], also allows the token
+  holder to delete the LiveKit room which includes kicking all joined participants. Since this is a possible
+  denial-of-service vector, room creation is exclusively and preemptively performed by the homeserver as
+  described above.
 - `video.roomJoin`: Always `true`. This enables clients to join the LiveKit room if it exists.
 - `video.canPublish`: `true` if the token was requested by a local user. `false` otherwise. This enforces
   the multi-SFU configuration and ensures clients can only publish RTC data on a local SFU.
@@ -390,6 +394,8 @@ Below is an example of a LiveKit JWT for a local user:
 
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 [later]: #access-token-properties
+[creating]: https://docs.livekit.io/reference/other/roomservice-api/#createroom
+[counterintuitively]: https://docs.livekit.io/frontends/reference/tokens-grants/#video-grant
 
 ### Optional delegated delayed leave events
 
