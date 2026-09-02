@@ -8,9 +8,9 @@ users in a room to indicate whether the given client is in the call or not.
 
 The concerns with allowing any user to send room state and using it for MatrixRTC are mainly:
 
-1. Any user can modify other user's call state. MSC3757 tries to fix this, but in order to ensure other
-   users are unable to modify each other’s state, it proposes using string packing for authorization which
-   feels wrong, given the structured nature of events.  
+1. Any user can modify other user's call state. [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757)
+   tries to fix this, but in order to ensure other users are unable to modify each other’s state, it proposes
+   using string packing for authorization which feels wrong, given the structured nature of events.  
 2. Allowing unprivileged users to send arbitrary amounts of state into the room is a potential
    abuse vector, as these states can pile up and can never be cleaned up as the DAG is append-only.  
 3. State resolution can cause rollbacks. These rollbacks may inadvertently affect per-user per-device state.
