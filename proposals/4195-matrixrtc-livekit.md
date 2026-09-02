@@ -194,17 +194,27 @@ following schema:
 - `server_name` (string): The [server name](https://spec.matrix.org/v1.19/appendices/#server-name)
   for which a token is requested. Defaults to the server's own server name if omitted.
 - `url` (required, string): The WebSocket URL of the LiveKit SFU for which a token is requested.
-- `room_id` (required, string): The room ID where the associated `m.rtc.member` event (see below) was sent.
-- `slot_id` (required, string): The contents of the `slot_id` property of the associated `m.rtc.member` event.
-- `member_id` (required, string): The `member.id` property of the associated `m.rtc.member` event.
+- `room_id` (required, string): The ID of the room in which the associated MatrixRTC session is
+  taking place.
+- `slot_id` (required, string): The ID of the slot in which the associated MatrixRTC session is
+  taking place.
+- `member_id` (required, string): The `member.id` property of the requesting user's own `m.rtc.member`
+  event.
 
-When requesting a token for publishing, the associated `m.rtc.member` event is the member's own event.
-The client uses its own server name for `server_name` and the WebSocket URL discovered from
-`/_matrix/client/v1/rtc/transports` for `url`.
+As mentioned before, clients always publish RTC media on a local SFU. Consequently, when requesting
+a token for publishing, the client uses its own server name for `server_name` and the WebSocket URL
+discovered from `/_matrix/client/v1/rtc/transports` for `url`.
 
-If, on the other hand, the token is requested for subscribing, the associated `m.rtc.member` event is
-another member's event. In this case, the client derives the value for `server_name` from the `sender`
-of that event and takes `url` from the respective `transports` array element in the event.
+For subscribing to RTC media, clients need to connect to the publisher's chosen local SFU – which
+might be on a different server. In this case, the subscribing client derives the `server_name` and
+`url` parameters needed in the token request from the publisher's `m.rtc.member` event. In particular,
+`server_name` is obtained by parsing the event's `sender` and `url` is taken from the respective
+`transports` array element in the event.
+
+Note that as explained [later], tokens always include the grant required for subscribing. This means
+that a token obtained for publishing on a local SFU also allows the bearer to subscribe to RTC streams
+in the same LiveKit room on that SFU. As a result, clients only need to issue one token request per
+SFU involved in the session.
 
 Below is an example of a token request for the `m.rtc.membership` example given further up.
 
@@ -367,6 +377,7 @@ Below is an example of a LiveKit JWT for a local user:
 ```
 
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
+[later]: #access-token-properties
 
 ### Optional delegated delayed leave events
 
