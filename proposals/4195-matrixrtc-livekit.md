@@ -495,7 +495,7 @@ disconnected, it MUST trigger the sending of the delegated leave event.
 For maximum reliability, it is RECOMMENDED to use a combination of polling and listening to SFU [webhooks]
 to monitor for SFU (dis)connections.
 
-The server MUST only maintain a single delegated event per `room_id`, `slot_id`, `member` and MXID.
+The server MUST only maintain a single delegated event per `room_id`, `slot_id`, `member_id` and MXID.
 Requests to delegate a different `delay_id` MUST invalidate earlier delegations for the same parameters.
 
 It is RECOMMENDED that servers apply rate limiting to the delegation endpoint.
