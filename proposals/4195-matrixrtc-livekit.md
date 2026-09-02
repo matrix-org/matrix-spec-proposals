@@ -2,8 +2,9 @@
 
 [MSC4143] introduces MatrixRTC as an extensible framework for real-time communication in Matrix.
 MatrixRTC uses so called transports to transfer the actual RTC data between RTC members. This
-proposal introduces a transport based on the [LiveKit] Selective Forwarding Unit (SFU). The SFU
-intelligently relays RTC data between members without them having to connect to each other directly.
+proposal introduces an OPTIONAL transport based on the [LiveKit] Selective Forwarding Unit (SFU).
+The SFU intelligently relays RTC data between members without them having to connect to each other
+directly.
 
 The LiveKit SFU is integrated into Matrix in a multi-SFU configuration. In this setup, a homeserver
 may operate one or more SFUs. RTC members always publish their RTC data to a local SFU and announce
@@ -47,7 +48,7 @@ subscribe │                         discover SFU │          │ publish
 
 A new transport type `m.livekit` is introduced. Homeservers that support this transport announce it
 to clients by including a dedicated object in the response of the `/_matrix/client/v1/rtc/transports`
-endpoint from [MSC4519]. The object has the following schema:
+endpoint from [MSC4143]. The object has the following schema:
 
 - `type` (required, string): The transport's type identifier. MUST be `m.livekit`.
 - `url` (required, string): The SFU's WebSocket URL. Clients use this URL to connect to the SFU
@@ -95,7 +96,6 @@ Below is an example of an appropriate membership event:
 }
 ```
 
-[MSC4519]: https://github.com/matrix-org/matrix-spec-proposals/pull/4519
 [client SDKs]: https://docs.livekit.io/transport/sdk-platforms/
 
 ### Mapping MatrixRTC members to LiveKit
@@ -554,25 +554,30 @@ for achieving forward secrecy.
 ### Reliance on the LiveKit protocol implementations
 
 While being open source, LiveKit is developed and maintained by a commercial entity and is not an
-open standard. As a result, future development or licensing changes by LiveKit, Inc could diverge
+open standard. As a result, future development or licensing changes by LiveKit, Inc. could diverge
 from Matrix’s goals or limit interoperability. This is mitigated by the following factors:
 
 - Protocol openness: The LiveKit protocol and reference implementation are released under the
   [Apache 2.0 License] which allows for forking and independent evolution. If LiveKit’s direction
   or license were to change, Matrix could adopt the current protocol version and evolve it
   independently under an open governance model.
-* No lock-in at the Matrix level: As per [MSC4143], transports in MatrixRTC are a generic abstraction
+- No lock-in at the Matrix level: As per [MSC4143], transports in MatrixRTC are a generic abstraction
   that allows defining additional or alternative transport types in the future without breaking
   compatibility.
-* Extensibility: Because the LiveKit protocol is open source, nothing prevents the Matrix community
+- Extensibility: Because the LiveKit protocol is open source, nothing prevents the Matrix community
   from implementing additional functionality (such as cascading SFUs or other federation-oriented
   features) on top of the existing protocol if required. While this has been discussed with the
   LiveKit team and they did not object in principle, such extensions are not expected to depend on
   their involvement.
-* Implementation pragmatism: The choice of LiveKit is pragmatic and helps accelerate development
+- Implementation pragmatism: The choice of LiveKit is pragmatic and helps accelerate development
   and deployment of a functioning multi-SFU solution without necessarily establishing a permanent
   dependency. The current multi-SFU model also reduces the importance of features such as cascading
   SFUs that might otherwise require protocol changes.
+
+To further reduce the risk and as already mentioned at the beginning of this proposal, the `m.livekit`
+transport is made OPTIONAL for implementations. Given that as of writing this is the only available
+transport for MatrixRTC, users of implementations that don't implement `m.livekit` will not be able
+to use MatrixRTC for now.
 
 [Apache 2.0 License]: https://github.com/livekit/livekit/blob/master/LICENSE
 
@@ -678,7 +683,7 @@ Apart from this, the endpoints introduced above should be referred to as follows
 
 ## Dependencies
 
-This proposal depends on [MSC4143] and [MSC4519].
+This proposal depends on [MSC4143].
 
 ## Appendix: hash derivation test vectors
 
