@@ -360,6 +360,12 @@ to ensure these are set appropriately so that clients can connect correctly and 
 servers MUST apply the following settings:
 
 - `sub`: The LiveKit participant identity of the user that requested the token, derived as described above.
+- `exp`: When using a self-hosted LiveKit SFU, servers SHOULD use a sufficiently short expiration time (`exp`)
+  because [token revocation] is a LiveKit Cloud feature only. Otherwise, the expiration time is less
+  significant because the SFU [proactively refreshes tokens] via a client's WebSocket signalling connection.
+  Servers SHOULD rely on the default expiration time of 6 hours used in LiveKit's SDKs.
+- `nbf`: The current time. This is required because LiveKit Cloud uses the token's not-before (`nbf`)
+  timestamp in [token revocation].
 - `video.room`: The LiveKit room name, derived as described above.
 - `video.roomCreate`: Always `false`. This grant, somewhat [counterintuitively], also allows the token
   holder to delete the LiveKit room which includes kicking all joined participants. Since this is a possible
@@ -395,6 +401,8 @@ Below is an example of a LiveKit JWT for a local user:
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 [later]: #access-token-properties
 [creating]: https://docs.livekit.io/reference/other/roomservice-api/#createroom
+[token revocation]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-revocation
+[proactively refreshes tokens]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-refresh
 [counterintuitively]: https://docs.livekit.io/frontends/reference/tokens-grants/#video-grant
 
 ### Optional delegated delayed leave events
@@ -636,13 +644,6 @@ This is important because otherwise a malicious user being kicked from a room mi
 connected to an ongoing RTC session related to the room. To prevent this, servers SHOULD remove any
 associated LiveKit participant identities from the related LiveKit rooms when a user leaves or is
 banned from a Matrix room.
-
-It should be noted, that removing a participant from a LiveKit room also [revokes] their access token
-in the cloud version of LiveKit. This is _not_ the case in the self-hosted version, however. Homeservers
-that rely on a self-hosted LiveKit instance should issue access tokens with a sufficiently short TTL
-to mitigate this.
-
-[revokes]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-revocation
 
 ### Reducing metadata leakage to the SFU
 
