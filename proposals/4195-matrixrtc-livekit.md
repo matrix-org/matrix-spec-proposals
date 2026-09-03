@@ -479,10 +479,11 @@ Clients delegate delayed leave events to their homeserver by `POST`ing to a new 
 `/_matrix/client/v1/rtc/livekit/delegate_delayed_leave`. The body of the request contains a JSON
 object with the following schema:
 
-- `room_id` (required, `string`): The room ID in which the delayed `m.rtc.member` event was scheduled.
-- `slot_id` (required, `string`): The contents of the `slot_id` property of the `m.rtc.member` event.
-- `member_id` (required, `string`): The `member.id` property of the `m.rtc.member` event.
-- `delay_id` (required, `string`): The delayed event ID obtained when scheduling the `m.rtc.member` event.
+- `url` (required, string): The WebSocket URL of the LiveKit SFU that the user has connected to.
+- `room_id` (required, string): The room ID in which the delayed `m.rtc.member` event was scheduled.
+- `slot_id` (required, string): The contents of the `slot_id` property of the `m.rtc.member` event.
+- `member_id` (required, string): The `member.id` property of the `m.rtc.member` event.
+- `delay_id` (required, string): The delayed event ID obtained when scheduling the `m.rtc.member` event.
 
 Below is an example of a request:
 
@@ -490,6 +491,7 @@ Below is an example of a request:
 POST /_matrix/client/v1/rtc/livekit/delegate_delayed_leave
 
 {
+  "url": "wss://livekit.example.com",
   "room_id": "!tDLCaLXijNtYcJZEey:example.com",
   "slot_id": "the_id",
   "member_id": "id",
@@ -503,6 +505,9 @@ requests with HTTP 400 / `M_INVALID_PARAM` when the delegated event has a lower 
 
 If the server cannot find the delayed event based on the `delay_id` or if it can find the delayed event
 but it belongs to another room or user, the delegation request MUST be rejected with HTTP 400 / `M_INVALID_PARAM`.
+
+If `url` does not match any of the remote server's own SFUs, the request is rejected with
+HTTP 400 / `M_INVALID_PARAM`.
 
 Otherwise, the server responds with HTTP 200 and an empty JSON object to confirm the delegation.
 
