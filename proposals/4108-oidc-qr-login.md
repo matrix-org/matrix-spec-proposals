@@ -683,6 +683,11 @@ note over N: All done!
 These are the messages that are exchanged between the devices via the secure channel to negotiate the sign in and set up
 of E2EE.
 
+Clients MUST ignore any fields in these messages that they do not recognise, and any unrecognised values of
+those fields, so that future MSCs can extend them. For example, an unrecognised entry in `protocols` MUST be
+ignored rather than causing the whole message to be rejected. Where a value cannot simply be ignored, such as an
+unrecognised `reason` in `m.login.failure`, clients MUST fall back to handling it generically.
+
 ### `m.login.protocols`
 
 - Sent by: existing device
