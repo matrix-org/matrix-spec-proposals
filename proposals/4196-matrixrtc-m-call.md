@@ -119,8 +119,8 @@ Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
 
 When a client joins an `m.call` slot where all other members have set their `intent` to `audio`,
 the joining client SHOULD not publish a video track by default. It MAY allow the user to overrule
-this initial setting both before and after joining though. If the other members use different
-intents or have not disclosed their intent, the joining client SHOULD assume the session to
+this initial setting both before and after joining though. If any other members have an
+`intent` of `video`, the joining client SHOULD assume the session to
 represent a video call. This does *not* imply that the client should enter the call with video
 enabled, however (see [below]).
 
