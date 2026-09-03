@@ -58,9 +58,10 @@ when operating in lazy loading mode, for example to show user status of room mem
 - **Description**: Retrieve room member user profiles.
 - **Pagination**: *Yes TODO What mechanism?*
 - **Parameters**:
-  - `fields` - Request only specific fields, comma separated list, for example:
+  - `fields` - (Optional) URL encoded JSON list of fields to include in the response. If not
+    given, all profile fields will be returned.
 
-    `GET /_matrix/client/v3/rooms/{roomId}/profiles?fields=m.status,m.tz`
+    `GET /_matrix/client/v3/rooms/{roomId}/profiles?fields=%5B%22m.status%22%2C%22displayname%22%5D`
 - **Response**:
 
   ```json
@@ -89,7 +90,7 @@ TODO: error codes
 
   * `users` - List of user IDs to query for. The maximum amount of profiles the homeserver should
     accept to be requested in one go should be limited to 100.
-  * `fields` - (Optional) Request only specific fields, comma separated list. If not
+  * `fields` - (Optional) List of fields to include in the response. If not
     given, all profile fields will be returned.
 
     Example request body:
@@ -100,7 +101,10 @@ TODO: error codes
       "@alice:example.com",
       "@bob:domain.tld"
     ],
-    "fields": "m.status,m.tz"
+    "fields": [
+      "m.status",
+      "displayname"
+    ]
   }
   ```
 - **Response**:
