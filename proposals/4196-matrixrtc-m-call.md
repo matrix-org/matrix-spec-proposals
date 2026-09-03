@@ -55,25 +55,28 @@ an open `m.rtc.slot` event for the `m.call` application:
 }
 ```
 
-When clients create rooms with `preset = private_chat` in [`/createRoom`], they SHOULD by default
-include an open `m.rtc.slot` event for `m.call` in `initial_state`. Clients MAY let the user
-override this default behaviour.
+When clients create rooms with a `preset` of `private_chat` or `trusted_private_chat` in
+[`/createRoom`], they SHOULD by default include an open `m.rtc.slot` event for `m.call` in
+`initial_state`. Clients MAY let the user override this default behaviour.
 
 As per [MSC4143], encryption of MatrixRTC sessions is mandatory in encrypted rooms and forbidden
 in unencrypted rooms. Therefore, if [`m.room.encryption`] is also present in `initial_state`, the
 `encryption` content block on the initial slot event MUST be set to `{ "type": "m.per_member" }`.
 Otherwise, the `encryption` property MUST be omitted.
 
-The default [power levels] assigned during room creation prevent room members other than the room
-creator from sending state events. Including the slot event at room creation time, ensures that
-room members are able to have calls in the room without depending on a room administrator to send
-the slot event later.
+The default [power levels] assigned under the `private_chat` preset prevent room members other
+than the room creator from sending state events. Including the slot event at room creation time,
+ensures that room members are able to have calls in the room without depending on a room administrator
+to send the slot event later.
 
-Including `m.rtc.slot` events in `initial_state` is not required when other `preset` values are
-used in [`/createRoom`]. With the `trusted_private_chat` preset, all room members get the same power
-level as the room creator. Thus, they can send the `m.rtc.slot` event themselves when needed. In
-rooms that use the `public_chat` preset, in turn, enabling calls by default is usually not desired
-due to the open-access nature and the potentially large size of such rooms.
+With the `trusted_private_chat` preset, all room members get the same power level as the room
+creator. Thus, they could technically send the `m.rtc.slot` event themselves when needed. However,
+including the slot at room creation time, makes it explicit that calls are enabled and prevents
+clients from having to create the event later.
+
+Contratry to the above, including `m.rtc.slot` events in `initial_state` is not required when
+the `public_chat` preset is used. Enabling calls by default is usually not desired here due to
+the open-access nature and the potentially large size of such rooms.
 
 [`/createRoom`]: https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3createroom
 [`m.room.encryption`]: https://spec.matrix.org/v1.18/client-server-api/#mroomencryption
