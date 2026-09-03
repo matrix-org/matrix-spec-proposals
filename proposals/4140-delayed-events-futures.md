@@ -402,6 +402,11 @@ better identification of what entity is requesting these endpoints, which can be
 The downsides of this approach are the required work of having to implement scoped access tokens in homeservers
 and the additional network/configuration overhead for external services to request access to this scope.
 
+Delegation of delayed events to other entities was originally part of this MSC, but descoped as an
+alternative given these complexities. However, a simplified version of it is reintroduced in
+[MSC4195](https://github.com/matrix-org/matrix-spec-proposals/pull/4195) which allows a user's
+homeserver to act on behalf of the user in response to updates from a LiveKit SFU.
+
 ### Management endpoint action in request body
 
 A previous version of this MSC defined the [delayed event management endpoints](#managing-scheduled-delayed-events)
