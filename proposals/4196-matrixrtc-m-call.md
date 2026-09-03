@@ -180,15 +180,23 @@ creation though.
 
 Some users might not be comfortable with disclosing whether their camera is on or off via
 the `intent` property on `m.rtc.member` events. Given that any room member can join the
-session, this information is effectively obtainable by all room members anyway (though the join would at least be a visible choice). In either
-case, users can opt not to fill `intent` given that it is an optional property.
+session, this information is effectively obtainable by all room members anyway (though the
+join would at least be a visible choice). In either case, users can opt not to fill `intent`
+given that it is an optional property.
 
-### Faking intent
+### Consent to share media
 
-A malicious user could set `intent = video` without actually publishing their video stream
-to trick another user into joining the call with their camera on. To mitigate this, clients
-SHOULD default to joining with video disabled regardless of the `intent` values of other
-members. They MAY allow users to override the default setting though.
+Before joining a call, clients SHOULD demonstrate to the user what media (audio and/or video)
+they are about to share so that the user can meaningfully consent to sharing it.
+
+In particular, clients should be careful about the fact that remote users could fake a call's
+intent. If an `intent` of `video` would cause a client to automatically start sharing video upon
+accepting an incoming call, then it SHOULD clearly differentiate the call from an audio call.
+This could be achieved for instance by presenting different text labels ("Incoming video call"
+/ 'Join with video') or by showing the user a preview of their video.
+
+Clients MAY allow their users to override any default settings before joining a call, so that a
+user can accept an incoming video call without sharing their own video, for example.
 
 ## Unstable prefix
 
