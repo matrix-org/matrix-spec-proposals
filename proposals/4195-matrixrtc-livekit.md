@@ -721,6 +721,11 @@ about RTC streams or identities that cannot be mapped to RTC members. For the `m
 this means that clients SHOULD notify users when they observe LiveKit participants for which no
 corresponding `m.rtc.member` event exists.
 
+Note that while the server could verify that the user at least has the necessary power level to
+send `m.rtc.member` events, a malicious server could fake the `user_id` when requesting an SFU
+token over federation. Given this and the limitations around denying side stepping `m.rtc.member`
+events, a power levels check wouldn't lead to a significant improvement.
+
 [includes]: https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#unmappable-rtc-streams
 
 ### Error handling and information disclosure
