@@ -38,58 +38,104 @@ the joined room that the client didn't know about before, unless those users had
 
 ## Proposal
 
-Just as we already have a `GET /_matrix/client/v3/rooms/{roomId}/members`, this MSC proposes a new endpoint
-`GET /_matrix/client/v3/rooms/{roomId}/profiles`. Clients that use the members endpoint to populate
-the full members list for rooms when in lazy loading sync mode, could then proceed to also populating
-the profiles of any room member that they don't have profiles for. This may be important for
-clients that want to show for example a user status of users in the room membership list.
+This MSC proposes two new endpoints.
+
+Just as we already have a `GET /_matrix/client/v3/rooms/{roomId}/members` to paginate through room members,
+a new endpoint `GET /_matrix/client/v3/rooms/{roomId}/profiles` would allow paginating through profiles
+of a room.
+
+Additionally, as clients may need to efficiently fetch certain profiles across multiple rooms, a new
+endpoint `POST /_matrix/client/v3/profiles/query` is suggested for this purpose.
+
+These endpoints would help clients efficiently fetch profiles for things like the room members list,
+when operating in lazy loading mode, for example to show user status of room members.
 
 ### Client-Server API Changes
 
-#### Get room profiles
+#### Fetch room profiles
 
 - **Endpoint**: `GET /_matrix/client/v3/rooms/{roomId}/profiles`
 - **Description**: Retrieve room member user profiles.
-- **Pagination**: *Yes? What mechanism?*
+- **Pagination**: *Yes TODO What mechanism?*
+- **Parameters**:
+  - `fields` - Request only specific fields, comma separated list, for example:
+
+    `GET /_matrix/client/v3/rooms/{roomId}/profiles?fields=m.status,m.tz`
 - **Response**:
 
-```json
-{
-  "@alice:example.com": {
-    "displayname": "Alice",
-    "m.status": {
-      "emoji": "💬",
-      "text": "In a meeting"
+  ```json
+  {
+    "@alice:example.com": {
+      "displayname": "Alice",
+      "m.status": {
+        "emoji": "💬",
+        "text": "In a meeting"
+      }
+    },
+    "@bob:domain.tld": {
+      "displayname": "Bob"
     }
-  },
-  "@bob:example.com": {
-    "displayname": "Bob"
   }
-}
-```
+  ```
 
-Optional parameters:
+TODO: error codes
 
-* `members` - A query parameter to fetch only particular members, passed in as comma separated full
-  user identifiers. Users in the request must be members of the room. Pagination cannot be
-  used if fetching members directly. For example;
+#### Query profiles
 
-  `GET /_matrix/client/v3/rooms/{roomId}/profiles?members=@alice:example.com,@bob:example.com`
+- **Endpoint**: `POST /_matrix/client/v3/profiles/query`
+- **Description**: Query a list of profiles from the server.
+- **Pagination**: No
+- **Request body**: Request body should contain a list of profiles, and optionally fields, to query.
 
-* `fields` - Request only specific fields, comma separated list, for example:
+  * `users` - List of user IDs to query for. The maximum amount of profiles the homeserver should
+    accept to be requested in one go should be limited to 100.
+  * `fields` - (Optional) Request only specific fields, comma separated list. If not
+    given, all profile fields will be returned.
 
-  `GET /_matrix/client/v3/rooms/{roomId}/profiles?fields=m.status,m.tz`
+    Example request body:
+    
+  ```json
+  {
+    "users": [
+      "@alice:example.com",
+      "@bob:domain.tld"
+    ],
+    "fields": "m.status,m.tz"
+  }
+  ```
+- **Response**:
 
-TODO: error codes, etc.
+  ```json
+  {
+    "@alice:example.com": {
+      "displayname": "Alice",
+      "m.status": {
+        "emoji": "💬",
+        "text": "In a meeting"
+      }
+    },
+    "@bob:domain.tld": {
+      "displayname": "Bob"
+    }
+  }
+  ```
+
+The homeserver MUST check that the user has access to view the profile and/or profile
+fields. While at the time of writing this MSC profile fields are considered public
+information, this may change with future MSC.
+
+TODO: error codes
 
 ### Homeserver implementation details
 
-Fetching profiles via the new endpoint should never trigger lookups to fetch profiles from other homeservers. The response should be calculated from known profiles locally. It should be assumed that remote servers push profile changes over, so they would already be available (see [MSC4259](https://github.com/matrix-org/matrix-spec-proposals/pull/4259) as one possibility).
+Fetching profiles via the new endpoints should never trigger lookups to fetch profiles from other
+homeservers. The response should be calculated from known profiles locally. It should be assumed that
+remote servers push profile changes over, so they would already be available
+(see [MSC4259](https://github.com/matrix-org/matrix-spec-proposals/pull/4259) as one possibility).
 
 ## Potential issues
 
-Passing in a `members` parameter for a lot of members may produce very long URLs. Clients would need
-to ensure they fetch profiles in batches.
+TBD
 
 ## Alternatives
 
@@ -126,8 +172,12 @@ None foreseen at this moment.
 
 ## Unstable prefix
 
-While this MSC is unstable, the endpoint is `GET /_matrix/client/unstable/org.matrix.mscxxxx/rooms/{roomId}/profiles`,
-advertised via the `org.matrix.mscxxxx` flag in `/_matrix/client/versions`.
+While this MSC is unstable, the endpoints are:
+
+* `GET /_matrix/client/unstable/org.matrix.mscxxxx/rooms/{roomId}/profiles`
+* `POST /_matrix/client/unstable/org.matrix.mscxxxx/profiles/query`
+
+Support for these endpoints MUST be advertised via the `org.matrix.mscxxxx` flag in `/_matrix/client/versions`.
 
 ## Dependencies
 
