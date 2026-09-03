@@ -658,10 +658,10 @@ LiveKit rooms themselves are lightweight, however, and applying rate limiting on
 endpoints further mitigates this problem.
 
 Users publishing and subscribing to RTC data within LiveKit rooms has a larger resource impact
-though. Any Matrix room member is able to connect to an associated LiveKit room and publish and/or
-subscribe to media streams. Again, rate limiting the `/get_token` endpoints mitigates this concern.
-Servers MAY apply additional countermeasures such as limiting the maximum allowed lifetime of LiveKit
-rooms or restricting SFU access to trusted users and/or servers.
+though. Any Matrix room member is able to connect to an associated LiveKit room and subscribe to media
+streams. Local room members can also publish media. Again, rate limiting the `/get_token` endpoints
+mitigates this concern. Servers MAY apply additional countermeasures such as limiting the maximum
+allowed lifetime of LiveKit rooms or restricting SFU access to trusted users and/or servers.
 
 ### Reducing metadata leakage to the SFU
 
