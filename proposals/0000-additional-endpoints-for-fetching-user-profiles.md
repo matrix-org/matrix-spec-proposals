@@ -1,4 +1,4 @@
-# MSC0000: Room profiles endpoint
+# MSC0000: Additional endpoints for fetching user profiles
 
 This MSC builds on the profile updates over legacy ([MSC4429](https://github.com/matrix-org/matrix-spec-proposals/pull/4429))
 and sliding sync ([MSC4262](https://github.com/matrix-org/matrix-spec-proposals/pull/4262)) MSC's.
@@ -56,7 +56,7 @@ when operating in lazy loading mode, for example to show user status of room mem
 
 - **Endpoint**: `GET /_matrix/client/v3/rooms/{roomId}/profiles`
 - **Description**: Retrieve room member user profiles.
-- **Pagination**: *Yes TODO What mechanism?*
+- **Pagination**: *Yes. TODO what mechanism?*
 - **Parameters**:
   - `fields` - (Optional) URL encoded JSON list of fields to include in the response. If not
     given, all profile fields will be returned.
@@ -88,7 +88,7 @@ TODO: error codes
 - **Pagination**: No
 - **Request body**: Request body should contain a list of profiles, and optionally fields, to query.
 
-  * `users` - List of user IDs to query for. The maximum amount of profiles the homeserver should
+  * `users` - (Required) List of user IDs to query for. The maximum amount of profiles the homeserver should
     accept to be requested in one go should be limited to 100.
   * `fields` - (Optional) List of fields to include in the response. If not
     given, all profile fields will be returned.
