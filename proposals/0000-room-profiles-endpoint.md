@@ -44,9 +44,9 @@ the full members list for rooms when in lazy loading sync mode, could then proce
 the profiles of any room member that they don't have profiles for. This may be important for
 clients that want to show for example a user status of users in the room membership list.
 
-## Client-Server API Changes
+### Client-Server API Changes
 
-### Get room profiles
+#### Get room profiles
 
 - **Endpoint**: `GET /_matrix/client/v3/rooms/{roomId}/profiles`
 - **Description**: Retrieve room member user profiles.
@@ -81,6 +81,10 @@ Optional parameters:
   `GET /_matrix/client/v3/rooms/{roomId}/profiles?fields=m.status,m.tz`
 
 TODO: error codes, etc.
+
+### Homeserver implementation details
+
+Fetching profiles via the new endpoint should never trigger lookups to fetch profiles from other homeservers. The response should be calculated from known profiles locally. It should be assumed that remote servers push profile changes over, so they would already be available (see [MSC4259](https://github.com/matrix-org/matrix-spec-proposals/pull/4259) as one possibility).
 
 ## Potential issues
 
