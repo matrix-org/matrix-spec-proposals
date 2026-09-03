@@ -144,6 +144,14 @@ create a Discord-style experience where members hop on and off as desired. A con
 or meeting-centric client might close its slots at the end of the meeting. A future
 proposal might change how slots are automatically managed.
 
+The default [power levels] assigned during room creation prevent room members other than the room
+creator from sending state events. To avoid leaving normal room members stuck waiting for a room
+administrator to recreate a slot following a room upgrade, servers SHOULD include `m.rtc.slot`
+events in the set of state events that are replicated during [room upgrades].
+
+[power levels]: https://spec.matrix.org/v1.18/client-server-api/#mroompower_levels
+[room upgrades]: https://spec.matrix.org/v1.18/client-server-api/#server-behaviour-21
+
 ### Membership
 
 Membership in slots is expressed via `m.rtc.member` room events. These events provide sufficient
