@@ -1097,6 +1097,7 @@ Mitigations:
 |Because the data in the QR code is a Matrix-specific binary format, system provided QR scanners can not be used to initiate an attack. This means that the client can control the UI shown to the user prior to scanning a QR code.|Yes|Yes|
 |Before scanning a QR code an existing client SHOULD warn the user in the UI about the dangers of scanning a QR from an untrusted source.|Yes|Yes|
 |If an existing client provides a mechanism to initiate the scanning of a QR (e.g. via a deep-link) then it MUST not bypass any warnings that are implemented.|Yes|Yes|
+|A deployment with first-party clients could choose to not implement the flow where the existing device scans a QR shown by a new device. This would mean that an attack would have to be initiated by the user going into the existing device rather than externally, therefore meaning that the client UI is shown first.|Yes|Yes|
 
 ### Malicious client sends arbitrary verification URI
 
