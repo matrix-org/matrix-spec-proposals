@@ -274,9 +274,10 @@ POST /_matrix/federation/v1/rtc/livekit/get_token
 }
 ```
 
-Upon receiving the request, the remote server verifies that the origin server is joined to the room
-identified by `room_id`. If the origin server is not joined or the remote server doesn't know the room,
-the request MUST be rejected with HTTP 403 / `M_FORBIDDEN`.
+Upon receiving the request, the remote server verifies that `user_id` belongs to the origin server and
+that the user is joined to the room identified by `room_id`. If the user is from another server or not
+not joined to the room or if the remote server doesn't know the room, the request MUST be rejected with
+HTTP 403 / `M_FORBIDDEN`.
 
 If `url` does not match one of the remote server's own SFUs, the request is rejected with
 HTTP 400 / `M_INVALID_PARAM`.
