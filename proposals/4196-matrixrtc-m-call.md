@@ -68,9 +68,6 @@ creator from sending state events. Including the slot event at room creation tim
 room members are able to have calls in the room without depending on a room administrator to send
 the slot event later.
 
-For the same reason, homeservers SHOULD include `m.rtc.slot` events for `m.call` applications in
-the set of state events that are replicated during [room upgrades].
-
 Including `m.rtc.slot` events in `initial_state` is not required when other `preset` values are
 used in [`/createRoom`]. With the `trusted_private_chat` preset, all room members get the same power
 level as the room creator. Thus, they can send the `m.rtc.slot` event themselves when needed. In
@@ -80,7 +77,6 @@ due to the open-access nature and the potentially large size of such rooms.
 [`/createRoom`]: https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3createroom
 [`m.room.encryption`]: https://spec.matrix.org/v1.18/client-server-api/#mroomencryption
 [power levels]: https://spec.matrix.org/v1.18/client-server-api/#mroompower_levels
-[room upgrades]: https://spec.matrix.org/v1.18/client-server-api/#server-behaviour-21
 
 ### Membership events
 
