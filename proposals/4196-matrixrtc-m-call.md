@@ -129,7 +129,6 @@ the following additional codes:
   (e.g. due to an ICE/DTLS setup failure).
 - `media_error`: The client failed to capture or transmit audio and/or video after joining.
 - `codec_mismatch`: The client could not decode/encode the call media.
-- `encryption_error`: The client failed to set up end-to-end encryption for the media channel.
 
 [below]: #faking-intent
 
