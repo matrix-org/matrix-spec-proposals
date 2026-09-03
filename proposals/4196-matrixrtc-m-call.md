@@ -6,8 +6,8 @@ then used in what MatrixRTC calls applications to build user experiences for con
 
 This proposal introduces a MatrixRTC application for voice and video calling that is able to power
 a variety of calling use cases including but not limited to classical 1-on-1 and group calling
-as well as Discord-style [Voice Channels]. The application is compatible with the [LiveKit] transport
-introduced in [MSC4195].
+as well as Discord-style [Voice Channels] (which, previously, were attempted to be introduced
+in [MSC3417]). The application is compatible with the [LiveKit] transport introduced in [MSC4195].
 
 Note that call ringing and notifications are not in scope for this proposal. These are covered
 in [MSC4075] and [MSC4310].
@@ -15,6 +15,7 @@ in [MSC4075] and [MSC4310].
 [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
 [Voice Channels]: https://support.discord.com/hc/en-us/articles/19583625604887-Voice-Channels-FAQs
 [LiveKit]: https://github.com/livekit/livekit
+[MSC3417]: https://github.com/matrix-org/matrix-spec-proposals/pull/3417
 [MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
 [MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
 [MSC4310]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
