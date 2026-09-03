@@ -697,6 +697,26 @@ however. In unencrypted RTC sessions, the SFU operator of course has full access
 [LiveKit Cloud]: https://cloud.livekit.io
 [LiveKit participant identities]: #liveKit-participant-identities
 
+### Side stepping MatrixRTC membership
+
+Given that `m.rtc.member` events are encrypted, the homeserver has no way to verify whether a user
+requesting an SFU token has actually joined the slot with the claimed `member_id`. As a result,
+room members could subscribe to RTC streams even without sending an RTC member event.
+
+In encrypted rooms, they wouldn't receive the keys needed to decrypt the streams but could still
+access metadata. This includes whether participants are publishing audio, video or a screenshare
+and whether they are currently speaking (both exposed unencrypted over LiveKit's WebSocket signalling
+connection).
+
+In unencrypted rooms, in turn, the published media is accessible directly given that it isn't encrypted.
+
+As a mitigation, [MSC4143] already [includes] a RECOMMENDATION for clients to notify their users
+about RTC streams or identities that cannot be mapped to RTC members. For the `m.livekit` transport
+this means that clients SHOULD notify users when they observe LiveKit participants for which no
+corresponding `m.rtc.member` event exists.
+
+[includes]: https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#unmappable-rtc-streams
+
 ### Error handling and information disclosure
 
 Implementations of the `/get_token` endpoint SHOULD take care not to disclose sensitive internal
