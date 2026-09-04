@@ -232,7 +232,8 @@ allowed difference of 20 seconds between `sender_ts` and `origin_server_ts` and 
 | Session invites | ✅ via [`m.call.invite`] events | ✅ via `m.rtc.invite` events |
 | Directing invites at specific users | ✅ via `invitee` on [`m.call.invite`] | ✅ via `m.mentions` on `m.rtc.invite` |
 | Expiring invites | ⚠️ via `lifetime` on [`m.call.invite`] evaluated against [`age`] which is known to be broken in various homeservers | ✅ via `lifetime` on `m.rtc.invite` evaluated against either `sender_ts` or `origin_server_ts` |
-| Invite without starting a call | ❌ Not possible | ✅ Explicitly allowed if an open slot exists |
+| Inviting without starting a call | ❌ Not possible | ✅ Explicitly allowed if an open slot exists |
+| Withdrawing invites | ✅ via [`m.call.hangup`] events | ✅ via empty `m.rtc.invite` events |
 | Declining invites | ✅ via [`m.call.hangup`] events | ✅ via `m.rtc.decline` events |
 | Managing notification settings | ✅ via `.m.rule.call` push rule | ✅ via `.m.rule.rtc` push rule |
 | Events required to validate session invites | ✅ 1 ([`m.call.invite`]) | ⚠️ 2 (`m.rtc.slot` and `m.rtc.invite`; since `m.rtc.slot` is a state event both can be fetched in the same `/sync`, however ) |
