@@ -82,7 +82,8 @@ state-like store of both invite and decline events.
 A receiving client SHOULD only consider an invite valid as long as all of the following conditions
 apply:
 
-- The invite is the latest sticky event for the sender and slot.
+- The invite is the current invite entry in the ephemeral sticky events map for the sender
+  and slot.
 - The client's current [push rules] produce an action of `notify` for the event.
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
   where the invite was received.
@@ -139,7 +140,7 @@ To prevent duplicate invitations, senders SHOULD NOT emit invites when another v
 for the same slot and the same set of targeted users.
 
 An existing invite can be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
-and an otherwise empty content.
+and an otherwise empty content and the same or a larger sticky duration.
 
 Again, how exactly sending clients present extended invitations in their UI is left as an
 implementation detail. Similar to the examples previously given for receiving clients, a
