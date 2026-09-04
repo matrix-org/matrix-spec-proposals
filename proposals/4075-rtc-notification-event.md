@@ -28,8 +28,8 @@ The schema of `m.rtc.invite` is as follows:
   client created the event.
 - `lifetime` (required, integer): The time in milliseconds that the invite is valid for. MUST be
   non-negative and SHOULD NOT be larger than 2 minutes. The RECOMMENDED value is 90 seconds.
-- `m.mentions`: (optional, object): A [mentions] object to optionally direct the invite at a subset
-  of users in the room only. If omitted or empty, the event is not targeted at specific users and may
+- `m.mentions`: (optional, object): A [mentions] object to optionally direct the invite at a set
+  of users in the room. If omitted or empty, the event is not targeted at specific users and may
   be acted upon by any room member.
 - `sticky_key` (required, string): The event's sticky key as per [MSC4354]. MUST be equal to `slot_id`.
   This ensures that receivers only maintain one active invite per slot and sender.
