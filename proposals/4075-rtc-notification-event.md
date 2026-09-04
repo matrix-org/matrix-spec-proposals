@@ -69,11 +69,10 @@ The schema of `m.rtc.decline` is as follows:
 }
 ```
 
-
 Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as per [MSC4354] for the
-associated delivery guarantee. The RECOMMENDED sticky duration is 1 hour. Additionally, clients MUST
-implement the ephemeral map algorithm as per [MSC4354] to construct a state-like store of both
-invite and decline events.
+associated delivery guarantee. The sticky duration SHOULD NOT be smaller than the invite's `lifetime`.
+Additionally, clients MUST implement the ephemeral map algorithm as per [MSC4354] to construct a
+state-like store of both invite and decline events.
 
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
