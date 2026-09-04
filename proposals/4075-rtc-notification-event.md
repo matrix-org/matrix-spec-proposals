@@ -73,10 +73,10 @@ apply:
 - The client's current [push rules] produce an action of `notify` for the event.
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
   where the invite was received.
-- The `lifetime` of the event is at most 2 minutes and, as measured from `sender_ts`, has not
-  elapsed. If `sender_ts` is more than 20 seconds ahead of `origin_server_ts`, the `lifetime`
-  SHOULD be measured from `origin_server_ts` instead. This limits the impact of a malicious
-  user faking `sender_ts` to trigger long-lived notifications.
+- The `lifetime`, as measured from `sender_ts` and capped to 2 minutes, has not elapsed. If
+  `sender_ts` is more than 20 seconds ahead of `origin_server_ts`, the `lifetime` SHOULD be
+  measured from `origin_server_ts` instead. This limits the impact of a malicious user faking
+  `sender_ts` to trigger long-lived notifications.
 - The client's user ID is included in `m.mentions` (either directly or through a room mention)
   or `m.mentions` is missing.
 - The user is not already joined to the same slot via a corresponding `m.rtc.member` event.
@@ -189,8 +189,9 @@ Under this proposal, the sender of `m.rtc.invite` events does not need to be joi
 themselves in order to make the invite valid. This may seem like a potential abuse vector. However,
 room members who are able to send `m.rtc.invite` events will commonly also be able to send
 `m.rtc.member` events. Thus requiring a member event to send invites doesn't provide additional
-protection. The actual access control for sending invites is the existence of an open `m.rtc.slot`
-event which is covered in the requirements for valid invites.
+protection. The actual access control for sending invites is the power level for sending
+`m.rtc.invite` events which room administrators can raise as needed. When power levels allow
+sending invitations, users can still mitigate abusive invites by configuring push rules accordingly.
 
 Besides this, requiring the sender to have an `m.rtc.member` event also complicates invite processing.
 Particularly on mobile, it would mean that after receiving a push notification, the client would
