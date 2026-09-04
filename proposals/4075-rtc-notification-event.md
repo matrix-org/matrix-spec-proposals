@@ -130,8 +130,8 @@ If the invite is valid, the receiving client has three options:
 1. It can ignore the event by doing nothing. The invite will remain valid until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
 
-If multiple valid invites for the same slot exist, clients SHOULD only consider the one that
-will expire last.
+If multiple valid invites for the same slot exist, clients SHOULD only consider the one whose
+`lifetime` will expire last.
 
 Again, how exactly receiving clients render invites in their UI is left as an implementation
 detail. A reasonable choice could, for instance, be to use a ringing UI in [direct chats] and
