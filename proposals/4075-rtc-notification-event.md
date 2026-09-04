@@ -1,4 +1,4 @@
-# MSC4075: MatrixRTC notifications
+# MSC4075: MatrixRTC invites and notifications
 
 [MSC4143] introduces MatrixRTC as an extensible framework for real-time communication in Matrix.
 MatrixRTC sessions are formed around `m.rtc.slot` state events to which users join by sending
