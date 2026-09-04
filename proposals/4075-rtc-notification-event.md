@@ -116,6 +116,8 @@ ensures that only one active invite per slot and sender is maintained by receive
 clients MUST use the event ID of the `m.rtc.invite` event that is being declined as `sticky_key`. The
 RECOMMENDED sticky duration is 1 hour.
 
+Both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted when the room is encrypted.
+
 In line with the expected behaviour of receiving clients that was outlined in the previous section,
 a sending client SHOULD only consider an extended invite valid as long as all of the following
 conditions apply:
@@ -161,6 +163,10 @@ In order to allow clients to manage their notification settings for MatrixRTC in
 ```
 
 `.m.rule.rtc` is inserted directly after the existing `.m.rule.call` rule.
+
+Note that in encrypted rooms, the server cannot apply this rule because any `m.rtc.invite` events will
+be encrypted. In this case, clients need to reapply push rules after decrypting and apply the rule themselves.
+This is already the case for other events and push rules.
 
 [underride]: https://spec.matrix.org/v1.19/client-server-api/#default-underride-rules
 
