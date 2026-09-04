@@ -111,7 +111,10 @@ video calls.
 ### Sending invites
 
 Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as per [MSC4354] for the
-associated delivery guarantee.
+associated delivery guarantee. For `m.rtc.invite`, clients MUST use `slot_id` as the `sticky_key`. This
+ensures that only one active invite per slot and sender is maintained by receivers. For `m.rtc.decline`,
+clients MUST use the event ID of the `m.rtc.invite` event that is being declined as `sticky_key`. The
+RECOMMENDED sticky duration is 1 hour.
 
 In line with the expected behaviour of receiving clients that was outlined in the previous section,
 a sending client SHOULD only consider an extended invite valid as long as all of the following
@@ -125,6 +128,9 @@ conditions apply:
 
 To prevent duplicate invitations, senders SHOULD NOT emit invites when another valid invite exists
 for the same slot.
+
+An existing invite can be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
+and empty content.
 
 Again, how exactly sending clients present extended invitations in their UI is left as an
 implementation detail. Similar to the examples previously given for receiving clients, a
