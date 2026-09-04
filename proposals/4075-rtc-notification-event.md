@@ -84,10 +84,11 @@ apply:
 If the invite is valid, the receiving client has three options:
 
 1. It can accept the invite by joining the slot with an appropriate `m.rtc.member` event as
-   per [MSC4143]. This immediately invalidates the invite for all devices of the user.
-2. It can decline the invite by sending an `m.rtc.decline` event. Again, this immediately
-   invalidates the invite for all devices of the user.
-3. It can ignore the event by doing nothing. The invite will remain valid until either
+   per [MSC4143]. Once the event is observed by other devices of the user, it invalidates the
+   invite.
+1. It can decline the invite by sending an `m.rtc.decline` event. Again, once the event is
+   observed by other devices of the user, it invalidates the invite.
+1. It can ignore the event by doing nothing. The invite will remain valid until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
 
 How exactly receiving clients render invites in their UI is left as an implementation detail.
