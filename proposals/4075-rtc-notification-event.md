@@ -31,6 +31,8 @@ The schema of `m.rtc.invite` is as follows:
 - `m.mentions`: (optional, object): A [mentions] object to optionally direct the invite at a subset
   of users in the room only. If omitted, the event is not targeted at specific users and may be acted
   upon by any room member.
+- `sticky_key` (required, string): The events sticky key as per [MSC4354]. MUST be equal to `slot_id`.
+  This ensures that receivers only maintain one active invite per slot and sender.
 
 ```json5
 {
@@ -40,7 +42,8 @@ The schema of `m.rtc.invite` is as follows:
     "slot_id": "m.call#room", // = m.rtc.slot state_key
     "sender_ts": 1784493900000, // July 19, 2026 at 8:45pm UTC
     "lifetime": 90000, // 90s
-    "m.mentions": { "user_ids": ["@alice:example.org"] } // Optional
+    "m.mentions": { "user_ids": ["@alice:example.org"] }, // Optional
+    "sticky_key": "m.call#room", // = slot_id
   },
   ...
 }
@@ -50,6 +53,8 @@ The schema of `m.rtc.decline` is as follows:
 
 - `m.relates_to` (required, object): An `m.reference` relation to the `m.rtc.invite` event which is
   being declined.
+- `sticky_key` (required, string): The events sticky key as per [MSC4354]. MUST be equal to the
+  event ID of the event that is being declined.
 
 ```json5
 {
@@ -59,11 +64,19 @@ The schema of `m.rtc.decline` is as follows:
       "rel_type": "m.reference",
       "event_id": "$1"
     },
+    "sticky_key": "$1"
   }
 }
 ```
 
+
+Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as per [MSC4354] for the
+associated delivery guarantee. The RECOMMENDED sticky duration is 1 hour. Additionally, clients MUST
+implement the ephemeral map algorithm as per [MSC4354] to construct a state-like store of both
+invite and decline events.
+
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
+[MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
 
 ### Receiving invites
 
@@ -110,12 +123,6 @@ video calls.
 
 ### Sending invites
 
-Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as per [MSC4354] for the
-associated delivery guarantee. For `m.rtc.invite`, clients MUST use `slot_id` as the `sticky_key`. This
-ensures that only one active invite per slot and sender is maintained by receivers. For `m.rtc.decline`,
-clients MUST use the event ID of the `m.rtc.invite` event that is being declined as `sticky_key`. The
-RECOMMENDED sticky duration is 1 hour.
-
 Both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted when the room is encrypted.
 
 In line with the expected behaviour of receiving clients that was outlined in the previous section,
@@ -137,8 +144,6 @@ and empty content.
 Again, how exactly sending clients present extended invitations in their UI is left as an
 implementation detail. Similar to the examples previously given for receiving clients, a
 sending client could use a ringing UI in [direct chats], for instance.
-
-[MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
 
 ### Push rules
 
