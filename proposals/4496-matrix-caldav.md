@@ -230,8 +230,13 @@ same convention as `m.space.child` state events and `matrix.to` links. Clients M
 at least one `via` entry when constructing this block; a `conference` block without a `via`
 array SHOULD be treated as unresolvable and clients SHOULD disable the join button rather
 than silently failing. The call room is managed independently of the calendar event; this
-MSC does not specify how it is created. Clients SHOULD display the room name with a fallback to the room ID and
-MUST NOT auto-join call rooms without explicit user confirmation.
+MSC does not specify how it is created. Clients MUST NOT join a call room referenced by a
+`conference` block without explicit user confirmation; see the "Call room linkage" security
+consideration for how clients should help the user vet the target room before that.
+
+`label` is a free-form action string chosen by whoever authored the block (e.g. "Join
+call"). It is not the room's name and MUST NOT be presented to the user as the identity of
+the room being joined.
 
 #### 2.5 Recurring events
 
@@ -698,11 +703,22 @@ data deletion and room purge mechanisms are the means to exercise the right to e
 parsers. Implementations MUST validate timezone identifiers against the IANA Time Zone
 Database and reject unknown values with a 400 error.
 
-**Call room linkage.** The `conference.room_id` field links a calendar event to a Matrix call
-room. A malicious event could link to an attacker-controlled room to lure users into joining.
-Mitigations are specified in §2.4: clients MUST require explicit user confirmation before
-joining, MUST NOT act on a `conference` block missing a `via` array, and SHOULD display the
-room name with a fallback to the room ID so users can inspect it before joining.
+**Call room linkage (phishing).** The `conference.room_id` field links a calendar event to a
+Matrix call room, but nothing binds that room to the event's organiser or subject: a
+malicious event can point it at an attacker-controlled room to lure users into joining. The
+`label` field is a free-form string chosen by whoever authored the block and MUST NOT be
+presented as the room's identity. A human-readable name carried inside the block would not
+help either — it would still be an unbound string in the event and equally usable for
+phishing. Therefore:
+
+- Clients MUST require explicit user confirmation before joining a call room referenced by a
+  `conference` block, and MUST NOT act on a block missing a `via` array.
+- Before that confirmation, clients SHOULD present information that lets the user judge
+  whether the target room is the one they expect — for example the room's own name and
+  membership as resolved from the room itself (by peeking it, or resolving it via the `via`
+  servers). This MSC does not define how a client obtains that information.
+- Where the target room's identity cannot be resolved, clients SHOULD fall back to showing
+  the raw `room_id`, so the user is never asked to join an entirely unidentified room.
 
 ---
 
