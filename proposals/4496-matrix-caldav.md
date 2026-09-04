@@ -3,7 +3,8 @@
 _This proposal introduces a general-purpose calendaring system for Matrix, covering event
 creation and sharing, invite/RSVP flows, attendee tracking, location and video conference
 attachments, recurrence, and user availability. It is intended to supersede the earlier
-attempt in MSC1116 and to incorporate the community feedback that drove that proposal toward
+attempt in [MSC1116](https://github.com/matrix-org/matrix-spec-proposals/pull/1116) and to
+incorporate the community feedback that drove that proposal toward
 an iCalendar-compatible semantic model. It deliberately avoids a meetings-specific scope so
 that higher-level applications (including video conferencing schedulers) can build on top._
 
