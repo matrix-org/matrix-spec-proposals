@@ -79,7 +79,7 @@ apply:
   user faking `sender_ts` to trigger long-lived notifications.
 - The client's user ID is included in `m.mentions` (either directly or through a room mention)
   or `m.mentions` is missing.
-- The client is not already joined to the same slot via a corresponding `m.rtc.member` event.
+- The user is not already joined to the same slot via a corresponding `m.rtc.member` event.
 
 If the invite is valid, the receiving client has three options:
 
