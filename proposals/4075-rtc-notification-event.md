@@ -91,6 +91,9 @@ If the invite is valid, the receiving client has three options:
 1. It can ignore the event by doing nothing. The invite will remain valid until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
 
+If multiple valid invites for the same slot exist, clients SHOULD only consider the one that
+will expire last.
+
 How exactly receiving clients render invites in their UI is left as an implementation detail.
 A reasonable choice could, for instance, be to use a ringing UI in [direct chats] and a banner
 notification in group chats.
@@ -119,6 +122,9 @@ conditions apply:
 - The invite's `lifetime` as measured from `sender_ts`, has not elapsed.
 - There are targeted room members who have neither accepted the invite (by sending a corresponding
   `m.rtc.member` event) nor declined it (by sending an `m.rtc.decline` event).
+
+To prevent duplicate invitations, senders SHOULD NOT emit invites when another valid invite exists
+for the same slot.
 
 Again, how exactly sending clients present extended invitations in their UI is left as an
 implementation detail. Similar to the examples previously given for receiving clients, a
