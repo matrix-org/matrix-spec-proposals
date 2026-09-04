@@ -48,7 +48,8 @@ This proposal is guided by four core principles:
 
 ### 1. Calendar rooms
 
-A **calendar room** is a Matrix room with `m.room.type` set to `m.calendar`. It acts as a
+A **calendar room** is a Matrix room whose room type (the `type` field in the
+`m.room.create` event content) is `m.calendar`. It acts as a
 container for a user's or group's calendar events. Each user's personal calendar is a
 private (invite-only) `m.calendar` room on their homeserver. Shared/group calendars are
 `m.calendar` rooms with multiple members.
@@ -708,9 +709,6 @@ While this MSC is not yet accepted, the following unstable prefixes apply:
 ---
 
 ## Prior art and related MSCs
-
-- [MSC1840](https://github.com/matrix-org/matrix-spec-proposals/pull/1840) – Typed rooms /
-  `m.room.type` (required for the `m.calendar` room type).
 
 - [MSC1116](https://github.com/matrix-org/matrix-spec-proposals/pull/1116) – Original
   calendar proposal by @Half-Shot (closed; this MSC supersedes it).
