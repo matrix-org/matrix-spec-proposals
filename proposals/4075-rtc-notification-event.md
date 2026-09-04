@@ -29,8 +29,8 @@ The schema of `m.rtc.invite` is as follows:
 - `lifetime` (required, integer): The time in milliseconds that the invite is valid for. MUST be
   non-negative and SHOULD NOT be larger than 2 minutes. The RECOMMENDED value is 90 seconds.
 - `m.mentions`: (optional, object): A [mentions] object to optionally direct the invite at a subset
-  of users in the room only. If omitted, the event is not targeted at specific users and may be acted
-  upon by any room member.
+  of users in the room only. If omitted or empty, the event is not targeted at specific users and may
+  be acted upon by any room member.
 - `sticky_key` (required, string): The event's sticky key as per [MSC4354]. MUST be equal to `slot_id`.
   This ensures that receivers only maintain one active invite per slot and sender.
 
@@ -70,9 +70,10 @@ The schema of `m.rtc.decline` is as follows:
 ```
 
 Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as per [MSC4354] for the
-associated delivery guarantee. The sticky duration SHOULD NOT be smaller than the invite's `lifetime`.
-Additionally, clients MUST implement the ephemeral map algorithm as per [MSC4354] to construct a
-state-like store of both invite and decline events.
+associated delivery guarantee. The sticky duration for `m.rtc.invite` events SHOULD NOT be smaller
+than the invite's `lifetime`. The sticky duration for `m.rtc.decline`, in turn, SHOULD NOT be smaller
+than the declined event's sticky duration. Additionally, clients MUST implement the ephemeral map
+algorithm as per [MSC4354] to construct a state-like store of both invite and decline events.
 
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
@@ -94,7 +95,8 @@ To prevent duplicate invitations, senders SHOULD NOT emit invites when another v
 for the same slot and the same set of targeted users.
 
 An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
-and an otherwise empty content and the same or a larger sticky duration.
+and an otherwise empty content and the same or a larger sticky duration. Alternatively, the event
+MAY also be redacted which will remove it from the ephemeral map of sticky events.
 
 How exactly sending clients present extended invitations in their UI is left as an implementation
 detail. For instance, a sending client could use a ringing UI in [direct chats] while it is waiting
@@ -108,7 +110,8 @@ a receiving client SHOULD only consider an invite valid as long as all of the fo
 apply:
 
 - The invite is the current invite entry in the ephemeral sticky events map for the sender
-  and slot and not a withdrawal (see the previous section).
+  and slot and not a withdrawal (that is, an invite event whose `content` is empty except
+  for `sticky_key`).
 - The client's current [push rules] produce an action of `notify` for the event.
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
   where the invite was received.
@@ -116,8 +119,8 @@ apply:
   `sender_ts` is more than 20 seconds ahead of `origin_server_ts`, the `lifetime` SHOULD be
   measured from `origin_server_ts` instead. This limits the impact of a malicious user faking
   `sender_ts` to trigger long-lived notifications.
-- The client's user ID is included in `m.mentions` (either directly or through a room mention)
-  or `m.mentions` is missing.
+- `m.mentions` is either empty, missing or contains the client's user ID (either directly or
+  through a room mention).
 - The user is not already joined to the same slot via a corresponding `m.rtc.member` event.
 
 If the invite is valid, the receiving client has three options:
@@ -149,12 +152,65 @@ video calls.
 
 ### Push rules
 
-In order to allow clients to manage their notification settings for MatrixRTC invites, a new default
-[underride] push rule `.m.rule.rtc` is introduced that matches any incoming `m.rtc.invite` event.
+In order to allow clients to manage their notification settings for MatrixRTC invites, three new default
+push rules are introduced.
+
+`.m.rule.rtc.invite_for_me` matches `m.rtc.invite` events which contain the user's Matrix ID in
+the list of `user_ids` under `m.mentions`.
 
 ```json5
 {
-  "rule_id": ".m.rule.rtc",
+  "rule_id": ".m.rule.rtc.invite_for_me",
+  "default": true,
+  "enabled": true,
+  "conditions": [{
+    "kind": "event_match",
+    "key": "type",
+    "pattern": "m.rtc.invite"
+  }, {
+    "kind": "event_property_contains",
+    "key": "content.m\\.mentions.user_ids",
+    "value": "[the user's Matrix ID]"
+  }],
+  "actions": ["notify", {
+    "set_tweak": "sound",
+    "value": "ring"
+  }]
+}
+```
+
+`.m.rule.rtc.invite_for_room` matches `m.rtc.invite` events with the `room` property of `m.mentions`
+set to `true` (provided that the sender has the proper power level to trigger `@room` notifications).
+
+```json5
+{
+  "rule_id": ".m.rule.rtc.invite_for_room",
+  "default": true,
+  "enabled": true,
+  "conditions": [{
+    "kind": "event_match",
+    "key": "type",
+    "pattern": "m.rtc.invite"
+  }, {
+    "kind": "event_property_is",
+    "key": "content.m\\.mentions.room",
+    "value": true
+  }, {
+    "kind": "sender_notification_permission",
+    "key": "room"
+  }],
+  "actions": ["notify", {
+    "set_tweak": "sound",
+    "value": "ring"
+  }]
+}
+```
+
+Finally, `.m.rule.rtc.invite` matches any `m.rtc.invite` event.
+
+```json5
+{
+  "rule_id": ".m.rule.rtc.invite",
   "default": true,
   "enabled": true,
   "conditions": [{
@@ -169,13 +225,45 @@ In order to allow clients to manage their notification settings for MatrixRTC in
 }
 ```
 
-`.m.rule.rtc` is inserted directly after the existing `.m.rule.call` rule.
+The rules are inserted into the existing default rule set as follows:
 
-Note that in encrypted rooms, the server cannot apply this rule because any `m.rtc.invite` events will
-be encrypted. In this case, clients need to reapply push rules after decrypting themselves. This is
-already the case for other events and push rules.
+- `.m.rule.rtc.invite_for_me` is inserted as an [`override`] rule before `.m.rule.is_user_mention`.
+- `.m.rule.rtc.invite_for_room` is inserted as an [`override`] rule before `.m.rule.is_room_mention`.
+- `.m.rule.rtc.invite` is inserted as an [`underride`] rule before `.m.rule.call`.
 
-[underride]: https://spec.matrix.org/v1.19/client-server-api/#default-underride-rules
+The rules and their placement are designed to fit in with the common push rule configurations for setting
+rooms to muted or mentions-only.
+
+Muting is usually implemented via a user-defined `override` rule with empty `actions`. This overrides all
+three rules and silences any notifcation for `m.rtc.invite` events.
+
+Mentions-only rooms are commonly implemented via a `room`-kind rule with empty `actions`. The override
+rules `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` are processed before such a rule.
+As a result, `m.rtc.invite` events that include the user in `m.mentions` still cause notifications.
+The `.m.rule.rtc.invite` underride rule, however, is processed after the `room`-kind rule. Consequently,
+`m.rtc.invite` events with empty or no `m.mentions` don't cause notifications. This behaviour is
+analogous to normal messages with `m.mentions`.
+
+Furthermore, the placement of `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` before
+`.m.rule.is_user_mention` and `.m.rule.is_room_mention` means that invites that target the user via
+`m.mentions` can be muted by setting empty `actions` on these rules.
+
+Finally, in rooms that are neither set to muted nor mentions-only, `m.rtc.invite` events with `m.mentions`
+notify if the user is validly targeted via the event's `m.mentions` (via one of the two override rules)
+and also if the event has no or empty `m.mentions` (via the underride rule).
+
+| Push rule configuration | Invite with room mention | Invite with user mention | Invite without mention |
+| ----------------------- | ------------------------ | ------------------------ | ---------------------- |
+| Default | ✅ Notifies | ✅ Notifies | ✅ Notifies |
+| Mentions-only | ✅ Notifies | ✅ Notifies | ❌ Silent |
+| Muted | ❌ Silent | ❌ Silent | ❌ Silent |
+
+Note that in encrypted rooms, the server cannot apply any of the above rules because `m.rtc.invite`
+events will be encrypted. In this case, clients need to reapply push rules after decrypting themselves.
+This is already the case for other events and push rules.
+
+[`override`]: https://spec.matrix.org/v1.19/client-server-api/#default-override-rules
+[`underride`]: https://spec.matrix.org/v1.19/client-server-api/#default-underride-rules
 
 ## Potential issues
 
@@ -196,6 +284,16 @@ the recipient, however. This could be desirable in order to create an experience
 phone calls. A future proposal may address this gap, for instance, by introducing ringing
 acknowledgements communicated via to-device messages or by designing a more general event delivery
 receipt mechanism.
+
+### Lack of push notifications in encrypted mentions-only rooms
+
+In encrypted rooms, the server can see neither the actual type of events nor their `m.mentions`. As a
+result, invite events will erroneously be caught by the `room`-kind push rule that is needed to implement
+mentions-only rooms which means they don't cause push notifications on mobile clients. As a result,
+`m.rtc.invite` notifications can be significantly delayed on mobile clients. This problem is not unique
+to MatrixRTC invites and [MSC4028] is an ongoing attempt at solving it generally.
+
+[MSC4028]: https://github.com/matrix-org/matrix-spec-proposals/pull/4028
 
 ## Alternatives
 
@@ -238,6 +336,12 @@ periods of time. This is mitigated by the recommendations given earlier, in part
 allowed difference of 20 seconds between `sender_ts` and `origin_server_ts` and the maximum allowed
 `lifetime` of 2 minutes.
 
+### Room-level invites
+
+Using room mentions on `m.rtc.invite` events will notify all users in a room. This has the same
+potential for abuse as room mentions on normal messages and can be mitigated by increasing the
+power level required to send room notifications.
+
 ### Repeated invites
 
 Senders can issue a new invite after a previous invite was declined. This can be abusive. Users can
@@ -255,7 +359,8 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 | Inviting without starting a call | ❌ Not possible | ✅ Explicitly allowed if an open slot exists |
 | Withdrawing invites | ✅ via [`m.call.hangup`] events | ✅ via empty `m.rtc.invite` events |
 | Declining invites | ✅ via [`m.call.hangup`] events | ✅ via `m.rtc.decline` events |
-| Managing notification settings | ✅ via `.m.rule.call` push rule | ✅ via `.m.rule.rtc` push rule |
+| Notifications in default rooms | ✅ via `.m.rule.call` push rule | ✅ via `.m.rule.rtc.invite_for_me`, `.m.rule.rtc.invite_for_room` or `.m.rule.rtc.invite` push rules |
+| Notifications in mentions-only rooms | ❌ Not possible | ✅ via `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` push rules |
 | Events required to validate session invites | ✅ 1 ([`m.call.invite`]) | ⚠️ 2 (`m.rtc.slot` and `m.rtc.invite`; since `m.rtc.slot` is a state event both can be fetched in the same `/sync`, however) |
 
 [`m.call.invite`]: https://spec.matrix.org/v1.19/client-server-api/#mcallinvite
@@ -268,7 +373,9 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 | ----------------- | ------- | --------------------|
 | `m.rtc.invite` | Event type | `org.matrix.msc4075.rtc.invite` |
 | `m.rtc.decline` | Event type | `org.matrix.msc4075.rtc.decline` |
-| `.m.rule.rtc` | Push rule ID | `.org.matrix.msc4075.rule.rtc` |
+| `.m.rule.rtc.invite_for_me` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_me` |
+| `.m.rule.rtc.invite_for_room` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_room` |
+| `.m.rule.rtc.invite` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite` |
 
 ## Dependencies
 
