@@ -170,8 +170,8 @@ In order to allow clients to manage their notification settings for MatrixRTC in
 `.m.rule.rtc` is inserted directly after the existing `.m.rule.call` rule.
 
 Note that in encrypted rooms, the server cannot apply this rule because any `m.rtc.invite` events will
-be encrypted. In this case, clients need to reapply push rules after decrypting and apply the rule themselves.
-This is already the case for other events and push rules.
+be encrypted. In this case, clients need to reapply push rules after decrypting themselves. This is
+already the case for other events and push rules.
 
 [underride]: https://spec.matrix.org/v1.19/client-server-api/#default-underride-rules
 
@@ -254,7 +254,7 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 | Withdrawing invites | ✅ via [`m.call.hangup`] events | ✅ via empty `m.rtc.invite` events |
 | Declining invites | ✅ via [`m.call.hangup`] events | ✅ via `m.rtc.decline` events |
 | Managing notification settings | ✅ via `.m.rule.call` push rule | ✅ via `.m.rule.rtc` push rule |
-| Events required to validate session invites | ✅ 1 ([`m.call.invite`]) | ⚠️ 2 (`m.rtc.slot` and `m.rtc.invite`; since `m.rtc.slot` is a state event both can be fetched in the same `/sync`, however ) |
+| Events required to validate session invites | ✅ 1 ([`m.call.invite`]) | ⚠️ 2 (`m.rtc.slot` and `m.rtc.invite`; since `m.rtc.slot` is a state event both can be fetched in the same `/sync`, however) |
 
 [`m.call.invite`]: https://spec.matrix.org/v1.19/client-server-api/#mcallinvite
 [`age`]: https://spec.matrix.org/v1.19/client-server-api/#call-event-liveness
