@@ -233,6 +233,7 @@ allowed difference of 20 seconds between `sender_ts` and `origin_server_ts` and 
 | ----------------- | ------- | --------------------|
 | `m.rtc.invite` | Event type | `org.matrix.msc4075.rtc.invite` |
 | `m.rtc.decline` | Event type | `org.matrix.msc4075.rtc.decline` |
+| `.m.rule.rtc` | Push rule ID | `.org.matrix.msc4075.rule.rtc` |
 
 ## Dependencies
 
