@@ -1018,6 +1018,44 @@ Against:
 
 Rather than making [MSC4198] a dependency of this proposal, a future MSC could add this.
 
+### Existing device endorses the grant
+
+The [device authorization flow] has a remote phishing threat that is listed in the
+[Security considerations](#phishing-of-the-underlying-device-authorization-grant) section. This proposal could be used
+to provide an additional mitigation for the threat.
+
+With this proposal an already-authenticated device belonging to the same account is present for the whole of the grant.
+That presence could be made explicit to the homeserver so that it can use it as a risk signal. If the homeserver knows
+that the grant is taking place as part of this proposal then it could assume that the client-side mitigations from
+[Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing) have been applied and,
+conversely, if the grant is not part of this proposal then it could apply additional security checks.
+
+One way to think of this is that in the case of this proposal the existing device "endorses" the login of the new
+device. However, there is no mechanism provided by the [device authorization flow] to help with this.
+
+Conceptually the existing device could either supply the new device with some kind of token that should be passed to the
+server with the Device Authorization Request, or the existing device could inform the homeserver of its intent to help
+the new device sign in (and somehow bind to that specific device).
+
+This could be implemented as a new login protocol variant (e.g. `endorsed_device_authorization_grant`) rather than a
+change to the existing one, negotiated by name through the `m.login.protocols` message that this proposal already
+defines.
+
+For:
+
+- Could allow the homeserver to provide a higher-friction consent where the grant is known to not be part of this
+  proposal.
+- Compared with the [MSC4198 `login_hint` alternative](#incorporate-msc4198-login_hint), the homeserver learns the
+  account from the endorsement rather than from a hint relayed through the new device.
+
+Against:
+
+- No standardised mechanism exists to provide such an endorsement.
+
+As there is no pre-existing standard mechanism for this this enhancement is left to a follow-on proposal. The
+`m.login.protocols` negotiation step exists precisely so that further login protocols can be added, as noted in the
+[Authorization Code Grant alternative] above.
+
 ## Security considerations
 
 ### Malicious session spawning
@@ -1174,6 +1212,23 @@ Mitigations:
   in the alternatives section, which binds the secure channel peer to the device keys published for `D` on the
   homeserver.
 
+### Phishing of the underlying device authorization grant
+
+This proposal builds on the [device authorization flow] and therefore inherits the security considerations of the
+OAuth 2.0 Device Authorization Grant, as set out in
+[RFC8628 Section 5](https://datatracker.ietf.org/doc/html/rfc8628#section-5). Implementors of this proposal should read
+and consider the recommendations in the RFC.
+
+[RFC8628 Section 5.4](https://datatracker.ietf.org/doc/html/rfc8628#section-5.4) describes a remote phishing attack
+where the attacker initiates a grant and sends the resulting URI to the victim to open in their browser and complete
+consent. This MSC does not attempt to mitigate such an attack in the general case. The specific form of this attack
+that uses the QR flow itself, and the client-side mitigations that apply to it, are covered in
+[Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing).
+
+However, there are properties of this proposal that could be used to provide additional mitigations against such
+an attack. This is explored under
+[Existing device endorses the grant](#existing-device-endorses-the-grant) in the alternatives section.
+
 ## Threat modelling
 
 During the design of this proposal various security threats have been identified and considered. The details of these
@@ -1186,6 +1241,7 @@ The following table is intended to provide an overview with links into the detai
 |**Unattended devices**|The Sign in with QR mechanism could be used by an attacker who has gained temporary access to a client to escalate the attack to creation of a new client session that has ongoing access|login protocol; grant|biometrics; server policies|[MSC4108 Malicious session spawning](#malicious-session-spawning)|
 |**Social engineering: Sign in with QR remote phishing (remote client)**|Attacker tricks a legitimate user into scanning a QR code (generated on an attacker controlled remote client) with their existing client and completing the sign in, resulting in disclosure of access token and end-to-end encryption secrets|login protocol; grant|UX|[MSC4108 Social Engineering: Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing)|
 |**Social engineering: Sign in with QR remote phishing (remote client + malicious homeserver)**|Similar to remote client phishing, but homeserver is under active control of the attacker and wants to compromise the victim's end-to-end encryption|login protocol|UX|[MSC4108 Social Engineering: Sign in with QR remote phishing](#social-engineering-sign-in-with-qr-remote-phishing)|
+|**Phishing of the underlying device authorization grant**|The OAuth 2.0 Device Authorization Grant is inherently susceptible to remote phishing, as described in RFC8628 Section 5.4, because the device being authorized is not the device that the user authorizes it from|grant|homeserver consent UX; not mitigated by this MSC|[MSC4108 Phishing of the underlying device authorization grant](#phishing-of-the-underlying-device-authorization-grant)|
 |**Malicious client sends arbitrary verification URI**|A malicious new client sends an arbitrary URL in the `m.login.protocol` message which the victim's existing client then opens in a trusted browser environment|login protocol|UX|[MSC4108 Malicious client sends arbitrary verification URI](#malicious-client-sends-arbitrary-verification-uri)|
 |**Device ID confusion**|A malicious device on the secure channel claims a `device_id` that the victim's genuine new device is bringing online concurrently, causing the existing device's liveness check to pass and secrets to be shared with the attacker without it authenticating|login protocol|device ID checks; UX|[MSC4108 Device ID confusion](#device-id-confusion)|
 |**Shoulder-surfing attacker (Specter)**|Attacker has control of homeserver and network and is present for QR scanning and attempts to steal end-to-end encryption secrets|secure channel|cryptographic|[MSC4388 Shoulder-surfing attacker (Specter)](https://github.com/matrix-org/matrix-spec-proposals/blob/element-hq/oidc-qr-secure-channel/proposals/4388-secure-qr-channel.md#shoulder-surfing-attacker-specter)|
@@ -1224,3 +1280,4 @@ This MSC builds on:
 [Device Authorization Response]: https://datatracker.ietf.org/doc/html/rfc8628#section-3.2
 [dynamic client registration]: https://spec.matrix.org/v1.15/client-server-api/#client-registration
 [MSC4198]: https://github.com/matrix-org/matrix-spec-proposals/pull/4198 "MSC4198: Usage of OIDC login_hint"
+[Authorization Code Grant alternative]: #use-the-authorization-code-grant-instead-of-the-device-authorization-grant
