@@ -245,7 +245,7 @@ The `.m.rule.rtc.invite` underride rule, however, is processed after the `room`-
 analogous to normal messages with `m.mentions`.
 
 Furthermore, the placement of `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` before
-`.m.rule.is_user_mention` and `.m.rule.is_room_mention` means that invites that target the user via
+`.m.rule.is_user_mention` and `.m.rule.is_room_mention` means that invites which target the user via
 `m.mentions` can be muted by setting empty `actions` on these rules.
 
 Finally, in rooms that are neither set to muted nor mentions-only, `m.rtc.invite` events with `m.mentions`
