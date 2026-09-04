@@ -982,6 +982,42 @@ scope of this MSC. It is already very big.
 A future MSC could propose a "login protocol" variant that works without secret sharing. For example a
 `device_authorization_grant_without_secrets` protocol being offered in `m.login.protocols`.
 
+### Incorporate MSC4198 `login_hint`
+
+[MSC4198] defines a Matrix format for the OIDC `login_hint` parameter, including an `mxid` hint type, and specifies its
+use in the [device authorization flow]. It could be used by this proposal so that the homeserver guides the user to
+consent to the grant with the correct account. [MSC4198] anticipates this usage and refers to this proposal directly.
+
+This could be achieved by adding an optional `login_hint` field to the `m.login.protocols` message as follows:
+
+```json
+{
+    "type": "m.login.protocols",
+    "protocols": ["device_authorization_grant"],
+    "base_url": "https://matrix-client.matrix.org",
+    "login_hint": "mxid:@alice:matrix.org"
+}
+```
+
+The new device would then include the hint in its device authorization request, provided the homeserver advertises
+support for the `mxid` hint type in its auth metadata, which the new device already fetches in
+[step 2](#2-new-device-checks-if-it-can-use-an-available-protocol).
+
+For:
+
+- Improves the UX of the consent step, as the homeserver can prefill or confirm the account rather than asking the user
+  to identify themselves again.
+
+Against:
+
+- It is a hint only, and provides no security guarantee: [MSC4198] requires clients to be prepared for the user signing
+  in with a different account than the one suggested. The `whoami` check described in
+  [Malicious session spawning](#malicious-session-spawning) remains necessary regardless.
+- It discloses the user's MXID to the other side of the secure channel before any login has taken place. This is a
+  small increase on the status quo, where the peer learns only the homeserver [base URL] at this point.
+
+Rather than making [MSC4198] a dependency of this proposal, a future MSC could add this.
+
 ## Security considerations
 
 ### Malicious session spawning
@@ -1186,3 +1222,4 @@ This MSC builds on:
 [MSC4388]: https://github.com/matrix-org/matrix-spec-proposals/pull/4388 "MSC4388 Secure out-of-band channel for sign in with QR"
 [Device Authorization Response]: https://datatracker.ietf.org/doc/html/rfc8628#section-3.2
 [dynamic client registration]: https://spec.matrix.org/v1.15/client-server-api/#client-registration
+[MSC4198]: https://github.com/matrix-org/matrix-spec-proposals/pull/4198 "MSC4198: Usage of OIDC login_hint"
