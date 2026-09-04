@@ -1,4 +1,4 @@
-# MSC0000: Additional endpoints for fetching user profiles
+# MSC4536: Additional endpoints for fetching user profiles
 
 This MSC aims to provide a solution for Matrix clients to fetch user profile data from Matrix servers.
 Currently, there are multiple ways a client may end up receiving profile data from the backend.
@@ -175,10 +175,10 @@ None foreseen at this moment.
 
 While this MSC is unstable, the endpoints are:
 
-* `GET /_matrix/client/unstable/org.matrix.mscxxxx/rooms/{roomId}/profiles`
-* `POST /_matrix/client/unstable/org.matrix.mscxxxx/profiles/query`
+* `GET /_matrix/client/unstable/org.matrix.msc4536/rooms/{roomId}/profiles`
+* `POST /_matrix/client/unstable/org.matrix.msc4536/profiles/query`
 
-Support for these endpoints MUST be advertised via the `org.matrix.mscxxxx` flag in `/_matrix/client/versions`.
+Support for these endpoints should be advertised via the `org.matrix.msc4536` flag in `/_matrix/client/versions`.
 
 ## Dependencies
 
