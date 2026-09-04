@@ -217,19 +217,36 @@ iCalendar output.
 
 ```json
 "conference": {
-  "type": "m.call",
+  "type": "m.rtc",
+  "application": "m.call",
   "room_id": "!callroom:example.com",
+  "slot_id": "...",
   "via": ["example.com", "matrix.org"],
   "label": "Join call"
 }
 ```
+
+`type` is `m.rtc`, marking this a MatrixRTC conference. `application` names the MatrixRTC
+application type (`m.call` today; MatrixRTC is expected to define further application types
+in future, which slot in here without a schema change).
 
 The `room_id` MUST be the Matrix room ID of an active MatrixRTC-enabled room. The
 `via` field is a list of server names through which the room can be joined, following the
 same convention as `m.space.child` state events and `matrix.to` links. Clients MUST include
 at least one `via` entry when constructing this block; a `conference` block without a `via`
 array SHOULD be treated as unresolvable and clients SHOULD disable the join button rather
-than silently failing. The call room is managed independently of the calendar event; this
+than silently failing.
+
+`slot_id` is OPTIONAL. A single MatrixRTC room can host multiple concurrent sessions
+("slots"); when set, `slot_id` is the `state_key` of the `m.rtc.slot` state event
+identifying the specific slot this calendar event refers to, as defined in
+[MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143). When omitted, the
+event refers to the room's default slot. The concrete slot-ID grammar is
+application-specific (e.g. `m.call#ROOM` from
+[MSC4196](https://github.com/matrix-org/matrix-spec-proposals/pull/4196)); this MSC does not
+constrain it beyond deferring to the MatrixRTC definition, which is still in progress.
+
+The call room is managed independently of the calendar event; this
 MSC does not specify how it is created. Clients MUST NOT join a call room referenced by a
 `conference` block without explicit user confirmation; see the "Call room linkage" security
 consideration for how clients should help the user vet the target room before that.
@@ -321,7 +338,7 @@ sole specified transport for invites.
         "start": { "utc": "2026-07-01T07:00:00Z", "localtime": "2026-07-01T09:00:00", "timezone": "Europe/Berlin" },
         "end": { "utc": "2026-07-01T07:30:00Z", "localtime": "2026-07-01T09:30:00", "timezone": "Europe/Berlin" },
         "organizer": "@alice:example.com",
-        "conference": { "type": "m.call", "room_id": "!callroom:example.com", "label": "Join call" }
+        "conference": { "type": "m.rtc", "application": "m.call", "room_id": "!callroom:example.com", "via": ["example.com"], "label": "Join call" }
       }
     }
   }
@@ -757,9 +774,13 @@ in their place.
 - [MSC3160](https://github.com/matrix-org/matrix-spec-proposals/pull/3160) – Message timezone
   markup (addresses timezone display in freeform messages; this MSC's structured event type
   supersedes that use case for scheduled events).
-- [MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) – MatrixRTC
-  (the spec-level term for Matrix-native video calls; `conference.room_id` points to a
-  MatrixRTC-enabled room as defined there).
+- [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) – MatrixRTC
+  (Matrix-native real-time communication; `conference.room_id` points to a MatrixRTC-enabled
+  room and `conference.slot_id` to an `m.rtc.slot` defined there). Supersedes the earlier
+  [MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401).
+- [MSC4196](https://github.com/matrix-org/matrix-spec-proposals/pull/4196) – Voice and video
+  calling application for MatrixRTC (defines the `m.call` application type and its slot-ID
+  grammar used in `conference`).
 - [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488) – Location data
   (`m.location`; this MSC's `location.uri` field reuses the same `geo:` URI convention).
 - [RFC 5546](https://www.rfc-editor.org/rfc/rfc5546) – iTIP scheduling methods.
