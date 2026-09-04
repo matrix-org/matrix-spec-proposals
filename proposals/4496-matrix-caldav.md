@@ -75,7 +75,7 @@ Calendar metadata is stored in a dedicated state event:
   "state_key": "",
   "content": {
     "m.text": [{ "body": "Personal calendar", "mimetype": "text/plain" }],
-    "org.matrix.msc4496.calendar_info": {
+    "m.calendar.info": {
       "color": "#3c82f6",
       "timezone": "Europe/Berlin"
     }
@@ -105,7 +105,7 @@ special-casing.
         "mimetype": "text/plain"
       }
     ],
-    "org.matrix.msc4496.calendar_event": {
+    "m.calendar.event": {
       "uid": "550e8400-e29b-41d4-a716-446655440000",
       "title": "Team standup",
       "start": {
@@ -238,10 +238,10 @@ event) is a separate `m.calendar.event` timeline event relating to the original:
 
 ```json
 "m.relates_to": {
-  "rel_type": "org.matrix.msc4496.calendar_override",
+  "rel_type": "m.calendar.override",
   "event_id": "$original_event_id"
 },
-"org.matrix.msc4496.calendar_event": {
+"m.calendar.event": {
   "uid": "550e8400-e29b-41d4-a716-446655440000",
   "recurrence_id": "2026-07-08T07:00:00Z",
   ...
@@ -290,7 +290,7 @@ sole specified transport for invites.
         "mimetype": "text/plain"
       }
     ],
-    "org.matrix.msc4496.calendar_invite": {
+    "m.calendar.invite": {
       "uid": "550e8400-e29b-41d4-a716-446655440000",
       "sequence": 0,
       "method": "REQUEST",
@@ -322,7 +322,7 @@ The invitee replies in the same room with an `m.calendar.rsvp` event relating to
   "type": "m.calendar.rsvp",
   "content": {
     "m.text": [{ "body": "Accepted: Team standup on 2026-07-01", "mimetype": "text/plain" }],
-    "org.matrix.msc4496.calendar_rsvp": {
+    "m.calendar.rsvp": {
       "uid": "550e8400-e29b-41d4-a716-446655440000",
       "sequence": 0,
       "partstat": "ACCEPTED",
@@ -376,7 +376,7 @@ The user's grant policy is stored as a state event in their `m.calendar` room:
 
 ```json
 {
-  "type": "org.matrix.msc4496.availability_policy",
+  "type": "m.calendar.availability_policy",
   "state_key": "",
   "content": {
     "default_tier": 0,
@@ -395,7 +395,7 @@ VAVAILABILITY, so that scheduling assistants know when slots are even worth quer
 
 ```json
 {
-  "type": "org.matrix.msc4496.availability_window",
+  "type": "m.calendar.availability_window",
   "state_key": "",
   "content": {
     "windows": [
@@ -419,7 +419,7 @@ public and non-granular: there is no per-contact access control. This MSC theref
 calendar room state events (which benefit from room ACLs and E2EE) for tier-controlled
 availability grants, and proposes only that a user's _working hours window_ (§4.3) MAY
 additionally be published as a profile field under
-`org.matrix.msc4496.working_hours` for use by clients that want a lightweight,
+`m.calendar.working_hours` for use by clients that want a lightweight,
 no-calendar-room indicator. Servers and clients SHOULD treat the calendar room state event
 as authoritative if both exist.
 
@@ -525,7 +525,7 @@ Once decrypted by a client, the plaintext payload contains the full calendar eve
         "mimetype": "text/plain"
       }
     ],
-    "org.matrix.msc4496.calendar_event": {
+    "m.calendar.event": {
       "uid": "550e8400-e29b-41d4-a716-446655440000",
       "title": "Team standup",
       "start": { "utc": "2026-07-01T07:00:00Z", "localtime": "2026-07-01T09:00:00", "timezone": "Europe/Berlin" },
@@ -691,21 +691,23 @@ room name with a fallback to the room ID so users can inspect it before joining.
 
 ## Unstable prefix
 
-While this MSC is not yet accepted, the following unstable prefixes apply:
+All snippets in this proposal use the stable identifiers. While this MSC is not yet
+accepted, implementations MUST use the unstable identifier from the right-hand column
+in their place.
 
-| Stable identifier                                   | Unstable prefix                                                              |
-| --------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Stable identifier                                   | Unstable identifier                                                          |
+| --------------------------------------------------- | --------------------------------------------------------------------------- |
 | `m.calendar` (room type)                            | `org.matrix.msc4496.calendar`                                                |
-| `m.calendar.info`                                   | `org.matrix.msc4496.calendar_info`                                           |
-| `m.calendar.event`                                  | `org.matrix.msc4496.calendar_event`                                          |
-| `m.calendar.invite`                                 | `org.matrix.msc4496.calendar_invite`                                         |
-| `m.calendar.rsvp`                                   | `org.matrix.msc4496.calendar_rsvp`                                           |
-| `org.matrix.msc4496.availability_policy`            | (already vendor-prefixed)                                                    |
-| `org.matrix.msc4496.availability_window`            | (already vendor-prefixed)                                                    |
-| `org.matrix.msc4496.working_hours` (profile field)  | (already vendor-prefixed)                                                    |
+| `m.calendar.info` (state event)                     | `org.matrix.msc4496.calendar_info`                                           |
+| `m.calendar.event` (event type + content block)     | `org.matrix.msc4496.calendar_event`                                          |
+| `m.calendar.invite` (event type + content block)    | `org.matrix.msc4496.calendar_invite`                                         |
+| `m.calendar.rsvp` (event type + content block)      | `org.matrix.msc4496.calendar_rsvp`                                           |
+| `m.calendar.override` (rel_type)                    | `org.matrix.msc4496.calendar_override`                                       |
+| `m.calendar.availability_policy` (state event)      | `org.matrix.msc4496.availability_policy`                                     |
+| `m.calendar.availability_window` (state event)      | `org.matrix.msc4496.availability_window`                                     |
+| `m.calendar.working_hours` (profile field)          | `org.matrix.msc4496.working_hours`                                           |
 | `/_matrix/client/v1/user/{userId}/availability`     | `/_matrix/client/unstable/org.matrix.msc4496/user/{userId}/availability`     |
 | `/_matrix/federation/v1/user/{userId}/availability` | `/_matrix/federation/unstable/org.matrix.msc4496/user/{userId}/availability` |
-| `org.matrix.msc4496.calendar_override` (rel_type)   | (already vendor-prefixed)                                                    |
 
 ---
 
