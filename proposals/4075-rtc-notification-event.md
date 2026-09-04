@@ -180,7 +180,7 @@ the list of `user_ids` under `m.mentions`.
 ```
 
 `.m.rule.rtc.invite_for_room` matches `m.rtc.invite` events with the `room` property of `m.mentions`
-set to `true` (provided that the sender has the proper power level to trigger `@room` notifications).
+set to `true` (provided that the sender has the proper power level to trigger room notifications).
 
 ```json5
 {
