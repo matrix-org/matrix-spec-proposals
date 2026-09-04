@@ -236,6 +236,13 @@ periods of time. This is mitigated by the recommendations given earlier, in part
 allowed difference of 20 seconds between `sender_ts` and `origin_server_ts` and the maximum allowed
 `lifetime` of 2 minutes.
 
+### Repeated invites
+
+Senders can issue a new invite after a previous invite was declined. This can be abusive. Users can
+mitigate this by adapting their push rules, [ignoring] the sender or leaving the room.
+
+[ignoring]: https://spec.matrix.org/v1.18/client-server-api/#ignoring-users
+
 ## Appendix: Comparison to [legacy VoIP]
 
 | Feature | Legacy VoIP | MatrixRTC |
