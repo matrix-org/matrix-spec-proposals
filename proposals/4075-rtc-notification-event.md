@@ -131,7 +131,7 @@ conditions apply:
 
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
   where the invite was sent.
-- The invite's `lifetime` as measured from `sender_ts`, has not elapsed.
+- The invite's `lifetime`, as measured from `sender_ts` and capped at 2 minutes, has not elapsed.
 - There are targeted room members who have neither accepted the invite (by sending a corresponding
   `m.rtc.member` event) nor declined it (by sending an `m.rtc.decline` event).
 
