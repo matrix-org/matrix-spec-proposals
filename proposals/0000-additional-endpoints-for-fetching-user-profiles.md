@@ -1,14 +1,11 @@
 # MSC0000: Additional endpoints for fetching user profiles
 
-This MSC builds on the profile updates over legacy ([MSC4429](https://github.com/matrix-org/matrix-spec-proposals/pull/4429))
-and sliding sync ([MSC4262](https://github.com/matrix-org/matrix-spec-proposals/pull/4262)) MSC's.
-
 This MSC aims to provide a solution for Matrix clients to fetch user profile data from Matrix servers.
 Currently, there are multiple ways a client may end up receiving profile data from the backend.
 
 1) By fetching a full profile or individual fields using `GET /_matrix/client/v3/profile/{userId}`
   or `GET /_matrix/client/v3/profile/{userId}/{keyName}`.
-2) From legacy and sliding sync responses ([MSC4429](https://github.com/matrix-org/matrix-spec-proposals/pull/4429),
+2) From profiles over legacy and sliding sync responses ([MSC4429](https://github.com/matrix-org/matrix-spec-proposals/pull/4429),
   [MSC4262](https://github.com/matrix-org/matrix-spec-proposals/pull/4262)).
 
 Additionally, display names and avatar urls may be discovered by clients using other methods. For 
@@ -185,6 +182,4 @@ Support for these endpoints MUST be advertised via the `org.matrix.mscxxxx` flag
 
 ## Dependencies
 
-This MSC builds on [MSC4429](https://github.com/matrix-org/matrix-spec-proposals/pull/4429) and
-[MSC4262](https://github.com/matrix-org/matrix-spec-proposals/pull/4262) (which at the time of writing
-have not yet been accepted into the spec).
+This MSC doesn't depend on any unstable MSCs.
