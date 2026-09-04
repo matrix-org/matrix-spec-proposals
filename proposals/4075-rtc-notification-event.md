@@ -136,7 +136,7 @@ conditions apply:
   `m.rtc.member` event) nor declined it (by sending an `m.rtc.decline` event).
 
 To prevent duplicate invitations, senders SHOULD NOT emit invites when another valid invite exists
-for the same slot.
+for the same slot and the same set of targeted users.
 
 An existing invite can be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
 and an otherwise empty content.
