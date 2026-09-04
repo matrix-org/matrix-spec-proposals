@@ -235,7 +235,7 @@ The rules and their placement are designed to fit in with the common push rule c
 rooms to muted or mentions-only.
 
 Muting is usually implemented via a user-defined `override` rule with empty `actions`. This overrides all
-three rules and silences any notifcation for `m.rtc.invite` events.
+three rules and silences any notification for `m.rtc.invite` events.
 
 Mentions-only rooms are commonly implemented via a `room`-kind rule with empty `actions`. The override
 rules `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` are processed before such a rule.
