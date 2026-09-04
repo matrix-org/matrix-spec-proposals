@@ -85,6 +85,23 @@ Calendar metadata is stored in a dedicated state event:
 
 The `m.text` block (MSC1767) MUST be present as a human-readable fallback for unaware clients.
 
+`m.calendar.info` fields:
+
+- `timezone`: OPTIONAL IANA timezone identifier. Advisory only. It is the calendar's
+  "home" timezone and is used by clients as (a) the default timezone for newly authored
+  events and (b) the fallback timezone for rendering the calendar grid and all-day event
+  boundaries when the viewing user has expressed no preference of their own. It MUST NOT
+  override the per-event `start`/`end` timezone of any `m.calendar.event`. For shared /
+  group calendars it represents the calendar's primary locale (e.g. a team's main office);
+  members in other timezones SHOULD have times presented in their own local timezone
+  regardless of this value.
+- `color`: OPTIONAL. A suggested display colour as a `#rrggbb` hex string, carrying the
+  calendar owner's intent across clients (equivalent to the CalDAV `calendar-color`
+  property). It is purely advisory: clients MAY let the viewing user override it, and MUST
+  cope with two calendars declaring the same value by disambiguating in their own UI (for
+  example by reassigning one). Clients that do not support per-calendar colouring MAY
+  ignore it entirely.
+
 ---
 
 ### 2. Calendar event type: `m.calendar.event`
