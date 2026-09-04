@@ -205,8 +205,8 @@ type is used:
 }
 ```
 
-For virtual locations, `uri` is a plain HTTPS URL rather than a `geo:` URI. Clients SHOULD
-display virtual locations as clickable links.
+For virtual locations, `uri` is a plain `https:` URL that the user follows to join, rather
+than a `geo:` URI.
 
 #### 2.4 Video conference attachment (MatrixRTC)
 
