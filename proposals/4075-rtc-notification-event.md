@@ -223,9 +223,9 @@ allowed difference of 20 seconds between `sender_ts` and `origin_server_ts` and 
 | Managing notification settings | ✅ via `.m.rule.call` push rule | ✅ via `.m.rule.rtc` push rule |
 | Events required to validate session invites | ✅ 1 ([`m.call.invite`]) | ⚠️ 2 (`m.rtc.slot` and `m.rtc.invite`; since `m.rtc.slot` is a state event both can be fetched in the same `/sync`, however ) |
 
-[`m.call.invite`] https://spec.matrix.org/v1.19/client-server-api/#mcallinvite
+[`m.call.invite`]: https://spec.matrix.org/v1.19/client-server-api/#mcallinvite
 [`age`]: https://spec.matrix.org/v1.19/client-server-api/#call-event-liveness
-[`m.call.hangup`] https://spec.matrix.org/v1.19/client-server-api/#mcallhangup
+[`m.call.hangup`]: https://spec.matrix.org/v1.19/client-server-api/#mcallhangup
 
 ## Unstable prefix
 
