@@ -8,14 +8,47 @@ incorporate the community feedback that drove that proposal toward
 an iCalendar-compatible semantic model. It deliberately avoids a meetings-specific scope so
 that higher-level applications (including video conferencing schedulers) can build on top._
 
-Matrix currently has no first-class representation of calendar data. Users who wish to schedule
-events with others over Matrix must either use an out-of-band calendar system and paste details
-into chat, or rely on bespoke application-layer solutions that do not interoperate. This creates
-friction, breaks privacy (invites often travel via corporate email even when both parties use
-Matrix), and prevents Matrix from serving as a complete communication stack for organisations. A
-general, privacy-respecting, federated calendaring primitive in Matrix would fill this gap while
-also enabling transparent interop with the iCalendar/CalDAV ecosystem that the majority of the
-world already uses.
+Matrix currently has no first-class representation of calendar data. Users who wish to
+schedule events with others over Matrix must either use an out-of-band calendar system and
+paste details into chat, or rely on bespoke application-layer solutions that do not
+interoperate.
+
+**Motivation.** The driving use case is letting Matrix serve as a complete communication
+stack for an organisation — the role Microsoft Teams / Outlook, Google Workspace, or open
+suites such as openDesk (the ZenDiS Sovereign Workplace) fill today. In those products the
+calendar is a distinct component (in openDesk's case a bundled Nextcloud) with no link
+between an event and the room where it was arranged. Matrix has the chat and the calls but
+not the calendar, and for some organisations that gap may be enough to keep them on a stack
+where scheduling lives elsewhere. Concretely, this MSC targets:
+
+- Sharing an event into a room a group already shares, with RSVPs visible inline.
+- Inviting someone by their Matrix ID, with proper RSVP tracking, without knowing or
+  exchanging an email address.
+- Running an organisation's calendaring on its own homeserver rather than a hosted tenant.
+
+It is explicitly fine for this to be an enterprise-leaning feature that not every client
+implements, and for clients to ship partial support (e.g. a read-only event calendar in a
+community room).
+
+**Interoperability, not reimplementation.** Most of the world runs on iCalendar and CalDAV
+and always will; there is no point at which everyone is on Matrix. This proposal therefore
+treats CalDAV as a third-party network — reached, in the usual Matrix way, through a bridge
+(Appendix A) — rather than reimplementing CalDAV inside Matrix. The client-server API
+surface added here is kept to the bare minimum; everything that can be expressed as ordinary
+room events is. The data model stays close to JSCalendar (see design philosophy below) so
+conversion in either direction is straightforward, and an enterprise deployment that still
+needs email invites can bridge those too.
+
+**Privacy.** Meeting metadata — who, when, where, with whom — is sensitive, so the
+availability query API (§4) is server-mediated: the queried user's homeserver filters
+results by the caller's granted tier before responding, which a purely client-side scheme
+could not do (the server could not withhold private events from the other side). E2EE comes
+for free because calendar events are ordinary timeline events; §5 exists mainly to confirm
+that and flag the plaintext-fallback pitfall, not as a headline feature.
+
+A general, privacy-respecting, federated calendaring primitive in Matrix fills this gap
+while keeping transparent interop with the iCalendar/CalDAV ecosystem that the majority of
+the world already uses.
 
 ## Proposal
 
