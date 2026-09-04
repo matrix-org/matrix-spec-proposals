@@ -707,20 +707,10 @@ While this MSC is not yet accepted, the following unstable prefixes apply:
 
 ---
 
-## Dependencies
+## Prior art and related MSCs
 
-This MSC builds on:
-
-- [MSC1767](https://github.com/matrix-org/matrix-spec-proposals/pull/1767) – Extensible events
-  (required for `m.text` fallback blocks in all event types).
-- [MSC2674](https://github.com/matrix-org/matrix-spec-proposals/pull/2674) – Event
-  relationships (required for recurrence overrides and RSVP threading).
-- [MSC2676](https://github.com/matrix-org/matrix-spec-proposals/pull/2676) – Message edits
-  (required for cancellation and event updates).
 - [MSC1840](https://github.com/matrix-org/matrix-spec-proposals/pull/1840) – Typed rooms /
   `m.room.type` (required for the `m.calendar` room type).
-
-Related prior art (not hard dependencies):
 
 - [MSC1116](https://github.com/matrix-org/matrix-spec-proposals/pull/1116) – Original
   calendar proposal by @Half-Shot (closed; this MSC supersedes it).
