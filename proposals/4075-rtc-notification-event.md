@@ -77,13 +77,38 @@ state-like store of both invite and decline events.
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
 
+### Sending invites
+
+Both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted when the room is encrypted.
+
+A sending client SHOULD only consider an extended invite valid as long as all of the following
+conditions apply:
+
+- An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
+  where the invite was sent.
+- The invite's `lifetime`, as measured from `sender_ts` and capped at 2 minutes, has not elapsed.
+- There are targeted room members who have neither accepted the invite (by sending a corresponding
+  `m.rtc.member` event) nor declined it (by sending an `m.rtc.decline` event).
+
+To prevent duplicate invitations, senders SHOULD NOT emit invites when another valid invite exists
+for the same slot and the same set of targeted users.
+
+An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
+and an otherwise empty content and the same or a larger sticky duration.
+
+How exactly sending clients present extended invitations in their UI is left as an implementation
+detail. For instance, a sending client could use a ringing UI in [direct chats] while it is waiting
+for the invite to be acted on and stop ringing when the invite is accepted or declined (see the next
+section).
+
 ### Receiving invites
 
-A receiving client SHOULD only consider an invite valid as long as all of the following conditions
+In line with the expected behaviour of sending clients that was outlined in the previous section,
+a receiving client SHOULD only consider an invite valid as long as all of the following conditions
 apply:
 
 - The invite is the current invite entry in the ephemeral sticky events map for the sender
-  and slot.
+  and slot and not a withdrawal (see the previous section).
 - The client's current [push rules] produce an action of `notify` for the event.
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
   where the invite was received.
@@ -108,9 +133,9 @@ If the invite is valid, the receiving client has three options:
 If multiple valid invites for the same slot exist, clients SHOULD only consider the one that
 will expire last.
 
-How exactly receiving clients render invites in their UI is left as an implementation detail.
-A reasonable choice could, for instance, be to use a ringing UI in [direct chats] and a banner
-notification in group chats.
+Again, how exactly receiving clients render invites in their UI is left as an implementation
+detail. A reasonable choice could, for instance, be to use a ringing UI in [direct chats] and
+a banner notification in group chats.
 
 Clients may also tweak their notification UI based on the referenced `m.rtc.slot` event and the
 `m.rtc.member` events currently joined to that slot. As an example, a client could choose to only
@@ -121,30 +146,6 @@ video calls.
 [push rules]: https://spec.matrix.org/v1.19/client-server-api/#push-rules
 [direct chats]: https://spec.matrix.org/v1.19/client-server-api/#direct-messaging
 [MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
-
-### Sending invites
-
-Both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted when the room is encrypted.
-
-In line with the expected behaviour of receiving clients that was outlined in the previous section,
-a sending client SHOULD only consider an extended invite valid as long as all of the following
-conditions apply:
-
-- An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
-  where the invite was sent.
-- The invite's `lifetime`, as measured from `sender_ts` and capped at 2 minutes, has not elapsed.
-- There are targeted room members who have neither accepted the invite (by sending a corresponding
-  `m.rtc.member` event) nor declined it (by sending an `m.rtc.decline` event).
-
-To prevent duplicate invitations, senders SHOULD NOT emit invites when another valid invite exists
-for the same slot and the same set of targeted users.
-
-An existing invite can be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
-and an otherwise empty content and the same or a larger sticky duration.
-
-Again, how exactly sending clients present extended invitations in their UI is left as an
-implementation detail. Similar to the examples previously given for receiving clients, a
-sending client could use a ringing UI in [direct chats], for instance.
 
 ### Push rules
 
