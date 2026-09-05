@@ -52,7 +52,7 @@ Example for the behavior of `unchanged`:
 | Alice Margatroid                     | Alice "Nickname" Margatroid      | Alice                        | Unchanged from Alice "Nickname" Margatroid, because `displayname` in room membership is different from displayname in global profile |
 | Alice Margatroid                     | Alice Margatroid                 | Alice                        | Changed to Alice, because `displayname` in room membership is identical to `displayname` in global profile                           |
 
-Additionally, a new `propagate_to` query parameter is introduced on on `PUT /_matrix/client/v3/profile/{userId}`
+Additionally, a new `propagate_to` query parameter is introduced on `PUT /_matrix/client/v3/profile/{userId}`
 ([MSC4437](https://github.com/matrix-org/matrix-spec-proposals/pull/4437)). This query parameter has the same
 acceptable values and same behavior as the `propagate_to` query parameter on the `PUT
 /_matrix/client/v3/profile/{userId}/{keyName}` endpoint, with the following caveats:
