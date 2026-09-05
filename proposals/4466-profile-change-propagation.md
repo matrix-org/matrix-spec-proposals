@@ -11,7 +11,7 @@ This proposal describes a simple method for clients to control how the server se
 events. Clients may ask the server to suppress the events entirely and manage updating the user's membership events
 manually. Alternatively, they may ask the server to only send the events to rooms where the user has not overridden
 their `displayname` and `avatar_url`. This functionality is provided both as a convenience for client developers and to
-improve the reliability and lessen the possible the bandwidth impact of this common use case, which would otherwise
+improve the reliability and lessen the bandwidth impact of this common use case, which would otherwise
 require clients to manually send potentially hundreds of state events at once.
 
 This proposal also clarifies what keys the server should preserve when sending these membership events.
