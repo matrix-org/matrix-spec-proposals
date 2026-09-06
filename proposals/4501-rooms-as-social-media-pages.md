@@ -32,6 +32,31 @@ client can build a social media experience on top of:
   for a real post, so that the ecosystem doesn't have to flag-day cut over and break interoperability
   with clients that haven't adopted this MSC yet.
 
+## Table of contents
+
+- [Proposal](#proposal)
+  - [Profile rooms](#profile-rooms)
+  - [Profile/Group discoverability](#profilegroup-discoverability)
+  - [Following](#following)
+  - [Group rooms](#group-rooms)
+  - [Posts](#posts)
+  - [Cross-room post references](#cross-room-post-references)
+    - [Quote Posts](#quote-posts)
+    - [Reposts](#reposts)
+    - [Cross-posted reply](#cross-posted-reply)
+  - [Liking](#liking)
+  - [Repost counts](#repost-counts)
+  - [Feeds](#feeds)
+  - [Handling `m.room.message` in social rooms](#handling-mroommessage-in-social-rooms)
+    - [Using a separate m.room.message body for social clients](#using-a-separate-mroommessage-body-for-social-clients)
+    - [Reposting with inline content](#reposting-with-inline-content)
+- [Potential issues](#potential-issues)
+- [Alternatives](#alternatives)
+- [Comparison to MSC3639](#comparison-to-msc3639)
+- [Security considerations](#security-considerations)
+- [Unstable prefix](#unstable-prefix)
+- [Dependencies](#dependencies)
+
 ## Proposal
 
 ### Profile rooms
@@ -156,7 +181,7 @@ service, a room alias convention, or a shared space to find it. It also gives a 
 
 A room being of type `m.social.profile` does **not** by itself mean it is "the" official profile of
 its creator. `m.social.profile_room` (set on the candidate user's own account) and
-`m.social.profile_user_id` (set on the room itself, see Profile rooms, above) are the authoritative
+`m.social.profile_user_id` (set on the room state, see Profile rooms, above) are the authoritative
 signals a client should use to decide "this is user X's current profile," ideally checked together
 (see Security considerations). A profile-typed room's `type` and `m.room.create` `creator` are only a
 weaker, best-effort fallback signal (useful for legacy clients, or while neither of these fields has
@@ -264,7 +289,7 @@ aggregation, bundling, or thread-rollup behavior, only the identifier-naming con
 - `content_inline` (boolean): set in place of `content`, when the outer event's own `content` is
   already an identical duplicate of the referenced post. Only meaningful for `rel_type: "m.social.repost"`;
   MUST NOT be set for `rel_type: "m.social.reply"`, whose outer `body` is always the replying user's own
-  text, never a duplicate of what they're replying to. See Client Backwards Compatibility, below.
+  text, never a duplicate of what they're replying to. See Reposting with inline content, below.
 - `displayname`: snapshot of the referenced post's author's display name at reference time, for nicer
   default rendering. Clients MUST fall back to the bare `sender` Matrix ID when it is absent, the same
   as Matrix already does anywhere else a display name is unset.
@@ -283,7 +308,7 @@ reaction counts, or detecting that it has since been edited or redacted, falling
 copy when it isn't reachable, or to a bare placeholder linking to the event when no embedded copy was
 sent either.
 
-### Quote Posts
+#### Quote Posts
 
 A repost with the reposting user's own added commentary in the *outer* post's `body`, with the quoted
 post held entirely inside `m.social.relates_to`. Uses `rel_type: "m.social.repost"`.
@@ -318,7 +343,7 @@ Also known as:
 }
 ```
 
-### Reposts
+#### Reposts
 
 A repost with no added commentary. Also uses `rel_type: "m.social.repost"`, the same as a quote-post;
 the only difference is what the outer `body` contains.
@@ -384,7 +409,7 @@ original author (`relates_to`'s `sender`/`displayname`).
 No new event type is needed to distinguish a plain repost from a quote-post, avoiding near-identical
 event types for what is fundamentally one relationship.
 
-### Cross-posted reply
+#### Cross-posted reply
 
 It's common on social media for a reply someone makes in a thread to also show up on their own profile,
 so followers see it without needing to find the thread it was posted in. This is what `rel_type:
@@ -431,29 +456,96 @@ visibility, not the real in-thread reply, so clients MUST NOT rely on it for thr
 reaction counts, or anything else that depends on the actual in-room relation; that still comes from
 the genuine `m.thread`-related event in the room the reply was sent in.
 
-### Client Backwards Compatibility
+### Liking
 
-Because Phase 1 (and any client that never adopts this proposal at all, see Handling `m.room.message`
-in social rooms, below) relies on plain `m.room.message` for posts, and because profile/group rooms are
-joinable by any Matrix client whether or not it understands this proposal, a post needs to render
-sensibly in a non-compliant client's ordinary room timeline, not just in a compliant social client's
-feed. This section covers the parts of this proposal that exist purely to keep `m.room.message` events
-looking correct there, as distinct from the rest of this proposal, which exists to make a *compliant*
-client's rendering better.
+Posts can be reacted to with any `m.reaction` event, the same as messages in any other Matrix room
+today. This proposal does not define a new event type for "liking" a post. Instead, clients SHOULD
+treat an `m.reaction` whose `key` is "👍" as a like: showing it in a dedicated like count/button rather
+than (or in addition to) the room's normal reaction display, incrementing a "like" affordance when the
+current user has sent one, and so on.
 
-**`m.social.body` and `m.social.formatted_body`** are two new, optional content fields, usable alongside
-the ordinary `body`/`formatted_body` on any post:
+Also known as:
+
+- **Favorite**/**Favourite**: old Twitter (pre-2015), and still Mastodon/Pleroma and other
+  ActivityPub/Fediverse software today
+- **Heart**/**Hearting**: informal name for the same action on Instagram, Twitter, and Tumblr
+- **Thumbs up**: Slack, GitHub, and Facebook's own Reactions bar
+
+### Repost counts
+
+When sending a post with `m.social.relates_to` of `rel_type: "m.social.repost"` (a quote-post or a
+plain repost, in either form described under Reposts, above), clients SHOULD (but are not required to)
+additionally send an `m.reaction` with `key: "🔁"` annotating the referenced event. This is RECOMMENDED,
+not mandatory, but it lets any client compute a repost count for a post using the same
+reaction-aggregation mechanism it already needs for likes, without waiting for every viewing client to
+understand `m.social.relates_to` itself, mirroring how a 👍 `m.reaction` is treated as a like (see
+Liking, above). This is only possible where the reposting user has permission to react in the referenced
+event's room; where they don't, the reaction is simply not sent and the count isn't incremented from
+that repost.
+
+### Feeds
+
+Constructing a "feed" is a client-side behavior, not a new room or event type. A client builds a
+user's feed by walking every room the user has joined that is of type `m.social.profile` or
+`m.social.group`, and merging their `m.social.post` events (and `m.room.message` events, see Handling
+`m.room.message` in social rooms, below) into a single timeline sorted by timestamp.
+
+Clients MAY additionally let a user opt in to including other, non-social-typed rooms in their feed,
+for cases where a room has organically become a source of "posts" a user wants to follow without
+formally reclassifying it. This is a client-local preference, not a protocol-level concept; this
+proposal does not define a state or account data event for it, leaving it to individual client
+implementations (which may already have their own account-data-backed settings sync).
+
+### Handling `m.room.message` in social rooms
+
+`m.social.post` will not be supported by every Matrix client immediately, and profile/group rooms are
+ordinary rooms that any Matrix client, compliant with this MSC or not, can already join and post
+`m.room.message` events into. To preserve interoperability with non-compliant clients during rollout,
+this proposal defines three phases for how a compliant client should treat `m.room.message` events
+found in `m.social.profile`/`m.social.group` rooms:
+
+- **Phase 1 (initial rollout).** Compliant clients render `m.room.message` and `m.social.post`
+  identically in the feed. When composing a post, clients default to sending `m.room.message`, with an
+  option to send `m.social.post` instead. This maximizes compatibility: any existing Matrix client,
+  compliant or not, can already fully participate in a profile/group room's content as ordinary
+  messages, while the new type is introduced.
+- **Phase 2 (majority adoption).** Once a majority of active Matrix users report using at least one
+  MSC4501-compliant client, social clients should switch their default posting behavior to send
+  `m.social.post`, with an option to fall back to `m.room.message`. Rendering in the feed is unchanged
+  from Phase 1; both event types are still shown identically. (This proposal does not define how
+  "majority of active users" is measured; that is left to the ecosystem and spec core team to judge,
+  the same way other adoption-gated transitions in Matrix already are.)
+- **Phase 3 (post-migration).** Once a majority of posts sent by compliant clients use `m.social.post`,
+  clients can safely experiment with no longer treating `m.room.message` as a post at all. A profile or group room 
+  could then use `m.room.message` for something other than posts, e.g. an internal chat thread alongside its
+  public posts, without that content leaking into anyone's feed.
+
+This phased approach is intended to avoid a hard cutover that would break interoperability for any user
+still on a non-compliant or Phase-1 client, at the cost of a longer transition period before
+`m.room.message` and `m.social.post` can be treated as meaningfully different things.
+
+Because Phase 1 (and any client that never adopts this proposal at all) relies on plain
+`m.room.message` for posts, and because profile/group rooms are joinable by any Matrix client whether
+or not it understands this proposal, a post needs to render sensibly in a non-compliant client's
+ordinary room timeline, not just in a compliant social client's feed. The following subsections cover
+the parts of this proposal that exist purely to keep `m.room.message` events looking correct there, as
+distinct from the rest of this proposal, which exists to make a *compliant* client's rendering better.
+
+#### Using a separate m.room.message body for social clients
+
+Two new, optional content fields, usable alongside the ordinary `body`/`formatted_body` on any
+`m.room.message` event:
 
 - `m.social.body` MUST only be set when `body` is also present.
 - `m.social.formatted_body` MUST only be set when `formatted_body` (and `format`) is also present.
 
 A compliant social client SHOULD render `m.social.body`/`m.social.formatted_body` in place of
-`body`/`formatted_body` when present. A non-compliant client, with no knowledge of this proposal, renders
+`body`/`formatted_body` when displaying it as a post. A non-compliant client, with no knowledge of this proposal, renders
 `body`/`formatted_body` exactly as it would for any other message, unaffected by these fields' presence.
 
 This exists because what a non-compliant client's ordinary room timeline needs to show, and what a
 compliant social client needs to show, can genuinely differ. A repost with the reposting user's own
-commentary (see Quote Posts, above) is the motivating case: a non-compliant client has no idea the event
+commentary (see Quote Posts, above) is the motivating case: A non-compliant client has no idea the event
 is a repost at all, so `body` needs to spell that out in full, the commentary followed by a "reposted
 so-and-so's post:" line and a quoted copy of the original, or the event looks like unexplained text
 sitting next to a bare permalink or attachment with no context. A compliant social client already
@@ -492,10 +584,12 @@ everyone else:
 has no non-compliant room timeline to accommodate; `body`/`formatted_body` can be used directly, with no
 need for a second, duplicate pair of fields.
 
-**Reposting with inline content** is an alternative to the permalink form (see Reposts, above), for
-implementations, such as a bridge mirroring reposts from another network, that already build one copy of
-the reposted content as the event's own `content` and would rather a non-compliant client render that
-content directly than a bare link. Set `content_inline: true` and omit `relates_to.content`:
+#### Reposting with inline content
+
+An alternative to the permalink form (see Reposts, above), for implementations, such as a bridge
+mirroring reposts from another network, that already build one copy of the reposted content as the
+event's own `content` and would rather a non-compliant client render that content directly than a bare
+link. Set `content_inline: true` and omit `relates_to.content`:
 
 ```json
 {
@@ -523,7 +617,7 @@ the `content` copy instead (Quote Posts, above).
 (`url`/`file`, `info`, etc.) on the outer event are just as much a copy of the original post as `body`
 is, so a compliant client rendering the duplicated content SHOULD render the whole thing, attachment
 included, not only extract text from it. And where `m.social.body`/`m.social.formatted_body` (see
-Client Backwards Compatibility, above) are also present on the outer event, they, not the raw
+Using a separate m.room.message body for social clients, above) are also present on the outer event, they, not the raw
 `body`/`formatted_body`, are what a compliant client should treat as the duplicated content's actual
 text, the same way it already prefers them over `body`/`formatted_body` for any other post. `body`
 still carries whatever a non-compliant client's timeline needs, which for a repost is the fuller,
@@ -565,74 +659,6 @@ the outer event carries the same image (`url`/`info`) and, via `m.social.body`, 
 `body`/`formatted_body` carry the fuller "reposted Bob's post:" version for a non-compliant client's
 timeline; a compliant client renders the image with just "Look at this cat!" as its caption, using
 `m.social.body` in place of `body`, the same as it would for any other post carrying that field.
-
-### Liking
-
-Posts can be reacted to with any `m.reaction` event, the same as messages in any other Matrix room
-today. This proposal does not define a new event type for "liking" a post. Instead, clients SHOULD
-treat an `m.reaction` whose `key` is "👍" as a like: showing it in a dedicated like count/button rather
-than (or in addition to) the room's normal reaction display, incrementing a "like" affordance when the
-current user has sent one, and so on.
-
-Also known as:
-
-- **Favorite**/**Favourite**: old Twitter (pre-2015), and still Mastodon/Pleroma and other
-  ActivityPub/Fediverse software today
-- **Heart**/**Hearting**: informal name for the same action on Instagram, Twitter, and Tumblr
-- **Thumbs up**: Slack, GitHub, and Facebook's own Reactions bar
-
-### Repost counts
-
-When sending a post with `m.social.relates_to` of `rel_type: "m.social.repost"` (a quote-post or a
-plain repost, in either form described under Reposts, above), clients SHOULD (but are not required to)
-additionally send an `m.reaction` with `key: "🔁"` annotating the referenced event. This is RECOMMENDED,
-not mandatory, but it lets any client compute a repost count for a post using the same
-reaction-aggregation mechanism it already needs for likes, without waiting for every viewing client to
-understand `m.social.relates_to` itself, mirroring how a 👍 `m.reaction` is treated as a like (see
-Liking, above). This is only possible where the reposting user has permission to react in the referenced
-event's room; where they don't, the reaction is simply not sent and the count isn't incremented from
-that repost.
-
-### Feeds
-
-Constructing a "feed" is a client-side behavior, not a new room or event type. A client builds a
-user's feed by walking every room the user has joined that is of type `m.social.profile` or
-`m.social.group`, and merging their `m.social.post` events (see Phased rollout, below, for
-`m.room.message`) into a single timeline sorted by timestamp.
-
-Clients MAY additionally let a user opt in to including other, non-social-typed rooms in their feed,
-for cases where a room has organically become a source of "posts" a user wants to follow without
-formally reclassifying it. This is a client-local preference, not a protocol-level concept; this
-proposal does not define a state or account data event for it, leaving it to individual client
-implementations (which may already have their own account-data-backed settings sync).
-
-### Handling `m.room.message` in social rooms
-
-`m.social.post` will not be supported by every Matrix client immediately, and profile/group rooms are
-ordinary rooms that any Matrix client, compliant with this MSC or not, can already join and post
-`m.room.message` events into. To preserve interoperability with non-compliant clients during rollout,
-this proposal defines three phases for how a compliant client should treat `m.room.message` events
-found in `m.social.profile`/`m.social.group` rooms:
-
-- **Phase 1 (initial rollout).** Compliant clients render `m.room.message` and `m.social.post`
-  identically in the feed. When composing a post, clients default to sending `m.room.message`, with an
-  option to send `m.social.post` instead. This maximizes compatibility: any existing Matrix client,
-  compliant or not, can already fully participate in a profile/group room's content as ordinary
-  messages, while the new type is introduced.
-- **Phase 2 (majority adoption).** Once a majority of active Matrix users report using at least one
-  MSC4501-compliant client, compliant clients should switch their default posting behavior to send
-  `m.social.post`, with an option to fall back to `m.room.message`. Rendering in the feed is unchanged
-  from Phase 1; both event types are still shown identically. (This proposal does not define how
-  "majority of active users" is measured; that is left to the ecosystem and spec core team to judge,
-  the same way other adoption-gated transitions in Matrix already are.)
-- **Phase 3 (post-migration).** Once a majority of posts sent by compliant clients use `m.social.post`,
-  clients are free to stop treating `m.room.message` as a post at all. A profile or group room could
-  then use `m.room.message` for something other than posts, e.g. an internal chat thread alongside its
-  public posts, without that content leaking into anyone's feed.
-
-This phased approach is intended to avoid a hard cutover that would break interoperability for any user
-still on a non-compliant or Phase-1 client, at the cost of a longer transition period before
-`m.room.message` and `m.social.post` can be treated as meaningfully different things.
 
 ## Potential issues
 
