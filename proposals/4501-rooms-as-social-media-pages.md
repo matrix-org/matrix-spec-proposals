@@ -47,7 +47,8 @@ client can build a social media experience on top of:
   - [Liking](#liking)
   - [Repost counts](#repost-counts)
   - [Feeds](#feeds)
-  - [Handling `m.room.message` in social rooms](#handling-mroommessage-in-social-rooms)
+  - [Client Backwards Compatibility](#client-backwards-compatibility)
+    - [Handling `m.room.message` in social rooms](#handling-mroommessage-in-social-rooms)
     - [Using a separate m.room.message body for social clients](#using-a-separate-mroommessage-body-for-social-clients)
     - [Reposting with inline content](#reposting-with-inline-content)
 - [Potential issues](#potential-issues)
@@ -496,7 +497,16 @@ formally reclassifying it. This is a client-local preference, not a protocol-lev
 proposal does not define a state or account data event for it, leaving it to individual client
 implementations (which may already have their own account-data-backed settings sync).
 
-### Handling `m.room.message` in social rooms
+### Client Backwards Compatibility
+
+Because Phase 1 (and any client that never adopts this proposal at all) relies on plain
+`m.room.message` for posts, and because profile/group rooms are joinable by any Matrix client whether
+or not it understands this proposal, a post needs to render sensibly in a non-compliant client's
+ordinary room timeline, not just in a compliant social client's feed. The following subsections cover
+the parts of this proposal that exist purely to keep `m.room.message` events looking correct there, as
+distinct from the rest of this proposal, which exists to make a *compliant* client's rendering better.
+
+#### Handling `m.room.message` in social rooms
 
 `m.social.post` will not be supported by every Matrix client immediately, and profile/group rooms are
 ordinary rooms that any Matrix client, compliant with this MSC or not, can already join and post
@@ -523,13 +533,6 @@ found in `m.social.profile`/`m.social.group` rooms:
 This phased approach is intended to avoid a hard cutover that would break interoperability for any user
 still on a non-compliant or Phase-1 client, at the cost of a longer transition period before
 `m.room.message` and `m.social.post` can be treated as meaningfully different things.
-
-Because Phase 1 (and any client that never adopts this proposal at all) relies on plain
-`m.room.message` for posts, and because profile/group rooms are joinable by any Matrix client whether
-or not it understands this proposal, a post needs to render sensibly in a non-compliant client's
-ordinary room timeline, not just in a compliant social client's feed. The following subsections cover
-the parts of this proposal that exist purely to keep `m.room.message` events looking correct there, as
-distinct from the rest of this proposal, which exists to make a *compliant* client's rendering better.
 
 #### Using a separate m.room.message body for social clients
 
@@ -593,7 +596,7 @@ link. Set `content_inline: true` and omit `relates_to.content`:
 
 ```json
 {
-  "type": "m.social.post",
+  "type": "m.room.message",
   "content": {
     "msgtype": "m.text",
     "body": "This is the original post being reposted",
