@@ -40,7 +40,7 @@ connection. There are two distinct cases:
 
 - The extension is enabled for the first time on the connection, having been absent or disabled on
   every previous request. Clients may choose to defer an extension deliberately to allow the initial
-  request to complete faster.
+  request to complete faster (or if a client newly supports an extension).
 - The extension is re-enabled having previously been enabled and then disabled on the same
   connection. The client has whatever data it received before disabling the extension, but that data
   is stale by an unknown amount.
