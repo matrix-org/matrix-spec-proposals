@@ -1,4 +1,4 @@
-# MSC0000: `200` with an omitted field as a valid response for unset `displayname` and `avatar_url`
+# MSC4537: `200` with an omitted field as a valid response for unset `displayname` and `avatar_url`
 
 [MSC4133] extended the profile API beyond `displayname` and `avatar_url`, merging the per-field endpoints into a single
 [`GET /_matrix/client/v3/profile/{userId}/{keyName}`] that works for any profile field. In doing so, it also made an
