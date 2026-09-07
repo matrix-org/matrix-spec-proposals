@@ -63,7 +63,7 @@ they do not recognise (rather than rejecting the request), so that newer clients
 with older servers.
 
 Since an ignored extension is indistinguishable from an enabled extension that has no data to send,
-extension MSCs MUST define both an unstable and a stable feature flag in
+extension MSCs SHOULD define both an unstable and a stable feature flag in
 [`/_matrix/client/versions`](https://spec.matrix.org/latest/client-server-api/#get_matrixclientversions)
 `unstable_features`, so that clients can detect support for an individual extension. Per convention
 the stable flag is the unstable flag with `.stable` appended. Servers SHOULD advertise the stable
