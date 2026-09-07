@@ -178,11 +178,10 @@ creation though.
 
 ### Metadata leakage through intent
 
-Some users might not be comfortable with disclosing whether their camera is on or off via
-the `intent` property on `m.rtc.member` events. Given that any room member can join the
-session, this information is effectively obtainable by all room members anyway (though the
-join would at least be a visible choice). In either case, users can opt not to fill `intent`
-given that it is an optional property.
+The `intent` property on `m.rtc.member` events is visible to all room members, not just
+those joined to the MatrixRTC session. Some user's might not be comfortable with disclosing
+whether their camera is on or off outside the session though. To mitigate this, users can opt
+not to fill `intent` given that it is an optional property.
 
 ### Consent to share media
 
