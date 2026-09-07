@@ -110,7 +110,7 @@ apply where profile look-up is allowed.
   - the removal of the `200`-omission form goes undiscussed
 - **2025-06-26** — [Matrix v1.15] is released
   - the wording of both representations is still unchanged since [r0.1.0]
-- **2025-08-13** — Ruma implements the [MSC4133] endpoint ([`9ede1ac9`][ruma-2025])
+- **2025-08-13** — Ruma implements the [MSC4133] endpoint ([commit][ruma-2025])
   - its server-side implementation answers `200 {}` when the field is unset ([source][ruma-server])
 - **2025-09-17** — [Matrix 1.16][v1.16-keyname] is released
   - the `404` is now the only valid representation of an unset field
