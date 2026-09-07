@@ -2,12 +2,12 @@
 
 [MSC4133] extended the profile API beyond `displayname` and `avatar_url`, merging the per-field endpoints into a single
 [`GET /_matrix/client/v3/profile/{userId}/{keyName}`] that works for any profile field. In doing so, it also made an
-unintended breaking change: since Matrix 1.16, fetching an unset `displayname` or `avatar_url` must return a `404`
+unintended breaking change: since Matrix 1.16, fetching an **unset** `displayname` or `avatar_url` must return a `404`
 error, where a `200` response with the field omitted had also been valid since the first version of the specification.
 
 This MSC proposes to go back to the behaviour specified before Matrix 1.16, returning the client `v3` API to a state
 where it carries no breaking change: both `200` with the field omitted and the `404` are valid representations of an
-unset field, and clients treat them identically.
+**unset** field, and clients treat them identically.
 
 ## Proposal
 
@@ -73,14 +73,6 @@ to a requester is already governed by the `403` introduced by [MSC4170]: a serve
 information answers `403` before the question of representing an unset field arises. The two permitted responses only
 apply where profile look-up is allowed.
 
-## Unstable prefix
-
-None.
-
-## Dependencies
-
-None.
-
 ## History
 
 - **2015-12** — the first stable release of the client-server API ([r0.0.0])
@@ -105,7 +97,7 @@ None.
   - it is not resolved as a compatibility question
   - the accepted proposal restates only the `404`, describing it as "unchanged, just expanded to apply to arbitrary
     keys"
-- **2024-09-14** — conduwuit implements [MSC4133] ([`d75aebc3`][conduwuit-impl])
+- **2024-09-14** — Conduwuit implements [MSC4133] ([`d75aebc3`][conduwuit-impl])
   - the new generic key route returns `404` for missing custom keys
   - `displayname` and `avatar_url` keep their dedicated routes answering `200 {}`
 - **2025-01-21** — Synapse implements [MSC4133] ([synapse#17488], released in Synapse 1.123.0)
@@ -118,29 +110,46 @@ None.
   - the removal of the `200`-omission form goes undiscussed
 - **2025-06-26** — [Matrix v1.15] is released
   - the wording of both representations is still unchanged since [r0.1.0]
-- **2025-08-13** — ruma implements the [MSC4133] endpoint ([`9ede1ac9`][ruma-2025])
+- **2025-08-13** — Ruma implements the [MSC4133] endpoint ([`9ede1ac9`][ruma-2025])
   - its server-side implementation answers `200 {}` when the field is unset ([source][ruma-server])
 - **2025-09-17** — [Matrix 1.16][v1.16-keyname] is released
   - the `404` is now the only valid representation of an unset field
 - **2026-02-10** — Synapse's `null` breaks Element X
   - reported as [ruma#2360], worked around in [matrix-rust-sdk#6148]
   - the inconsistencies are reported as [synapse#19466]
-- **2026-04-28** — Continuwuity unifies its legacy fields onto the [MSC4133] code path ([`1bf6d2a1`][continuwuity-impl])
+- **2026-04-28** — Continuwuity unifies its legacy fields onto the [MSC4133] code path
+  ([`1bf6d2a1`][continuwuity-impl])
   - it chooses `200 {}` for all fields
 - **2026-06-29** — Tuwunel performs the same unification ([`fb5a4ea9`][tuwunel-impl])
   - it chooses the `404` for all fields
   - it becomes the first homeserver to return `404` for an unset legacy field
-- **2026-08-31** — Tuwunel's `404` breaks mautrix bridges ([mautrix/go#563])
+- **2026-08-31** — Tuwunel's `404` breaks Mautrix bridges ([mautrix/go#563])
   - their avatar update flow treats the `404` as a fatal error
+- **2026-09-01** — Tuwunel reverts to `200 {}` for unset `displayname` and `avatar_url` ([`130f63da`][tuwunel-revert])
+  - it keeps the `404` for other fields, matching Conduwuit
+  - the Mautrix fix is closed unmerged, its maintainer expecting the specification to change instead
+  - no homeserver returns `404` for an unset legacy field any more
 
-The Conduit family tree summarises the divergence:
+<details>
+<summary>The Conduit family tree summarises the divergence</summary>
 
 ```
-Conduit ······································ 200 {}
-└── conduwuit (2024-09-14) ··················· 200 {} for displayname/avatar_url, 404 for other fields
-    ├── Continuwuity (2026-04-28) ············ 200 {} for all fields
-    └── Tuwunel (2026-06-29) ················· 404 for all fields
+Conduit ····························· 200 {}
+└── Conduwuit (2024-09-14) ············ 200 {} for displayname/avatar_url, 404 for other fields
+    ├── Continuwuity (2026-04-28) ····· 200 {} for all fields
+    └── Tuwunel (2026-06-29) ·········· 404 for all fields
+        └── (2026-09-01) ·············· 200 {} for displayname/avatar_url, 404 for other fields
 ```
+
+</details>
+
+## Unstable prefix
+
+None: this proposal only affects HTTP status codes and response bodies of an existing endpoint.
+
+## Dependencies
+
+None.
 
 [MSC4133]: https://github.com/matrix-org/matrix-spec-proposals/pull/4133
 [MSC4170]: https://github.com/matrix-org/matrix-spec-proposals/pull/4170
@@ -168,4 +177,5 @@ Conduit ····································
 [synapse#19466]: https://github.com/element-hq/synapse/issues/19466
 [continuwuity-impl]: https://github.com/continuwuity/continuwuity/commit/1bf6d2a1
 [tuwunel-impl]: https://github.com/matrix-construct/tuwunel/commit/fb5a4ea96
+[tuwunel-revert]: https://github.com/matrix-construct/tuwunel/commit/130f63da5b
 [matrix-rust-sdk#6148]: https://github.com/matrix-org/matrix-rust-sdk/pull/6148
