@@ -567,6 +567,9 @@ events directly. Including the device ID in the member event's `content` isn't s
 the absence of event authentication, a malicious homeserver could just forge member events to capture
 keys. A future MSC may introduce another mechanism that lends itself better to unencrypted rooms.
 
+Note that changing the room encryption settings can, thus, invalidate existing `m.rtc.slot` events and
+require them to be updated with an appropriate `encryption` object.
+
 ## Potential issues
 
 ### Shared state
