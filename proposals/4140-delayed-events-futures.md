@@ -354,6 +354,21 @@ then a client would fail to schedule any action that requires multiple delayed e
 Thus, clients should consult the [delayed event limits capability](#delayed-event-limits-as-a-capability)
 before attempting to use delayed events in a manner that the server would not allow.
 
+### Account deactivation
+
+A [deactivated] user's scheduled events serve no purpose once that account can no longer participate in
+the room. Retaining these events and sending them could even be harmful since account deactivation is often
+a response to abuse. Hence, when an account is deactivated, the homeserver MUST cancel that account's delayed
+events which have not yet been added to a room's event DAG. These cancelled records MAY be removed immediately,
+including their stored event content, as an exception to the usual finalised-record retention policy.
+
+In contrast to this, no concrete behaviour is prescribed for delayed events after [account suspension]
+because *all* behaviour for suspension is currently an implementation detail as per the spec. A future
+proposal may follow up on this.
+
+[deactivated]: https://spec.matrix.org/v1.19/client-server-api/#account-deactivation
+[account suspension]: https://spec.matrix.org/v1.19/client-server-api/#account-suspension
+
 ## Alternatives
 
 ### Delegating scheduled delayed events
