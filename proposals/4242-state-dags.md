@@ -407,7 +407,13 @@ request parameters. For example, given these graphs:
   \ / |
    D  E
 ```
-Walking with `latest_events={D,E}` returns `[B,C]`.
+Walking with `latest_events={D,E}` returns `[B,C]` NOT `[C,B]`.
+
+Finally, both `earliest_events` and `latest_events` have an independent size limit of 100 elements when
+`state_dag = true`. An HTTP 400 error is returned if a server attempts to set more elements than this.
+Both of these fields are derived from a room's forward extremities, just at different points in time.
+The expected number of forward extremities in a room is much lower than this limit. If a room were to
+genuinely have so many entries, servers would need to break up their `/get_missing_events` requests.
 
 ##### `/send_join`
 
