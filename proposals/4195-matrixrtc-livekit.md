@@ -477,7 +477,7 @@ sequenceDiagram
     deactivate H
 ```
 
-Clients delegate delayed leave events to their homeserver by `POST`ing to a new authenticated endpoint
+Clients delegate delayed leave events to their homeserver by `POST`ing to a new authenticated, rate limited, and guest-accessible endpoint
 `/_matrix/client/v1/rtc/livekit/delegate_delayed_leave`. Servers supporting `m.livekit`
 MUST support this endpoint too. The body of the request contains a JSON
 object with the following schema:
