@@ -1,14 +1,14 @@
 # MSC4196: Voice and video calling application for MatrixRTC
 
 [MSC4143] introduces MatrixRTC as an extensible framework for real-time communication in Matrix.
-MatrixRTC uses so called transports to transfer the RTC data between RTC members. Transports are
-then used in what MatrixRTC calls applications to build user experiences for concrete use cases.
+MatrixRTC separates the transport of RTC data between members from the applications that use this
+data to build user experiences. This proposal introduces such an application for the concrete use
+case of voice and video calling.
 
-This proposal introduces a MatrixRTC application for voice and video calling that is able to power
-a variety of calling use cases including but not limited to classical 1-on-1 and group calling
-as well as Discord-style [Voice Channels] (which, previously, [MSC3417] tried to introdcue based
-on the pre-MatrixRTC group calling mechanism from [MSC3401]). The application is compatible with
-the [LiveKit] transport introduced in [MSC4195].
+The application is able to power a variety of calling use cases including but not limited to
+classical 1-on-1 and group calling as well as Discord-style [Voice Channels] (which, previously,
+[MSC3417] tried to introdcue based on the pre-MatrixRTC group calling mechanism from [MSC3401]).
+The application is compatible with the [LiveKit] transport introduced in [MSC4195].
 
 Note that call ringing and notifications are not in scope for this proposal. These are covered
 in [MSC4075] and [MSC4310].
