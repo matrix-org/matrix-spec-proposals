@@ -183,7 +183,8 @@ Servers can [generate] the tokens by using one of the LiveKit SDKs and inputting
 including the LiveKit room name and the LiveKit participant identifier. The procedure also requires
 secrets agreed upon between the homeserver and the respective SFU. This means homeservers can
 only generate tokens for their own SFUs. To allow clients to request tokens for both local and
-remote SFUs, a new pair of authenticated Client-Server and Server-Server endpoints is introduced:
+remote SFUs, a new pair of authenticated Client-Server and Server-Server endpoints is introduced.
+These endpoints MUST be implemented by servers supporting the `m.livekit` transport. They are:
 
 - `POST /_matrix/client/v1/rtc/livekit/get_token`
 - `POST /_matrix/federation/v1/rtc/livekit/get_token`
