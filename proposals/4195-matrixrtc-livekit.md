@@ -46,7 +46,7 @@ subscribe │                         discover SFU │          │ publish
 
 ### Discovering and announcing transports
 
-A new transport type `m.livekit` is introduced. Homeservers that support this transport announce it
+A new transport type `m.livekit` is introduced, which homeservers MAY support. Homeservers that support this transport announce it
 to clients by including a dedicated object in the response of the `/_matrix/client/v1/rtc/transports`
 endpoint from [MSC4143]. The object has the following schema:
 
