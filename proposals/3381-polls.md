@@ -456,6 +456,10 @@ Examples of unstable events are:
 
 ### Implementation considerations
 
+**Changed in MSC4460**: The following no longer applies, but is kept for posterity.
+Clients can use stable event types in all room versions now. See [MSC4460](./4460-extensible-events-unstable.md)
+for details.
+
 Client authors should note that as a feature using the Extensible Events system,
 usage of the *stable* event types in regular room versions is not permitted. As
 of writing (December 2023), Extensible Events does not have a *stable* room version
