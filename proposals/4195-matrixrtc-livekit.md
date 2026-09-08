@@ -189,7 +189,8 @@ These endpoints MUST be implemented by servers supporting the `m.livekit` transp
 - `POST /_matrix/client/v1/rtc/livekit/get_token`
 - `POST /_matrix/federation/v1/rtc/livekit/get_token`
 
-The server SHOULD apply rate limiting to both of these endpoints.
+The server SHOULD apply rate limiting to both of these endpoints. Guest access to the endpoints is
+allowed so that guest users can participate in MatrixRTC sessions using the LiveKit transport.
 
 To request a token, a client `POST`s to the `/get_token` client endpoint including in the body a JSON object with the
 following schema:
