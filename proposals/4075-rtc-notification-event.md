@@ -270,11 +270,16 @@ This is already the case for other events and push rules.
 ### Lack of application-specific notifications
 
 This proposal deliberately only covers generic session invites and notifications. Some MatrixRTC
-applications might have a need for application specific notification mechanisms though. For instance,
-a calling application might want to provide hints for the ringing behaviour in the invite. This
-could easily be added on top of this proposal by allowing application specific metadata in a dedicated
-`application` object inside of `m.rtc.invite` events. Doing so is left as a task for a future proposal
-which can use this MSC as a foundation.
+applications might have a need for application specific notification mechanisms though.
+
+For instance, when issuing invites to the `m.call` application from [MSC4196], it could be helpful
+to provide a hint for the intent of the call (audio or video). This would spare the invitee from
+having to look up the `intent` properties of the current `m.rtc.member` events. Additionally, it
+would also make it possible to convey the intent when no joined members exist yet.
+
+Extensions like this could be added on top of this proposal, for instance, by allowing application
+specific metadata in a dedicated `application` object inside of `m.rtc.invite` events. Doing so is
+left as a task for a future proposal which can use this MSC as a foundation.
 
 ### Lack of feedback
 
