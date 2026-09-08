@@ -729,7 +729,7 @@ send `m.rtc.member` events, a malicious server could fake the `user_id` when req
 token over federation. Given this and the limitations around denying side stepping `m.rtc.member`
 events, a power levels check wouldn't lead to a significant improvement.
 
-[includes]: https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#unmappable-rtc-streams
+[includes]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143/changes#diff-dc6525cff19aa3db827a41713f35cab1894558074be60455a55e1126a21a2b36R703
 
 ### Error handling and information disclosure
 
