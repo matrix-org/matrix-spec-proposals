@@ -477,7 +477,8 @@ sequenceDiagram
 ```
 
 Clients delegate delayed leave events to their homeserver by `POST`ing to a new authenticated endpoint
-`/_matrix/client/v1/rtc/livekit/delegate_delayed_leave`. The body of the request contains a JSON
+`/_matrix/client/v1/rtc/livekit/delegate_delayed_leave`. Servers supporting `m.livekit`
+MUST support this endpoint too. The body of the request contains a JSON
 object with the following schema:
 
 - `url` (required, string): The WebSocket URL of the LiveKit SFU that the user has connected to.
