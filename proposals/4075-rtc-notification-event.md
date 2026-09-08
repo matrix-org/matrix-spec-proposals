@@ -53,8 +53,8 @@ The schema of `m.rtc.decline` is as follows:
 
 - `m.relates_to` (required, object): An `m.reference` relation to the `m.rtc.invite` event which is
   being declined.
-- `sticky_key` (required, string): The events sticky key as per [MSC4354]. MUST be equal to the
-  event ID of the event that is being declined.
+- `sticky_key` (required, string): The event's sticky key as per [MSC4354]. MUST be equal to the
+  event ID of the `m.rtc.invite` event that is being declined.
 
 ```json5
 {
