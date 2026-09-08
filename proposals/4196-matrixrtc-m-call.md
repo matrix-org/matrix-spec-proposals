@@ -28,7 +28,7 @@ competing slots being opened for the same call when room administrators race.
 
 ### Slot event
 
-The `m.call` application instance MUST use an application-specific slot ID of `room`. The full
+The `m.call` application instance MUST use an application-specific slot ID literal of `room`. The full
 slot ID as per [MSC4143], thus, becomes:
 
 ```
