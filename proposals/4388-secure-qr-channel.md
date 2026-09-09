@@ -106,16 +106,15 @@ the payload to contain a list of those messages rather than overwriting it repea
 
 ### The send mechanism
 
-Every send (`PUT`) request MUST include a `sequence_token` value whose value is the `sequence_token` from the last `GET`
-response seen by the requester. (The initiating device may also use the `sequence_token` supplied in the initial `POST` response
-to immediately update the payload.) Sends will succeed only if the supplied `sequence_token` matches the server's current
-revision of the payload. This prevents concurrent writes to the payload.
+Every send (`PUT`) request carries the `sequence_token` of the payload that the sending client last saw - from the last
+`GET` response it received, or, for the initiating device, from the initial `POST` response - and the server accepts the
+send only if that token still matches the current revision of the payload. This prevents concurrent writes, and means
+that a client which has fallen behind must first `GET` the current payload before it can send.
 
-To make sends idempotent (so that clients can safely retry a request whose response was lost), the server MUST also
-accept a send request whose `sequence_token` does not match the current revision if the supplied `data` is byte-for-byte
-identical to the current payload. In that case the server MUST NOT advance the payload or generate a new
-`sequence_token`, and MUST return the current `sequence_token` in the response, as if the client's previous (successful)
-request were being acknowledged again. Any other mismatch of `sequence_token` MUST be rejected as a concurrent write.
+Each send also carries a client-generated transaction ID in its path, following the same convention as
+[transaction identifiers] elsewhere in the Client-Server API, which the server uses to make retries idempotent so that
+a client can safely repeat a send whose response was lost. Both mechanisms are specified in detail in the definition of
+the `PUT` endpoint below.
 
 n.b. Once a new payload has been sent there is no mechanism to retrieve previous payloads.
 
@@ -230,10 +229,17 @@ include:
 
 The expiry time is detailed [below](#maximum-duration-of-a-rendezvous).
 
-### `PUT /_matrix/client/v1/rendezvous/{rendezvousId}` - Send a payload to an existing rendezvous
+### `PUT /_matrix/client/v1/rendezvous/{rendezvousId}/{txnId}` - Send a payload to an existing rendezvous
 
 Rate-limited: Yes
 Requires authentication: No
+
+Path parameters:
+
+|Parameter|Type||
+|-|-|-|
+|`rendezvousId`|required `string`|The rendezvous session to send the payload to.|
+|`txnId`|required `string`|A client-generated transaction ID which identifies this request for the purposes of idempotency. Must comply with the [opaque identifier grammar]|
 
 Request body is `application/json` with contents:
 
@@ -245,7 +251,7 @@ Request body is `application/json` with contents:
 For example:
 
 ```http
-PUT /_matrix/client/v1/rendezvous/abcdEFG12345 HTTP/1.1
+PUT /_matrix/client/v1/rendezvous/abcdEFG12345/mLDVAsAqLnzUonKnmnzUyC7B HTTP/1.1
 Content-Type: application/json
 
 {
@@ -257,14 +263,24 @@ Content-Type: application/json
 The server MUST perform a compare-and-swap operation by checking that the `sequence_token` matches
 the current sequence token for the session. If the `sequence_token` does not match then the `data` MUST not be
 accepted and the `M_CONCURRENT_WRITE` error is returned. On receipt of a `M_CONCURRENT_WRITE` the client can do a `GET`
-to fetch the latest data and `sequence_token` and then retry.
+to fetch the latest data and `sequence_token` and then send again with a new `{txnId}`.
 
 To support idempotent retries (e.g. when a client did not receive the response to a previous `PUT` and so does not know
-whether it succeeded), the server MUST treat the request as successful - without advancing the payload or issuing a new
-`sequence_token` - if the supplied `sequence_token` does not match the current sequence token but the supplied `data`
-is byte-for-byte identical to the current payload. In this case the server returns `200 OK` with the current
-`sequence_token`, rather than `M_CONCURRENT_WRITE`. This allows a client to safely repeat the same `PUT` request without
+whether it succeeded), the server MUST record the response to each `PUT` against the `{txnId}` used, for at least the
+lifetime of the rendezvous session. If it receives a `PUT` with a `{txnId}` it has already seen for that rendezvous
+session then it MUST NOT re-evaluate the compare-and-swap or advance the payload, and MUST instead return the recorded
+response, including the same `sequence_token`. This allows a client to safely repeat the same `PUT` request without
 first issuing a `GET`.
+
+A `{txnId}` therefore identifies a single send attempt rather than a payload: a client which changes the `data` or
+`sequence_token` it is sending MUST use a new `{txnId}`, and a client which re-sends with a previously used `{txnId}`
+will receive the earlier response - which may be a `M_CONCURRENT_WRITE` - without the new request being considered.
+
+Unlike elsewhere in the Client-Server API, transaction IDs here are not scoped to a single device or access token: the
+rendezvous session is unauthenticated and shared between two devices, so a `{txnId}` is scoped to the rendezvous session
+as a whole. Clients MUST therefore generate transaction IDs that are unlikely to collide with those of the other
+device - for example a random value of at least 128 bits - rather than, say, a counter starting at zero. A server which
+saw a colliding transaction ID would replay the other device's response and silently discard this device's payload.
 
 HTTP response codes, and Matrix error codes:
 
@@ -379,7 +395,7 @@ sequenceDiagram
   end
 
   note over B: Device B sends a new payload
-  B->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456<br>{"sequence_token": "1", "data": "Hello from B"}
+  B->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456/txnB1<br>{"sequence_token": "1", "data": "Hello from B"}
   HS->>-B: 200 OK<br>{"sequence_token": "2"}
 
   Note over B: Device B starts polling for new payloads at the<br>rendezvous session using the new `sequence_token`
@@ -399,7 +415,7 @@ sequenceDiagram
   deactivate A
 
   note over A: Device A sends a new payload
-    A->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456<br>{"sequence_token": "2", "data": "Hello again from A"}
+    A->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456/txnA1<br>{"sequence_token": "2", "data": "Hello again from A"}
     HS->>-A: 200 OK<br>{"sequence_token": "3"}
 
   note over B: Device B then receives the new payload
@@ -418,11 +434,9 @@ The server MUST enforce a maximum `data` field size of 4096 bytes.
 
 #### `sequence_token` values
 
-A recommended implementation is a hash/digest of:
-
-- the rendezvous ID
-- a monotonic counter incremented on each successful write
-- the last `data` value written
+A recommended implementation is the decimal representation of a counter, scoped to the rendezvous session, which is
+incremented on each successful write. The `sequence_token` is only used to detect concurrent writes and to bind the
+secure channel messages to a particular revision of the payload, so it does not need to be unguessable.
 
 #### Maximum duration of a rendezvous
 
@@ -909,7 +923,7 @@ sequenceDiagram
     Z->>-S: 200 OK<br>{"sequence_token": "SEQ1", "expires_in_ms": 300000, "data": ""}
 
     note over S: 4) Device S creates context Context_DeviceS_Send and LoginInitiateMessage (sealed using sequence token SEQ1).<br>It sends LoginInitiateMessage via the rendezvous session
-    S->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "SEQ1", "data": "<LoginInitiateMessage>"}
+    S->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def/txnS1<br>{"sequence_token": "SEQ1", "data": "<LoginInitiateMessage>"}
     Z->>-S: 200 OK<br>{"sequence_token": "SEQ2"}
     deactivate S
 
@@ -922,7 +936,7 @@ sequenceDiagram
     note over G: Device G creates Context_DeviceG_Send
     note over G: Device G computes LoginOkMessage (sealed using sequence token SEQ2) and sends to the rendezvous session
 
-    G->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "SEQ2", "data": "<LoginOkMessage>"}
+    G->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def/txnG1<br>{"sequence_token": "SEQ2", "data": "<LoginOkMessage>"}
     Z->>-G: 200 OK<br>{"sequence_token": "SEQ3"}
     deactivate G
 
@@ -1167,3 +1181,4 @@ None.
 [base URL]: https://spec.matrix.org/v1.16/client-server-api/#getwell-knownmatrixclient
 [MSC4108]: https://github.com/matrix-org/matrix-spec-proposals/pull/4108
 [opaque identifier grammar]: https://spec.matrix.org/v1.18/appendices/#opaque-identifiers
+[transaction identifiers]: https://spec.matrix.org/v1.19/client-server-api/#transaction-identifiers
