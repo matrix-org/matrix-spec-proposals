@@ -386,9 +386,7 @@ server-supported transport types:
 ```
 
 - `transports` (required, array): Array of objects describing the transports the homeserver
-  supports. Generally, these are given in no particular order, but in case the homeserver considers
-  multiple transports interchangeable (e.g. when advertising multiple transports of the same type),
-  it SHOULD arrange them in descending order of preference (e.g. listing backup infrastructure last).
+  supports. Ordered descendingly by the homeserver's preference.
   - `type`: (required, string): The globally unique transport identifier. MUST follow the
     [Common Namespaced Identifier Grammar].
   - Optionally includes further properties specific to the transport `type`. The concrete properties
