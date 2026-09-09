@@ -574,7 +574,7 @@ the absence of event authentication, a malicious homeserver could just forge mem
 keys. A future MSC may introduce another mechanism that lends itself better to unencrypted rooms.
 
 On the other hand and as mentioned above, MatrixRTC encryption is REQUIRED in encrypted rooms. As a
-result, when room encryption is later enabled in a previously unencrypted room, any exisitng `m.rtc.slot`
+result, when room encryption is later enabled in a previously unencrypted room, any existing `m.rtc.slot`
 events are invalidated and will have to be updated with an appropriate `encryption` object.
 
 ## Potential issues
