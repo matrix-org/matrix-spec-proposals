@@ -554,7 +554,7 @@ with
          ├─────────────────── grace (10s) ───────────────────┤            ├────── grace ...
 ```
 
-#### Encrypted sessions in unencrypted rooms
+#### Encrypted sessions in unencrypted rooms and migrating them to encrypted rooms
 
 MatrixRTC encryption MUST NOT be used in unencrypted rooms. This is because the specific encryption
 mechanism introduced above is not well suited for unencrypted rooms. In an unencrypted room, events
@@ -563,8 +563,9 @@ events directly. Including the device ID in the member event's `content` isn't s
 the absence of event authentication, a malicious homeserver could just forge member events to capture
 keys. A future MSC may introduce another mechanism that lends itself better to unencrypted rooms.
 
-Note that changing the room encryption settings can, thus, invalidate existing `m.rtc.slot` events and
-require them to be updated with an appropriate `encryption` object.
+On the other hand and as mentioned above, MatrixRTC encryption is REQUIRED in encrypted rooms. As a
+result, when room encryption is later enabled in a previously unencrypted room, any exisitng `m.rtc.slot`
+events are invalidated and will have to be updated with an appropriate `encryption` object.
 
 ## Potential issues
 
