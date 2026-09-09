@@ -48,8 +48,8 @@ The server SHOULD, when a client requests the scope, indicate clearly to the use
 this scope in its grant confirmation webpage.
 
 Clients intended for general-purpose use, as opposed to specifically administrative tasks, SHOULD NOT request the
-scope during normal use. If the user wishes to perform an administrative action, clients SHOULD attempt to obtain
-a new access token with the scope.
+scope during normal use. If the user wishes to perform an administrative action, clients SHOULD temporarily request
+the scope using OAuth step up authentication, as described in [MSC4363].
 
 Clients using user-interactive authentication SHOULD be handled by the server as before. The server MAY restrict
 administration endpoints to only clients using OAuth, and return a `M_FORBIDDEN` error code to clients using
@@ -89,4 +89,6 @@ unstable feature flag to indicate that clients using OAuth must request the unst
 
 ## Dependencies
 
-None.
+This MSC depends on [MSC4363] (OAuth step up authentication).
+
+[MSC4363]: https://github.com/matrix-org/matrix-spec-proposals/pull/4363
