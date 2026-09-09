@@ -466,7 +466,7 @@ The schema for `m.rtc.encryption_key` to-device messages is as follows:
 - `room_id` (required, string): The ID of the room that the slot is located in.
 - `member_id` (required, string): The `member.id` value of the sender's `m.rtc.member` event.
   Note that because `member.id` is unique per member, it is sufficient to disambiguate multiple
-  key events for the same device.
+  key events for the same device (when the client has joined more than one slot in the room).
 - `media_key` (required, object): Information on the key material.
   - `key` (required, string): The key (32 bytes) encoded as specified by `format`.
   - `index` (required, number): The rolling index of the key to distinguish it from other keys. The
