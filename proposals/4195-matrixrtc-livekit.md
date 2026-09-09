@@ -564,9 +564,10 @@ that is distributed to other clients via `m.rtc.encryption_key` to-device messag
 }
 ```
 
-To map this secret into LiveKit's frame-level [encryption] mechanism, clients use LiveKit's SDKs to implement
-a [custom key provider]. The secret in `media_key.key` is then used as the raw byte input to LiveKit's HKDF-based
-key derivation function, keyed by `media_key.index` and associated with the respective LiveKit participant identity
+For the `m.livekit` transport a generic secret of at least 32 bytes is REQUIRED. To map this secret into
+LiveKit's frame-level [encryption] mechanism, clients use LiveKit's SDKs to implement a [custom key provider].
+The full secret in `media_key.key` is then used as the raw byte input to LiveKit's HKDF-based key derivation
+function, keyed by `media_key.index` and associated with the respective LiveKit participant identity
 derived as described [above].
 
 Clients MUST use a keyring size of 256 when initialising the custom key provider to align with the [0, 255] range
