@@ -445,6 +445,10 @@ The recipient devices are determined from the `m.rtc.member` events that are con
 joined to the slot. The conditions for considering a member joined were given
 [above](#joining-a-slot). Once the member events are determined, the `m.rtc.encryption_key`
 to-device messages are sent to the devices that were used to encrypt these member events.
+The latter are determined by following the existing processes for cryptographic validation
+of the sending devices of encrypted room messages[^1].
+
+[^1]: Note that a concrete specification of this process will be covered by https://github.com/matrix-org/matrix-spec/issues/2441.
 
 The schema for `m.rtc.encryption_key` to-device messages is as follows:
 
