@@ -258,8 +258,9 @@ Apart from having to match the above schema, an `m.rtc.member` event MUST only b
 joined if all of the following conditions apply:
 
 - `member.membership` equals `join`.
-- An open slot exists in the room state as an `m.rtc.slot` state event with `state_key` equalling
-  the `m.rtc.member` event's `slot_id`.
+- An open slot exists in the room state as an `m.rtc.slot` state event with `state_key` and
+  `application.type` equalling the `m.rtc.member` event's `slot_id` and `application.type`,
+  respectively.
 - The sender is currently a member of the room (i.e. has room membership `join`).
 - The event is currently sticky, meaning that its stickiness duration as per [MSC4354] has not expired.
   This is to ensure that the membership view is as consistent as possible across all members.
