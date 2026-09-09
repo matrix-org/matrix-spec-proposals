@@ -130,18 +130,37 @@ The rendezvous session (i.e. the payload) SHOULD expire after a period of time c
 `expires_in_ms` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
 the payload MUST fail. The rendezvous session can be manually expired with a `DELETE` call to the rendezvous session.
 
+### Authentication
+
+Once a rendezvous session has been created sending and receiving do not require authentication: the two devices are
+anonymous to the homeserver, and one of them typically has no access token at all. However, a server may require
+authentication in order to _create_ a rendezvous session - see the description of `POST /_matrix/client/v1/rendezvous`
+below - so clients should make requests to the discovery and creation endpoints with their access token if they have
+one.
+
+Because authentication on those two endpoints is optional rather than absent, a client which supplies an access token
+that is invalid or has expired MUST receive the usual response for a request made with a bad token - i.e.
+`401 Unauthorized` with the applicable [common error code], such as `M_UNKNOWN_TOKEN` - exactly as it would from an
+endpoint which requires authentication. The server MUST NOT instead treat such a request as if it had been made
+unauthenticated. This allows a client to distinguish a token which merely needs refreshing (and would return an error)
+from a server policy which does not permit it to create a rendezvous session (which would return a 
+`create_available: false` response).
+
 ### `GET /_matrix/client/v1/rendezvous` - Discover if the rendezvous API is available
 
 Rate-limited: Yes
 Requires authentication: Optional - depending on server policy
 
 Clients can use this endpoint to determine if the rendezvous API is available to them. Because the server policy may
-require authentication, clients should make this request with their access token if they have one.
+require authentication, clients should make this request with their access token if they have one, as described
+[above](#authentication).
+
+A requester which is not permitted by server policy to create a rendezvous session is told so via
+`create_available: false`, rather than by an error response.
 
 HTTP response codes, and Matrix error codes:
 
 - `200 OK` - rendezvous API discovery supported
-- `403 Forbidden` (`M_FORBIDDEN`) - the requester is not authorized to use the rendezvous API
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
@@ -1179,6 +1198,7 @@ The unstable value of `IO_ELEMENT_MSC4388_CONCURRENT_WRITE` should be used inste
 None.
 
 [base URL]: https://spec.matrix.org/v1.16/client-server-api/#getwell-knownmatrixclient
+[common error code]: https://spec.matrix.org/v1.19/client-server-api/#common-error-codes
 [MSC4108]: https://github.com/matrix-org/matrix-spec-proposals/pull/4108
 [opaque identifier grammar]: https://spec.matrix.org/v1.18/appendices/#opaque-identifiers
 [transaction identifiers]: https://spec.matrix.org/v1.19/client-server-api/#transaction-identifiers
