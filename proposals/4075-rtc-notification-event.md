@@ -303,8 +303,10 @@ explicit and form a better foundation for future extensions.
 
 Rather than re-using the `m.mentions` mechanism, `m.rtc.invite` events could have a dedicated
 `invitees` property for specifying the targets of the invite. This would avoid overloading
-the semantics of `m.mentions`. However, it would also largely duplicate what `m.mentions`
-already supports, including a power levels setting for controlling room-invites.
+the semantics of `m.mentions`. Additionally, a power level flag could be introduced that
+allows to configure the threshold for MatrixRTC room invites separately from the threshold
+for room mentions on other messages. It's unclear what use cases would require this, however.
+Additionally, an `invitees` property would largely duplicate what `m.mentions` already supports.
 
 ## Security considerations
 
@@ -358,13 +360,13 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 
 | Feature | Legacy VoIP | MatrixRTC |
 | ------- | ----------- | --------- |
-| Session invites | ✅ via [`m.call.invite`] events | ✅ via `m.rtc.invite` events |
-| Directing invites at specific users | ✅ via `invitee` on [`m.call.invite`] | ✅ via `m.mentions` on `m.rtc.invite` |
+| Directing invites at specific users | ✅ via [`m.call.invite`] and `invitee` | ✅ via `m.rtc.invite` and `m.mentions` |
+| Directing invites at the room | ❌ Not possible | ✅ via `m.rtc.invite` and `m.mentions` |
 | Expiring invites | ⚠️ via `lifetime` on [`m.call.invite`] evaluated against [`age`] which is known to be broken in various homeservers | ✅ via `lifetime` on `m.rtc.invite` evaluated against either `sender_ts` or `origin_server_ts` |
 | Inviting without starting a call | ❌ Not possible | ✅ Explicitly allowed if an open slot exists |
 | Withdrawing invites | ✅ via [`m.call.hangup`] events | ✅ via empty or redacted `m.rtc.invite` events |
 | Declining invites | ✅ via [`m.call.hangup`] events | ✅ via `m.rtc.decline` events |
-| Notifications in default rooms | ✅ via `.m.rule.call` push rule | ✅ via `.m.rule.rtc.invite_for_me`, `.m.rule.rtc.invite_for_room` or `.m.rule.rtc.invite` push rules |
+| Notifications in default rooms | ✅ via `.m.rule.call` push rule | ✅ via `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` push rules |
 | Notifications in mentions-only rooms | ❌ Not possible | ✅ via `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` push rules |
 | Events required to validate session invites | ✅ 1 ([`m.call.invite`]) | ⚠️ 2 (`m.rtc.slot` and `m.rtc.invite`; since `m.rtc.slot` is a state event both can be fetched in the same `/sync`, however) |
 
