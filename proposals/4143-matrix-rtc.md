@@ -199,7 +199,7 @@ Within `m.rtc.member` events, `content` contains the following properties:
     Since publishing transorts will usually incur a certain performance cost on the client, clients
     SHOULD strive to only publish transports that are actually required, using `can_subscribe` as cue.
     Given that the only currently known transport is [MSC4195], the question of choosing transports
-    is academic for now. A future MSC that introdcues the second transport type will have to cover
+    is academic for now. A future MSC that introduces the second transport type will have to cover
     any required negotiation or consensus mechanism to agree on transports.
 - `leave_reason` (object): If `membership = leave`, optionally provides context on why the client left.
   This SHOULD only be used by clients if the user has actually attempted to join the slot before.
