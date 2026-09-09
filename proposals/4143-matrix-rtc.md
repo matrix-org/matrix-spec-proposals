@@ -437,9 +437,15 @@ distributed among session members. Other devices, even if in the room, never get
 
 #### Distributing keys
 
-When joining a slot, clients generate a 32-byte key by using a cryptographically secure random
-number generator. They then share the key with other clients joined to the slot by sending encrypted
-to-device messages of the type `m.rtc.encryption_key`.
+When joining a slot, clients generate a key of `N` bytes by using a cryptographically secure random
+number generator. The key length `N` is derived from the transports that a client is publishing. Each
+transport defines its required key length via its own specification. Clients MUST use a key length
+that is large enough to satisfy all published transports. Note that this means that transports
+themselves need to account for excess bytes beyond their own key length requirement in their
+encryption scheme.
+
+Once the key is generated, the client shares it with other clients joined to the slot by sending
+encrypted to-device messages of the type `m.rtc.encryption_key`.
 
 The recipient devices are determined from the `m.rtc.member` events that are considered to be
 joined to the slot. The conditions for considering a member joined were given
@@ -471,7 +477,7 @@ The schema for `m.rtc.encryption_key` to-device messages is as follows:
   Note that because `member.id` is unique per member, it is sufficient to disambiguate multiple
   key events for the same device (when the client has joined more than one slot in the room).
 - `media_key` (required, object): Information on the key material.
-  - `key` (required, string): The key (32 bytes) in raw bytes encoded using unpadded base64.
+  - `key` (required, string): The key in raw bytes encoded using unpadded base64.
   - `index` (required, number): The rolling index of the key to distinguish it from other keys. The
     value MUST be between 0 and 255 inclusive. WebRTC-based transports may use this as the `keyID`
     field of [SFrame](https://www.w3.org/TR/webrtc-encoded-transform/#sframe) headers.
