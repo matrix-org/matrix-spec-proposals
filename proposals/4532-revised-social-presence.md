@@ -57,6 +57,10 @@ deprecated** from the federation [User Presence Update] type, the [`m.presence` 
 Endpoints], and [`GET /_matrix/client/v3/sync`] by this proposal. The new states `"active"`, `"idle"`, and `"busy"` are
 introduced to all of these mechanisms in their place.
 
+For servers that advertise support for this proposal, clients SHOULD use the query parameter defined in [Sending Revised
+States]. Otherwise, clients SHOULD reinterpret legacy presence states and `currently_active` values received via an
+[`m.presence` Sync Event] or [`GET /_matrix/client/v3/presence/{userId}/status`] according to the above behaviour map.
+
 #### Busy State
 
 While `"active"` and `"idle"` map cleanly from existing states encoded by the presence system, `"busy"` is a
@@ -70,6 +74,27 @@ user action \- for example, if the user joins a call \- it SHOULD do so via the 
 or the [Presence Client-Server Endpoints], as with other states. It is by design that the latter case does not override
 the overrides mechanism to prevent clients from interfering with each other's automated actions and being unsure which
 state to return the override to.
+
+#### Serving Revised States
+
+To create a transition window for clients to implement this proposal, a new query parameter `?revised_presence=true` is
+added to [`GET /_matrix/client/v3/sync`] and [`GET /_matrix/client/v3/presence/{userId}/status`]. This parameter is
+immediately deprecated by this proposal, and it is intended to be removed at the same time as the legacy pressence
+states, marking the end of the transition window.
+
+When this parameter is not set, servers MAY return legacy `presence` fields from these endpoints using the following
+behaviour map. The server SHOULD return a `currently_active` value of `true` if, and only if, the returned state would
+be `online`.
+
+| New `presence` | Returned `presence` |
+|----------------|---------------------|
+| `active`       | `online`            |
+| `idle`         | `unavailable`       |
+| `busy`         | `unavailable`       |
+| `offline`      | `offline`           |
+
+When this parameter is set, the server MUST return one of the presence states defined in this proposal from these
+endpoints.
 
 ### Presence Overrides
 
@@ -173,37 +198,30 @@ the [`GET /_matrix/client/v3/presence/{userId}/status`] endpoint.
 as the number of milliseconds since a user's `presence` last updated from `"active"` to any other state, based on when
 the recipient's server received the transitioning EDU. Because this information is now given by the recipient's server,
 `last_active_ago` is deprecated from the federation [User Presence Update] type. Clients SHOULD ignore this property
-altogether while a user is `"active"`.
+altogether while a user is `"active"`. Servers SHOULD ignore all incoming [User Presence Update] `last_active_ago`
+values and derive their own according to this definition when returning presence to clients.
 
 Implementations should note that pro-active event tracking is not used in this redefinition of `last_active_ago`.
 
-#### Backwards Compatibility
-
-* Servers SHOULD reinterpret an old presence state or a `currently_active` value of `true` in an incoming presence EDU
-  according to the behaviour map given in [Presence States] before passing presence onto clients. This necessarily
-  causes clients that do not implement this proposal to display everyone as offline.
-* Servers SHOULD ignore all incoming [User Presence Update] `last_active_ago` values and derive their own according to
-  the definition above before passing presence onto clients.
-* Clients SHOULD reinterpret presence states and `currently_active` values in an [`m.presence` Sync Event] from a server
-  that does not advertise support for this proposal according to the behaviour map given in [Presence States].
-
 ### Extensible Status
 
-The `status_msg` property of the federation [User Presence Update] type and [`GET
-/_matrix/client/v3/presence/{userId}/status`] is **deprecated**. It is replaced with an OPTIONAL extensible `status`
-object with a single OPTIONAL string property `msg`. This extensible approach provides for future expanding status
-needs, as desired in proposals like [MSC4426]. Whenever this is broadcasted or requested, servers MUST use current value
-of the corresponding property in `m.presence.persistent`. For backwards compatibility, servers and clients implementing
-this proposal SHOULD process `status_msg` in lieu of the EDU property and endpoint response property respectively.
+The `status_msg` property is **deprecated** in the federation [User Presence Update] type, the [`m.presence` Sync
+Event], and the [`GET /_matrix/client/v3/presence/{userId}/status`] endpoint. It is replaced with an OPTIONAL extensible
+`status` object with a single OPTIONAL string property `msg`. This extensible approach provides for future expanding
+status needs, as desired in proposals like [MSC4426]. Whenever this is broadcasted or requested, servers MUST use
+the current value of the corresponding property in `m.presence.persistent`.
 
-The same applies to the [`m.presence` Sync Event], where clients implementing this proposal SHOULD treat `status_msg`
-from servers that do not advertise support for this proposal as though it were given as `msg` in `status`.
+For backwards compatibility, servers and clients implementing this proposal SHOULD process `status_msg` in lieu of the
+EDU property and endpoint response property respectively. The same applies to the [`m.presence` Sync Event], where
+clients implementing this proposal SHOULD treat `status_msg` from servers that do not advertise support for this
+proposal as though it were given as `msg` in `status`. Equally, servers SHOULD return `status_msg` with the same value
+as `msg` in `status` for legacy clients.
 
 The `status_msg` request body property of the [`PUT /_matrix/client/v3/presence/{userId}/status`] endpoint is
-**deprecated** altogether. Clients that wish to manage [Presence Overrides] MUST do so via the `m.presence.persistent`
-account data to ensure the data is consistent across all a user's clients. It should be noted that this deprecation also
-means [`PUT /_matrix/client/v3/presence/{userId}/status`] is no longer useful to clients that call [`GET
-/_matrix/client/v3/sync`].
+**deprecated** without replacement. Clients that wish to manage [Presence Overrides] MUST do so via the
+`m.presence.persistent` account data to ensure the data is consistent across all a user's clients. It should be noted
+that this deprecation also means [`PUT /_matrix/client/v3/presence/{userId}/status`] is no longer useful to clients that
+call [`GET /_matrix/client/v3/sync`].
 
 ### `m.presence` EDU and Sync Event Examples
 
@@ -347,7 +365,7 @@ available by tracking a user's presence state transitions.
 | `busy`                   | [User Presence Update] `presence` value for a user that is online and unreachable | `org.continuwuity.presence_v2.msc4532.busy`                 |
 | `status`                 | [User Presence Update] extensible object for conveying status information         | `org.continuwuity.presence_v2.msc4532.status`               |
 | `m.presence.persistent`  | Account data event for allowing clients to set a persistent global presence state | `org.continuwuity.presence_v2.msc4532.presence.persistent`  |
-
+| `revised_presence`       | Query parameter for clients to update to use the new `presence` values            | `org.continuwuity.presence_v2.msc4532.revised_presence`     |
 
 Servers may advertise support for Revised Social Presence by listing `org.continuwuity.presence_v2.msc4532` in the
 `unstable_features` section of the response to [`GET /_matrix/client/versions`][cs-versions].
@@ -368,6 +386,7 @@ the server to adopt a version of the spec that includes it.
 [MSC4495]: https://github.com/matrix-org/matrix-spec-proposals/pull/4495
 [Presence States]: #Presence-States
 [State Determination]: #State-Determination
+[Serving Revised States]: #Serving-Revised-States
 [Presence Overrides]: #Presence-Overrides
 [Extensible Status]: #Extensible-Status
 [Simplified Activity]: #Simplified-Activity
