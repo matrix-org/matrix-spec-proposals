@@ -196,7 +196,7 @@ Within `m.rtc.member` events, `content` contains the following properties:
     - Optionally includes further properties specific to the transport `type`. The concrete properties
       are defined by the transport's specification. This could, for instance, include WebSocket URLs.
   - `can_subscribe` (array): An array of transport types that the member is able to subscribe to.
-    Since publishing transorts will usually incur a certain performance cost on the client, clients
+    Since publishing transports will usually incur a certain performance cost on the client, clients
     SHOULD strive to only publish transports that are actually required, using `can_subscribe` as cue.
     Given that the only currently known transport is [MSC4195], the question of choosing transports
     is academic for now. A future MSC that introduces the second transport type will have to cover
