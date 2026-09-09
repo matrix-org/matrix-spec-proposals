@@ -112,7 +112,6 @@ apply:
 - The invite is the current invite entry in the ephemeral sticky events map for the sender
   and slot and not a withdrawal (that is, an invite event whose `content` is empty except
   for `sticky_key`).
-- The client's current [push rules] produce an action of `notify` for the event.
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
   where the invite was received.
 - The `lifetime`, as measured from `sender_ts` and capped to 2 minutes, has not elapsed. If
@@ -146,14 +145,13 @@ ring for invites to slots hosting an `m.call` application. Similarly, the client
 the `intent` property from [MSC4196] to display invites to audio calls differently than invites to
 video calls.
 
-[push rules]: https://spec.matrix.org/v1.19/client-server-api/#push-rules
 [direct chats]: https://spec.matrix.org/v1.19/client-server-api/#direct-messaging
 [MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
 
 ### Push rules
 
 In order to allow clients to manage their notification settings for MatrixRTC invites, three new default
-push rules are introduced.
+[push rules] are introduced.
 
 `.m.rule.rtc.invite_for_me` matches `m.rtc.invite` events which contain the user's Matrix ID in
 the list of `user_ids` under `m.mentions`.
@@ -262,6 +260,7 @@ Note that in encrypted rooms, the server cannot apply any of the above rules bec
 events will be encrypted. In this case, clients need to reapply push rules after decrypting themselves.
 This is already the case for other events and push rules.
 
+[push rules]: https://spec.matrix.org/v1.19/client-server-api/#push-rules
 [`override`]: https://spec.matrix.org/v1.19/client-server-api/#default-override-rules
 [`underride`]: https://spec.matrix.org/v1.19/client-server-api/#default-underride-rules
 
