@@ -114,10 +114,11 @@ apply:
   for `sticky_key`).
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
   where the invite was received.
-- The `lifetime`, as measured from `sender_ts` and capped to 2 minutes, has not elapsed. If
-  `sender_ts` is more than 20 seconds ahead of `origin_server_ts`, the `lifetime` SHOULD be
-  measured from `origin_server_ts` instead. This limits the impact of a malicious user faking
-  `sender_ts` to trigger long-lived notifications.
+- The `lifetime`, as measured from `sender_ts`, has not elapsed. If `sender_ts` is more than
+  20 seconds ahead of `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts`
+  instead. This limits the impact of a malicious user faking `sender_ts` to trigger long-lived
+  notifications. Regardless of the basis for measuring, the remaining lifetime MUST be capped
+  at 2 minutes.
 - `m.mentions` is either empty, missing or contains the client's user ID (either directly or
   through a room mention).
 - The user is not already joined to the same slot via a corresponding `m.rtc.member` event.
@@ -339,6 +340,9 @@ large `lifetime` in an attempt to cause receiving clients to notify or ring thei
 periods of time. This is mitigated by the recommendations given earlier, in particular the maximum
 allowed difference of 20 seconds between `sender_ts` and `origin_server_ts` and the maximum allowed
 `lifetime` of 2 minutes.
+
+Similarly, a malicious server could fake `origin_server_ts` to be in the future to cause long-lived
+notifications. Again, the client-side 2 minute cap for the remaining lifetime acts as a mitigation.
 
 ### Room-level invites
 
