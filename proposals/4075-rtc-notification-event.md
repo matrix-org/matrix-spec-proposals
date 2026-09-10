@@ -70,10 +70,10 @@ The schema of `m.rtc.decline` is as follows:
 ```
 
 Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as per [MSC4354] for the
-associated delivery guarantee. The sticky duration for `m.rtc.invite` events SHOULD NOT be smaller
-than the invite's `lifetime`. The sticky duration for `m.rtc.decline`, in turn, SHOULD NOT be smaller
-than the declined invite's sticky duration. Additionally, clients MUST implement the ephemeral map
-algorithm as per [MSC4354] to construct a state-like store of both invite and decline events.
+associated delivery guarantee. The sticky durations of `m.rtc.invite` events, `m.rtc.member` events
+which accept an invite, or `m.rtc.decline` events which decline an invite SHOULD NOT be smaller than
+the invite's `lifetime`. Additionally, clients MUST implement the ephemeral map algorithm as per
+[MSC4354] to construct a state-like store of invite events.
 
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
@@ -296,6 +296,28 @@ This might not be true for future MatrixRTC transports, however.
 
 [MSC4028]: https://github.com/matrix-org/matrix-spec-proposals/pull/4028
 [MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
+
+### Invites may reappear when membership expires
+
+Intuitively, an invite that is considered invalid on one device ought to stay invalid on *all* a
+user's devices for the remainder of its lifetime. However, there is an edge case in which an invite
+may later reappear, to the user's surprise, on another device:
+
+1. Alice's laptop loses connection to her homeserver
+1. Later, Alice joins a session from her smartphone
+1. Bob joins the same session and sends an invite asking the whole room to join
+1. During the invite's lifetime:
+    1. Alice leaves the session from her smartphone
+    1. Alice's original join event expires (ceases to be sticky)
+    1. Alice's laptop reestablishes its connection and syncs the invite event
+
+In this situation, Alice's smartphone would have ignored the invite, since it was already joined at
+the time, while her laptop would display the invite, because it cannot see Alice's previous join
+event due to it expiring halfway through.
+
+This series of events should be exceedingly rare, but as a mitigation, clients MAY choose to resend
+`m.rtc.member` join events as soon as they receive an invite to the same session, when necessary to
+ensure that their membership will remain sticky throughout the entire lifetime of the invite.
 
 ## Alternatives
 
