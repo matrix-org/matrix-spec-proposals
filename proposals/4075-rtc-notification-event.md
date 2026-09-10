@@ -417,7 +417,3 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 ## Dependencies
 
 This proposal depends on [MSC4143] and [MSC4354].
-
-[^order]: As determined by the sticky event ordering found in the ephemeral map algorithm from
-[MSC4354] (i.e. based on the `origin_server_ts`, sticky durations, and event IDs of the events in
-question).
