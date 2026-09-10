@@ -119,7 +119,8 @@ apply:
   instead. This limits the impact of a malicious user faking `sender_ts` to trigger long-lived
   notifications. Regardless of the basis for measuring, the remaining lifetime MUST be capped
   at 2 minutes.
-- `m.mentions`  either has `room` set to `true` or contains the current user in `user_ids`.
+- `m.mentions` either has `room` set to `true` (and the sender had a sufficient power level at the
+  time of sending to trigger a `room` notification) or contains the current user in `user_ids`.
 - The user is not already joined to the same slot via a corresponding `m.rtc.member` event.
 
 If the invite is valid, the receiving client has three options:
