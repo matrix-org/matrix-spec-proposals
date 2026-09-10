@@ -2,7 +2,7 @@
 
 For a long time now, Matrix users extended the usefulness of their clients by embedding small web
 applications that sit alongside the main timeline. This is useful because these web apps can render their own
-custom content, fully independant of the parent web app.
+custom content, fully independent of the parent web app.
 
 This feature has been in use in clients such as Element Web, and widgets have been a part of the Matrix
 ecosystem for a while such as [Neoboard](https://github.com/nordeck/matrix-neoboard) and
@@ -68,13 +68,13 @@ room.
 ## Potential issues
 
 The main problem with this proposal is that it requires clients to present a web view, even if they do not
-have the capability to do so. This might be because they would rather not bundle a webview depencency, run in
+have the capability to do so. This might be because they would rather not bundle a webview dependency, run in
 a terminal interface, and so on. Additionally, assistive technologies may struggle with handling interfaces
 presented in a web view.
 
 Developers should be mindful of impact of relying on widgets exclusively, and where possible allow for users
 to participate without the use of widgets. As an example,
-[Hookshot](https://github.com/matrix-org/hookshot) provides a widget for configuration convienence, but also
+[Hookshot](https://github.com/matrix-org/hookshot) provides a widget for configuration convenience, but also
 provides a bot command interface so that all users can use the integration.
 
 ## Alternatives
@@ -91,7 +91,7 @@ such client developers should take every precaution to protect users from malici
  - The `url` field MUST be strictly validated to ensure widgets do not try to load or execute malicious
    content. For example, `javascript:alert("XSS attack!")` should not be allowed to execute.
  - Clients should take all reasonable care to fully isolate the widget frame from the parent client. In
-   browser contexts this would mean ensuring sufficent use of `sandbox` as well as tight cross-site scripting
+   browser contexts this would mean ensuring sufficient use of `sandbox` as well as tight cross-site scripting
    policies so that the widget could not, for example, sniff out the user's credentials.
 
 ## Unstable prefix
