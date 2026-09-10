@@ -123,12 +123,11 @@ apply:
   at 2 minutes.
 - `m.mentions` either has `room` set to `true` (and the sender had a sufficient power level at the
   time of sending to trigger a `room` notification) or contains the current user in `user_ids`.
-- The user does not have *any* currently sticky `m.rtc.member` events with a membership of `join`
-  in the same slot, regardless of whether the ephemeral map algorithm considers them the latest
-  state.
-- The user does not have *any* currently sticky `m.rtc.decline` events referencing the
-  `m.rtc.invite` event, regardless of whether the ephemeral map algorithm considers them the latest
-  state.
+- For any currently sticky `m.rtc.member` event with a membership of `join` that the user has for
+  the same slot, there also exists a currently sticky `m.rtc.member` event with a membership of
+  `leave`, such that the leave event comes *after*[^order] the join event.
+- The user does not have any currently sticky `m.rtc.decline` events referencing the
+  `m.rtc.invite` event.
 
 In effect, these conditions mean that when an invite comes in, the receiving client has three
 options:
@@ -417,3 +416,7 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 ## Dependencies
 
 This proposal depends on [MSC4143] and [MSC4354].
+
+[^order]: As determined by the sticky event ordering found in the ephemeral map algorithm from
+[MSC4354] (i.e. based on the `origin_server_ts`, sticky durations, and event IDs of the events in
+question).
