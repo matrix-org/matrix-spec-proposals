@@ -306,7 +306,7 @@ may later reappear, to the user's surprise, on another device:
 
 1. Alice's laptop loses connection to her homeserver
 1. Later, Alice joins a session from her smartphone
-1. Bob joins the same session and sends an invite asking the whole room to join
+1. Bob then joins the same session and sends an invite asking the whole room to join
 1. During the invite's lifetime:
     1. Alice leaves the session from her smartphone
     1. Alice's original join event expires (ceases to be sticky)
