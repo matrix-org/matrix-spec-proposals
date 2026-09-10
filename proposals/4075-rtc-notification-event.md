@@ -122,15 +122,20 @@ apply:
   at 2 minutes.
 - `m.mentions` either has `room` set to `true` (and the sender had a sufficient power level at the
   time of sending to trigger a `room` notification) or contains the current user in `user_ids`.
-- The user is not already joined to the same slot via a corresponding `m.rtc.member` event.
+- The user does not have *any* currently sticky `m.rtc.member` events with a membership of `join`
+  in the same slot, regardless of whether the ephemeral map algorithm considers them the latest
+  state.
+- The user does not have *any* currently sticky `m.rtc.decline` events referencing the
+  `m.rtc.invite` event, regardless of whether the ephemeral map algorithm considers them the latest
+  state.
 
-If the invite is valid, the receiving client has three options:
+In effect, these conditions mean that when an invite comes in, the receiving client has three
+options:
 
 1. It can accept the invite by joining the slot with an appropriate `m.rtc.member` event as
-   per [MSC4143]. Once the event is observed by other devices of the user, it invalidates the
-   invite.
-1. It can decline the invite by sending an `m.rtc.decline` event. Again, once the event is
-   observed by other devices of the user, it invalidates the invite.
+   per [MSC4143]. The client will invalidate the invite due to the presence of a sticky join event.
+1. It can decline the invite by sending an `m.rtc.decline` event. Again, the client will invalidate
+   the invite due to the presence of a sticky decline event.
 1. It can ignore the event by doing nothing. The invite will remain valid until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
 
