@@ -316,8 +316,9 @@ the time, while her laptop would display the invite, because it cannot see Alice
 event due to it expiring halfway through.
 
 This series of events should be exceedingly rare, but as a mitigation, clients SHOULD resend
-`m.rtc.member` join events as soon as they receive an invite to the same session, when necessary to
-ensure that their membership will remain sticky throughout the entire lifetime of the invite.
+`m.rtc.member` join events 2 minutes before they would expire (matching the maximum lifetime of an
+`m.rtc.invite` event) at the latest, to rule out any possibility of it expiring during the lifetime
+of an invite.
 
 ## Alternatives
 
