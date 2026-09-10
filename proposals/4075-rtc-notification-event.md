@@ -125,7 +125,7 @@ apply:
   time of sending to trigger a `room` notification) or contains the current user in `user_ids`.
 - For any currently sticky `m.rtc.member` event with a membership of `join` that the user has for
   the same slot, there also exists a currently sticky `m.rtc.member` event with a membership of
-  `leave`, such that the leave event comes *after*[^order] the join event.
+  `leave`, such that the leave event comes *after* the join event but *before* the invite event.[^order]
 - The user does not have any currently sticky `m.rtc.decline` events referencing the
   `m.rtc.invite` event.
 
