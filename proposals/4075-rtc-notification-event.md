@@ -109,6 +109,7 @@ In line with the expected behaviour of sending clients that was outlined in the 
 a receiving client SHOULD only consider an invite valid as long as all of the following conditions
 apply:
 
+- The `sender` is not the same user as the recipient.
 - The invite is the current invite entry in the ephemeral sticky events map for the sender
   and slot, and is not a withdrawal (that is, an invite event whose `content` is empty except
   for `sticky_key`).
