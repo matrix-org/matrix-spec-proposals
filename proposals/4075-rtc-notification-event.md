@@ -112,7 +112,7 @@ apply:
 - The invite is the current invite entry in the ephemeral sticky events map for the sender
   and slot and not a withdrawal (that is, an invite event whose `content` is empty except
   for `sticky_key`).
-- An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
+- An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the room
   where the invite was received.
 - The `lifetime`, as measured from `sender_ts`, has not elapsed. If `sender_ts` is more than
   20 seconds ahead of `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts`
