@@ -90,3 +90,4 @@ This proposal depends on [MSC4484] and [MSC4363].
 [BooleanCapability]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3capabilities_response-200_booleancapability
 [MSC4484]: https://github.com/matrix-org/matrix-spec-proposals/pull/4484
 [MSC4363]: https://github.com/matrix-org/matrix-spec-proposals/pull/4484
+[`m.account_moderation` capability]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3capabilities_response-200_accountmoderationcapability
