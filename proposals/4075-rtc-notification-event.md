@@ -300,7 +300,7 @@ This might not be true for future MatrixRTC transports, however.
 
 ### Invites may reappear when membership expires
 
-Intuitively, an invite that is considered invalid on one device ought to stay invalid on *all* a
+Intuitively, an invite that is considered invalid on one device ought to stay invalid on *all* of a
 user's devices for the remainder of its lifetime. However, there is an edge case in which an invite
 may later reappear, to the user's surprise, on another device:
 
