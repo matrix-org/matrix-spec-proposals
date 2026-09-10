@@ -73,7 +73,8 @@ Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as pe
 associated delivery guarantee. The sticky durations of `m.rtc.invite` events, `m.rtc.member` events
 which accept an invite, or `m.rtc.decline` events which decline an invite SHOULD NOT be smaller than
 the invite's `lifetime`. Additionally, clients MUST implement the ephemeral map algorithm as per
-[MSC4354] to construct a state-like store of invite events and decline events.
+[MSC4354] to construct a state-like store of invite events. Tracking decline events in a map isn't
+necessary because there is no need to update them after being sent.
 
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
@@ -126,8 +127,7 @@ apply:
   sticky events map.
 - If the user has an `m.rtc.member` event with a membership of `leave` for the slot in the ephemeral
   sticky events map, its `origin_server_ts` is less than the `origin_server_ts` of the invite event.
-- The user has no `m.rtc.decline` event referencing the invite event in the ephemeral sticky events
-  map.
+- The user has no currently sticky `m.rtc.decline` event referencing the invite event.
 
 In effect, these conditions mean that when an invite comes in, the receiving client has three
 options:
