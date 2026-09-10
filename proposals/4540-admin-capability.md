@@ -44,6 +44,9 @@ At the time of writing, the only OAuth scope which provides access to administra
 `urn:matrix:client:server_administration` scope proposed in [MSC4484]. If this scope, or its unstable identifier,
 is present in `allowed_scopes`, clients SHOULD show all UI pertaining to the Server Administration endpoints.
 
+The [`m.account_moderation` capability] is superseded by `m.admin` and should be deprecated for removal in a future
+spec version.
+
 ## Potential issues
 
 This proposal assumes that, for legacy authentication, a user may either use all administrator functionality
@@ -55,6 +58,11 @@ an acceptable compromise.
 Clients could show administrative UI by default and make administrative requests sight unseen, as they do
 today. This creates a poor user experience by showing users buttons that don't work, an issue which
 this proposal seeks to alleviate.
+
+More fields could be added to the existing `m.account_moderation` capability. This could work fine
+for legacy devices, but it does not cleanly map to allowed scopes for OAuth devices, meaning that
+clients supporting OAuth either have to infer which scopes are allowed from the fields on `m.account_moderation`
+or blindly attempt to acquire scopes as they do today.
 
 ## Security considerations
 
