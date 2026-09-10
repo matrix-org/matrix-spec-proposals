@@ -316,7 +316,7 @@ In this situation, Alice's smartphone would have ignored the invite, since it wa
 the time, while her laptop would display the invite, because it cannot see Alice's previous join
 event due to it expiring halfway through.
 
-This series of events should be exceedingly rare, but as a mitigation, clients MAY choose to resend
+This series of events should be exceedingly rare, but as a mitigation, clients SHOULD resend
 `m.rtc.member` join events as soon as they receive an invite to the same session, when necessary to
 ensure that their membership will remain sticky throughout the entire lifetime of the invite.
 
