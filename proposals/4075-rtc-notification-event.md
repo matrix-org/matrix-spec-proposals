@@ -73,8 +73,7 @@ Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as pe
 associated delivery guarantee. The sticky durations of `m.rtc.invite` events, `m.rtc.member` events
 which accept an invite, or `m.rtc.decline` events which decline an invite SHOULD NOT be smaller than
 the invite's `lifetime`. Additionally, clients MUST implement the ephemeral map algorithm as per
-[MSC4354] to construct a state-like store of invite events. Tracking decline events in a map isn't
-necessary because there is no need to update them after being sent.
+[MSC4354] to construct a state-like store of invite events and decline events.
 
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
@@ -123,11 +122,12 @@ apply:
   at 2 minutes.
 - `m.mentions` either has `room` set to `true` (and the sender had a sufficient power level at the
   time of sending to trigger a `room` notification) or contains the current user in `user_ids`.
-- For any currently sticky `m.rtc.member` event with a membership of `join` that the user has for
-  the same slot, there also exists a currently sticky `m.rtc.member` event with a membership of
-  `leave`, such that the leave event comes *after* the join event but *before* the invite event.[^order]
-- The user does not have any currently sticky `m.rtc.decline` events referencing the
-  `m.rtc.invite` event.
+- The user has no `m.rtc.member` event with a membership of `join` for the slot in the ephemeral
+  sticky events map.
+- If the user has an `m.rtc.member` event with a membership of `leave` for the slot in the ephemeral
+  sticky events map, its `origin_server_ts` is less than the `origin_server_ts` of the invite event.
+- The user has no `m.rtc.decline` event referencing the invite event in the ephemeral sticky events
+  map.
 
 In effect, these conditions mean that when an invite comes in, the receiving client has three
 options:
@@ -301,13 +301,13 @@ This might not be true for future MatrixRTC transports, however.
 
 Intuitively, an invite that is considered invalid on one device ought to stay invalid on *all* of a
 user's devices for the remainder of its lifetime. However, there is an edge case in which an invite
-may later reappear, to the user's surprise, on another device:
+could later reappear, to the user's surprise, on another device:
 
 1. Alice's laptop loses connection to her homeserver
 1. Later, Alice joins a session from her smartphone
 1. Bob then joins the same session and sends an invite asking the whole room to join
 1. During the invite's lifetime:
-    1. Alice leaves the session from her smartphone
+    1. Alice's smartphone *also* loses connection to her homeserver
     1. Alice's original join event expires (ceases to be sticky)
     1. Alice's laptop reestablishes its connection and syncs the invite event
 
@@ -315,7 +315,7 @@ In this situation, Alice's smartphone would have ignored the invite, since it wa
 the time, while her laptop would display the invite, because it cannot see Alice's previous join
 event due to it expiring halfway through.
 
-This series of events should be exceedingly rare, but as a mitigation, clients SHOULD resend
+This series of events should already be quite rare, but as a mitigation, clients SHOULD resend
 `m.rtc.member` join events 2 minutes before they would expire (matching the maximum lifetime of an
 `m.rtc.invite` event) at the latest, to rule out any possibility of it expiring during the lifetime
 of an invite.
