@@ -86,11 +86,11 @@ Additionally, both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted whe
 A sending client SHOULD only consider an extended invite valid as long as all of the following
 conditions apply:
 
-- An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the room
-  where the invite was sent.
+- An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the
+  room where the invite was sent.
 - The invite's `lifetime`, as measured from `sender_ts` and capped at 2 minutes, has not elapsed.
-- There are targeted room members who have neither accepted the invite (by sending a corresponding
-  `m.rtc.member` event) nor declined it (by sending an `m.rtc.decline` event).
+- There are targeted room members who have neither accepted the invite (by sending an `m.rtc.member`
+  event) nor declined it (by sending an `m.rtc.decline` event).
 
 To prevent duplicate invitations, senders SHOULD NOT emit invites when another valid invite exists
 for the same slot and the same set of targeted users.
