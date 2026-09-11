@@ -388,11 +388,12 @@ the lifetime from `sender_ts`, however, to account for clock-drift between clien
 
 Under this proposal, the sender of `m.rtc.invite` events does not need to be joined to the slot
 themselves in order to make the invite valid. This may seem like a potential abuse vector. However,
-room members who are able to send `m.rtc.invite` events will commonly also be able to send
-`m.rtc.member` events. Thus requiring a member event to send invites doesn't provide additional
-protection. The actual access control for sending invites is the power level for sending
-`m.rtc.invite` events which room administrators can raise as needed. When power levels allow
-sending invitations, users can still mitigate abusive invites by configuring push rules accordingly.
+room members who are able to send `m.rtc.invite` events will usually also be able to send
+`m.rtc.member` events unless the room power levels have specifically been configured otherwise.
+Thus requiring a member event to send invites doesn't provide additional protection. The actual
+access control for sending invites is the power level for sending `m.rtc.invite` events which
+room administrators can raise as needed. When power levels allow sending invitations, users can
+still mitigate abusive invites by configuring push rules accordingly.
 
 Besides this, requiring the sender to have an `m.rtc.member` event also complicates invite processing.
 Particularly on mobile, it would mean that after receiving a push notification, the client would
