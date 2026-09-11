@@ -47,10 +47,9 @@ emoji can be useful as a compact summary, or just for fun.
 *Note: A future MSC may add an additional field to support custom emotes, ala.
 [MSC2545](https://github.com/matrix-org/matrix-spec-proposals/pull/2545).*
 
-Applications SHOULD NOT automatically update this field. It’s intended to be
-controlled by the user manually, and it may be confusing for most users if their
-manually-set status is overridden by an application they may have no control
-over.
+This field is intended to be controlled by the user rather than set automatically,
+although this does not rule out the field being set, for example, by the homeserver
+to automatically clear the status after some time.
 
 Instead, applications should prefer to use other profile fields, such as
 `m.call`, which would typically not be managed manually by a user. Future
