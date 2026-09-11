@@ -212,7 +212,7 @@ rate-limiting and debouncing mechanisms around this. It is also recommended to
 allow sysadmins to configure these values based on their own deployments.
 
 Homeservers should consider implementing limits on both a per-field and entire
-profile basis for each user.
+profile basis for each user in addition to existing specced limits.
 
 `m.status` may be be updated 1-5 times in a short burst very occasionally (as
 someone updates their status, and then edits it to fix typos). Whereas `m.call`
