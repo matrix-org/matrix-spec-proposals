@@ -295,7 +295,7 @@ To voluntarily leave a slot, the client sends an `m.rtc.member` event for the de
 }
 ```
 
-Again, once a member has left, clients SHOULD refrain from connecting to their transports.
+Again, once a member has left, clients MUST refrain from connecting to their transports.
 
 [lifecycle]: #membership-lifecycle
 
