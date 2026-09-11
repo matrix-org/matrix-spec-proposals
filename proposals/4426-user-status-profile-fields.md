@@ -67,10 +67,10 @@ this is the approximate length expected.
 The `emoji` field is limited to 32 bytes.
 
 Homeservers SHOULD reject statuses that contain fields which exceed these
-limits with status code `400` and errcode `M_TOO_LARGE.` Homeservers SHOULD NOT
-reject `m.status` entries containing an `emoji` field with more than one
-grapheme. This is due to Unicode byte to grapheme definitions being
-continuously added over time.
+limits with status code `400` and errcode `M_TOO_LARGE` when set via the
+Client-Server API. Homeservers SHOULD NOT reject `m.status` entries
+containing an `emoji` field with more than one grapheme. This is due to
+Unicode byte to grapheme definitions being continuously added over time.
 
 #### `m.call`
 
