@@ -87,7 +87,7 @@ proposal.
 
 [Common Namespaced Identifier Grammar]: https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar
 
-[^nohash]: Note that due the use of the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar),
+[^nohash]: Note that due to the use of the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar),
 neither `application_type` nor `application_slot_id` can contain the `#` character.
 
 `m.rtc.slot` events have the following schema:
