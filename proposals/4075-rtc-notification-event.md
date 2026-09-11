@@ -70,10 +70,11 @@ The schema of `m.rtc.decline` is as follows:
 ```
 
 Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as per [MSC4354] for the
-associated delivery guarantee. The sticky duration for `m.rtc.invite` events SHOULD NOT be smaller
-than the invite's `lifetime`. The sticky duration for `m.rtc.decline`, in turn, SHOULD NOT be smaller
-than the declined invite's sticky duration. Additionally, clients MUST implement the ephemeral map
-algorithm as per [MSC4354] to construct a state-like store of both invite and decline events.
+associated delivery guarantee. The sticky durations of `m.rtc.invite` events, `m.rtc.member` events
+which accept an invite, or `m.rtc.decline` events which decline an invite SHOULD NOT be smaller than
+the invite's `lifetime`. Additionally, clients MUST implement the ephemeral map algorithm as per
+[MSC4354] to construct a state-like store of invite events. Tracking decline events in a map isn't
+necessary because there is no need to update them after being sent.
 
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
@@ -109,26 +110,32 @@ In line with the expected behaviour of sending clients that was outlined in the 
 a receiving client SHOULD only consider an invite valid as long as all of the following conditions
 apply:
 
+- The `sender` is not the same user as the recipient.
 - The invite is the current invite entry in the ephemeral sticky events map for the sender
-  and slot and not a withdrawal (that is, an invite event whose `content` is empty except
+  and slot, and is not a withdrawal (that is, an invite event whose `content` is empty except
   for `sticky_key`).
-- An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the room
+- An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the room
   where the invite was received.
 - The `lifetime`, as measured from `sender_ts`, has not elapsed. If `sender_ts` is more than
   20 seconds ahead of `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts`
   instead. This limits the impact of a malicious user faking `sender_ts` to trigger long-lived
   notifications. Regardless of the basis for measuring, the remaining lifetime MUST be capped
   at 2 minutes.
-- `m.mentions`  either has `room` set to `true` or contains the current user in `user_ids`.
-- The user is not already joined to the same slot via a corresponding `m.rtc.member` event.
+- `m.mentions` either has `room` set to `true` (and the sender had a sufficient power level at the
+  time of sending to trigger a `room` notification) or contains the current user in `user_ids`.
+- The user has no `m.rtc.member` event with a membership of `join` for the slot in the ephemeral
+  sticky events map.
+- If the user has an `m.rtc.member` event with a membership of `leave` for the slot in the ephemeral
+  sticky events map, its `origin_server_ts` is less than the `origin_server_ts` of the invite event.
+- The user has no currently sticky `m.rtc.decline` event referencing the invite event.
 
-If the invite is valid, the receiving client has three options:
+In effect, these conditions mean that when an invite comes in, the receiving client has three
+options:
 
 1. It can accept the invite by joining the slot with an appropriate `m.rtc.member` event as
-   per [MSC4143]. Once the event is observed by other devices of the user, it invalidates the
-   invite.
-1. It can decline the invite by sending an `m.rtc.decline` event. Again, once the event is
-   observed by other devices of the user, it invalidates the invite.
+   per [MSC4143]. The client will invalidate the invite due to the presence of a sticky join event.
+1. It can decline the invite by sending an `m.rtc.decline` event. Again, the client will invalidate
+   the invite due to the presence of a sticky decline event.
 1. It can ignore the event by doing nothing. The invite will remain valid until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
 
