@@ -294,8 +294,8 @@ is not unique to MatrixRTC invites and [MSC4028] is an ongoing attempt at solvin
 
 A possible mediation could be to send `m.rtc.invite` events unencrypted. The only currently available
 MatrixRTC transport is [MSC4075] which already exposes user participation in slots to the homeserver
-via SFU token requests. Not encrypting the invite event would, therefore, not increase the leakage.
-This might not be true for future MatrixRTC transports, however.
+via SFU token requests. Not encrypting the invite event would, therefore, not increase the leakage
+when using this transport. This might not be true for future MatrixRTC transports, however.
 
 [MSC4028]: https://github.com/matrix-org/matrix-spec-proposals/pull/4028
 [MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
