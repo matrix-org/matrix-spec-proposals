@@ -35,7 +35,7 @@ fields with `m.status` taking precedence if both are set.
 
 ### New Profile Fields
 
-`m.status`
+#### `m.status`
 
 A text-only field describing the user’s current state, along with an emoji. The
 emoji can be useful as a compact summary, or just for fun.
@@ -57,16 +57,16 @@ Instead, applications should prefer to use other profile fields, such as
 proposal may define further fields for other applications (what game is a user
 playing, etc.).
 
-#### `text` and `emoji` field grammar
+##### `text` and `emoji` field grammar
 
 The `text` field is encoded UTF-8, and limited to 256 bytes. The `emoji` field
 is limited to 32 bytes. Homeservers SHOULD reject statuses that contain fields
 which exceed these limits with status code `400` and errcode `M_TOO_LARGE.`
 Homeservers SHOULD NOT reject `m.status` entries containing an `emoji` field
 with more than one grapheme. This is due to Unicode byte to grapheme definitions
-being continuous added over time.
+being continuously added over time.
 
-`m.call`
+#### `m.call`
 
 An indicator that the user is currently in a call, and optionally how long
 they’ve been in the call.
