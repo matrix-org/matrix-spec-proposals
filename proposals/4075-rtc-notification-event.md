@@ -396,11 +396,11 @@ sending invitations, users can still mitigate abusive invites by configuring pus
 
 Besides this, requiring the sender to have an `m.rtc.member` event also complicates invite processing.
 Particularly on mobile, it would mean that after receiving a push notification, the client would
-have to fetch a state event and two different room events, including the information required to
-decrypt them, in order to validate the invite. This significantly increases the chance to run into
-time limits applied to notification processing by mobile operating systems. While it's possible
-to mitigate this by processing invites optimistically while they're being validated in the
-background, this introduces further abuse risks.
+have to fetch an additional related room event, including the information required for decryption,
+in order to validate the invite. This increases the chance to run into time limits applied to
+notification processing by mobile operating systems. While it's possible to mitigate this by
+processing invites optimistically while they're being validated in the background, this introduces
+further abuse risks.
 
 Lastly, being able to invite users into a MatrixRTC session without being joined oneself, also
 acts as a feature and enables integrations such as meeting bots to issue invites without having
