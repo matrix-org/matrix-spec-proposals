@@ -297,29 +297,6 @@ This might not be true for future MatrixRTC transports, however.
 [MSC4028]: https://github.com/matrix-org/matrix-spec-proposals/pull/4028
 [MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
 
-### Invites may reappear when membership expires
-
-Intuitively, an invite that is considered invalid on one device ought to stay invalid on *all* of a
-user's devices for the remainder of its lifetime. However, there is an edge case in which an invite
-could later reappear, to the user's surprise, on another device:
-
-1. Alice's laptop loses connection to her homeserver
-1. Later, Alice joins a session from her smartphone
-1. Bob then joins the same session and sends an invite asking the whole room to join
-1. During the invite's lifetime:
-    1. Alice's smartphone *also* loses connection to her homeserver
-    1. Alice's original join event expires (ceases to be sticky)
-    1. Alice's laptop reestablishes its connection and syncs the invite event
-
-In this situation, Alice's smartphone would have ignored the invite, since it was already joined at
-the time, while her laptop would display the invite, because it cannot see Alice's previous join
-event due to it expiring halfway through.
-
-This series of events should already be quite rare, but as a mitigation, clients SHOULD resend
-`m.rtc.member` join events 2 minutes before they would expire (matching the maximum lifetime of an
-`m.rtc.invite` event) at the latest, to rule out any possibility of it expiring during the lifetime
-of an invite.
-
 ## Alternatives
 
 ### Inferring notifications from membership events
