@@ -28,7 +28,8 @@ still maintaining their manually-set status afterwards.
 
 This proposal outlines two new custom profile fields (`m.status`, `m.call`) that
 satisfy the above use cases, while leaving the door open for future fields to
-further enhance a user's profile.
+further enhance a user's profile. Clients SHOULD display the status from one of these
+fields with `m.status` taking precedence if both are set.
 
 ## Proposal
 
