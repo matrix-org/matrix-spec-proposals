@@ -37,24 +37,26 @@ list of available template parameters.
 
 ### URL Templating
 
-The URL may be templated to contain additional query parameters, to allow widgets to display some dynamic
+The URL may be templated to contain additional parameters, to allow widgets to display some dynamic
 content. This includes:
 
- - `matrix_room_id`: the ID of the room the widget is being displayed in.
- - `matrix_user_id`: the ID of the user who is viewing the widget.
- - `matrix_display_name`: the display name of the user who is viewing the widget.
- - `matrix_avatar_url`: the **HTTP** avatar URL of the user who is viewing the widget.
+ - `$matrix_room_id`: the ID of the room the widget is being displayed in.
+ - `$matrix_user_id`: the ID of the user who is viewing the widget.
+ - `$matrix_display_name`: the display name of the user who is viewing the widget.
+ - `$matrix_avatar_url`: the **HTTP** avatar URL of the user who is viewing the widget.
 
-For instance, a widget in the room `!room:example.org` being viewed by "@alice:example.org" using a URL of:
 
-```
-https://example.com/widget?room_id=$matrix_room_id&user_id=$matrix_user_id`
-```
+All template parameters MUST start with a $, and string replacement apply to the whole **path** segment
+of the URL.
 
-Would see a URL of:
+The origin of a URL cannot be templated. If a unknown parameter is encountered, it is ignored.
 
-```
-https://example.com/widget?room_id=!room:example.com&user_id=@alice:example.com
+For example:
+
+```sh
+https://example.com/widget?room_id=$matrix_room_id&user_id=$matrix_user_id#$matrix_display_name`
+# would become
+https://example.com/widget?room_id=!room:example.com&user_id=@alice:example.com#Alice
 ```
 
 ### Displaying a widget
@@ -95,6 +97,8 @@ such client developers should take every precaution to protect users from malici
    policies so that the widget could not, for example, sniff out the user's credentials.
 
 ## Unstable prefix
+
+### im.vector.modular.widgets
 
 The unstable event type for this MSC is `im.vector.modular.widgets`. This event has been used in production
 instances for a long time under Element Web and other clients. While it's implementation does differ in some
