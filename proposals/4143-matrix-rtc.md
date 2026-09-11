@@ -14,7 +14,7 @@ building RTC experiences on top of Matrix. At a high level, MatrixRTC consists o
 * **End-to-end encryption** provides a generic basis for encrypted media exchange and reuses existing
   Matrix primitives such as encrypted room and to-device messages.
 * **Transports** define how members exchange media streams. This can, for instance, happen
-  peer-to-peer or through Selective Forwarding Unit (SFUs). Transports also determine how the generic
+  peer-to-peer or through Selective Forwarding Units (SFUs). Transports also determine how the generic
   end-to-end encryption is used in transport-specific encryption.
 * **Applications** describe the type of RTC activity such as a call, a shared document, or a real-time
   game. Applications also define what types of transports they can work with and how media streams are used.
