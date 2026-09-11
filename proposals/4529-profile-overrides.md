@@ -15,7 +15,7 @@ offering this feature today must store the labels locally, so they are lost on r
 reach the user's other devices.
 
 This proposal introduces an account data event in which a user records the profile fields they wish
-to see in place of the real ones, facilitating the usage of private labels between the user's clients.
+to see in place of the real ones, so that their private labels reach all of their clients.
 
 ## Proposal
 
@@ -42,7 +42,8 @@ to objects of profile field names and the values to display for them:
 The field names are those of the [profile](https://spec.matrix.org/v1.18/client-server-api/#profiles):
 `displayname`, `avatar_url`, `m.tz`, and any other extended profile field. A value MUST have the
 type that field would have in a real profile, except that `null` means the user has no value for
-that field. Clients MUST ignore entries whose key is not a valid
+that field. A client may also replace an MXC URL with an encrypted file object, as described below.
+Clients MUST ignore entries whose key is not a valid
 [user ID](https://spec.matrix.org/v1.18/appendices/#user-identifiers) and fields whose value is of
 the wrong type, which leaves room to extend the event later. To remove an override, remove its key.
 Clients SHOULD drop a user's entry rather than leave an empty object behind.
@@ -67,11 +68,6 @@ Overrides MUST NOT affect anything the client sends. The text of a
 fallback, and all other outgoing content, MUST use the real profile, so that a private label is
 never revealed to the room.
 
-Clients [disambiguate](https://spec.matrix.org/v1.18/client-server-api/#calculating-the-display-name-for-a-user)
-colliding display names by appending the user ID. A client MAY treat an overridden name as
-unambiguous, since the user chose it themselves, provided the real user ID remains discoverable
-elsewhere, such as on the user's profile view.
-
 This is a client-to-client mechanism carried over the existing
 [account data](https://spec.matrix.org/v1.18/client-server-api/#client-config) endpoints; servers
 need no knowledge of this proposal.
@@ -94,10 +90,54 @@ MAY store the event in the encrypted form:
 }
 ```
 
-The plaintext is the `content` described above, and encryption changes nothing else in this
-proposal. A client implementing it without [MSC4483] finds no key in the encrypted form that is a
-valid user ID, so under the rules above it ignores the event and displays real profiles, as though
-it implemented neither proposal.
+The plaintext is the `content` described above. A client implementing this proposal without
+[MSC4483] finds no key in the encrypted form that is a valid user ID, so under the rules above it
+ignores the event and displays real profiles, as though it implemented neither proposal.
+
+If the account data event is encrypted, clients SHOULD also encrypt the media their overrides point
+at, using the existing
+[encrypted attachment](https://spec.matrix.org/v1.18/client-server-api/#sending-encrypted-attachments)
+format. A client MUST NOT store encrypted media in an unencrypted event, since the homeserver could
+then read and decrypt it anyway.
+
+The substitution applies only to a field whose value in a real profile is a string holding an MXC
+URL, such as `avatar_url`. The
+[`EncryptedFile`](https://spec.matrix.org/v1.18/client-server-api/#definition-encryptedfile) object
+replaces the URL string under the same field name. Where a client expects an MXC URL and finds an
+object, that object is an `EncryptedFile`. For example, an `avatar_url` override in decrypted form
+may be:
+
+```json
+{
+  "@alex:example.com": {
+    "avatar_url": {
+      "hashes": {
+        "sha256": "fdSLu/YkRx3Wyh3KQabP3rd6+SFiKg5lsJZQHtkSAYA"
+      },
+      "iv": "w+sE15fzSc0AAAAAAAAAAA",
+      "key": {
+        "alg": "A256CTR",
+        "ext": true,
+        "k": "aWF6-32KGYaC3A_FEUCk1Bt0JA37zP0wrStgmdCaW-0",
+        "key_ops": ["encrypt", "decrypt"],
+        "kty": "oct"
+      },
+      "url": "mxc://example.org/FHyPlCeYUSFFxlgbQYZmoEoe",
+      "v": "v2"
+    }
+  }
+}
+```
+
+A client implementing [MSC4483] MUST read this form and decrypt the media it points at. It MUST
+also accept a plain MXC URL string in an encrypted event, since the rule above is only a SHOULD and
+another client may have stored one. An object missing a property that `EncryptedFile` requires is a
+value of the wrong type, so under the rules above a client ignores the override and displays the
+real profile field.
+
+The server cannot thumbnail encrypted media, so a client must fetch the whole file every time it
+displays an encrypted media override. Therefore, clients MAY wish to downscale or compress the
+media prior to uploading, depending on the type of the media override.
 
 ## Potential issues
 
@@ -109,16 +149,15 @@ specification already places on a profile, 255 bytes per key and 64 KiB for the 
 so the event grows with the number of users overridden rather than without limit. In practice the
 feature is used for a handful of users at a few dozen bytes each.
 
-An override is a snapshot and does not track later changes to the real profile. That is largely the
-point, but it does mean a user will not notice when the underlying name changes.
-
 Clients that do not implement this proposal display real profiles, which is a safe degradation,
 though a user running two clients may then see different names in each.
 
 If the event is encrypted under [MSC4483], a client implementing this proposal but not that one
 cannot read the overrides. Worse, if the user edits an override on such a client, it rewrites the
 event in plaintext and every encrypted override is lost. Encryption also ties the event to secret
-storage, so a user who resets their identity loses their overrides.
+storage, so a user who resets their identity loses their overrides. Encrypted avatar media also
+costs more to display, since the server cannot thumbnail it. Downscaling before upload, as allowed
+above, limits that cost without removing it.
 
 ## Alternatives
 
@@ -169,9 +208,7 @@ presentational concern in the server.
 The user's homeserver can read their account data, so unless the event is encrypted under
 [MSC4483], the labels they choose are visible to a server administrator, and a label like
 "therapist" or "work" gives away plenty. Clients SHOULD NOT present the feature as private from the
-homeserver in that case. Encryption narrows the exposure but does not remove it: an overridden
-`avatar_url` points at unencrypted media, and the server can see it being fetched. The overridden
-user learns nothing either way: nothing is sent to them and no room state changes.
+homeserver in that case.
 
 ## Unstable prefix
 
