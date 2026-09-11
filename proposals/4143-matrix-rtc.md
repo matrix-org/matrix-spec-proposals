@@ -311,7 +311,11 @@ A typical lifecycle of a MatrixRTC membership involves a series of `m.rtc.member
 
 As explained above, the resolved membership state is also constrained by the associated `m.rtc.slot`
 event existing and being open. Since `m.rtc.slot` state may generally be changed at any time, clients
-MUST constantly react to and respect the latest state of the room.
+MUST constantly react to and respect the latest state of the room. Note that this means that a lingering
+`m.rtc.member` event with `membership = joined` on a closed slot is suddenly rejoined when the
+slot is opened back up. To avoid unexpected joins, clients SHOULD leave the slot by sending an explicit
+`m.rtc.member` event with `membership = leave` when the slot is closed. A suitable delay MAY be
+applied between the slot being closed and the client sending the leaving event.
 
 One problem with the membership lifecycle as listed above is that a client may not be able to
 send its leaving `m.rtc.member` event if it loses network connectivity. This would result
