@@ -272,7 +272,6 @@ events are treated as left which enables moderators to kick participants.
 #### Leaving a slot
 
 To voluntarily leave a slot, the client sends an `m.rtc.member` event for the desired `member.id` and with `membership = leave`.
-`m.rtc.member` event.
 
 ```json5
 {
