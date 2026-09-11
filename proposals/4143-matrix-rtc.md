@@ -603,7 +603,7 @@ a low potential for conflicts.
 
 MatrixRTC does not currently define how clients should discover or negotiate which real-time
 applications are available in a given room or between a set of users. For example, when multiple
-calling-capable applications exist, it is unclear which of them clients should offer for making a call.
+calling-capable applications exist, it is unclear which application a client should offer for making a call.
 The impact of this is limited for now as only a single application exists with [MSC4196]. Therefore,
 introducing a scheme for application discovery and/or negotiation is left to a future proposal.
 
