@@ -269,8 +269,8 @@ joined if all of the following conditions apply:
   This is to ensure that the membership view is as consistent as possible across all members.
 
 If these conditions are not fulfilled, clients MUST treat the member as left and refrain
-from connecting to their transports. The conditions above also imply that redacted `m.rtc.member`
-events are treated as left which enables moderators to kick participants.
+from connecting to their transports. The conditions above also enable moderators to kick participants
+by redacting all of their still sticky `m.rtc.member` events.
 
 #### Leaving a slot
 
