@@ -289,9 +289,8 @@ receipt mechanism.
 
 In encrypted rooms, the server can see neither the actual type of events nor their `m.mentions`. As a
 result, invite events will erroneously be caught by the `room`-kind push rule that is needed to implement
-mentions-only rooms which means they don't cause push notifications on mobile clients. As a result,
-`m.rtc.invite` notifications can be significantly delayed on mobile clients. This problem is not unique
-to MatrixRTC invites and [MSC4028] is an ongoing attempt at solving it generally.
+mentions-only rooms. This means invites don't trigger push notifications on mobile clients. This problem
+is not unique to MatrixRTC invites and [MSC4028] is an ongoing attempt at solving it generally.
 
 A possible mediation could be to send `m.rtc.invite` events unencrypted. The only currently available
 MatrixRTC transport is [MSC4075] which already exposes user participation in slots to the homeserver
