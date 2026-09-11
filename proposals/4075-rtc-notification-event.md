@@ -73,7 +73,7 @@ Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as pe
 associated delivery guarantee. The sticky durations of `m.rtc.invite` events, `m.rtc.member` events
 which accept an invite, or `m.rtc.decline` events which decline an invite SHOULD NOT be smaller than
 the invite's `lifetime`. Additionally, clients MUST implement the ephemeral map algorithm as per
-[MSC4354] to construct a state-like store of invite events. Tracking decline events in a map isn't
+[MSC4354] to construct a state-like store of `m.rtc.invite` events. Tracking `m.rtc.decline` events in a map isn't
 necessary because there is no need to update them after being sent.
 
 Additionally, both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted when the room is encrypted.
