@@ -318,6 +318,12 @@ allows to configure the threshold for MatrixRTC room invites separately from the
 for room mentions on other messages. It's unclear what use cases would require this, however.
 Additionally, an `invitees` property would largely duplicate what `m.mentions` already supports.
 
+### Treating sticky duration as lifetime
+
+The lifetime of `m.rtc.invite` could also be inferred from their sticky duration which would
+eliminate the need for an explicit `lifetime` property. This would make it impossible to measure
+the lifetime from `sender_ts`, however, to account for clock-drift between clients and servers.
+
 ## Security considerations
 
 ### Inviting without a valid `m.rtc.member` event
