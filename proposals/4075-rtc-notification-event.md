@@ -17,8 +17,9 @@ application, yet form a solid foundation for future extension.
 
 ## Proposal
 
-Two new room events `m.rtc.invite` and `m.rtc.decline` are introduced. These events can be sent by
-clients to prompt other users to join a MatrixRTC session and to reject a received invitation, respectively.
+Two new [sticky][MSC4354] room events, `m.rtc.invite` and `m.rtc.decline`, are introduced. These
+events can be sent by clients to prompt other users to join a MatrixRTC session and to reject a
+received invitation, respectively.
 
 The schema of `m.rtc.invite` is as follows:
 
