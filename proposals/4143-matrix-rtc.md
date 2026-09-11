@@ -374,7 +374,7 @@ Time                 ───────────────────�
 
 Some RTC transports may require server-side infrastructure such as SFUs or TURN servers. Clients
 need a mechanism to discover the availability of such infrastructure and any potentially required
-connection details. To enable this, a new authenticated Client-Server endpoint
+connection details. To enable this, a new authenticated and guest-accessible Client-Server endpoint
 `GET /_matrix/client/v1/rtc/transports` is introduced. The endpoint returns the available
 server-supported transport types:
 
