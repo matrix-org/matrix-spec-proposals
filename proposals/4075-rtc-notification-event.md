@@ -93,7 +93,8 @@ conditions apply:
   event) nor declined it (by sending an `m.rtc.decline` event).
 
 To prevent duplicate invitations, senders SHOULD NOT emit invites when another valid invite exists
-for the same slot and the same set of targeted users.
+for the same slot and the same set of targeted users. Additionally, clients MAY emit invites automatically
+when joining a slot but SHOULD only do so when no other user is currently joined to the slot.
 
 An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
 and an otherwise empty content and the same or a larger sticky duration. Alternatively, the event
