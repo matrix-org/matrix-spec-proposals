@@ -743,8 +743,8 @@ Servers may advertise support for the feature by listing `org.matrix.msc4143` in
 section of the response to [`GET /_matrix/client/versions`](https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientversions).
 
 Once this proposal completes FCP, servers may advertise support for the _stable_ identifiers by listing
-`org.matrix.msc4143.stable` in `unstable_features`. Clients may use this while they are waiting for the
-server to adopt a version of the spec that includes it.
+`org.matrix.msc4143.stable = true` in `unstable_features`. Clients may use this while they are waiting
+for the server to adopt a version of the spec that includes it.
 
 ## Dependencies
 
