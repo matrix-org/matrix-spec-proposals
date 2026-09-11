@@ -85,8 +85,8 @@ Additionally, both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted whe
 
 ### Sending invites
 
-A sending client SHOULD only consider an extended invite valid as long as all of the following
-conditions apply:
+A sending client SHOULD only consider an issued invite valid as long as all of the following conditions
+apply:
 
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the
   room where the invite was sent.
@@ -102,10 +102,10 @@ An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with
 and an otherwise empty content and the same or a larger sticky duration. Alternatively, the event
 MAY also be redacted which will remove it from the ephemeral map of sticky events.
 
-To prevent stale invitations, clients SHOULD withdraw previously extended invitations when the
+To prevent stale invitations, clients SHOULD withdraw previously sent invitations when the
 inviter themselves leaves the slot with no other members currently joined to the slot.
 
-How exactly sending clients present extended invitations in their UI is left as an implementation
+How exactly sending clients present issued invitations in their UI is left as an implementation
 detail. For instance, a sending client could use a ringing UI in [direct chats] while it is waiting
 for the invite to be acted on and stop ringing when the invite is accepted or declined (see the next
 section).
