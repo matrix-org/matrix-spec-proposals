@@ -225,6 +225,16 @@ over federation has been expanded upon further in MSC4259, see [this
 thread](https://github.com/matrix-org/matrix-spec-proposals/pull/4259/files#r2858835260).
 It's intended for federation-related performance discussion to continue there.
 
+### Impersonation
+Clients should be aware that a malicious user could set their status emoji to match
+the emoji that another user has at the end of their display name in order to make
+their profiles display similarly or the same in the client and avoid display name
+disambiguation, eg. 'Bill' could impersonate 'Bill 🎧' by setting his status emoji
+to '🎧' if the client displayed the two in similar ways. Clients SHOULD additionally
+validate that the emoji field in incoming profiles is a single grapheme in the set of
+emoji characters in order to minimise avoid a user setting their status emoji to a
+target's surname.
+
 ## Alternatives
 
 ### Single `m.status` field
