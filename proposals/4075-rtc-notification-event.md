@@ -107,8 +107,8 @@ inviter themselves leaves the slot with no other members currently joined to the
 
 How exactly sending clients present issued invitations in their UI is left as an implementation
 detail. For instance, a sending client could use a ringing UI in [direct chats] while it is waiting
-for the invite to be acted on and stop ringing when the invite is accepted or declined (see the next
-section).
+for the invite to be acted on and stop ringing when the invite is accepted, declined (see the next
+section) or expires.
 
 ### Receiving invites
 
