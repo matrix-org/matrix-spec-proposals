@@ -159,6 +159,62 @@ video calls.
 [direct chats]: https://spec.matrix.org/v1.19/client-server-api/#direct-messaging
 [MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
 
+### Exemplary invite flows
+
+To visualise how event stickiness, the rules for invite validity and actions taken on invites
+play together, a few examples are provided below. Note that, as mentioned before, the sticky
+duration of both invite events and events which react to invites SHOULD exceed the invite's
+`lifetime`. Additionally, the sticky duration of a leaving `m.rtc.member` event MUST be large
+enough to replace the corresponding joining member event in the sticky map as per [MSC4354].
+As a result, joins, leaves and declines always exceed the invite's `lifetime` which ensures
+that invalidated invites cannot be resurrected.
+
+All examples below use the following legend:
+
+```
+[===]: Event is the current one in the sticky map
+[xxx]: Event is not the current one anymore
+[###]: Invite is considered valid
+```
+
+#### Example 1: User accepts invite, then leaves again
+
+```
+m.rtc.invite          [==========|==========|==========]
+m.rtc.member (join)   |          [==========|xxxxxxxxxxxxxxxxxxxxx]
+m.rtc.member (leave)  |          |          [================================]
+                      |          |          |
+Invite valid          [##########]          |
+                      |          |          |
+                      Invite     Invite     Invitee
+                      sent       accepted   leaves
+```
+
+#### Example 2: User declines invite
+
+```
+m.rtc.invite          [==========|=====================]
+m.rtc.decline.        |          [================================]
+                      |          |
+Invite valid          [##########]
+                      |          |
+                      Invite     Invite
+                      sent       declined
+```
+
+#### Example 3: User is already joined before being invited
+
+```
+m.rtc.invite                     [==========|=====================]
+m.rtc.member (join)   [==========|==========|xxxxxxxxxx]
+m.rtc.member (leave)  |          |          [================================]
+                      |          |          |
+Invite valid          |          |          |
+                      |          |          |
+                      Slot       Invite     Invitee
+                      joined     sent       leaves
+```
+
 ### Push rules
 
 In order to allow clients to manage their notification settings for MatrixRTC invites, two new default
