@@ -77,6 +77,8 @@ but this time without the namespacing requirements[^nohash]. Additionally, the v
 be predictable for clients given that slots act like virtual addresses where members
 are allowed to meet.
 
+Slot IDs MUST NOT exceed the [maximum allowed length of `state_key`] which is 255 bytes.
+
 As an example, the default slot ID for the calling application from [MSC4196] is `m.call#room`.
 
 By prescribing a deterministic grammar for slot IDs, we avoid the need to define extra criteria for
@@ -86,6 +88,7 @@ NOT be used to parse the components out of a slot ID, however, as it could be mo
 proposal.
 
 [Common Namespaced Identifier Grammar]: https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar
+[maximum allowed length of `state_key`]: https://spec.matrix.org/v1.19/client-server-api/#size-limits
 
 [^nohash]: Note that due to the use of the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar),
 neither `application_type` nor `application_slot_id` can contain the `#` character.
