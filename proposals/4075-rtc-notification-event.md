@@ -30,7 +30,8 @@ The schema of `m.rtc.invite` is as follows:
   non-negative and SHOULD NOT be larger than 2 minutes. The RECOMMENDED value is 90 seconds.
 - `m.mentions`: (required, object): A [mentions] object to direct the invite at either a set
   of users in the room or the entire room. One of the two options MUST be used. An `m.mentions`
-  object with both `room` missing or set to false and `user_ids` missing or empty is invalid.
+  object with both `room` missing or set to false and `user_ids` missing or empty makes the
+  `m.rtc.invite` event invalid.
 - `sticky_key` (required, string): The event's sticky key as per [MSC4354]. MUST be equal to `slot_id`.
   This ensures that receivers only maintain one active invite per slot and sender.
 
