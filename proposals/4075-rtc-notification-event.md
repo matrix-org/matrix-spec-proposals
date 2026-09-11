@@ -7,7 +7,7 @@ MatrixRTC sessions are formed around `m.rtc.slot` state events to which users jo
 This proposal introduces a scheme for notifying users about MatrixRTC sessions. The goal explicitly
 is to construct a minimal solution that achieves feature parity with notifications in [legacy VoIP]
 and doesn't design out future improvements. This is achieved by mediating notifications via dedicated
-room events that prompt recipients to join a MatrixRTC session. Invites can be accepted by joining
+room events that invite recipients to join a MatrixRTC session. Invites can be accepted by joining
 the session with an appropriate `m.rtc.member` event, declined by sending a dedicated decline event
 or ignored entirely. Under this model, notifications are agnostic of the particular MatrixRTC
 application, yet form a solid foundation for future extension.
