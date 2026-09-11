@@ -304,7 +304,8 @@ wish to remind them of this.
 ## Privacy Considerations
 
 A user status’ wouldn’t be encrypted. They’re intended to be public. Clients MAY
-wish to remind them of this.
+wish to remind them of this. This is no worse that display names and presence
+which are the two mechanisms sometimes used to convey this infortmation currently.
 
 ## Dependencies
 
