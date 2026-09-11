@@ -24,7 +24,7 @@ The schema of `m.rtc.invite` is as follows:
 
 - `slot_id` (required, string): The `state_key` of the `m.rtc.slot` event for which the invite is
   handed out.
-- `sender_ts` (required, integer): The timestamp (in milliseconds since the epoch) when the sending
+- `sender_ts` (required, integer): The timestamp (in milliseconds since the Unix epoch) when the sending
   client created the event.
 - `lifetime` (required, integer): The time in milliseconds that the invite is valid for. MUST be
   non-negative and SHOULD NOT be larger than 2 minutes. The RECOMMENDED value is 90 seconds.
