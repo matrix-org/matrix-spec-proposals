@@ -59,12 +59,18 @@ playing, etc.).
 
 ##### `text` and `emoji` field grammar
 
-The `text` field is encoded UTF-8, and limited to 256 bytes. The `emoji` field
-is limited to 32 bytes. Homeservers SHOULD reject statuses that contain fields
-which exceed these limits with status code `400` and errcode `M_TOO_LARGE.`
-Homeservers SHOULD NOT reject `m.status` entries containing an `emoji` field
-with more than one grapheme. This is due to Unicode byte to grapheme definitions
-being continuously added over time.
+The `text` field is encoded UTF-8, and limited to 256 bytes, however the intention
+of the status text is to be around 30 characters. Clients SHOULD expect to display
+status strings of around this length and design UI to indicate to the user that
+this is the approximate length expected.
+
+The `emoji` field is limited to 32 bytes.
+
+Homeservers SHOULD reject statuses that contain fields which exceed these
+limits with status code `400` and errcode `M_TOO_LARGE.` Homeservers SHOULD NOT
+reject `m.status` entries containing an `emoji` field with more than one
+grapheme. This is due to Unicode byte to grapheme definitions being
+continuously added over time.
 
 #### `m.call`
 
