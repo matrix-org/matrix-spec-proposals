@@ -692,7 +692,7 @@ keys. This turned out to be problematic due to homeservers rate-limiting message
 being polluted with invisible events and, most importantly, the keys being shared with all room
 members rather than just the session members.
 
-#### Shared key encryption
+### Shared key encryption
 
 For large calls an encryption scheme based on a shared key instead of per-sender keys could be more
 efficient. This would obviously weaken security properties though. A future proposal may consider the
