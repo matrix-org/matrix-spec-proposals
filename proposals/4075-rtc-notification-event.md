@@ -378,9 +378,15 @@ Additionally, an `invitees` property would largely duplicate what `m.mentions` a
 
 ### Treating sticky duration as lifetime
 
-The lifetime of `m.rtc.invite` could also be inferred from their sticky duration which would
-eliminate the need for an explicit `lifetime` property. This would make it impossible to measure
-the lifetime from `sender_ts`, however, to account for clock-drift between clients and servers.
+The lifetime of `m.rtc.invite` events could also be inferred from their sticky duration which
+would eliminate the need for an explicit `lifetime` property. As mentioned earlier, clients
+evaluate an invite's effective lifetime based on `sender_ts`, falling back to `origin_server_ts`
+only on larger deviations. However, servers measure the sticky duration exclusively from
+`origin_server_ts` because they have no access to `sender_ts` in encrypted events. As a result,
+if the `lifetime` property were replaced with the event's sticky duration, clients could not
+reliably evaluate the lifetime against `sender_ts` anymore. This is because when the stickiness
+ends, the invite may not even be delivered to clients anymore. This would make it impossible to
+account for clock-drift between inviting clients and servers.
 
 ## Security considerations
 
