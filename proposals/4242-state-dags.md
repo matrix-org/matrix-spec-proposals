@@ -409,6 +409,12 @@ request parameters. For example, given these graphs:
 ```
 Walking with `latest_events={D,E}` returns `[B,C]` NOT `[C,B]`.
 
+If `/get_missing_events` is called with `state_dag: true` and `latest_events` contains a message event
+(not a state event) then the response MUST include the `prev_state_events` for that message event.
+This ensures that a server can perform a single `/get_missing_events` request to optimistically fill in
+the state DAG. Without this, a server would need to make additional `/event` requests to fetch the `prev_state_events`
+in the message event and then use those state events in the `/get_missing_events` request.
+
 Finally, both `earliest_events` and `latest_events` have an independent size limit of 100 elements when
 `state_dag = true`. An HTTP 400 error is returned if a server attempts to set more elements than this.
 Both of these fields are derived from a room's forward extremities, just at different points in time.
