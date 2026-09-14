@@ -278,7 +278,7 @@ holiday status manually.
 Using [Presence](https://spec.matrix.org/v1.17/client-server-api/#presence) was
 initially considered for this use case. It has existed for a long time, already
 features a `status_msg` field, and could easily have a `status_msg_emoji` field
-added and `m.call` in an extyensible status field as in [MSC4532](https://github.com/matrix-org/matrix-spec-proposals/pull/4532).
+added and `m.call` in an extensible status field as in [MSC4532](https://github.com/matrix-org/matrix-spec-proposals/pull/4532).
 It is already sent proactively to clients and over federation to other
 homeservers.
 
