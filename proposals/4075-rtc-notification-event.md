@@ -90,7 +90,11 @@ apply:
 
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the
   room where the invite was sent.
-- The invite's `lifetime`, as measured from `sender_ts` and capped at 2 minutes, has not elapsed.
+- The `lifetime`, as measured from `sender_ts`, has not elapsed. If `sender_ts` is more than
+  20 seconds ahead of `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts`
+  instead. This limits the impact of a malicious user faking `sender_ts` to trigger long-lived
+  notifications. Regardless of the basis for measuring, the remaining lifetime MUST be capped
+  at 2 minutes.
 - There are targeted room members who have neither accepted the invite (by sending an `m.rtc.member`
   event) nor declined it (by sending an `m.rtc.decline` event).
 
