@@ -131,6 +131,10 @@ For any of these limits enforced by the server, its representative field MUST be
 If the server doesn't enforce one of these limits, its representative field MUST be absent from the capability.
 If the server enforces none of these limits, the capability MUST have an empty body.
 
+> **Process note**: Previously the capability MAY have been omitted if empty, but that
+> would have caused problems with discovery of delayed events. Thus, the body MUST be
+> empty instead.
+
 For example, the following specifies a maximum allowed delay of 24 hours and a per-user limit of 10 delayed events:
 
 ```json
