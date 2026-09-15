@@ -252,6 +252,8 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
   last restarted.
 - `content` - Required. The content of the delayed event.
   This is the `content` property from the body of the original `PUT` request, not a preview of the full event after sending.
+  > **Process note**: The proposal had a typo where this previously placed the entire request
+  > body into `content`, including the fields communicated elsewhere in this schema.
 - `finalised` - Present only for finalised delayed events.
   An object with fields describing how the delayed event was finalised:
   - `error` - Present only for finalised delayed events that were cancelled due to an error.
