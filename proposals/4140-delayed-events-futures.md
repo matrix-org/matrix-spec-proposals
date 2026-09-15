@@ -90,13 +90,13 @@ sent as a non-delayed event.
 The homeserver SHOULD apply rate limiting to the scheduling of delayed events to provide mitigation against the
 [Resource Exhaustion](https://spec.matrix.org/v1.19/appendices/#threat-resource-exhaustion) threat.
 
-The homeserver MAY enforce a maximum allowed delay for delayed events. This limit is
+The homeserver MUST enforce a maximum allowed delay for delayed events. This limit is
 communicated to the client in a capability (described later in this proposal).
 If a requested delay exceeds this maximum, the homeserver will respond with HTTP 400
 and a [standard error response](https://spec.matrix.org/v1.19/client-server-api/#standard-error-response)
 with an `errcode` of `M_DELAY_TOO_LARGE`.
 
-The homeserver SHOULD enforce a limit of how many delayed events a user may have scheduled at once
+The homeserver MUST enforce a limit of how many delayed events a user may have scheduled at once
 to provide mitigation against both the
 [High Volume of Messages](https://spec.matrix.org/v1.19/appendices/#threat-high-volume-of-messages) and
 [Resource Exhaustion](https://spec.matrix.org/v1.19/appendices/#threat-resource-exhaustion) threats.
@@ -621,6 +621,9 @@ All new endpoints are authenticated.
 To mitigate the risk of users flooding the delayed events database, homeservers MUST impose limits on the number and
 timeout duration of scheduled delayed events. The exact limits are left as an implementation detail.
 
+> **Process note**: The MSC was internally inconsistent with how it applies rate limiting. It has been updated to
+> apply the "MUST" restriction above as it was the strongest condition in the MSC.
+
 It is the homeserver maintainer's responsibility to evaluate the best trade-off between what use cases
 their users have for delayed events for and the resources they are able to provide.
 
@@ -632,7 +635,7 @@ power levels at the time of the delayed event being sent (i.e. added to the DAG)
 
 This feature has the risk of being used by a malicious actor to circumvent existing rate limiting measures which
 corresponds to the [High Volume of Messages](https://spec.matrix.org/v1.19/appendices/#threat-high-volume-of-messages)
-threat. The homeserver SHOULD apply rate-limiting to both the scheduling of delayed events and the later sending to
+threat. The homeserver MUST apply rate-limiting to both the scheduling of delayed events and the later sending to
 mitigate this risk, as well as limiting the number of scheduled events a user can have at any one time.
 
 ## Unstable prefix
