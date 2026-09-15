@@ -475,6 +475,13 @@ cascading rejection: if A is rejected and B references A, then B is rejected and
 "If there are duplicate entries for a given `type` and `state_key` pair, reject" because it is entirely possible for
 `prev_state_events` to be pointing at two identical tuples on different branches.
 
+#### Out-of-band events changes
+
+A membership event which changes the membership of a user whose server is not in the room (e.g. rescinding an invite)
+MUST include the target user's current membership event in `prev_state_events`. That server cannot calculate the
+`auth_events` for the event as it does not have the state DAG, so this reference is the only way it can tell that
+the event supersedes the membership it currently holds.
+
 #### Faster remote room joins
 
 The state DAG model has implications on "faster remote room joins" which merely returns the auth chain for
