@@ -247,7 +247,7 @@ On success, the homeserver will respond with HTTP 200 and a JSON object containi
 - `delayed_since_ts` - Required. The timestamp (as Unix time in milliseconds) when the delayed event was scheduled or
   last restarted.
 - `content` - Required. The content of the delayed event.
-  This is the body of the original `PUT` request, not a preview of the full event after sending.
+  This is the `content` property from the body of the original `PUT` request, not a preview of the full event after sending.
 - `finalised` - Present only for finalised delayed events.
   An object with fields describing how the delayed event was finalised:
   - `error` - Present only for finalised delayed events that were cancelled due to an error.
