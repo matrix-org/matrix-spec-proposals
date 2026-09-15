@@ -129,7 +129,11 @@ The values of both the maximum allowed delay and the maximum allowed number of s
 the values of non-negative integer valued fields named `max_delay_ms` and `max_scheduled` respectively.
 For any of these limits enforced by the server, its representative field MUST be present in the capability.
 If the server doesn't enforce one of these limits, its representative field MUST be absent from the capability.
-If the server enforces none of these limits, the capability MAY be omitted entirely instead of having an empty body.
+If the server enforces none of these limits, the capability MUST have an empty body.
+
+> **Process note**: Previously the capability MAY have been omitted if empty, but that
+> would have caused problems with discovery of delayed events. Thus, the body MUST be
+> empty instead.
 
 For example, the following specifies a maximum allowed delay of 24 hours and a per-user limit of 10 delayed events:
 
