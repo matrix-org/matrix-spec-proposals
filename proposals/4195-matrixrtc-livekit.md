@@ -570,8 +570,10 @@ The full secret in `media_key.key` is then used as the raw byte input to LiveKit
 function, keyed by `media_key.index` and associated with the respective LiveKit participant identity
 derived as described [above].
 
-Clients MUST use a keyring size of 256 when initialising the custom key provider to align with the [0, 255] range
-of `media_key.index` as per [MSC4143].
+Clients MUST apply the following settings when initialising the custom key provider:
+
+- A keyring size of 256 to align with the [0, 255] range of `media_key.index` as per [MSC4143].
+- A ratchet salt value of `LKFrameEncryptionKey` (which is the default in LiveKit's SDKs).
 
 [encryption]: https://docs.livekit.io/transport/encryption/
 [custom key provider]: https://docs.livekit.io/transport/encryption/start/#custom-key-provider
