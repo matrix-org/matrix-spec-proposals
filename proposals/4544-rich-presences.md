@@ -124,8 +124,8 @@ Contains the following fields:
 - **`until`**. Unix timestamp (milliseconds) of when the current activity will end or change (e.g., when a match ends). Optional. If present, clients SHOULD display time remaining. If both `since` and `until` are present, clients SHOULD render a progress bar.
 - **`large_icon_url`**. Optional MXC URL of a large icon. Implementations SHOULD reuse previously uploaded icons rather than re-uploading on every update.
 - **`small_icon_url`**. Optional MXC URL of a small icon (e.g., a status indicator). Requires `large_icon_url` to be present.
-- **`large_icon_tooltip`**. Optional tooltip text for the large icon.
-- **`small_icon_tooltip`**. Optional tooltip text for the small icon.
+- **`large_icon_tooltip`**. Optional tooltip text for the large icon. Requires `large_icon_url` to be present.
+- **`small_icon_tooltip`**. Optional tooltip text for the small icon. Requires `small_icon_url` to be present.
 
 #### Type: `m.rpc.music`
 
