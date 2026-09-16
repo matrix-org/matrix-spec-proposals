@@ -211,7 +211,7 @@ or if the `action` is `cancel` and the delayed event has already been cancelled
 
 If the target delayed event is already finalised with an outcome that conflicts with the `action`, i.e.
 if the `action` is `send` or `restart` and the delayed event has already been cancelled,
-or if the `action` is `cancel` and the delayed event has already been sent,
+or if the `action` is `cancel` or `restart` and the delayed event has already been sent,
 the homeserver will respond with HTTP 409.
 
 If the action is `send` and the delayed event is unable to be sent due to an error,
