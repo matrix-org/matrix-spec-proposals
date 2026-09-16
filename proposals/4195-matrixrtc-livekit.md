@@ -109,6 +109,8 @@ while a LiveKit participant is identified by a unique "identity" string. These L
 primitives need to be mapped to the `m.rtc.member` events for MatrixRTC members from
 [MSC4143].
 
+[here]: https://docs.livekit.io/reference/internals/client-protocol/
+
 #### LiveKit room names
 
 LiveKit room names are derived by homeservers and shared with clients as part of the
