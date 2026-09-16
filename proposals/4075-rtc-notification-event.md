@@ -463,10 +463,16 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 
 | Stable identifier | Purpose | Unstable identifier |
 | ----------------- | ------- | --------------------|
-| `m.rtc.invite` | Event type | `org.matrix.msc4075.rtc.invite` |
-| `m.rtc.decline` | Event type | `org.matrix.msc4075.rtc.decline` |
+| `m.rtc.invite` | Event type | `org.matrix.msc4075.rtc.notification` |
+| `m.rtc.decline` | Event type | `org.matrix.msc4310.rtc.decline` |
 | `.m.rule.rtc.invite_for_me` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_me` |
 | `.m.rule.rtc.invite_for_room` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_room` |
+
+Note that the unstable identifier for invite events uses `rtc.notification` rather than `rtc.invite` due
+to an earlier iteration of this proposal having been implemented first. Moreover, decline events were
+originally specified in [MSC4310] and, therefore, use that MSC number in their unstable identifier.
+
+[MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
 
 ## Dependencies
 
