@@ -391,7 +391,7 @@ Below is an example of a LiveKit JWT for a local user:
   "sub": "{livekit_participant_identity}",
   "video": {
     "room": "{livekit_room_name}",
-    "roomCreate": true,
+    "roomCreate": false,
     "roomJoin": true,
     "canPublish": true,
     "canSubscribe": true,
