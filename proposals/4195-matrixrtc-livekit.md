@@ -572,12 +572,14 @@ derived as described [above].
 
 Clients MUST apply the following settings when initialising the custom key provider:
 
+- A key size of 128 bits which, at the moment, is the [only commonly supported value] across LiveKit's SDKs.
 - A keyring size of 256 to align with the [0, 255] range of `media_key.index` as per [MSC4143].
 - A ratchet salt value of `LKFrameEncryptionKey` (which is the default in LiveKit's SDKs).
 
 [encryption]: https://docs.livekit.io/transport/encryption/
 [custom key provider]: https://docs.livekit.io/transport/encryption/start/#custom-key-provider
 [above]: #livekit-participant-identities
+[only commonly supported value]: https://github.com/livekit/client-sdk-js/blob/303e9a8ed9e9749d97c0269135b055d843eab749/src/e2ee/types.ts#L232-L236
 
 ## Potential issues
 
