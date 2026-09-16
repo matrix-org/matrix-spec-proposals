@@ -71,9 +71,9 @@ The `ExtensionResult` has the following format:
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `next_batch` | `string` | Yes | The token to send as `since` in the next request. |
-| `events` | `[ToDeviceEvent]` | Yes | The messages for this device, in order of arrival. Empty when there are none. |
+| `messages` | `[ToDeviceMessage]` | Yes | The messages for this device, in order of arrival. Empty when there are none. |
 
-A `ToDeviceEvent` has the format of the `Event` in the `to_device` section of
+A `ToDeviceMessage` has the format of the `Event` in the `to_device` section of
 [`/v3/sync`](https://spec.matrix.org/v1.17/client-server-api/#extensions-to-sync):
 
 | Name | Type | Required | Comment |
@@ -89,7 +89,7 @@ For example:
     "extensions": {
         "to_device": {
             "next_batch": "1247",
-            "events": [
+            "messages": [
                 {
                     "type": "m.room_key_request",
                     "sender": "@alice:example.com",
@@ -214,7 +214,8 @@ Element X) have supported this extension with the unprefixed `to_device` key on 
 Until this MSC is accepted, implementations MUST use `org.matrix.msc4538.to_device` as the extension
 key on the stable [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) endpoint.
 The unprefixed `to_device` key remains in use on the unstable `org.matrix.simplified_msc3575`
-endpoint for compatibility with existing implementations.
+endpoint for compatibility with existing implementations, with the response format those
+implementations use (see the [Changelog](#changelog)).
 
 Per the common extension semantics of
 [MSC4508](https://github.com/matrix-org/matrix-spec-proposals/pull/4508), servers advertise support
@@ -242,3 +243,5 @@ Differences from the experimental implementation of simplified sliding sync in S
    everything queued.
 2. The `to_device` section may be omitted when there are no messages to send. Synapse always
    includes it.
+3. The messages are returned under `messages`. Synapse returns them under `events`, following
+   `/v3/sync`.
