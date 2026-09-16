@@ -370,7 +370,7 @@ servers MUST apply the following settings:
   timestamp in [token revocation].
 - `video.room`: The LiveKit room name, derived as described above.
 - `video.roomCreate`: Always `false`. This grant, somewhat [counterintuitively], also allows the token
-  holder to delete the LiveKit room which includes kicking all joined participants. Since this is a possible
+  holder to delete *any* LiveKit room which includes kicking all joined participants. Since this is a possible
   denial-of-service vector, room creation is exclusively and preemptively performed by the homeserver as
   described above.
 - `video.roomJoin`: Always `true`. This enables clients to join the LiveKit room if it exists.
