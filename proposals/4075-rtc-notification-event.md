@@ -467,7 +467,6 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 | `m.rtc.decline` | Event type | `org.matrix.msc4075.rtc.decline` |
 | `.m.rule.rtc.invite_for_me` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_me` |
 | `.m.rule.rtc.invite_for_room` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_room` |
-| `.m.rule.rtc.invite` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite` |
 
 ## Dependencies
 
