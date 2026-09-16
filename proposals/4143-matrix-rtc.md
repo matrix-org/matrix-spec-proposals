@@ -77,7 +77,7 @@ but this time without the namespacing requirements[^nohash]. Additionally, the v
 be predictable for clients given that slots act like virtual addresses where members
 are allowed to meet.
 
-Slot IDs MUST NOT exceed the [maximum allowed length of `state_key`] which is 255 bytes.
+Slot IDs MUST NOT exceed the [maximum allowed length of `state_key`], which is currently 255 bytes.
 
 As an example, the default slot ID for the calling application from [MSC4196] is `m.call#room`.
 
