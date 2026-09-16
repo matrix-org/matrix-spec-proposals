@@ -156,6 +156,7 @@ Sets the full set of active presences for the user.
 
 ```
 PUT /_matrix/client/v3/profile/{userId}/m.rpc
+Authorization: Bearer {accessToken}
 Content-Type: application/json
 
 {
