@@ -28,6 +28,10 @@ The `m.space.catch_all` event content holds the following boolean flags:
   considered. Whether a room is considered a direct chat depends solely on
   [`m.direct`](https://spec.matrix.org/v1.18/client-server-api/#mdirect) tracking, as long as this account
   data field is considered the canonical source for direct chats.
+- `filter_is_invite` (optional): If `true`, only orphan rooms for which the current user membership equals to
+  `invite` are considered. If `false` only orphan rooms that are *not* active invites are considered.
+  If omitted, both invites and non-invites are considered. Note that the invited room may already be part of
+  an existing space, for which this field does not bypass the related space orphan check.
 
 Clients should only consider `m.space.catch_all` state events using an empty state key.
 
