@@ -112,7 +112,12 @@ Contains the following fields:
 - **`type`**. Presence type. One of:
   - `m.rpc.activity` for games, applications, or general activities.
   - `m.rpc.music` for music playback.
-- **`expiry`**. Unix timestamp (milliseconds) after which this presence entry is considered stale. Clients MUST stop displaying the entry after expiry. Senders SHOULD remove expired entries before updating. Viewing clients MUST filter out expired entries regardless of whether the server's stored copy or federated cache still contains them.
+- **`expiry`**. Unix timestamp (milliseconds) after which this presence
+  entry MUST be treated as stale: clients MUST stop displaying it and
+  MUST re-fetch the profile to obtain any successor entry. Senders SHOULD
+  set `expiry` to a short lifetime (seconds to a few minutes) — viewers
+  rely on it as their refresh signal. Senders SHOULD still remove expired
+  entries before updating.
 - **`buttons`**. Optional array of **ButtonDataObject**s. Maximum 3.
 
 #### Type: `m.rpc.activity`
@@ -192,11 +197,13 @@ Clients MUST send a DELETE (rather than PUT with an empty array) when no active 
 #### Merge strategy
 
 Clients receive presence updates from local apps via the WebSocket transport, queue them, merge into the current local state, and then write the full array via PUT. Clients SHOULD hold subsequent writes until the previous PUT resolves to avoid race conditions.
-
+#### View-side refresh
+Changes made by senders are not broadcasted (profile field doesn't have push mechanism). Clients displaying another user's `m.rpc` field MUST therefore re-fetch the profile in following cases:
+1. Presence view is first opened (examples: profile card is displayed)
+2. Nearest `expiry` timestamp among from currently displayed entries passes. After that point, displayed set is to be considered stale, and the client MUST re-fetch to obtain next activity (examples: match in game ends and state changes to main menu, next track in playlist)
+Clients MAY re-fetch more frequently and MAY use a shorter poll interval while presence view is open. Past an entry's `expiry`, the client cannot know whetehr a successor entry exists, so it MUST stop displaying the expired entry as current and MUST re-fetch to find any successors.
 ### Examples
-
 #### Games
-
 ```json
 {
 	"m.rpc": [
@@ -213,9 +220,7 @@ Clients receive presence updates from local apps via the WebSocket transport, qu
 	]
 }
 ```
-
 #### Media
-
 ```json
 {
 	"m.rpc": [
@@ -241,13 +246,10 @@ Clients receive presence updates from local apps via the WebSocket transport, qu
 }
 ```
 ## Potential implementations
-
 - A game mod to send rich presence data (e.g., for Minecraft).
 - A mobile app to show currently playing song (like [Extera RPC](https://source.extera.xyz/Extera/RichPresenceAndroid)).
 - A script for mirroring "Now playing" data from Last.fm or similar services.
-
 ## Security considerations
-
 Users may not wish to share their activity information. This feature SHOULD be turned off by default. Clients MAY notify users about support for this feature upon first launch.
 
 Clients MUST prompt before navigating to any button URL. For buttons with `request_openid: true`, the prompt MUST additionally warn about the risks of OpenID requests.
@@ -255,5 +257,6 @@ Clients MUST prompt before navigating to any button URL. For buttons with `reque
 The opaque identifier used in the Unix socket path MUST NOT be directly traceable to the user's Matrix ID. A salted hash (e.g., HMAC-SHA256) of the Matrix user ID SHOULD be used instead.
 ## Alternatives
 - [MSC4320](https://github.com/matrix-org/matrix-spec-proposals/pull/4320): an alternative approach to rich presence in Matrix.
+- Extending existing presences to transmit rich presence data
 ## Unstable prefix
 While this MSC is considered unstable, `m.rpc` SHOULD be replaced with `xyz.extera.msc4544` in all field names and type identifiers.
