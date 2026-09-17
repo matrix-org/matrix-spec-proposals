@@ -103,9 +103,9 @@ result in the size of messages with an attached profile getting impractically la
 
 Alternatively, subprofiles could be added as a new event.
 
-### Using MSC4611
+### Using MSC4461
 
-Profile data could also be stored in account data as an extension to [MSC4611: Storing per-message profiles for users](https://github.com/matrix-org/matrix-spec-proposals/blob/tulir/per-message-profile-storage/proposals/4461-per-message-profile-storage.md):
+Profile data could also be stored in account data as an extension to [MSC4461: Storing per-message profiles for users](https://github.com/matrix-org/matrix-spec-proposals/blob/tulir/per-message-profile-storage/proposals/4461-per-message-profile-storage.md):
 
 ```json
 {
