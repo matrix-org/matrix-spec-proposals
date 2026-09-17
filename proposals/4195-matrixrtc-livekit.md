@@ -375,7 +375,9 @@ servers MUST apply the following settings:
   holder to delete *any* LiveKit room which includes kicking all joined participants. Since this is a possible
   denial-of-service vector, room creation is exclusively and preemptively performed by the homeserver as
   described above.
-- `video.roomJoin`: Always `true`. This enables clients to join the LiveKit room if it exists.
+- `video.roomJoin`: Always `true`. This enables clients to join the LiveKit room if it exists. Note that
+  when the [auto_create] feature is enabled on the SFU, this permission also allows a token holder to
+  create the room it is trying to join in case it doesn't exist yet.
 - `video.canPublish`: `true` if the token was requested by a local user. `false` otherwise. This enforces
   the multi-SFU configuration and ensures clients can only publish RTC data on a local SFU.
 - `video.canSubscribe`: Always `true`. This lets clients subscribe to RTC data on both local and
@@ -401,6 +403,8 @@ Below is an example of a LiveKit JWT for a local user:
   }
 }
 ```
+
+[auto_create]: https://github.com/livekit/livekit/blob/adf44a2eb6f35c1b0df81a2a54428329c1a61dec/config-sample.yaml#L210
 
 #### Kicking users from the SFU on room leave/ban
 
