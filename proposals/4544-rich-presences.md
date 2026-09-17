@@ -112,12 +112,7 @@ Contains the following fields:
 - **`type`**. Presence type. One of:
   - `m.rpc.activity` for games, applications, or general activities.
   - `m.rpc.music` for music playback.
-- **`expiry`**. Unix timestamp (milliseconds) after which this presence
-  entry MUST be treated as stale: clients MUST stop displaying it and
-  MUST re-fetch the profile to obtain any successor entry. Senders SHOULD
-  set `expiry` to a short lifetime (seconds to a few minutes) — viewers
-  rely on it as their refresh signal. Senders SHOULD still remove expired
-  entries before updating.
+- **`expiry`**. Unix timestamp (milliseconds) after which this presence entry MUST be treated as stale: clients MUST stop displaying it and MUST re-fetch the profile to obtain any successor entry. Senders SHOULD set `expiry` to a short lifetime (seconds to a few minutes) — viewers rely on it as their refresh signal. Senders SHOULD still remove expired entries before updating.
 - **`buttons`**. Optional array of **ButtonDataObject**s. Maximum 3.
 
 #### Type: `m.rpc.activity`
