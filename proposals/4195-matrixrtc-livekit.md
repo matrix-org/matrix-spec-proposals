@@ -382,8 +382,9 @@ servers MUST apply the following settings:
   the multi-SFU configuration and ensures clients can only publish RTC data on a local SFU.
 - `video.canSubscribe`: Always `true`. This lets clients subscribe to RTC data on both local and
   remote SFUs.
-- `video.canUpdateOwnMetadata`: Always `true`. This lets clients update their own metadata. The latter is
-  a single string that can store any data.
+- `video.canUpdateOwnMetadata`: This lets clients update their own metadata. Since no MatrixRTC applications
+  currently make use of this metadata, servers SHOULD set the permission to `false` to grant clients the
+  least amount of privileges required.
 
 Below is an example of a LiveKit JWT for a local user:
 
@@ -399,7 +400,7 @@ Below is an example of a LiveKit JWT for a local user:
     "roomJoin": true,
     "canPublish": true,
     "canSubscribe": true,
-    "canUpdateOwnMetadata": true
+    "canUpdateOwnMetadata": false
   }
 }
 ```
