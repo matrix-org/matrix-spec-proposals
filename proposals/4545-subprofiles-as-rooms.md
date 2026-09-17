@@ -131,7 +131,7 @@ Profile data could also be stored in account data as an extension to [MSC4611: S
 }
 ```
 
-This could also be surfaced as profile endpoints, using the `id` to surface the correct profile. Profile data is 'unlisted'. (It can be reached only through its identifier, it must be known before viewing a profile.) This lacks the `restricted` privacy control.
+This could also be surfaced as `/subprofile` endpoints, using the `id` to query the correct profile. Profile data is 'unlisted'. (It can be reached only through its identifier, it must be known before viewing a profile.) This lacks the `restricted` privacy control.
 
 ## Security considerations
 
