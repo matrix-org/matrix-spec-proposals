@@ -254,4 +254,4 @@ The opaque identifier used in the Unix socket path MUST NOT be directly traceabl
 - [MSC4320](https://github.com/matrix-org/matrix-spec-proposals/pull/4320): an alternative approach to rich presence in Matrix.
 - Extending existing presences to transmit rich presence data
 ## Unstable prefix
-While this MSC is considered unstable, `m.rpc` SHOULD be replaced with `xyz.extera.msc4544` in all field names and type identifiers.
+While this MSC is considered unstable, `m.rpc` SHOULD be replaced with `xyz.extera.msc4544.rpc` in all field names and type identifiers.
