@@ -103,6 +103,36 @@ result in the size of messages with an attached profile getting impractically la
 
 Alternatively, subprofiles could be added as a new event.
 
+### Using MSC4611
+
+Profile data could also be stored in account data as an extension to [MSC4611: Storing per-message profiles for users](https://github.com/matrix-org/matrix-spec-proposals/blob/tulir/per-message-profile-storage/proposals/4461-per-message-profile-storage.md):
+
+```json
+{
+  "type": "m.per_message_profiles",
+  "content": {
+    "default_profile_id": null,
+    "profiles": [
+      {
+        "id": "cat",
+        "displayname": "Cat 🐈️",
+        "triggers": [
+          {"prefix": "meow ", "suffix": " meow", "keep_trigger": true},
+          {"prefix": "cat: "}
+        ],
+        "m.biography": {
+          "m.text": [
+            { "body": "hello world!\n\ninterests:\n-  programming\n-  matrix\n-  sleeping\n-  petting cats" }
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+This could also be surfaced as profile endpoints, using the `id` to surface the correct profile. Profile data is 'unlisted'. (It can be reached only through its identifier, it must be known before viewing a profile.) This lacks the `restricted` privacy control.
+
 ## Security considerations
 
 Due to the small scope of this change, there should be not be many security considerations that would not
