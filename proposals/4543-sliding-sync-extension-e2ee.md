@@ -218,7 +218,8 @@ on the stable [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull
 Per the common extension semantics of
 [MSC4508](https://github.com/matrix-org/matrix-spec-proposals/pull/4508), servers advertise support
 for this extension in `unstable_features` of
-[`/_matrix/client/versions`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientversions):
+[`/_matrix/client/versions`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientversions)
+by setting the following flags to `true`:
 
 - `org.matrix.msc4543` while this MSC is unstable; and
 - `org.matrix.msc4543.stable` once this MSC is accepted and the server supports the extension as
