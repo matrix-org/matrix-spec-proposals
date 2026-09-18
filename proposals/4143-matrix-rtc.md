@@ -607,13 +607,17 @@ and ongoing sessions breaking. Slots are only used for administration, however, 
 is actually desired. They should generally see far fewer updates than memberships and exhibit
 a low potential for conflicts.
 
-### Discovery and negotiation of application types
+### Negotiation of compatible application and transport types
 
-MatrixRTC does not currently define how clients should discover or negotiate which real-time
-applications are available in a given room or between a set of users. For example, when multiple
-calling-capable applications exist, it is unclear which application a client should offer for making a call.
-The impact of this is limited for now as only a single application exists with [MSC4196]. Therefore,
-introducing a scheme for application discovery and/or negotiation is left to a future proposal.
+MatrixRTC does not currently define how clients should negotiate which real-time applications or
+transports are available in a given room or between a set of users. For example, when multiple
+calling-capable applications exist, it is unclear which application a client should offer for
+making a call. Similarly, two clients trying to join a session will fail connecting to each other
+if they don't support the same set of transports. The impact of this is limited for now as only
+a single application ([MSC4196]) and transport ([MSC4195]) exist. Additionally, for transports
+`can_subscribe` lets clients recognise when others won't be able to subscribe to their published
+streams. A more advanced negotiation mechanism for applications and transports is left to a
+future proposal.
 
 ### Accurate session reconstruction
 
