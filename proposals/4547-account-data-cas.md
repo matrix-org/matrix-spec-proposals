@@ -1,4 +1,4 @@
-# MSC0000: Atomic Account Data Updates via Compare-and-Swap
+# MSC4547: Atomic Account Data Updates via Compare-and-Swap
 
 Clients may want to update account data while preventing race conditions with other clients,
 in particular to prevent outdated clients from accidentally undoing newer changes made by other clients
