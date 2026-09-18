@@ -162,9 +162,9 @@ homeserver needs to explicitly allow-list.
 | `proxy_prefix` | Registration file property | `io.element.msc4512.proxy_prefix` |
 | `proxy_url` | Registration file property | `io.element.msc4512.proxy_url` |
 | `/_matrix/client/v1/appservice/fed_proxy` | Endpoint | `/_matrix/client/unstable/io.element.msc4512/appservice/fed_proxy` |
-| `M_FEDPROXY_DESTINATION_DENIED` | Error code | `IO.ELEMENT.MSC4512.M_FEDPROXY_DESTINATION_DENIED` |
-| `M_FEDPROXY_PATH_NOT_ALLOWED` | Error code | `IO.ELEMENT.MSC4512.M_FEDPROXY_PATH_NOT_ALLOWED` |
-| `M_FEDPROXY_CONNECTION_FAILED` | Error code | `IO.ELEMENT.MSC4512.M_FEDPROXY_CONNECTION_FAILED` |
+| `M_FEDPROXY_DESTINATION_DENIED` | Error code | `IO.ELEMENT.MSC4512_FEDPROXY_DESTINATION_DENIED` |
+| `M_FEDPROXY_PATH_NOT_ALLOWED` | Error code | `IO.ELEMENT.MSC4512_FEDPROXY_PATH_NOT_ALLOWED` |
+| `M_FEDPROXY_CONNECTION_FAILED` | Error code | `IO.ELEMENT.MSC4512_FEDPROXY_CONNECTION_FAILED` |
 
 ## Dependencies
 
