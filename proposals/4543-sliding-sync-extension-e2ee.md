@@ -6,7 +6,7 @@ only includes core room data and omits other data, such as the end-to-end encryp
 into individually via the `extensions` field of the sync request.
 
 This MSC defines the extension for the three end-to-end encryption fields that
-[`/v3/sync`](https://spec.matrix.org/v1.17/client-server-api/#e2e-extensions-to-sync) carries
+[`/v3/sync`](https://spec.matrix.org/v1.19/client-server-api/#e2e-extensions-to-sync) carries
 outside any room: `device_lists`, `device_one_time_keys_count` and
 `device_unused_fallback_key_types`. A client uses them to keep its copy of other users' device lists
 current and to keep the server supplied with one-time and fallback keys. Without them, a client
@@ -66,7 +66,7 @@ The `ExtensionResult` has the following format:
 | `device_unused_fallback_key_types` | `[string]` | Yes | The key algorithms for which the device has a fallback key that has not been used. |
 
 A `DeviceLists` has the format of the `DeviceLists` in
-[`/v3/sync`](https://spec.matrix.org/v1.17/client-server-api/#e2e-extensions-to-sync):
+[`/v3/sync`](https://spec.matrix.org/v1.19/client-server-api/#e2e-extensions-to-sync):
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
@@ -112,12 +112,12 @@ A client therefore has no coverage for a period in two cases:
 In both cases the client MUST bring its tracked device lists up to date before use. A client SHOULD
 persist the `pos` up to which it has applied device list changes, as it would the `next_batch` of
 `/v3/sync`, and MAY call
-[`/keys/changes`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3keyschanges)
+[`/keys/changes`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3keyschanges)
 with that `pos` as `from` and the end of the gap as `to`. The end of the gap is the `pos` returned
 by the request without `pos` in the first case, and the `pos` the client sent in the enabling
 request in the second. If it has no persisted `pos`, or the call fails with `M_UNKNOWN_POS`, it MUST
 treat every device list it tracks as outdated and refresh them with
-[`/keys/query`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3keysquery)
+[`/keys/query`](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3keysquery)
 before use.
 
 `changed` MAY be a superset of the users whose device lists have actually changed. A server MAY
@@ -154,7 +154,7 @@ included at or before the request's `pos`.
 
 `device_unused_fallback_key_types` lists the algorithms for which the device has uploaded a fallback
 key that no
-[`/keys/claim`](https://spec.matrix.org/v1.17/client-server-api/#post_matrixclientv3keysclaim)
+[`/keys/claim`](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3keysclaim)
 response has returned. An empty list means the device has no unused fallback key, whether because
 none was uploaded or because it has been used.
 
@@ -218,7 +218,7 @@ on the stable [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull
 Per the common extension semantics of
 [MSC4508](https://github.com/matrix-org/matrix-spec-proposals/pull/4508), servers advertise support
 for this extension in `unstable_features` of
-[`/_matrix/client/versions`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientversions)
+[`/_matrix/client/versions`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientversions)
 by setting the following flags to `true`:
 
 - `org.matrix.msc4543` while this MSC is unstable; and
