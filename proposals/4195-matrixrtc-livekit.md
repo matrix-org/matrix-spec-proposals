@@ -669,6 +669,23 @@ the chances of accidentally using the wrong order of array elements. On the down
 Canonical JSON serialisation for objects is significantly more complex than for arrays. Overall, this
 would likely result in a higher chance of implementation errors.
 
+### Scheduling and delegating delayed leaves in a single endpoint
+
+Delegating a delayed leave event under this proposal requires two requests: One to schedule the delayed
+event (via `/rooms/{roomId}/delayed_event/{eventType}/{txnId}` from [MSC4140]) and one to delegate that
+schedlued event (via `/rtc/livekit/delegate_delayed_leave`). These actions could also be combined into
+a single endpoint that takes the (encrypted) content of the delayed leave event, schedules and delegates
+it and finally returns its `delay_id` (so that the calling client can still cancel it if needed). Apart
+from just requiring a single Client-Server request, this has the benefit that the client doesn't need
+to decide on a delay timeout that is suitable for delegation anymore. Instead the server can just pick
+the timeout itself.
+
+The downside, however, is that future transports that are not mediated via the homeserver will still
+require the two-step process because an external service cannot schedule delayed events itself. This
+would lead to clients having to implement both paths which could add considerable complexity. A future
+proposal may explore these drawbacks further and consider the introduction of a joint endpoint by
+versioning `/rtc/livekit/delegate_delayed_leave`.
+
 ## Security considerations
 
 ### Resource abuse
