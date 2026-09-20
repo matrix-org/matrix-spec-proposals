@@ -6,11 +6,9 @@ clutter. This proposal defines a standardized pronouns field on top of
 
 ## Proposal
 
-Profiles may have an optional `m.pronouns` field as an
+Profiles MAY have an optional `m.pronouns` field as an
 array. These fields can be fetched through the
 [profile API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles).
-Clients should use these instead of they/them where possible. All fields
-within `m.pronouns` are optional, excluding `"language"` and `"summary"`.
 
 ### Example
 
@@ -19,12 +17,10 @@ within `m.pronouns` are optional, excluding `"language"` and `"summary"`.
     "avatar_url": "…", "displayname": "…",
     "m.pronouns": [
         {
-            "grammatical_gender": "inanimate",
             "language": "en",
             "summary": "it/its"
         },
         {
-            "grammatical_gender": "feminine"
             "language": "en",
             "summary": "she/her"
         }
@@ -32,21 +28,19 @@ within `m.pronouns` are optional, excluding `"language"` and `"summary"`.
 }
 ```
 The example uses it/its pronouns followed by she/her pronouns, both in English.
-The array is ordered by preference, `language` should be a
+The array is ordered by preference, `language` SHOULD be a
 [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language code, and
-clients should render the `summary` for the pronouns. Clients SHOULD use the
-`grammatical_gender` if possible in state events. For example, "Alice changed
-her avatar" for `feminine` or "Alex changed its avatar" for `inanimate`.
+clients MUST render the `summary` for the pronouns, and clients SHOULD only show
+pronouns in the user's language.
 
 ## Potential issues
 
 Some users may not want to publish pronouns to others, although that is out of
-scope for this MSC. Some users may also complain about "woke", although
-pronouns are a basic part of langauge.
+scope for this MSC.
 
 ## Security issues
 
-None.
+Potential for abusive content in the `summary` of pronouns.
 
 ## Unstable prefix
 
