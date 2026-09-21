@@ -143,7 +143,7 @@ The new `/sync` section looks like:
                       "duration_ms": 300000
                     },
                     "origin_server_ts": 1757920344000,
-                    "content": { ... }
+                    "content": { ... },
                     "unsigned": { "sticky_duration_ttl_ms": 289170 }
                 }
             ]
