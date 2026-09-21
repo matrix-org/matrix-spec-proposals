@@ -68,6 +68,7 @@ added to the following endpoints:
 
 * [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
 * [`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
+* `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` as defined in [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
 
 To calculate if any sticky event is still sticky:
 
