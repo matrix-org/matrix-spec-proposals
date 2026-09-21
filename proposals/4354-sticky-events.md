@@ -161,7 +161,7 @@ This ensures we minimise duplication in the `/sync` response JSON.
 Servers MAY limit the number of sticky events in the `sticky.events` section; in that case a limit of 100
 is suggested.
 
-**Interaction with `RoomFilter`:** The `RoomFilter` does not apply to the `sticky.events` section, as it is neither `timeline` nor `state`.
+**Interaction with `RoomFilter`:** The `state` and `timeline` fields of the `RoomFilter` do not apply to the `sticky.events` section.
 However, the `timeline` filter MUST be applied before applying the deduplication logic above.
 In other words, if a sticky event would normally appear in both the `timeline.events` section and the `sticky.events` section,
 but is filtered out by the `timeline` filter, the sticky event MUST appear in `sticky.events`.
