@@ -256,7 +256,8 @@ receiving server to think the sender is joined (so it passes auth checks). Unenc
 require the receiving server to think the sender is joined.
 
 The prior lack of historical room key sharing that could make some encrypted sticky events undecryptable when new users join the room
-has been alleviated with [MSC4268: Sharing room keys for past messages](https://github.com/matrix-org/matrix-spec-proposals/pull/4268).
+has been alleviated in some cases with [MSC4268: Sharing room keys for past messages](https://github.com/matrix-org/matrix-spec-proposals/pull/4268).
+For rooms with `history_visibility` set to `joined` or `invited`, this is still an unsolved problem and is not solved here.
 
 ### Spam
 
