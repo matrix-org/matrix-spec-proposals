@@ -109,6 +109,8 @@ whereas the purpose of delayed events is to affect the send time (and thus start
 
 ### Sync API changes
 
+NOTE: The extension for MSC4186 Sliding Sync has been split out to [MSC4480: Sliding Sync Extension: Sticky Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4480).
+
 #### Current `/sync`
 
 The new `/sync` section looks like:
