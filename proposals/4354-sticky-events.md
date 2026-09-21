@@ -93,7 +93,7 @@ To implement these properties, servers MUST:
 * Ensure sticky events are **delivered** to clients via `/sync` in a new section of the sync response,
   regardless of whether the sticky event falls within the timeline limit of the request.
   If there are too many sticky events to deliver at once, they will be delivered in subsequent `/sync` responses instead.
-* **Re-evaluate soft-failure** of soft-failed unexpired sticky events when the membership state of the sender changes.[^softfail]
+* **Re-evaluate soft-failure** of soft-failed unexpired sticky events when the authorising state of the sticky event changes.[^softfail]
 * History visibility **checks** MUST NOT be applied to sticky events. Any joined user is authorised to see sticky events
   for the duration they remain sticky.[^hisvis]
 
