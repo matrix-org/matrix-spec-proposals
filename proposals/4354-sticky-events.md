@@ -72,8 +72,9 @@ added to the following endpoints:
 To calculate if any sticky event is still sticky:
 
 * Calculate the start time:  
-  * The start time is `min(received_ts, origin_server_ts)`. This ensures that malicious origin timestamps cannot
-    specify start times in the future.  
+  * The start time is `min(received_ts, origin_server_ts)`, where `received_ts` is the local homeserver's clock's timestamp at the
+    instant the event is received over the network.
+    This ensures that malicious origin timestamps cannot specify start times in the future.  
 * Calculate the end time as `start_time + min(sticky_duration_ms, 3600000)`.  
 * If the end time is in the future, the event remains sticky.
 
