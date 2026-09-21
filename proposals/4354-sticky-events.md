@@ -190,21 +190,11 @@ out across multiple sequential sync responses.
 As sticky events are sent to clients regardless of the timeline limit, care needs to be taken to ensure
 that other room participants cannot send large volumes of sticky events.
 
-Servers SHOULD rate limit sticky events over federation. Servers can choose one of two options to do this:
- - A) Do not persist the sticky events and expect the other server to retry later.
- - B) Persist the sticky events but wait a while before delivering them to clients.
+Servers MAY rate limit sticky events received over federation.
+As a suggested mechanism, servers MAY choose to persist, including deferred persistence, the sticky events but wait a while before delivering them to clients.
 
-Option A means servers don't need to store sticky events in their database, protecting disk usage at the cost of more bandwidth.
-To implement this, servers MUST return a non-2xx status code from `/send` such that the sending server
-*retries the request* in order to guarantee that the sticky event is eventually delivered. Servers MUST NOT
-silently drop sticky events and return 200 OK from `/send`, as this breaks the eventual delivery guarantee.
-Care must be taken with this approach as all the PDUs in the transaction will be retried, even ones for different rooms / not sticky events.
-Servers solely relying on this option will need to consider that sticky events may be transitively delivered by a 3rd server.
-
-Option B means servers have to store the sticky event in their database, protecting bandwidth at the cost of more disk usage.
-This provides fine-grained control over when to deliver the sticky events to clients as the server doesn't need
-to wait for another request. Servers SHOULD deliver the event to clients before the sticky event expires. This may not
-always be possible if the remaining time is very short.
+For cases of extreme load, servers can use any normal load-shedding mechanisms, such as responding to `/send` with non-`200 OK`
+response codes to cause the sender to back off.
 
 ### Federation behaviour
 
