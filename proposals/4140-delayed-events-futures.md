@@ -128,16 +128,13 @@ with an `errcode` of `M_FORBIDDEN`.
 
 #### Delayed event limits as a capability
 
-The values of both the maximum allowed delay and the maximum allowed number of scheduled events are advertised as a
+The limits on both the maximum allowed delay and the maximum allowed number of scheduled events are advertised as a
 [capability](https://spec.matrix.org/v1.19/client-server-api/#capabilities-negotiation) named `m.delayed_events`, via
 the values of non-negative integer valued fields named `max_delay_ms` and `max_scheduled` respectively.
-For any of these limits enforced by the server, its representative field MUST be present in the capability.
-If the server doesn't enforce one of these limits, its representative field MUST be absent from the capability.
-If the server enforces none of these limits, the capability MUST have an empty body.
+Both of these fields are REQUIRED as the server MUST enforce their respective limit.
 
-> **Process note**: Previously the capability MAY have been omitted if empty, but that
-> would have caused problems with discovery of delayed events. Thus, the body MUST be
-> empty instead.
+> **Process note**: Previously either field of the capability MAY have been omitted to indicate that its
+> respective limit was not enforced, but that is no longer permitted since the server MUST now enforce both limits.
 
 For example, the following specifies a maximum allowed delay of 24 hours and a per-user limit of 10 delayed events:
 
@@ -152,7 +149,7 @@ For example, the following specifies a maximum allowed delay of 24 hours and a p
 }
 ```
 
-If the capability is absent, clients SHOULD assume that delayed events are disabled / not supported by the server,
+If the capability is absent, clients MUST treat delayed events as disabled / not supported by the server,
 i.e. that the capability is functionally equivalent to the following:
 
 ```json
