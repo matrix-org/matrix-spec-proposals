@@ -78,6 +78,9 @@ To calculate if any sticky event is still sticky:
 * Calculate the end time as `start_time + min(sticky_duration_ms, 3600000)`.  
 * If the end time is in the future, the event remains sticky.
 
+As it depends on the server-private timestamp of receipt, this calculation is carried out by servers.
+Clients will instead use the `unsigned.sticky_duration_remaining_ms` field hereinafter.
+
 Sticky events are like normal message events and are authorised using normal PDU checks. They have the
 following _additional_ properties[^prop]:
 
@@ -135,7 +138,7 @@ The new `/sync` section looks like:
                     },
                     "origin_server_ts": 1757920341020,
                     "content": { ... },
-                    "unsigned": { "sticky_duration_ttl_ms": 258113 }
+                    "unsigned": { "sticky_duration_remaining_ms": 258113 }
                 },
                 {
                     "sender": "@alice:example.com",
@@ -145,7 +148,7 @@ The new `/sync` section looks like:
                     },
                     "origin_server_ts": 1757920344000,
                     "content": { ... },
-                    "unsigned": { "sticky_duration_ttl_ms": 289170 }
+                    "unsigned": { "sticky_duration_remaining_ms": 289170 }
                 }
             ]
         }
@@ -169,9 +172,13 @@ but is filtered out by the `timeline` filter, the sticky event MUST appear in `s
 Sticky events follow the same 'stream-like' behaviour as the `timeline`. This means clients will receive a sticky
 event S _once_, and subsequent requests with an advanced `since` token will not return the same sticky event S.
 
-When sending sticky events down `/sync`, the `unsigned` section SHOULD have a `sticky_duration_ttl_ms` to indicate
-how many milliseconds until the sticky event expires. This provides a way to reduce clock skew between a local homeserver
-and their connected clients. Clients SHOULD use this value to determine when the sticky event expires.
+When sending sticky events down `/sync`, the `unsigned` section MUST have a `sticky_duration_remaining_ms` field
+to indicate how many milliseconds until the sticky event expires.
+From the client's point of view, this relative expiry timestamp is authoritative. Clients MUST use this value to determine when the sticky event expires.
+The server MUST have already applied the 1 hour bounded sticky duration; essentially, this timestamp MUST
+agree with when the server will consider the event to have lost its stickiness.
+When the sticky event is expired (and thus no longer considered a sticky event), the `sticky_duration_remaining_ms`
+field MUST be omitted.
 
 When the user joins a room, the server MUST include all unexpired sticky events for that room in their subsequent
 sync response(s). The server MAY exceed the suggested 100 sticky event limit to do this, or MAY spread these
@@ -321,10 +328,10 @@ to their own clients to produce the same outcome. Federation equivocation is mit
 persisted in the DAG, as servers can talk to each other to fetch all events. There is no way to protect against
 dropped updates for the latter scenario.
 
-Servers may lie to their own clients about the `unsigned.sticky_duration_ttl_ms` value, with the aim of making
+Servers may lie to their own clients about the `unsigned.sticky_duration_remaining_ms` value, with the aim of making
 certain sticky events last longer or shorter than intended. Servers can already maliciously drop sticky events
 to lose updates, and the lack of any verification of the event hash means servers can also maliciously alter the
-`origin_server_ts`. Therefore, adding `unsigned.sticky_duration_ttl_ms` doesn't materially make the situation worse.
+`origin_server_ts`. Therefore, adding `unsigned.sticky_duration_remaining_ms` doesn't materially make the situation worse.
 In the common case, it provides protection against clock skew when clients have the wrong time. 
 
 ## Unstable Prefix
@@ -334,7 +341,7 @@ In the common case, it provides protection against clock skew when clients have 
 - The `/sync` response section is `msc4354_sticky`.
 - The sticky key in the `content` of the PDU is `msc4354_sticky_key`.
 - To enable this in SSS, the extension name is `org.matrix.msc4354.sticky_events`.
-- The `unsigned.sticky_duration_ttl_ms` field is `unsigned.msc4354_sticky_duration_ttl_ms`
+- The `unsigned.sticky_duration_remaining_ms` field is `unsigned.msc4354_sticky_duration_ttl_ms`
 
 The `/versions` response in the CSAPI includes:
 ```json
