@@ -34,7 +34,7 @@ Clients MAY send the video in other 1:1 resolutions.
 ## Potential issues
 
 Senders can set `m.circle` on a video that is not 1:1.
-Receivers SHOULD still treat the event as a Circle and MAY use crop-to-fit to mitigate this.
+Receivers MAY still treat the event as a Circle and MAY use crop-to-fit to mitigate this.
 
 ## Alternatives
 
@@ -49,6 +49,11 @@ with other content-level annotations such as [MSC3245]'s voice marker.
 For naming, I believe "Circles" is the most natural way to call this feature.
 "Video messages" is easy to confuse with a normal video message.
 "Video Notes" is Telegram-specific and personally doesn't sound right to me.
+
+The 1:1 aspect ratio is the core function of this feature. Circles are expected to be small, square videos.
+If the aspect ratio will be unspecified, clients won't be able to render the content expectedly:
+* if we crop, the center of the video might not be something meaningful without the full aspect ratio
+* apps will be downloading unnecessary data as it'll be cropped to 1:1 anyway
 
 ## Security considerations
 
