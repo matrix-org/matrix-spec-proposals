@@ -169,6 +169,8 @@ However, the `timeline` filter MUST be applied before applying the deduplication
 In other words, if a sticky event would normally appear in both the `timeline.events` section and the `sticky.events` section,
 but is filtered out by the `timeline` filter, the sticky event MUST appear in `sticky.events`.
 
+**Ignored users:** Servers MUST omit sticky events sent by ignored users.
+
 Sticky events follow the same 'stream-like' behaviour as the `timeline`. This means clients will receive a sticky
 event S _once_, and subsequent requests with an advanced `since` token will not return the same sticky event S.
 
