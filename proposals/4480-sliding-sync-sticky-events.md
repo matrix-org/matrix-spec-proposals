@@ -31,7 +31,8 @@ and, when enabled, the following response extension shape:
                 "duration_ms": 300000
               },
               "origin_server_ts": 1757920344000,
-              "content": { ... }
+              "content": { ... },
+              "unsigned": { "sticky_duration_remaining_ms": 289170 }
           }]
       }
   }
@@ -40,6 +41,12 @@ and, when enabled, the following response extension shape:
 
 As with regular `/sync`, if a sticky event appears in the `timeline_events` section of the sync
 response, it MUST NOT be included in the Sticky Events extension response.
+
+As with regular `/sync`, no matter whether the sticky event is delivered in the `timeline_events`
+section or the `sticky_events` extension, the server MUST include an `unsigned.sticky_duration_remaining_ms`
+property with the authoritative remaining sticky duration in milliseconds.
+
+Clients MUST use this value as the authoritative sticky duration.
 
 Sticky events are expected to be encrypted and so there is no [state filter] equivalent provided for
 sticky events e.g to filter sticky events by event type. As with normal events, sticky events sent
