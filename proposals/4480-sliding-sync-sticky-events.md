@@ -39,10 +39,10 @@ and, when enabled, the following response extension shape:
 }
 ```
 
-As with regular `/sync`, if a sticky event appears in the `timeline_events` section of the sync
+As with regular `/sync`, if a sticky event appears in the `timeline` section of the sync
 response, it MUST NOT be included in the Sticky Events extension response.
 
-As with regular `/sync`, no matter whether the sticky event is delivered in the `timeline_events`
+As with regular `/sync`, no matter whether the sticky event is delivered in the `timeline`
 section or the `sticky_events` extension, the server MUST include an `unsigned.sticky_duration_remaining_ms`
 property with the authoritative remaining sticky duration in milliseconds.
 
