@@ -84,6 +84,9 @@ it with later data, despite that later data already having been ‘available’ 
 With that said, given this is an edge case that requires a substantial number of sticky events to
 trigger, we don’t currently consider it worthwhile to add complexity to avoid.
 
+If flickering is a concern, clients MAY consider waiting for the sticky events stream to be exhausted
+before triggering their effects.
+
 ## Potential issues
 
 Nothing beyond what’s included in [MSC4354].
