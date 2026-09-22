@@ -98,8 +98,8 @@ To implement these properties, servers MUST:
   regardless of whether the sticky event falls within the timeline limit of the request.
   If there are too many sticky events to deliver at once, they will be delivered in subsequent `/sync` responses instead.
 * **Re-evaluate soft-failure** of soft-failed unexpired sticky events when the authorising state of the sticky event changes.[^softfail]
-* History visibility **checks** MUST NOT be applied to sticky events. Any joined user is authorised to see sticky events
-  for the duration they remain sticky.[^hisvis]
+* History visibility **checks** MUST NOT be applied to sticky events. This applies to all endpoints where the sticky events could be returned.
+  Any joined user or server is authorised to see sticky events for the duration they remain sticky.[^hisvis]
 
 When an event loses its stickiness, these properties disappear with the stickiness. Servers SHOULD NOT
 eagerly synchronise such events anymore, nor send them down `/sync`, nor re-evaluate their soft-failure status.
