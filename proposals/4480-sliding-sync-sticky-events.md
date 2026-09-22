@@ -57,6 +57,9 @@ equivalent provided for sticky events e.g. to filter sticky events by event type
 
 As with timeline events, sticky events sent by ignored users MUST NOT be delivered to clients.
 
+Servers MUST treat sticky events the same as timeline events, for the purposes of
+calculating which lazy-loaded membership events to include in the sync response.
+
 The server MUST include sticky events across all rooms that would be matched by at least one
 subscription or list (i.e. all rooms that the client is interested in), even if the room does not
 appear in top-N window for that subscription list at this time. Rooms that would not be matched by a
