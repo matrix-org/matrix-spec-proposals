@@ -53,7 +53,7 @@ sticky events e.g to filter sticky events by event type. As with normal events, 
 by ignored users MUST NOT be delivered to clients.
 
 The server MUST include sticky events across all rooms that would be matched by at least one
-subscription list (i.e. all rooms that the client is interested in), even if the room does not
+subscription or list (i.e. all rooms that the client is interested in), even if the room does not
 appear in top-N window for that subscription list at this time. Rooms that would not be matched by a
 list are not included, as this means the client is not interested in those rooms.
 
