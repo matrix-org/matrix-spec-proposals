@@ -172,6 +172,10 @@ but is filtered out by the `timeline` filter, the sticky event MUST appear in `s
 Sticky events follow the same 'stream-like' behaviour as the `timeline`. This means clients will receive a sticky
 event S _once_, and subsequent requests with an advanced `since` token will not return the same sticky event S.
 
+Clients MUST tolerate an event being present in the `timeline` section in one sync response and then being
+present in the `sticky.events` section of a subsequent sync response (or vice-versa),
+though servers SHOULD avoid this happening where technically feasible to do so.
+
 When sending sticky events down `/sync`, the `unsigned` section MUST have a `sticky_duration_remaining_ms` field
 to indicate how many milliseconds until the sticky event expires.
 From the client's point of view, this relative expiry timestamp is authoritative. Clients MUST use this value to determine when the sticky event expires.
