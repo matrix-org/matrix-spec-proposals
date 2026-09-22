@@ -1,8 +1,9 @@
 # MSC4480: Sliding Sync Extension: Sticky Events
 
-[MSC4354] introduces Sticky Events using the existing [`/sync`] API. The present MSC adds support
-for Sticky Events in Simplified Sliding Sync as per [MSC4186]. This proposal was originally part of
-[MSC4354] itself and was split out to break the dependency on [MSC4186].
+[MSC4354] introduces Sticky Events using the existing [`/sync`] API.
+This MSC adds support for Sticky Events in Simplified Sliding Sync as per [MSC4186].
+The content of this proposal was originally part of [MSC4354] itself, but has
+since been split out to avoid [MSC4354] itself depending on [MSC4186].
 
 ## Proposal
 
@@ -51,10 +52,10 @@ property with the authoritative remaining sticky duration in milliseconds.
 Clients MUST use this value as the authoritative sticky duration.
 
 In common usage, sticky events are expected to be encrypted and so there is no [state filter]
-equivalent provided for sticky events e.g to filter sticky events by event type.
+equivalent provided for sticky events e.g. to filter sticky events by event type.
 (We do not anticipate common unencrypted usage to justify specifying such a mechanism at this time.)
 
-As with normal events, sticky events sent by ignored users MUST NOT be delivered to clients.
+As with timeline events, sticky events sent by ignored users MUST NOT be delivered to clients.
 
 The server MUST include sticky events across all rooms that would be matched by at least one
 subscription or list (i.e. all rooms that the client is interested in), even if the room does not
@@ -63,7 +64,7 @@ list are not included, as this means the client is not interested in those rooms
 
 As with regular `/sync`, when a user joins a room, the server MUST include all unexpired sticky
 events for that room in their subsequent sync responses. The server MAY spread them across multiple
-sync responses or the server MAY ignore the `limit` specified in the request extension for this
+sync responses or the server MAY exceed the `limit` specified in the request extension for this
 case, depending on implementation preference.
 
 ### Pagination
@@ -91,7 +92,7 @@ it with later data, despite that later data already having been ‘available’ 
 With that said, given this is an edge case that requires a substantial number of sticky events to
 trigger, we don’t currently consider it worthwhile to add complexity to avoid.
 
-If flickering is a concern, clients MAY consider waiting for the sticky events stream to be exhausted
+If flickering is a concern, clients MAY wait for the sticky events stream to be exhausted
 before triggering their effects.
 
 ## Potential issues
