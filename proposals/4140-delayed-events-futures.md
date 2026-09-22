@@ -62,7 +62,9 @@ when called by an application service.
 
 The body for requests to this endpoint is a JSON object containing the following fields:
 
-- `delay_ms` - Required. A positive non-zero number of milliseconds the homeserver should wait before sending the event.
+- `delay_ms` - Required. A positive non-zero integer of milliseconds the homeserver should wait before sending the event.
+  > **Process note**: The proposal originally permitted non-integer numeric values for this field,
+  > which would conflict with how other endpoints restrict delays to be integer-valued.
 - `state_key` - The state key for the event to be sent, if it is to be a state event; absent otherwise.
 - `content` - Required. The content of the event to be sent.
 
