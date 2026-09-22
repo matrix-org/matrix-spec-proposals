@@ -186,6 +186,9 @@ generic identifiers such as `camera-1` or `screenshare-1` could be stored in the
 on media tracks. When scoped to the publishing user and device, those identifiers become unique
 and can serve as the basis for moderation tooling.
 
+Note that being able to stably identify streams could be helpful for other future use cases
+such as recording bots as well.
+
 A future proposal may explore this space further.
 
 [name]: https://docs.livekit.io/reference/client-sdk-js/interfaces/TrackPublishOptions.html#name
