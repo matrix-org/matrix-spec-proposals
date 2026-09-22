@@ -377,7 +377,8 @@ receive a sticky event with a `sticky_key` SHOULD keep a map with keys determine
 users sending multiple events with the same event type and `sticky_key`. To deterministically tie-break, clients which
 implement this behaviour MUST[^maporder]:
 
-- pick the one with the highest `origin_server_ts + sticky.duration_ms` (last to expire wins),  
+- pick the one with the highest `origin_server_ts + sticky.duration_ms`
+  (intended by the sender's homeserver to expire last),
 - tie break on the one with the highest lexicographical event ID (A < Z).
 
 >[!NOTE]
@@ -427,7 +428,7 @@ Event        Lifetime
 ```
 Just like before, at time `A` the possible states are `{ _, S, S'}`, but now at time `B` the possible states are `{ _, S }`.
 This is problematic if you're trying to agree on the "latest" values, like you would in a k:v map. Note that if a client had
-seen S then sees S', they will ignore it due to it having a lower expiry time than S (last to expire wins).
+seen S then sees S', they will ignore it due to it having a lower intended expiry time than S (highest `origin_server_ts + sticky_duration` wins).
 
 Note that encrypted sticky events will encrypt some parts of the 4-uple. An encrypted sticky event only exposes the room ID and sender to the server:
 
