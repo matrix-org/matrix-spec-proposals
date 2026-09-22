@@ -50,9 +50,11 @@ property with the authoritative remaining sticky duration in milliseconds.
 
 Clients MUST use this value as the authoritative sticky duration.
 
-Sticky events are expected to be encrypted and so there is no [state filter] equivalent provided for
-sticky events e.g to filter sticky events by event type. As with normal events, sticky events sent
-by ignored users MUST NOT be delivered to clients.
+In common usage, sticky events are expected to be encrypted and so there is no [state filter]
+equivalent provided for sticky events e.g to filter sticky events by event type.
+(We do not anticipate common unencrypted usage to justify specifying such a mechanism at this time.)
+
+As with normal events, sticky events sent by ignored users MUST NOT be delivered to clients.
 
 The server MUST include sticky events across all rooms that would be matched by at least one
 subscription or list (i.e. all rooms that the client is interested in), even if the room does not
