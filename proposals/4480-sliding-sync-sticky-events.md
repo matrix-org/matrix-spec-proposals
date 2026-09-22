@@ -70,7 +70,7 @@ case, depending on implementation preference.
 ### Pagination
 
 Because sticky events and to-device messages are alike in the way that they should be *reliably*
-delivered to clients, without any gaps in the pagination, they follow the [MSC3885: Sliding Sync
+delivered to clients, without any gaps in the pagination, they follow the [MSC4538: Sliding Sync
 Extension: To-Device messages] model for pagination in sliding sync.
 
 In short: when there are too many sticky events to return in one response, the server returns a
@@ -79,11 +79,6 @@ limited number of the oldest sticky events that have not yet been delivered.
 At every response, the server MUST return a `next_batch` token which the client MUST persist and send as
 a `since` token in the next Sliding Sync request (in the extension), if the client wishes to advance
 in the sticky events stream.
-
-One concern is that [MSC3885][MSC3885: Sliding Sync Extension: To-Device messages] has not yet been
-updated to account for [MSC4186 ‘Simplified’ Sliding Sync][MSC4186], the ‘modern-day’ dialect of
-Sliding Sync, so it is unknown whether this pattern will remain in use. Whatever happens, this MSC
-should likely follow the same evolution as that one.
 
 Another concern is a potential problem that we are calling ‘flickering’. This is where due to
 oldest-first pagination, a client might briefly display stale data before near-immediately updating
@@ -121,4 +116,4 @@ This MSC builds on [MSC4354] and [MSC4186].
   [`/sync`]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3sync
   [MSC4186]: https://github.com/matrix-org/matrix-spec-proposals/pull/4186
   [state filter]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3useruseridfilter_request_roomeventfilter
-  [MSC3885: Sliding Sync Extension: To-Device messages]: https://github.com/matrix-org/matrix-spec-proposals/pull/3885
+  [MSC4538: Sliding Sync Extension: To-Device messages]: https://github.com/matrix-org/matrix-spec-proposals/pull/4538
