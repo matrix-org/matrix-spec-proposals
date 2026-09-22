@@ -67,7 +67,6 @@ This key can be set by clients in the CS API by a new query parameter `sticky_du
 added to the following endpoints:
 
 * [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
-* [`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
 * `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` as defined in [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
 
 To calculate if any sticky event is still sticky:
@@ -481,6 +480,17 @@ PL event will not update the map and hence forget the value. Clients which see t
 accept Alice setting the key and the net result is divergence between clients. By always updating the map even
 for unauthorised updates, we ensure that the arrival order doesn't affect the end result. Clients can then
 choose whether or not to materialise/show/process a given key based on the current PL event.
+
+
+## Notable changes to this MSC
+
+- **No longer adds a way to create sticky state events as a client**: In a previous draft of this MSC, it was proposed that
+  [`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
+  gains the necessary query parameter to allow clients to create sticky state events.
+  Due to lack of a motivating use case at this time, we have removed this from the proposal, though it is still
+  possible to create sticky state events over federation.
+  The feature can be suggested in the future if it would be useful.
+  [See this discussion thread](https://github.com/matrix-org/matrix-spec-proposals/pull/4354#discussion_r3013875995)
 
 [^toplevel]: This has to be at the top-level as we want to support _encrypted_ sticky events, and therefore metadata the server
 needs cannot be within `content`.
