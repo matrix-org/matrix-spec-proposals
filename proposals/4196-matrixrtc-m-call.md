@@ -167,6 +167,29 @@ for breakout sessions. This was consciously left out of scope in this proposal. 
 may devise a scheme for letting clients negotiate which slot to use when multiple are present in
 a room.
 
+### Lack of stable stream identifiers
+
+A possible future use case for moderation tooling is to apply limits on specific streams of
+a client. This could, for instance, be used to mute a member or to deny them screensharing.
+Such restrictions need to stay effective even when the member restarts their streams or rejoins
+the session. This would require a mechanism for identifying audio and video streams of the same
+client in a stable way irrespective of the used transport, that transport's internal stream
+identifiers and the current member ID.
+
+Designing such a mechanism has delibaretly been descoped from this proposal. For one thing,
+moderation rules will likely have to be enforced on the receiving rather than the sending side.
+This means that a client update will be required regardless if such rules are introduced in
+the future. For another, the current proposal doesn't design out the future addition of the
+labelling needed to identify streams in a stable way. This can happen on the transport layer
+as transports can be expected to have support for stream metadata. For LiveKit, for instance,
+generic identifiers such as `camera-1` or `screenshare-1` could be stored in the [name] field
+on media tracks. When scoped to the publishing user and device, those identifiers become unique
+and can serve as the basis for moderation tooling.
+
+A future proposal may explore this space further.
+
+[name]: https://docs.livekit.io/reference/client-sdk-js/interfaces/TrackPublishOptions.html#name
+
 ## Alternatives
 
 ### Injecting `m.rtc.slot` events on the server
