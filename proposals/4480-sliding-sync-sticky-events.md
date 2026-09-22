@@ -21,7 +21,7 @@ and, when enabled, the following response extension shape:
 
 ``` js
 {
-  "next_batch": "some_token", // REQUIRED when there are changes
+  "next_batch": "some_token", // REQUIRED
   "rooms": {
       "!726s6s6q:example.com": {
           "events": [{
@@ -38,6 +38,8 @@ and, when enabled, the following response extension shape:
   }
 }
 ```
+
+The server MAY omit the entire response extension when there are no changes.
 
 As with regular `/sync`, if a sticky event appears in the `timeline` section of the sync
 response, it MUST NOT be included in the Sticky Events extension response.
@@ -71,13 +73,9 @@ Extension: To-Device messages] model for pagination in sliding sync.
 In short: when there are too many sticky events to return in one response, the server returns a
 limited number of the oldest sticky events that have not yet been delivered.
 
-At every response, the server returns a `next_batch` token which the client MUST persist and send as
+At every response, the server MUST return a `next_batch` token which the client MUST persist and send as
 a `since` token in the next Sliding Sync request (in the extension), if the client wishes to advance
 in the sticky events stream.
-
-However, we don’t require `next_batch` to be provided in the response when there are no changes,
-because that seems like a mistake, which would lead to unnecessarily high quiescent bandwidth usage
-if many extensions follow this pattern. \[There is a comment thread open on MSC3885\].
 
 One concern is that [MSC3885][MSC3885: Sliding Sync Extension: To-Device messages] has not yet been
 updated to account for [MSC4186 ‘Simplified’ Sliding Sync][MSC4186], the ‘modern-day’ dialect of
