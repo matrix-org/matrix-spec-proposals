@@ -184,6 +184,35 @@ When the user joins a room, the server MUST include all unexpired sticky events 
 sync response(s). The server MAY exceed the suggested 100 sticky event limit to do this, or MAY spread these
 out across multiple sequential sync responses.
 
+### Redaction
+
+When a sticky event is redacted, the stickiness of the event is lost because `sticky` is not a field that is protected from redaction.
+
+Implementors should be aware of a divergence hazard: redactions of sticky events are not guaranteed to be reliably delivered themselves,
+unless the redactions themselves are sticky events.
+As a result, some clients may witness the redaction of a sticky event (thus removing its stickiness locally) whilst other clients
+may not witness the redaction and continue to locally treat the formerly-sticky event as sticky.
+
+Features built using sticky events need to tolerate this divergence hazard, as well as similar divergence hazards
+such as clients selectively withholding decryption keys to the sticky events they send.
+
+In the absence of other specific guidance, clients SHOULD NOT redact sticky events UNLESS the redaction has a sticky duration
+no shorter than the sticky event being redacted.
+
+#### Motivation for lack of server-side enforcement
+
+It would be possible to have servers promote redactions of sticky events to themselves be automatically
+sticky for as long as the event they are redacting.
+(Essentially introducing a concept of 'virtual sticky events' to allow these redactions to enjoy the benefits
+of being sticky \[such as being sent reliably down `/sync`\] without having been created as sticky.)
+
+Setting the complexity aside, such automatic redaction stickiness means that it would no longer be possible to
+'clean up' a flood of sticky events by redacting them, because newly-syncing clients would receive as many redactions
+as there were sticky events, causing a flood of virtually-sticky redactions of the same magnitude as the
+flood it was meant to clean up.
+
+For the time being, we prefer to keep the anti-abuse option open.
+
 ### Rate limits
 
 As sticky events are sent to clients regardless of the timeline limit, care needs to be taken to ensure
