@@ -171,6 +171,9 @@ but is filtered out by the `timeline` filter, the sticky event MUST appear in `s
 
 **Ignored users:** Servers MUST omit sticky events sent by ignored users.
 
+**Lazy-loading members:** Servers MUST treat sticky events the same as timeline events, for the purposes of
+calculating which lazy-loaded membership events to include in the sync response.
+
 Sticky events follow the same 'stream-like' behaviour as the `timeline`. This means clients will receive a sticky
 event S _once_, and subsequent requests with an advanced `since` token will not return the same sticky event S.
 
