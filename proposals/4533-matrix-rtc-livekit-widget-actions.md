@@ -48,10 +48,7 @@ For both actions the following rules apply:
       "url": "wss://livekit.example.com",
       "room_id": "!tDLCaLXijNtYcJZEey:example.com",
       "slot_id": "the_id",
-      "member": {
-         "id": "xyzABCDEF10123",
-         "claimed_device_id": "DEVICEID"
-      }
+      "member_id": "xyzABCDEF10123"
    },
    "response": {
       "jwt": "thejwt"
@@ -68,12 +65,10 @@ For both actions the following rules apply:
    "requestId": "req-abc",
    "action": "rtc_livekit_delegate_delayed_leave",
    "data": {
+      "url": "wss://livekit.example.com",
       "room_id": "!tDLCaLXijNtYcJZEey:example.com",
       "slot_id": "the_id",
-      "member": {
-         "id": "xyzABCDEF10123",
-         "claimed_device_id": "DEVICEID"
-      },
+      "member_id": "xyzABCDEF10123"
       "delay_id": "1234567890"
    },
    "response": {}
