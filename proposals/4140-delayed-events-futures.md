@@ -68,8 +68,16 @@ The body for requests to this endpoint is a JSON object containing the following
 - `state_key` - The state key for the event to be sent, if it is to be a state event; absent otherwise.
 - `content` - Required. The content of the event to be sent.
 
-The homeserver schedules the event to be sent with the specified delay and responds with an
-opaque `delay_id` field (omitting the `event_id` as it is not available):
+If any field of the request is set to an invalid value
+(such `delay_ms` being set to a non-positive integer),
+the homeserver will respond with HTTP 400
+and a [standard error response](https://spec.matrix.org/v1.19/client-server-api/#standard-error-response)
+with an `errcode` of `M_INVALID_PARAM`.
+
+> **Process note**: The proposal previously did not specify the response for invalid parameters to this endpoint.
+
+On success, the homeserver schedules the event to be sent with the specified delay, and responds with
+HTTP 200 and a JSON object containing an opaque `delay_id` field (omitting the `event_id` as it is not available):
 
 ```http
 200 OK
