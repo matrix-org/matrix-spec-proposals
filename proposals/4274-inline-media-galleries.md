@@ -85,6 +85,14 @@ better fallback support, is more flexible and less prone to event size limits.
 At the same time, it is significantly more complex to implement in terms of
 replies, edits, redactions, forwarding, etc.
 
+Additionally, chains of related events would lose the atomicity of the inline
+approach. With a single event, clients receive everything needed to render the
+gallery at once. With related events, clients would need to paginate all of them
+before the gallery can be fully rendered, leading to incomplete or evolving
+galleries, especially on slow networks. Moreover, since any user can send events
+that relate to another user's event, clients would need to verify that all
+gallery items were sent by the original sender, similar to the rules for edits.
+
 Finally, rather than defining galleries on the sender's side, receiving clients
 could opportunistically group consecutive images in the timeline into galleries.
 This might need specific rules such as grouping by sender or time windowing.
