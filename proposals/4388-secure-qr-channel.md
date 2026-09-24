@@ -547,8 +547,8 @@ The QR codes to be displayed and scanned using this format will encode binary st
   - one byte indicating the length in bytes of the rendezvous session ID as a UTF-8 string
   - the rendezvous session ID as a UTF-8 string
 - the [base URL] of the homeserver for client-server connections encoded as:
-  - two bytes in network byte order (big-endian) indicating the length in bytes of the base URL as a UTF-8 string
-    (n.b. a base URL longer than 65,535 bytes cannot be encoded and should be rejected)
+  - one byte indicating the length in bytes of the base URL as a UTF-8 string
+    (n.b. a base URL longer than 255 bytes cannot be encoded and should be rejected)
   - the base URL as a UTF-8 string
 
 If a new version of this QR sign in capability is needed in future (perhaps with updated secure channel protocol) then
@@ -567,7 +567,7 @@ encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on home
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 20
+20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67
 ```
 
@@ -580,7 +580,7 @@ nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 20
+20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4388-qr-intent00.png'
 -->
 ![Example QR for intent 0x00](images/4388-qr-intent00.png)
@@ -597,7 +597,7 @@ encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on hom
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 20
+20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67
 ```
 
@@ -610,7 +610,7 @@ nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 20
+20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4388-qr-intent01.png'
 -->
 ![Example QR for intent 0x01](images/4388-qr-intent01.png)
@@ -710,20 +710,10 @@ payload, **LoginInitiateMessage**, that Device G can use to confirm that the cha
   - the **sequence token** returned by the homeserver when calling `GET` on the rendezvous session
 
 ```
-Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
+Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 TaggedCiphertext := Context_DeviceS_Send.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", Aad)
 LoginInitiateMessage := UnpaddedBase64(Sp || TaggedCiphertext)
 ```
-
-We define the result of `EncodeStringAsBytes16(StringInput)` to be a sequence of bytes:
-
-- two bytes in network byte order (big-endian) indicating the length in bytes of the `StringInput` as a UTF-8 string
-- the `StringInput` as a UTF-8 string
-
-e.g. `EncodeStringAsBytes16("abcdef")` returns `[0x00, 0x06, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66]`
-
-n.b. Because a `BaseUrl` longer than 65535 bytes will have failed at the point of encoding a QR, we don't specify a handling for
-`StringInput` of length greater than 65535 bytes.
 
 We define the result of `EncodeStringAsBytes8(StringInput)` to be a sequence of bytes:
 
@@ -732,8 +722,9 @@ We define the result of `EncodeStringAsBytes8(StringInput)` to be a sequence of 
 
 e.g. `EncodeStringAsBytes8("abcdef")` returns `[0x06, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66]`
 
-n.b. Because this proposal restricts the length of `RendezvousId` and `SequenceToken` to 255 bytes (according to the
-[opaque identifier grammar]) we don't specify a handling for `StringInput` of length greater than 255 bytes.
+n.b. Because this proposal restricts the length of `BaseUrl` to 255 bytes (as a longer value cannot be encoded in the QR)
+and the length of `RendezvousId` and `SequenceToken` to 255 bytes (according to the [opaque identifier grammar]) we
+don't specify a handling for `StringInput` of length greater than 255 bytes.
 
 Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request
 and noting the new **sequence token**.
@@ -763,7 +754,7 @@ with the additional authentication data:
 It checks that the plaintext matches the string `MATRIX_QR_CODE_LOGIN_INITIATE`, failing and aborting if not.
 
 ```
-Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
+Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 Plaintext := Context_DeviceG_Receive.Open(TaggedCiphertext, Aad)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_INITIATE":
@@ -796,7 +787,7 @@ string `MATRIX_QR_CODE_LOGIN_OK` that is sealed with the additional authenticati
 **sequence token** is the one that was received with the `GET` request that returned **LoginInitiateMessage**:
 
 ```
-Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
+Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 TaggedCiphertext := Context_DeviceG_Send.Seal("MATRIX_QR_CODE_LOGIN_OK", Aad)
 LoginOkMessage := UnpaddedBase64Encode(ResponseNonce || TaggedCiphertext)
 ```
@@ -848,7 +839,7 @@ It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing
 otherwise.
 
 ```
-Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
+Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 Plaintext := Context_DeviceS_Receive.Open(TaggedCiphertext, Aad)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
@@ -902,7 +893,7 @@ sent from S should be encrypted with **Context_DeviceS_Send**. Each call to the 
 additional authentication data of the form where the **sequence token** is from the last `GET` that the device received:
 
 ```
-Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
+Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 ```
 
 Similarly, payloads received by G should be decrypted using the context **Context_DeviceG_Receive**, while payloads received by S
@@ -910,7 +901,7 @@ should be decrypted using the context **Context_DeviceG_Receive**. Each call to 
 additional authentication data of the form where the **sequence token** is from the last `PUT` that the device made:
 
 ```
-Aad := EncodeStringAsBytes16(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
+Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 ```
 
 ### Sequence diagram
@@ -1169,7 +1160,7 @@ encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on hom
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 20
+20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67
 ```
 
@@ -1182,7 +1173,7 @@ nix-shell -p qrencode --run 'echo "49 4F 5F 45 4C 45 4D 45 4E 54 5F 4D 53 43 34 
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 24
 65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 20
+20
 68 74 74 70 73 3A 2F 2F 6D 61 74 72 69 78 2D 63 6C 69 65 6E 74 2E 6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4388-qr-intent01-unstable.png'
 -->
 ![Example QR for intent 0x01](images/4388-qr-intent01-unstable.png)
