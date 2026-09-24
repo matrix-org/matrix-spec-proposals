@@ -120,23 +120,41 @@ The homeserver URL is encoded in the QR code, so the new device can do these che
 1. That the device either has a static OAuth 2.0 `client_id` or [dynamic client registration] is supported by the
    homeserver.
 
+These checks only serve to fail fast. The new device still waits for the `m.login.protocols` message from the existing
+device before starting the login, as described in step 1 below, because the QR code does not tell the new device which
+login protocols the existing device supports.
+
 ### Login via OAuth 2.0 device authorization flow
 
 In this section the sequence of steps depends on whether the new device generated or scanned the QR code from [MSC4388].
 
-For example, in the case that the new device scanned the QR code it is the first to do a `SecureSend` whereas if the new
-device generated the QR then the existing device is the first to do a `SecureSend`.
+The existing device is always the first to do a `SecureSend`, but the point at which it is able to do so differs. If the
+existing device scanned the QR code then it trusts the secure channel as soon as it has completed step 6 of [MSC4388].
+If instead the existing device generated the QR code then it must first wait for the user to enter the CheckCode as part
+of step 7 of [MSC4388].
 
 Unfortunately, this can make it hard to read what is going on. Sequence diagrams are included for both variants after
 the steps are described.
 
 We use the `SecureSend` and `SecureReceive` operations from [MSC4388] which are sent via the out-of-band channel.
 
-#### 1. Homeserver discovery
+#### 1. Homeserver discovery and available protocols
 
-The new device needs to know which homeserver it will be authenticating with. If the new device scanned the QR code,
-the [base URL] of the Matrix homeserver can be taken from the QR code and the new device proceeds to step 2
-immediately. Otherwise, the new device waits to receive an `m.login.protocols` message from the existing device.
+Before it can start authenticating, the new device needs to know two things: which homeserver it will be authenticating
+with, and which "login protocols" the existing device is offering. Both are conveyed by the existing device in the
+`m.login.protocols` message. The existing device MUST send this message once it trusts the secure channel, regardless
+of which device generated the QR code.
+
+The new device MUST wait to receive the `m.login.protocols` message before proceeding to step 2. This applies even when
+the new device scanned the QR code and so already knows the [base URL] of the homeserver: the new device can use the base
+URL from the QR code to perform the ahead-of-time checks described in
+[Discoverability of the capability](#discoverability-of-the-capability), but it does not know which protocols the
+existing device supports until it receives the `m.login.protocols` message. Requiring the message in all cases is what
+allows further login protocols to be added by future MSCs, as discussed in [Alternatives](#alternatives), without
+changing the sequence of messages.
+
+If the new device scanned the QR code then it MUST check that the `base_url` in the `m.login.protocols` message matches
+the base URL from the QR code, and abort the login if it does not.
 
 The existing device determines which "login protocols" are available for the new device to use. Currently this can
 only be `device_authorization_grant`, meaning the homeserver supports the
@@ -172,9 +190,13 @@ it can inform the user that the feature is not available before any QR is genera
 
 #### 2. New device checks if it can use an available protocol
 
-The new device then undertakes steps to determine if it is able to work with the homeserver.
+Having received the `m.login.protocols` message, the new device selects a protocol that it supports from those listed in
+`protocols`, ignoring any that it does not recognise. Currently the only protocol defined is `device_authorization_grant`.
+If none of the offered protocols is supported by the new device then it MUST send an `m.login.failure` with reason
+`unsupported_protocol` and stop.
 
-The steps are as follows:
+Otherwise, the new device then undertakes steps to determine if it is able to work with the homeserver using the selected
+protocol. For `device_authorization_grant` the steps are as follows:
 
 - checks that the homeserver has the OAuth 2.0 API available by [`GET /_matrix/client/v1/auth_metadata`](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery) on the homeserver [base URL]
 
@@ -284,14 +306,20 @@ sequenceDiagram
     rect rgba(255,0,0, 0.1)
     #alt if New device scanned QR code
         note over N: New device completes checks from MSC4388 secure channel establishment step 6 - it now trusts the channel
-        note over N: 1) New device got server base URL from the QR code
+        note over N: New device displays checkmark and CheckCode from MSC4388
+        note over E: Existing device waits for user to enter CheckCode<br>and confirm secure channel from MSC4388 step 7
+        note over E: If user entered correct CheckCode<br>and confirms checkmark then existing device now trusts the channel
+        note over E: 1) Existing device sends m.login.protocols message
+        E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"})
+        HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"}
+        note over N: New device checks that base_url matches the one from the QR code
 
     #else if Existing device scanned QR code
-    #    note over E: Existing device completes step 6
-    #    note over E: Existing device displays checkmark and CheckCode
+    #    note over E: Existing device completes MSC4388 step 6 - it now trusts the channel
+    #    note over E: Existing device displays checkmark and CheckCode from MSC4388
     #    note over E: 1) Existing device sends m.login.protocols message
-    #    E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "http://matrix-client.matrix.org"})
-    #    note over N: New device waits for user to confirm secure channel from step 7
+    #    E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"})
+    #    note over N: New device waits for user to confirm secure channel from MSC4388 step 7
     #    HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"}
     #    note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
     end
@@ -312,21 +340,9 @@ sequenceDiagram
     deactivate N
     end
 
-    rect rgba(255,0,0, 0.1)
-    # alt if New device scanned QR code
-        note over N: New device displays checkmark and CheckCode from MSC4388
-        note over E: Existing device waits for user to enter CheckCode<br>and confirm secure channel from MSC4388 step 7
-    end
-
     rect rgba(0,255,0, 0.1)
         HS->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
     end
-
-    rect rgba(255,0,0, 0.1)
-    # alt if New device scanned QR code
-        note over E: If user entered correct CheckCode<br>and confirms checkmark then existing device now trusts the channel
-    end
-
 
     rect rgba(0,255,0, 0.1)
     note over E: Existing device checks that requested protocol is supported
@@ -348,12 +364,18 @@ sequenceDiagram
 
 
     #alt if New device scanned QR code
-    #    note over N: New device completes checks from secure channel establishment step 6 - it now trusts the channel
-    #    note over N: 1) New device got server base URL from the QR code
+    #    note over N: New device completes checks from MSC4388 secure channel establishment step 6 - it now trusts the channel
+    #    note over N: New device displays checkmark and CheckCode from MSC4388
+    #    note over E: Existing device waits for user to enter CheckCode<br>and confirm secure channel from MSC4388 step 7
+    #    note over E: If user entered correct CheckCode<br>and confirms checkmark then existing device now trusts the channel
+    #    note over E: 1) Existing device sends m.login.protocols message
+    #    E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"})
+    #    HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"}
+    #    note over N: New device checks that base_url matches the one from the QR code
 
     rect rgba(255,0,0, 0.1)
     #else if Existing device scanned QR code
-        note over E: Existing device completes MSC4388 step 6
+        note over E: Existing device completes MSC4388 step 6 - it now trusts the channel
         note over E: Existing device displays checkmark and CheckCode from MSC4388
         note over E: 1) Existing device sends m.login.protocols message
         E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"})
@@ -378,19 +400,9 @@ sequenceDiagram
     deactivate N
     end
 
-    # alt if New device scanned QR code
-    #    note over N: New device displays checkmark and CheckCode
-    #    note over E: Existing device waits for user to enter CheckCode<br>and confirm secure channel from step 7
-    #end
-
     rect rgba(0,255,0, 0.1)
         HS->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
     end
-
-    # alt if New device scanned QR code
-    #    note over E: If user entered correct CheckCode<br>and confirms checkmark then existing device now trusts the channel
-    #end
-
 
     rect rgba(0,255,0, 0.1)
     note over E: Existing device checks that requested protocol is supported
@@ -404,11 +416,25 @@ sequenceDiagram
 
 Then we continue with the actual login:
 
-#### 4. Existing device checks device_id and accepts protocol to use
+#### 4. Existing device checks protocol and device_id, and accepts protocol to use
 
-On receipt of the `m.login.protocol` message, and having completed step 7 of the secure channel establishment, the
-existing device asserts that there is no existing device corresponding to the `device_id` from the
-`m.login.protocol` message. It does so by calling
+On receipt of the `m.login.protocol` message (by which point the existing device will already have completed step 7 of
+the secure channel establishment, since it did so before sending `m.login.protocols`), the existing device first checks
+that the requested `protocol` is one that it offered in its `m.login.protocols` message and that it supports. If it is
+not, for example because the new device requested a protocol that the existing device does not recognise, then the
+existing device MUST reject the request with an `m.login.failure` with reason `unsupported_protocol` and stop:
+
+*Existing device => New device via secure channel*
+
+```json
+{
+    "type": "m.login.failure",
+    "reason": "unsupported_protocol"
+}
+```
+
+If the protocol is acceptable, the existing device then asserts that there is no existing device corresponding to the
+`device_id` from the `m.login.protocol` message. It does so by calling
 [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
 and expecting to receive an HTTP 404 response.
 
@@ -690,8 +716,12 @@ unrecognised `reason` in `m.login.failure`, clients MUST fall back to handling i
 
 ### `m.login.protocols`
 
-- Sent by: existing device
-- Purpose: to state the available protocols for signing in. At the moment only `device_authorization_grant` is supported
+- Sent by: existing device.
+- Purpose: to state the homeserver and the available protocols for signing in. At the moment only
+  `device_authorization_grant` is supported
+
+This is always the first message sent over the secure channel and is sent regardless of which device generated the QR
+code, including when the new device scanned the QR code and so already knows the homeserver base URL.
 
 Fields:
 
