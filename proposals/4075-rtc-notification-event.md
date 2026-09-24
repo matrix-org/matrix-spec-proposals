@@ -340,12 +340,25 @@ left as a task for a future proposal which can use this MSC as a foundation.
 
 ### Lack of feedback
 
-As mentioned above, a ringing UX can be a reasonable choice in certain situations. This proposal
-doesn't provide sending clients with a way to know whether their invite is actually ringing
-the recipient, however. This could be desirable in order to create an experience akin to classical
-phone calls. A future proposal may address this gap, for instance, by introducing ringing
-acknowledgements communicated via to-device messages or by designing a more general event delivery
-receipt mechanism.
+As mentioned above, a ringing UX can be a reasonable choice in certain situations in order to create
+an experience akin to classical phone calls. However, this proposal doesn't provide sending clients
+with a way to know if their invite has reached the recipient or what their current status is (ringing,
+busy, etc.). The window inbetween inviting and declining has deliberately been descoped from this
+proposal and various solutions may be plugged into the system by a future MSC. As an example, lightweight
+ringing acknowledgements could be communicated back via to-device messages. Alternatively, richer invite
+progress updates could be mediated via sticky room messages. Lastly, a general event delivery receipt
+mechanism could also be sufficient to cover some use cases.
+
+### Device-specific invites
+
+This proposal uses `m.mentions` to target invite recipients. Mentions can currently be directed at either
+the whole room or a set of users in the room. They don't support targeting specific devices, however.
+This would be helpful in some cases, for instance, when a user has delegated part of their calling to a
+designated bridge device standing in for their desk phone. A caller might only want to ring that device
+rather than all of the user's devices. This feature is unlocked by adding support for device mentions
+which a future proposal, such as [MSC4296], may explore.
+
+[MSC4296]: https://github.com/matrix-org/matrix-spec-proposals/pull/4296
 
 ### Lack of push notifications in encrypted mentions-only rooms
 
