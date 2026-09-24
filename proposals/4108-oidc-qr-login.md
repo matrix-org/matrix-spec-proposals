@@ -755,6 +755,11 @@ Fields:
 |`device_authorization_grant`|Required `object` where `protocol` is `device_authorization_grant`|These values are taken from the RFC8628 Device Authorization Response that the new device received from the homeserver: <table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> </tr> <tr> <td><code>verification_uri</code> </td> <td>required <code>string</code> </td> </tr> <tr> <td><code>verification_uri_complete</code> </td> <td><code>string</code> </td> </tr></table>|
 |`device_id`|required `string`|The device ID that the new device will use|
 
+A future MSC adding a login protocol would define a new `protocol` value and a matching field named after it for its
+protocol-specific data. The `protocol` MUST be one offered in `m.login.protocols`; otherwise the existing device responds
+with an `m.login.failure` with reason `unsupported_protocol`, as described in
+[step 4](#4-existing-device-checks-protocol-and-device_id-and-accepts-protocol-to-use).
+
 Example:
 
 ```json
