@@ -153,8 +153,9 @@ existing device supports until it receives the `m.login.protocols` message. Requ
 allows further login protocols to be added by future MSCs, as discussed in [Alternatives](#alternatives), without
 changing the sequence of messages.
 
-If the new device scanned the QR code then it MUST check that the `base_url` in the `m.login.protocols` message matches
-the base URL from the QR code, and abort the login if it does not.
+The `base_url` in the `m.login.protocols` message is authoritative for the login. The base URL from the QR code
+identifies the rendezvous server for [MSC4388] and, as noted above, may be used for the ahead-of-time checks, but the
+two are not required to be the same.
 
 The existing device determines which "login protocols" are available for the new device to use. Currently this can
 only be `device_authorization_grant`, meaning the homeserver supports the
@@ -312,7 +313,7 @@ sequenceDiagram
         note over E: 1) Existing device sends m.login.protocols message
         E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"})
         HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"}
-        note over N: New device checks that base_url matches the one from the QR code
+        note over N: New device uses the base_url from the message for the login
 
     #else if Existing device scanned QR code
     #    note over E: Existing device completes MSC4388 step 6 - it now trusts the channel
@@ -371,7 +372,7 @@ sequenceDiagram
     #    note over E: 1) Existing device sends m.login.protocols message
     #    E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"})
     #    HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"}
-    #    note over N: New device checks that base_url matches the one from the QR code
+    #    note over N: New device uses the base_url from the message for the login
 
     rect rgba(255,0,0, 0.1)
     #else if Existing device scanned QR code
