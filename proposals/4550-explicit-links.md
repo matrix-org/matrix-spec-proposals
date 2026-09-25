@@ -7,9 +7,9 @@ in a message's `formatted_body`, and says:
 > Clients should display mentions differently from other elements.
 
 In the HTML, a mention is just a link, so a client can't tell it apart from any other link to a user or room.
-Every link to a user or room displays as a mention. If a sender writes "Questions?
-[DM me](https://matrix.to/#/@alice:example.org)", clients display it as a mention of Alice. A room link like
-"[Join our support room](https://matrix.to/#/#support:example.org) for help" gets the same treatment.
+Every link to a user or room displays as a mention. If a sender writes
+`Questions? [DM me](https://matrix.to/#/@alice:example.org)`, clients display it as a mention of Alice. A room
+link like `[Join our support room](https://matrix.to/#/#support:example.org) for help` gets the same treatment.
 
 Some clients display links to events differently too, even though the specification doesn't treat them as
 mentions. Element Web shows a link to an event as "Message from Bob" or "Message in #room" when the link text is
