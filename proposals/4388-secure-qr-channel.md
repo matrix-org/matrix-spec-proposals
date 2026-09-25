@@ -551,6 +551,9 @@ The QR codes to be displayed and scanned using this format will encode binary st
     (n.b. a base URL longer than 255 bytes cannot be encoded and should be rejected)
   - the base URL as a UTF-8 string
 
+As with the [base URL] obtained via `.well-known` discovery, the base URL encoded in the QR code may or may not include a
+trailing `/`. The scanning device must be prepared to handle both cases when constructing request URLs.
+
 If a new version of this QR sign in capability is needed in future (perhaps with updated secure channel protocol) then
 an additional type can then be allocated which would clearly distinguish this later version.
 
@@ -725,6 +728,12 @@ e.g. `EncodeStringAsBytes8("abcdef")` returns `[0x06, 0x61, 0x62, 0x63, 0x64, 0x
 n.b. Because this proposal restricts the length of `BaseUrl` to 255 bytes (as a longer value cannot be encoded in the QR)
 and the length of `RendezvousId` and `SequenceToken` to 255 bytes (according to the [opaque identifier grammar]) we
 don't specify a handling for `StringInput` of length greater than 255 bytes.
+
+The `BaseUrl` used in the additional authentication data is the exact sequence of bytes encoded in the QR code. Neither
+device may normalise it (for example by adding or removing a trailing `/`, changing the case of the host, or adding or
+removing a default port) before using it in the additional authentication data, as doing so would cause the devices to
+compute different values and the channel establishment to fail. A device may normalise a separate copy of the base URL
+for the purpose of constructing request URLs.
 
 Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request
 and noting the new **sequence token**.
