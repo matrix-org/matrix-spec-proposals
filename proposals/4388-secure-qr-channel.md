@@ -906,7 +906,7 @@ Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || En
 ```
 
 Similarly, payloads received by G should be decrypted using the context **Context_DeviceG_Receive**, while payloads received by S
-should be decrypted using the context **Context_DeviceG_Receive**. Each call to the `Open()` function should use the
+should be decrypted using the context **Context_DeviceS_Receive**. Each call to the `Open()` function should use the
 additional authentication data of the form where the **sequence token** is from the last `PUT` that the device made:
 
 ```
