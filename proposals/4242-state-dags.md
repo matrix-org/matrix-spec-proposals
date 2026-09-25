@@ -763,9 +763,14 @@ partially synchronised, it becomes difficult to ensure that all servers agree wh
 consistent with _both_ orders (see the graph on "Why not an auth DAG?"). State DAGs still have this
 problem, but between _messages_ and state.
 
+Server developers must take care not to make incorrect assumptions when processing state events.
+Notably, the introduction of a second DAG via `prev_state_events` naturally leads to the assumption
+that the _room DAG's causal order extends the state DAG_. However, no auth rule exists to enforce this
+and no auth rule _can_ exist if we want to continue to allow partial synchronisation of the room DAG.
+
 Events may specify `prev_events` which point to events which contradicts causality e.g point to events from
-before you were joined. These events will pass the PDU checks as long as the `prev_state_events`
-point to room state from when the sender was joined.
+before you were joined or a different fork entirely. These events will pass the PDU checks as long as the
+`prev_state_events` point to room state from when the sender was joined.
 
 ```mermaid
 flowchart BT
@@ -782,7 +787,7 @@ unverifiable in state DAG rooms. Due to partial synchronisation
 (relying on `/state` and `/state_ids`), this has always been the case and has been the cause of various
 state resets, despite attempting to have safeguards to guard against this (step 5 of the PDU checks).
 
-A similar problem occurs when an event points to provably older `prev_state_events`:
+A similar problem occurs when an event's `prev_events` points to newer state than that same event's `prev_state_events`:
 
 ```mermaid
 flowchart BT
@@ -802,6 +807,13 @@ had seen the ban `State2` then the `New msg` would be suppressed, just as soft f
 This can be seen as a "worse" form of ban evasion as the event itself encodes proof that the server is misbehaving.
 However, we cannot do auth checks on the `prev_events` state and _reject_ the event if the event fails the auth
 checks, as not all servers are guaranteed to converge due to reliance on `/state`.
+
+A critical implementation note is to consider _how the server becomes aware of `State2`_. Walking up the state DAG
+from "New msg" will NOT return State2. Only _backfilling_ from "New msg" will pull in previously unknown state events.
+This means server implementations MUST consider unseen state events from `/backfill` as normal state DAG events and so
+run the relevant code to update forward extremities and recalculate the current state _based on backfill results_. This
+is an edge case which only happens when the two graphs disagree in this way, which we cannot prevent so long as the room
+DAG remains partially synchronised.
 
 ## Unstable prefix
 
