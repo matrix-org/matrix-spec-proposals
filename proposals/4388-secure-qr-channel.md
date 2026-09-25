@@ -775,7 +775,7 @@ It then derives its own HPKE context **Context_DeviceG_Send** for sending based 
 from **Context_DeviceG_Receive**, and a dummy exporter secret, as follows:
 
 ```
-Secret := Context_DeviceG_Receive.Export("MATRIX_QR_CODE_LOGIN response", 32)
+Secret := Context_DeviceG_Receive.Export("MATRIX_QR_CODE_LOGIN_RESPONSE", 32)
 
 ResponseNonce := random(32)
 Salt := Sp || ResponseNonce
@@ -831,7 +831,7 @@ creating the **Context_DeviceS_Receive** response context as follows:
 ```
 (ResponseNonce, TaggedCiphertext) := Unpack(LoginOkMessage)
 
-Secret := Context_DeviceS_Send.Export("MATRIX_QR_CODE_LOGIN response", 32)
+Secret := Context_DeviceS_Send.Export("MATRIX_QR_CODE_LOGIN_RESPONSE", 32)
 Salt := Sp || ResponseNonce
 
 AeadKey_G := HKDF_SHA256(Secret, "key", salt=Salt, size=32)
