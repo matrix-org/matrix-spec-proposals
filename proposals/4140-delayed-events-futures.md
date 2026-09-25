@@ -72,7 +72,10 @@ If any field of the request is set to an invalid value
 (such `delay_ms` being set to a non-positive integer),
 the homeserver will respond with HTTP 400
 and a [standard error response](https://spec.matrix.org/v1.19/client-server-api/#standard-error-response)
-with an `errcode` of `M_INVALID_PARAM`.
+with an `errcode` of `M_BAD_JSON`.
+The homeserver MAY choose to respond with a more specific `errcode`,
+such as `M_MISSING_PARAM` when a required field is missing from the request body,
+or `M_INVALID_PARAM` when a field is set to a value of the wrong data type.
 
 > **Process note**: The proposal previously did not specify the response for invalid parameters to this endpoint.
 
