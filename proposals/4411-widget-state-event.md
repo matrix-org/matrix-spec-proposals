@@ -38,17 +38,25 @@ A new room state event is defined as `m.widget` with the following schema:
 ```
 
  - `content`:
-   - `name`: The widget name SHOULD be treated similar to a room name. It should be meaningful to all room members. It is expected to be the same string on all clients independent of localization.
+   - `name`: The widget name. It should be meaningful to all room members. It is expected to be the same string on all clients independent of localization
+     (similar to a room name).
    - `url`: The actual widget url where the widget is loaded from. Only `https://` urls are allowed (clients can allow non `https://` urls as part of their developer tools). This also takes the role as the widget-type. Widgets with the same url are of the same "application type". Template variables as
     proposed in MSC1236 get removed. So the url should be short. (See dedicated alternatives section on template parameters)
    - `avatar_url` (optional): A MXC URI for the icon used to render the widget in the client list. See [MSC2765](https://github.com/matrix-org/matrix-spec-proposals/pull/2765), which already defines this field and the sizing guidance.
- - `state_key`: opaque, client-generated uuid v4
+ - `state_key`: Opaque, client-generated, unique within the room
+
+A state event of type `m.widget` which does not match the content is considered a removed widget (Clients should set the content to `{}` for removing widgets.)
+
+#### Power Levels
+
+The default power level system will be used to control who can modify widgets.
+(e.g. `events/m.widget` is used to control who can modify widgets)
 
 ### Accessing and rendering widgets
 
 A client MUST show a list of available widgets in a UI element associated with a room.
 This list MUST provide the widget name. It SHOULD show the widget avatar.
-Additionally the client MUST provide a way the acces the secondary information `sender` and the `url` of the widget. (See `Security considerations` section for more details)
+Additionally the client MUST provide a way the acces the secondary information: the `sender` of the state event and the `url` of the widget. (See `Security considerations` section for more details)
 It is recommended to add the seconday information in a tooltip or context window or foldable component to not clutter the ui.
 (commen places could be side panels or room settings modals)
 The user SHOULD be able to open a widget (webview) as a "popout" view or next to the timeline.
@@ -123,7 +131,6 @@ These contain the configurations that are needed for this app.
 
 A client can then prompt the user based on the requested permissions and sandbox values.
 
-This can also be added as a follow up MSC.
 It can also be done via the postmessage api. (Which has the advantage that the user who sets up the widget does not need to know what permissions are required. The widget implementation has full control over what it requests)
 
 This can be pushed to a follow up MSC. Which asks clients to prompt users if a widget is setup without any `webview_allowlist` and `webview_sandbox`.
@@ -153,10 +160,10 @@ This allows users to mock others into clicking the wrong widget.
 On first sight this might be an issue. As room members already have access to the encrypted messages,
 this does not allow any attacks beyond what they are already able to (for ecxample: share encrypted history with the public)
 
-It can be used to mock other users however. If there are users with unconstructive motives in a room that change the widget name
-to confuse others, there is a more fundamental problem with the rooms community this MSC does not solve.
+It can be used to mock other users however.
 
-The MSC still demands to show the sender of the widget event and the url (see proposal section).
+The only workaround this MSC provides is showing the sender of the widget event and the url (see proposal section).
+
 ## Potential issues
 ### Backwards compatibility
 #### Comparison to the current in use widget state event
@@ -183,10 +190,12 @@ This is the old state event. Here we justify what is not needed and gets removed
     Additional data can be passed over the widget api.
  - `id` we use the `state_key` instead.
  - `eventId` The state key should hold the identifier. The `eventId` is part of the event json (outside content).
-   The initial eventId can be aquired by stepping back via: `replaces_state`
+   Clients can acces the initial eventId by walking `prev_content` via the state history endpoints.
  - `roomId` Widgets are only for the room they are added to. This data is implicitly known by the client.
  - `type` Is only used for allowing clients to categorize widgets. A dedicated category concept is desired here.
-   But should not be part of the core MSC.
+   But should not be part of the core MSC. Additionally without the requirement for the query paramerts, widget urls should look more
+   like: `https://widget.repositry.org/notepad` instead of `https://widget.repositry.org/notepad?padName=$padName&userName=$matrix_user_id`.
+   So the url becomes the type identity of the widget.
 
 #### Url template parameters
 In previous unspecced widget implementations templete parameters are used to pass data to the widget.
@@ -203,19 +212,27 @@ This looks useful on first sight but in practice it has drawbacks:
  - **Easy workaraound that does not need a specification** In case the community really needs add a widget from a webapp that does not support the widget api a simple wrapper could be build: A webview that uses the postmessage api to then popultate the template url and load the actual app in an iframe.
 
 
-#### Widget api messages
+#### Widget api messages wrapper
 Also the widget api will change in [MSC4412](https://github.com/matrix-org/matrix-spec-proposals/pull/4412).
-Those widgets are not compatible with clients implementing [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411)] and
-[MSC4412](https://github.com/matrix-org/matrix-spec-proposals/pull/4412)] anymore.
+Those widgets are not compatible with clients implementing [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411) and
+[MSC4412](https://github.com/matrix-org/matrix-spec-proposals/pull/4412) anymore.
 A similar solution to the url template appraoch can be used.
 
 A wrapper widget that gets the old style widget url as a parameter and then proxy and translate the widget messages.
 
+### Migration
+
+The current widget implementation with `im.vector.modular.widgets` eventually will be deprecated.
+Clients should provide a tool to replace the `im.vector.modular.widgets` state event with a `m.widget` one.
+As the widget api won't match this replacement should also wrap the widget in a api wrapper as proposed in the section: `Widget api messages wrapper`
+
+This allows clients to stop supporting the old style widgets. Custom tooling for migration or clients that do the migration automatically
+will make sure old widgets can still be usable without clients maintaining to implementations.
 ## Unstable prefix
 
-### im.vector.modular.widgets
+### org.matrix.msc4411.widget and
 
-The unstable event type for this MSC is `im.vector.modular.widgets`. This event has been used in production
+The unstable event type for this MSC is `org.matrix.msc4411.widget`. `im.vector.modular.widgets` has been used in production
 instances for a long time under Element Web and other clients. While it's implementation does differ in some
 respects to this proposal, it is currently the defacto standard and can be used to "prove the implementation".
 
@@ -226,7 +243,7 @@ respects to this proposal, it is currently the defacto standard and can be used 
 ([MSC4412](https://github.com/matrix-org/matrix-spec-proposals/pull/4412) defines the post-message widget API and is a dependant of this MSC.)
 
 
-## Closes
+## Superseeds
 https://github.com/matrix-org/matrix-spec-proposals/pull/2764
 https://github.com/matrix-org/matrix-doc/pull/2774
 https://github.com/matrix-org/matrix-spec-proposals/issues/3803
