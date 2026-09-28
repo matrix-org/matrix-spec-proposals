@@ -653,6 +653,13 @@ to use MatrixRTC for now.
 
 [Apache 2.0 License]: https://github.com/livekit/livekit/blob/master/LICENSE
 
+### Lack of peer-to-peer transport
+
+By design, the LiveKit transport specified in this proposal routes all RTC traffic through LiveKit
+SFUs. When compared to a peer-to-peer RTC transport, this leads to limitations in terms of privacy,
+latency and scalability. This shortcoming may be addressed in future by introducing a peer-to-peer
+capable transport or by LiveKit gaining peer-to-peer support.
+
 ## Alternatives
 
 ### Canonical JSON variations
