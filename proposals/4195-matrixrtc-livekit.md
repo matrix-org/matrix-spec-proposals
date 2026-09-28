@@ -419,7 +419,8 @@ participant identities from the related LiveKit rooms when a user leaves or is b
 As mentioned earlier, token revocation is only a feature on LiveKit Cloud. Homeservers that rely on a
 self-hosted LiveKit instance SHOULD, therefore, re-validate room membership when the SFU signals via
 one of its [webhooks] that a participant has joined. This mitigates malicious clients re-using older
-access tokens to connect without being part of the associated Matrix room.
+access tokens to connect without being part of the associated Matrix room. A draft fix for enabling
+token revocation in the self-hosted version of LiveKit exists [upstream].
 
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 [later]: #access-token-properties
@@ -427,6 +428,7 @@ access tokens to connect without being part of the associated Matrix room.
 [token revocation]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-revocation
 [proactively refreshes tokens]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-refresh
 [counterintuitively]: https://docs.livekit.io/frontends/reference/tokens-grants/#video-grant
+[upstream]: https://github.com/livekit/livekit/pull/4919.
 
 ### Optional delegated delayed leave events
 
