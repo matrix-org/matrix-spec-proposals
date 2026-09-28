@@ -69,7 +69,7 @@ The body for requests to this endpoint is a JSON object containing the following
 - `content` - Required. The content of the event to be sent.
 
 If any field of the request is set to an invalid value
-(such `delay_ms` being set to a non-positive integer),
+(such as `delay_ms` being set to a non-positive integer),
 the homeserver will respond with HTTP 400
 and a [standard error response](https://spec.matrix.org/v1.19/client-server-api/#standard-error-response)
 with an `errcode` of `M_BAD_JSON`.
