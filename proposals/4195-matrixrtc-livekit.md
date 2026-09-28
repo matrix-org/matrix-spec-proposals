@@ -415,8 +415,11 @@ be desirable to couple the lifetime of LiveKit tokens to the period of room memb
 because a malicious user being kicked from a Matrix room could otherwise continue to be connected to an
 ongoing RTC session related to the room. To prevent this, servers SHOULD remove any associated LiveKit
 participant identities from the related LiveKit rooms when a user leaves or is banned from a Matrix room.
-Note that this doesn't obsolete the recommendation to use sufficiently short-lived access tokens in
-self-hosted LiveKit deployments given in the previous section.
+
+As mentioned earlier, token revocation is only a feature on LiveKit Cloud. Homeservers that rely on a
+self-hosted LiveKit instance SHOULD, therefore, re-validate room membership when the SFU signals via
+one of its [webhooks] that a particpant has joined. This mitigates malicious clients re-using older
+access tokens to connect without being part of the associated Matrix room.
 
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 [later]: #access-token-properties
@@ -552,7 +555,6 @@ It is RECOMMENDED that servers apply rate limiting to the delegation endpoint.
 [MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 [earlier]: #mapping-matrixrtc-members-to-livekit
 [webhooks]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/
-
 
 ### End-to-end encryption
 
