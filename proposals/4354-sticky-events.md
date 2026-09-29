@@ -85,8 +85,7 @@ Sticky events are like normal message events and are authorised using normal PDU
 Unexpired sticky events have the following _additional_ properties[^prop]:
 
 * They are eagerly **pushed** to all other servers.[^partial]  
-* They must be **delivered** to clients.[^sync]
-* Only state event level **checks** are applied to them.[^softfail][^hisvis]
+* They must be **delivered** to clients of all joined users, regardless of history visibility.[^sync][^hisvis]
 
 To implement these properties, servers MUST:
 
