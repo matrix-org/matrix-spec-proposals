@@ -539,7 +539,7 @@ reliable. These properties are also properties which _state events_ already have
 proposal wants to replace [MSC3757: Restricting who can overwrite a state event](https://github.com/matrix-org/matrix-spec-proposals/pull/3757).
 [^partial]: Over federation, servers are not required to send all timeline events to every other server.
 Servers mostly lazy load timeline events, and will rely on clients hitting `/messages` which in turn
-hits`/backfill` to request events from federated servers.  
+prompts the server to hit `/backfill` to request events from federated servers.  
 [^sync]: Normal timeline events do not always appear in the sync response if the event is more than `timeline_limit` events away.  
 [^softfail]: Not all servers will agree on soft-failure status due to the check considering the “current state” of the room.
 To ensure all servers agree on which events are sticky, we need to re-evaluate soft-failed status when the current room state changes.
