@@ -81,8 +81,8 @@ To calculate if any sticky event is still sticky:
 As it depends on the server-private timestamp of receipt, this calculation is carried out by servers.
 Clients will instead use the `unsigned.sticky_duration_remaining_ms` field described below.
 
-Sticky events are like normal message events and are authorised using normal PDU checks. They have the
-following _additional_ properties[^prop]:
+Sticky events are like normal message events and are authorised using normal PDU checks.
+Unexpired sticky events have the following _additional_ properties[^prop]:
 
 * They are eagerly **pushed** to all other servers.[^partial]  
 * They must be **delivered** to clients.[^sync]
@@ -90,20 +90,20 @@ following _additional_ properties[^prop]:
 
 To implement these properties, servers MUST:
 
-* Attempt to **push** their own[^origin] sticky events to all joined servers, whilst respecting per-server backoff times.
-  Large volumes of events to send MUST NOT cause the sticky event to be dropped from the send queue on the server.
-* When a new server joins the room, existing servers MUST attempt to **push** all of their own sticky events[^newjoiner].
-* Ensure sticky events are **delivered** to clients via [`/sync`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3sync) in a new section of the sync response,
-  regardless of whether the sticky event falls within the timeline limit of the request.
-  If there are too many sticky events to deliver at once, they will be delivered in subsequent `/sync` responses instead.
+* Attempt to **push** their own[^origin] unexpired sticky events to all joined servers, whilst respecting per-server backoff times.
+  Large volumes of events to send MUST NOT cause the unexpired sticky event to be dropped from the send queue on the server.
+* When a new server joins the room, existing servers MUST attempt to **push** all of their own unexpired sticky events[^newjoiner].
+* Ensure unexpired sticky events are **delivered** to clients via [`/sync`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3sync) in a new section of the sync response,
+  regardless of whether the unexpired sticky event falls within the timeline limit of the request.
+  If there are too many unexpired sticky events to deliver at once, they will be delivered in subsequent `/sync` responses instead.
 * **Re-evaluate [soft-failure](https://spec.matrix.org/v1.19/server-server-api/#soft-failure)** of soft-failed
-  unexpired sticky events when the authorising state of the sticky event changes.[^softfail]
+  unexpired sticky events when the authorising state of the unexpired sticky event changes.[^softfail]
   (The same does NOT apply in reverse: once an event is accepted, it never becomes soft-failed retrospectively.)
-* History visibility **checks** MUST NOT be applied to sticky events. This applies to all endpoints where the sticky events could be returned.
-  Any joined user or server is authorised to see sticky events for the duration they remain sticky.[^hisvis]
+* History visibility **checks** MUST NOT be applied to unexpired sticky events.
+  This applies to all endpoints where the unexpired sticky events could be returned.
+  Any joined user or server is authorised to see unexpired sticky events for the duration they remain sticky.[^hisvis]
 
-When an event loses its stickiness, these properties disappear with the stickiness. Servers SHOULD NOT
-eagerly synchronise such events anymore, nor send them down `/sync`, nor re-evaluate their soft-failure status.
+When an event loses its stickiness (by expiring or being redacted), these properties disappear with the stickiness.
 
 Policy servers and similar homeserver-specific antispam techniques (e.g. custom spam checker modules) still apply to these events,
 in which case the stickiness of the event is prevented.
@@ -226,7 +226,7 @@ For the time being, we prefer to keep the anti-abuse option open.
 
 ### Rate limits
 
-As sticky events are sent to clients regardless of the timeline limit, care needs to be taken to ensure
+As unexpired sticky events are sent to clients regardless of the timeline limit, care needs to be taken to ensure
 that other room participants cannot send large volumes of sticky events.
 
 Servers MAY rate limit sticky events received over federation.
@@ -237,14 +237,14 @@ response codes to cause the sender to back off.
 
 ### Federation behaviour
 
-As with regular events, servers are only responsible for sending sticky events originating from their own server. This ensures the server is aware
+As with regular events, servers are only responsible for sending unexpired sticky events originating from their own server. This ensures the server is aware
 of the `prev_events` of all sticky events they send to other servers. This is important because the receiving server will
 attempt to fetch those previous events if they are unaware of them, _rejecting the transaction_ if the sending server fails
-to provide them. For this reason, it is not possible for servers to reliably deliver _other server's_ sticky events.
+to provide them. For this reason, it is not possible for servers to reliably deliver _other server's_ unexpired sticky events.
 
-In the common case, sticky events are sent over federation like any other event and do not cause any behavioural changes.
+In the common case, unexpired sticky events are sent over federation like any other event and do not cause any behavioural changes.
 The two cases where this is different is:
- - when sending sticky events to newly joined servers
+ - when sending unexpired sticky events to newly joined servers
  - when sending "old" but unexpired sticky events
 
 Servers tend to maintain a sliding window of events to deliver to other servers e.g the most recent 50 PDUs. Sticky events
@@ -261,13 +261,13 @@ events from other servers.
 
 [option]: https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html?highlight=dummy#dummy_events_threshold
 
-Servers SHOULD (best-effort) send sticky events to other homeservers in the order they were created on the server
+Servers SHOULD (best-effort) send unexpired sticky events to other homeservers in the order they were created on the server
 (stream ordering / based on `origin_server_ts`).
-However, this does not need to be guaranteed, particularly when catching up sending old sticky events
-(either after a network partition or to a newly-joined server) at the same time as new sticky events
+However, this does not need to be guaranteed, particularly when catching up sending old unexpired sticky events
+(either after a network partition or to a newly-joined server) at the same time as new unexpired sticky events
 are being created in real-time.
 
-When a sticky event was sent by a [user who has been erased](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3accountdeactivate),
+When an unexpried sticky event was sent by a [user who has been erased](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3accountdeactivate),
 servers SHOULD NOT send it to other homeservers as part of catch-up.
 
 ## Potential issues
