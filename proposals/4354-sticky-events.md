@@ -212,7 +212,7 @@ no shorter than the sticky event being redacted.
 
 It would be possible to have servers promote redactions of sticky events to themselves be automatically
 sticky for as long as the event they are redacting.
-(Essentially introducing a concept of 'virtual sticky events' to allow these redactions to enjoy the benefits
+(This would essentially introduce a concept of 'virtual sticky events' to allow these redactions to enjoy the benefits
 of being sticky \[such as being sent reliably down `/sync`\] without having been created as sticky.)
 
 Setting the complexity aside, such automatic redaction stickiness means that it would no longer be possible to
