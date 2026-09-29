@@ -245,6 +245,10 @@ in a non-extensible form, hence the requirement that clients treat the events as
 Using the usual MSC process, the Spec Core Team (SCT) will be responsible for determining
 the minimum scope of extensible events in a published (stable) room version.
 
+**Changed in MSC4460**: Some event types are explicitly allowed to have certain content
+blocks in certain scenarios without waiting for a formal room version. See [MSC4460](./4460-extensible-events-unstable.md)
+for details.
+
 Meanwhile, clients are welcome to use the unstable implementations of extensible event-supporting
 features, provided they are in an appropriate room version. Some event type MSCs declare
 explicit support for what would normally be an unsupported room version - client authors
