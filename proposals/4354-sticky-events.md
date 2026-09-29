@@ -79,7 +79,7 @@ To calculate if any sticky event is still sticky:
 * If the end time is in the future, the event remains sticky.
 
 As it depends on the server-private timestamp of receipt, this calculation is carried out by servers.
-Clients will instead use the `unsigned.sticky_duration_remaining_ms` field hereinafter.
+Clients will instead use the `unsigned.sticky_duration_remaining_ms` field described below.
 
 Sticky events are like normal message events and are authorised using normal PDU checks. They have the
 following _additional_ properties[^prop]:
