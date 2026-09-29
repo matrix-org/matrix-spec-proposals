@@ -96,7 +96,7 @@ To implement these properties, servers MUST:
 * Ensure sticky events are **delivered** to clients via [`/sync`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3sync) in a new section of the sync response,
   regardless of whether the sticky event falls within the timeline limit of the request.
   If there are too many sticky events to deliver at once, they will be delivered in subsequent `/sync` responses instead.
-* **Re-evaluate soft-failure** of soft-failed unexpired sticky events when the authorising state of the sticky event changes.[^softfail]
+* **Re-evaluate [soft-failure](https://spec.matrix.org/v1.19/server-server-api/#soft-failure)** of soft-failed unexpired sticky events when the authorising state of the sticky event changes.[^softfail]
 * History visibility **checks** MUST NOT be applied to sticky events. This applies to all endpoints where the sticky events could be returned.
   Any joined user or server is authorised to see sticky events for the duration they remain sticky.[^hisvis]
 
