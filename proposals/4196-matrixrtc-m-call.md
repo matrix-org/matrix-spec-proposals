@@ -94,6 +94,11 @@ slots, looks as follows:
   join the call with audio only or with audio and video. Clients SHOULD set this field when joining
   and update it as they en- or disable their video stream. This gives other members a hint as to whether
   the session presents an audio or video call.
+- `capabilities` (array): Each value is one of `audio`, `video`. Optionally discloses if the member
+  is able to render only audio calls or whether they can also display video calls. Note that the capability
+  only covers the rendering side and says nothing about whether or not the member has audio or video input
+  devices. Clients SHOULD populate this field when joining. This lets other members know whether it's worth
+  to publish a video stream or not.
 
 Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
 
@@ -108,7 +113,8 @@ Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
     },
     "application": {
       "type": "m.call",
-      "intent": "video"
+      "intent": "audio", // I'm going to connect with audio only.
+      "capabilities": ["audio", "video"], // But I can render video calls, too.
     },
     "transports": {
       ...
@@ -203,12 +209,13 @@ creation though.
 
 ## Security considerations
 
-### Metadata leakage through intent
+### Metadata leakage through `intent` and `capabilities`
 
-The `intent` property on `m.rtc.member` events is visible to all room members, not just
-those joined to the MatrixRTC session. Some user's might not be comfortable with disclosing
-whether their camera is on or off outside the session though. To mitigate this, users can opt
-not to fill `intent` given that it is an optional property.
+The `intent` and `capabilities` properties on `m.rtc.member` events are visible to all room members,
+not just those joined to the MatrixRTC session. Some user's might not be comfortable with disclosing
+whether their camera is enabled or whether their device supports video calls outside the session
+though. To mitigate this, users can opt not to fill `intent` and `capabilities` given that both are
+optional properties.
 
 ### Consent to share media
 
