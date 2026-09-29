@@ -93,7 +93,7 @@ To implement these properties, servers MUST:
 * Attempt to **push** their own[^origin] sticky events to all joined servers, whilst respecting per-server backoff times.
   Large volumes of events to send MUST NOT cause the sticky event to be dropped from the send queue on the server.
 * When a new server joins the room, existing servers MUST attempt to **push** all of their own sticky events[^newjoiner].
-* Ensure sticky events are **delivered** to clients via `/sync` in a new section of the sync response,
+* Ensure sticky events are **delivered** to clients via [`/sync`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3sync) in a new section of the sync response,
   regardless of whether the sticky event falls within the timeline limit of the request.
   If there are too many sticky events to deliver at once, they will be delivered in subsequent `/sync` responses instead.
 * **Re-evaluate soft-failure** of soft-failed unexpired sticky events when the authorising state of the sticky event changes.[^softfail]
