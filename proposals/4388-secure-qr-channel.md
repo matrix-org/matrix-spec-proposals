@@ -897,21 +897,29 @@ If the code that the user enters matches then the secure channel is established.
 Conceptually, once established, the secure channel offers two operations, `SecureSend` and `SecureReceive`, which wrap
 the `Send` and `Receive` operations offered by the rendezvous session API to securely send and receive data between two devices.
 
-Subsequent payloads sent from G should be encrypted using the context **Context_DeviceG_Send**, while payloads
-sent from S should be encrypted with **Context_DeviceS_Send**. Each call to the `Seal()` function should use the
-additional authentication data of the form where the **sequence token** is from the last `GET` that the device received:
+Subsequent payloads sent from G are encrypted using the context **Context_DeviceG_Send**, while payloads sent from S are
+encrypted with **Context_DeviceS_Send**. Similarly, payloads received by G are decrypted using the context
+**Context_DeviceG_Receive**, while payloads received by S are decrypted using the context **Context_DeviceS_Receive**.
+
+Every call to `Seal()` and `Open()` uses additional authentication data of the same form as during establishment:
 
 ```
 Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
 ```
 
-Similarly, payloads received by G should be decrypted using the context **Context_DeviceG_Receive**, while payloads received by S
-should be decrypted using the context **Context_DeviceS_Receive**. Each call to the `Open()` function should use the
-additional authentication data of the form where the **sequence token** is from the last `PUT` that the device made:
+where the **sequence token** is that of the payload being replaced in the rendezvous session:
 
-```
-Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
-```
+- when sending, the `sequence_token` that the sender includes in the body of its `PUT` request;
+- when receiving, the `sequence_token` that the receiver held before the `GET` request which returned the new payload.
+
+Because a send is only accepted if its `sequence_token` matches the token of the currently stored payload, the two
+tokens above are the same. Each payload is therefore bound to one position in the session's sequence and cannot be
+replayed or reordered within it.
+
+Note that this is not simply "the token from the sender's last `GET`": a device that sends two payloads in a row, as G
+does with **LoginOkMessage** followed by the first message from [MSC4108], binds the second to the `sequence_token`
+returned by the `PUT` that sent the first. The additional authentication data in establishment steps 4 to 6 above are
+instances of this same rule.
 
 ### Sequence diagram
 
