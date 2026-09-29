@@ -303,7 +303,7 @@ Again, once a member has left, clients MUST refrain from connecting to their tra
 
 A typical lifecycle of a MatrixRTC membership involves a series of `m.rtc.member` events, as follows:
 
-1. members first join a slot by sending a joining `m.rtc.member` event.
+1. Members first join a slot by sending a joining `m.rtc.member` event.
 1. Afterwards, members may update their membership, e.g. to change transports or modify
    application-specific settings, by sending a new `m.rtc.member` event with the same `sticky_key`.
    Since the actual join state is constrained by the stickiness of the member event, clients
