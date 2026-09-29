@@ -415,8 +415,6 @@ be desirable to couple the lifetime of LiveKit tokens to the period of room memb
 because a malicious user being kicked from a Matrix room could otherwise continue to be connected to an
 ongoing RTC session related to the room. To prevent this, servers SHOULD remove any associated LiveKit
 participant identities from the related LiveKit rooms when a user leaves or is banned from a Matrix room.
-Additionally, servers SHOULD downgrade the participant's [permissions] by setting all `can_` properties
-to `false`.
 
 As mentioned earlier, token revocation is only a feature on LiveKit Cloud. Homeservers that rely on a
 self-hosted LiveKit instance SHOULD, therefore, re-validate room membership when the SFU signals via
@@ -430,7 +428,6 @@ token revocation in the self-hosted version of LiveKit exists [upstream].
 [token revocation]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-revocation
 [proactively refreshes tokens]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-refresh
 [counterintuitively]: https://docs.livekit.io/frontends/reference/tokens-grants/#video-grant
-[permissions]: https://docs.livekit.io/reference/other/roomservice-api/#participantpermission
 [upstream]: https://github.com/livekit/livekit/pull/4919.
 
 ### Optional delegated delayed leave events
