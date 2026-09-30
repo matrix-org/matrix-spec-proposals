@@ -387,7 +387,7 @@ servers MUST apply the following settings:
   currently make use of this metadata, servers SHOULD set the permission to `false` to grant clients the
   least amount of privileges required.
 
-Below is an example of a LiveKit JWT for a local user:
+Below is an example of the payload of a LiveKit JWT for a local user:
 
 ```json5
 {
