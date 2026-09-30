@@ -97,7 +97,9 @@ slots, looks as follows:
 - `capabilities` (array): Optionally discloses what call related features the client supports. This allows
   other clients in the call to adapt their own features. For instance, a client may disable its camera button
   if none of the other members in the call support rendering video streams. Clients SHOULD populate `capabilities`
-  when joining a call. Allowed values for include:
+  when joining a call. If `capabilities` is set, the absence of a value signals that the client doesn't support
+  the respective capability. If `capabilities` is missing entirely, the client's capabilities are undetermined.
+  Allowed values for `capabilities` include:
   - `render_audio`: The client can render audio streams. Note that this doesn't necessarily imply that the
     client is able to also transmit its own audio.
   - `render_video`: The client can render video streams. Note that this doesn't necessarily imply that the
