@@ -179,7 +179,7 @@ is not required here.
 As mentioned above, WebSocket connections to LiveKit rooms are needed for publishing and subscribing
 to RTC streams. The LiveKit SFU requires an access token in the form of a JWT for these connections.
 In order to enable additional access control checks, responsibility for issuing these tokens is
-assigned to home servers.
+assigned to homeservers.
 
 Servers can [generate] the tokens by using one of the LiveKit SDKs and inputting a set of parameters
 including the LiveKit room name and the LiveKit participant identifier. The procedure also requires
