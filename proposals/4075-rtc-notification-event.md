@@ -17,9 +17,10 @@ application, yet form a solid foundation for future extension.
 
 ## Proposal
 
-Two new [sticky][MSC4354] room events, `m.rtc.invite` and `m.rtc.decline`, are introduced. These
-events can be sent by clients to prompt other users to join a MatrixRTC session and to reject a
-received invitation, respectively.
+Three new [sticky][MSC4354] room events, `m.rtc.invite`, `m.rtc.decline` and `m.rtc.invite_progress`,
+are introduced. These events can be sent by clients to prompt other users to join a MatrixRTC session,
+to reject a received invitation, and to report what became of an invitation on the recipient's side,
+respectively.
 
 The schema of `m.rtc.invite` is as follows:
 
@@ -71,14 +72,85 @@ The schema of `m.rtc.decline` is as follows:
 }
 ```
 
-Clients MUST send both `m.rtc.invite` and `m.rtc.decline` as sticky events as per [MSC4354] for the
-associated delivery guarantee. The sticky durations of `m.rtc.invite` events, `m.rtc.member` events
-which accept an invite, or `m.rtc.decline` events which decline an invite SHOULD NOT be smaller than
-the invite's `lifetime`. Additionally, clients MUST implement the ephemeral map algorithm as per
-[MSC4354] to construct a state-like store of `m.rtc.invite` events. Tracking `m.rtc.decline` events in a map isn't
-necessary because there is no need to update them after being sent.
+The schema of `m.rtc.invite_progress` is as follows:
 
-Additionally, both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted when the room is encrypted.
+- `m.relates_to` (required, object): An `m.reference` relation to the `m.rtc.invite` event whose
+  progress is being reported.
+- `sticky_key` (required, string): The event's sticky key as per [MSC4354]. MUST be equal to the
+  event ID of the `m.rtc.invite` event, so that a later report replaces an earlier one.
+- `device_id` (required, string): The sender's device that is reporting.
+- `state` (required, string): What became of the invite on that device. One of:
+  - `ringing`: The device is alerting the user, or the endpoint it stands in for is (a phone behind a
+    SIP bridge has returned `180 Ringing`, say).
+  - `busy`: The endpoint cannot take the call right now (SIP `486` or `600`, for instance). Unlike
+    `m.rtc.decline`, this is not a deliberate rejection by the user.
+  - `unreachable`: The endpoint could not be reached (SIP `404`, `408`, `480` or `503`, for instance,
+    or no device to ring).
+  - `connected`: The endpoint answered. A device which joins the slot itself needs no such report
+    because its `m.rtc.member` event says so. It is for a device acting on behalf of an endpoint that
+    does not appear as a member of its own, such as a bridge answering for a phone, so that the
+    inviter's client can stop ringing and start its call timer.
+- `reason` (optional, string): Free-text detail for diagnostics, such as a SIP status line. Clients
+  MAY show it alongside `state` so that a failed call can be diagnosed from the timeline but SHOULD
+  NOT interpret it.
+
+```json5
+{
+  "type": "m.rtc.invite_progress",
+  "content": {
+    "m.relates_to": {
+      "rel_type": "m.reference",
+      "event_id": "$1"
+    },
+    "sticky_key": "$1",
+    "device_id": "SIPBRIDGE",
+    "state": "ringing",
+    "reason": "180 Ringing"
+  }
+}
+```
+
+Progress reports are optional. Devices that ring for an invite MAY report `ringing` so that the
+inviter can tell a delivered invite from one that reached nothing. Devices standing in for an
+endpoint which cannot speak for itself, such as a SIP bridge dialling a phone, SHOULD report each
+state as they learn of it. Progress only moves forward: `ringing` may be followed by `connected`,
+`busy` or `unreachable`, and a device SHOULD send each state at most once per invite. Once a device has
+reported on an invite, the inviter's client takes its reports over its `m.rtc.member` events: a bridge
+joins the slot to play ringback long before the phone answers, so its membership cannot mean "answered".
+A device that has reported `ringing` and then answers the call itself, by joining the slot, SHOULD
+therefore also report `connected`. Memberships of users whose devices have not reported anything mean
+what they always did, so a recipient that never reports is treated exactly as before this event
+existed. Accepting and
+declining an invite remain as described above: a device which answers joins the slot and one which
+declines sends `m.rtc.decline`. A `busy` or `unreachable` report from the only targeted device MAY be
+presented like a decline with a different label, and the inviter's client MAY act on it as it does
+on a decline.
+
+Progress reports carry no media. A device standing in for an endpoint typically joins the slot as
+soon as it starts dialling, so that the inviter's own ringing lifecycle settles and the session has
+somewhere to put sound, and it uses the session's ordinary media path for everything the inviter
+hears before the answer: while `ringing`, a SIP bridge publishes either the far end's early media
+(a `183 Session Progress` with SDP: the network's own ringback, an announcement) or a locally
+synthesised ringback tone, and switches to the call's audio on the answer. `connected` is what tells
+the inviter's client that this switch has happened, since early media and the answer are
+indistinguishable on the wire, and a `busy` or `unreachable` report may likewise arrive while an
+announcement is still playing. An inviting client that plays its own ringback tone while an invite is
+pending SHOULD stop once a targeted user is joined to the slot and publishing audio, whether or not a
+report has arrived, so that the two are not heard at once.
+
+Clients MUST send `m.rtc.invite`, `m.rtc.decline` and `m.rtc.invite_progress` as sticky events as per
+[MSC4354] for the associated delivery guarantee. The sticky durations of `m.rtc.invite` events,
+`m.rtc.member` events which accept an invite, `m.rtc.decline` events which decline an invite, or
+`m.rtc.invite_progress` events which report on one SHOULD NOT be smaller than the invite's `lifetime`.
+Additionally, clients MUST implement the ephemeral map algorithm as per [MSC4354] to construct a
+state-like store of `m.rtc.invite` events. Tracking `m.rtc.decline` events in a map isn't necessary
+because there is no need to update them after being sent. Inviting clients that present progress
+SHOULD track `m.rtc.invite_progress` events in the map so that the latest report per sender is the
+one shown; as the map is keyed by sender, reports from several devices of one user replace each
+other, which `device_id` makes visible.
+
+Additionally, `m.rtc.invite`, `m.rtc.decline` and `m.rtc.invite_progress` MUST be sent encrypted when
+the room is encrypted.
 
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
@@ -112,7 +184,9 @@ inviter themselves leaves the slot with no other members currently joined to the
 How exactly sending clients present issued invitations in their UI is left as an implementation
 detail. For instance, a sending client could use a ringing UI in [direct chats] while it is waiting
 for the invite to be acted on and stop ringing when the invite is accepted, declined (see the next
-section) or expires.
+section) or expires, and it could use `m.rtc.invite_progress` reports to say "ringing" rather than
+"calling" once a recipient is actually alerting, or "busy" in place of waiting for the lifetime to
+elapse.
 
 ### Receiving invites
 
@@ -219,6 +293,23 @@ Invite valid          |          |          |
                       |          |          |
                       Slot       Invite     Invitee
                       joined     sent       leaves
+```
+
+#### Example 4: A bridge reports progress, and the phone behind it is busy
+
+Progress reports never invalidate an invite by themselves. Here the inviter's client shows
+"ringing" from the first report, then "busy" from the second, and MAY withdraw the invite at that
+point as it would after a decline; otherwise the invite stays valid until its `lifetime` elapses.
+
+```
+m.rtc.invite                   [==========|==========|==========]
+m.rtc.invite_progress (ringing)|          [==========|xxxxxxxxxxxxxxxxxxxxx]
+m.rtc.invite_progress (busy)   |          |          [================================]
+                               |          |          |
+Invite valid                   [#####################|##########]
+                               |          |          |
+                               Invite     Phone      Phone
+                               sent       rings      busy
 ```
 
 ### Push rules
@@ -338,16 +429,18 @@ Extensions like this could be added on top of this proposal, for instance, by al
 specific metadata in a dedicated `application` object inside of `m.rtc.invite` events. Doing so is
 left as a task for a future proposal which can use this MSC as a foundation.
 
-### Lack of feedback
+### Feedback is best effort
 
 As mentioned above, a ringing UX can be a reasonable choice in certain situations in order to create
-an experience akin to classical phone calls. However, this proposal doesn't provide sending clients
-with a way to know if their invite has reached the recipient or what their current status is (ringing,
-busy, etc.). The window inbetween inviting and declining has deliberately been descoped from this
-proposal and various solutions may be plugged into the system by a future MSC. As an example, lightweight
-ringing acknowledgements could be communicated back via to-device messages. Alternatively, richer invite
-progress updates could be mediated via sticky room messages. Lastly, a general event delivery receipt
-mechanism could also be sufficient to cover some use cases.
+an experience akin to classical phone calls. `m.rtc.invite_progress` gives sending clients a way to
+learn whether an invite reached a recipient and what its status is, but reports are optional and only
+as good as the reporting device's knowledge: a client that rings but never reports looks the same as
+one the invite never reached, and a bridge relays whatever the far side told it. Sending clients MUST
+therefore not depend on progress reports for correctness and SHOULD treat an invite without any as
+they would without this feature. Alternatives that were considered are lightweight ringing
+acknowledgements via to-device messages, which would leave nothing in the timeline for a failed call
+to be diagnosed from, and a general event delivery receipt mechanism, which cannot express `busy` or
+`unreachable`.
 
 ### Device-specific invites
 
@@ -464,6 +557,7 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 | Inviting without starting a call | ❌ Not possible | ✅ Explicitly allowed if an open slot exists |
 | Withdrawing invites | ✅ via [`m.call.hangup`] events | ✅ via empty or redacted `m.rtc.invite` events |
 | Declining invites | ✅ via [`m.call.hangup`] events | ✅ via `m.rtc.decline` events |
+| Ringing, busy and unreachable feedback | ❌ Not possible | ✅ via `m.rtc.invite_progress` events |
 | Notifications in default rooms | ✅ via `.m.rule.call` push rule | ✅ via `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` push rules |
 | Notifications in mentions-only rooms | ❌ Not possible | ✅ via `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` push rules |
 | Events required to validate session invites | ✅ 1 ([`m.call.invite`]) | ⚠️ 2 (`m.rtc.slot` and `m.rtc.invite`; since `m.rtc.slot` is a state event both can be fetched in the same `/sync`, however) |
@@ -478,6 +572,7 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 | ----------------- | ------- | --------------------|
 | `m.rtc.invite` | Event type | `org.matrix.msc4075.rtc.notification` |
 | `m.rtc.decline` | Event type | `org.matrix.msc4310.rtc.decline` |
+| `m.rtc.invite_progress` | Event type | `org.matrix.msc4075.rtc.invite_progress` |
 | `.m.rule.rtc.invite_for_me` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_me` |
 | `.m.rule.rtc.invite_for_room` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_room` |
 
