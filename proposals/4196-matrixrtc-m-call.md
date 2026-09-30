@@ -94,11 +94,14 @@ slots, looks as follows:
   join the call with audio only or with audio and video. Clients SHOULD set this field when joining
   and update it as they en- or disable their video stream. This gives other members a hint as to whether
   the session presents an audio or video call.
-- `capabilities` (array): Each value is one of `audio`, `video`. Optionally discloses if the member
-  is able to render only audio calls or whether they can also display video calls. Note that the capability
-  only covers the rendering side and says nothing about whether or not the member has audio or video input
-  devices. Clients SHOULD populate this field when joining. This lets other members know whether it's worth
-  to publish a video stream or not.
+- `capabilities` (array): Optionally discloses what call related features the client supports. This allows
+  other clients in the call to adapt their own features. For instance, a client may disable its camera button
+  if none of the other members in the call support rendering video streams. Clients SHOULD populate `capabilities`
+  when joining a call. Allowed values for include:
+  - `render_audio`: The client can render audio streams. Note that this doesn't necessarily imply that the
+    client is able to also transmit its own audio.
+  - `render_video`: The client can render video streams. Note that this doesn't necessarily imply that the
+    client is able to also transmit its own video.
 
 Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
 
@@ -114,7 +117,7 @@ Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
     "application": {
       "type": "m.call",
       "intent": "audio", // I'm going to connect with audio only.
-      "capabilities": ["audio", "video"], // But I can render video calls, too.
+      "capabilities": ["render_audio", "render_video"], // But I can render video calls, too.
     },
     "transports": {
       ...
