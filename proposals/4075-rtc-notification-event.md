@@ -120,6 +120,18 @@ declines sends `m.rtc.decline`. A `busy` or `unreachable` report from the only t
 presented like a decline with a different label, and the inviter's client MAY act on it as it does
 on a decline.
 
+Progress reports carry no media. A device standing in for an endpoint typically joins the slot as
+soon as it starts dialling, so that the inviter's own ringing lifecycle settles and the session has
+somewhere to put sound, and it uses the session's ordinary media path for everything the inviter
+hears before the answer: while `ringing`, a SIP bridge publishes either the far end's early media
+(a `183 Session Progress` with SDP: the network's own ringback, an announcement) or a locally
+synthesised ringback tone, and switches to the call's audio on the answer. `connected` is what tells
+the inviter's client that this switch has happened, since early media and the answer are
+indistinguishable on the wire, and a `busy` or `unreachable` report may likewise arrive while an
+announcement is still playing. An inviting client that plays its own ringback tone while an invite is
+pending SHOULD stop once a targeted user is joined to the slot and publishing audio, whether or not a
+report has arrived, so that the two are not heard at once.
+
 Clients MUST send `m.rtc.invite`, `m.rtc.decline` and `m.rtc.invite_progress` as sticky events as per
 [MSC4354] for the associated delivery guarantee. The sticky durations of `m.rtc.invite` events,
 `m.rtc.member` events which accept an invite, `m.rtc.decline` events which decline an invite, or
