@@ -215,7 +215,7 @@ creation though.
 ### Metadata leakage through `intent` and `capabilities`
 
 The `intent` and `capabilities` properties on `m.rtc.member` events are visible to all room members,
-not just those joined to the MatrixRTC session. Some user's might not be comfortable with disclosing
+not just those joined to the MatrixRTC session. Some users might not be comfortable with disclosing
 whether their camera is enabled or whether their device supports video calls outside the session
 though. To mitigate this, users can opt not to fill `intent` and `capabilities` given that both are
 optional properties.
