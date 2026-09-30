@@ -184,7 +184,7 @@ the session. This would require a mechanism for identifying audio and video stre
 client in a stable way irrespective of the used transport, that transport's internal stream
 identifiers and the current member ID.
 
-Designing such a mechanism has delibaretly been descoped from this proposal. For one thing,
+Designing such a mechanism has deliberately been descoped from this proposal. For one thing,
 moderation rules will likely have to be enforced on the receiving rather than the sending side.
 This means that a client update will be required regardless if such rules are introduced in
 the future. For another, the current proposal doesn't design out the future addition of the
