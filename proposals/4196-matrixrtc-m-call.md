@@ -176,7 +176,8 @@ fitness for use in `m.call`.
 More advanced calling experiences might have a need for more than one slot per room, for instance,
 for breakout sessions. This was consciously left out of scope in this proposal. A future MSC
 may devise a scheme for letting clients negotiate which slot to use when multiple are present in
-a room.
+a room. Until then, clients MUST ignore `m.rtc.slot` events that use an `application_slot_id` other
+than `room` (such as `m.call#line1`).
 
 ### Lack of stable stream identifiers
 
