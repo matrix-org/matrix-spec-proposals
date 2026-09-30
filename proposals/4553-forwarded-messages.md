@@ -75,26 +75,29 @@ forward.
 
 ### Fallback
 
-The sender MUST add a fallback when the message type's `body` holds message text, or supports
+Supporting clients render `m.forwarded_content` and never parse the fallback, so the format below is a
+recommendation. Senders MAY deviate from it, for example to localise the wording.
+
+The sender SHOULD add a fallback when the message type's `body` holds message text, or supports
 [media captions](https://spec.matrix.org/v1.19/client-server-api/#media-captions). Message types whose `body` is
-something else, such as the description of an `m.location`, and message types the sender does not recognise, keep
-`body`, `format`, and `formatted_body` exactly as in `m.forwarded_content`.
+something else, such as the description of an `m.location`, and message types the sender does not recognise, SHOULD
+keep `body`, `format`, and `formatted_body` as in `m.forwarded_content`.
 
 In this section, "the source" means `m.forwarded_content`.
 
-For message types that support media captions, the sender MUST set top-level `filename` to the source's `filename`,
+For message types that support media captions, the sender SHOULD set top-level `filename` to the source's `filename`,
 or to its `body` if `filename` is absent. The fallback then becomes the media's caption. The source has an original
 caption only if its `filename` is present and differs from its `body`.
 
 Clients that don't support this MSC would show a forwarded emote as an emote by the forwarding user, so the sender
-MUST set the top-level `msgtype` of a forwarded `m.emote` to `m.text` and put the original sender's display name, or
+SHOULD set the top-level `msgtype` of a forwarded `m.emote` to `m.text` and put the original sender's display name, or
 their user ID if the forwarding client does not know it, in front of the quoted text. In `body` it is plain text; in
 `formatted_body` it is `<a href="{sender permalink}">{display name}</a>`, which clients may display as a mention.
 `m.forwarded_content` keeps `m.emote`.
 
 #### Plain text
 
-The top-level `body` MUST be:
+The recommended top-level `body` is:
 
 ```text
 Forwarded from {sender} - view original message: {permalink}
@@ -106,12 +109,11 @@ The newline and the second line are only included if the source has non-empty te
 `{sender}` is `m.forwarded.sender`. `{permalink}` is a
 [matrix.to event permalink](https://spec.matrix.org/v1.19/appendices/#matrixto-navigation) built from
 `m.forwarded.room_id` and `m.forwarded.event_id`, each percent-encoded. It SHOULD include `via` parameters so the
-room can be found by users who are not in it. The wording is fixed English; supporting clients MAY localise
-attribution in their own UI.
+room can be found by users who are not in it.
 
 #### HTML
 
-The sender MUST set `format` to `org.matrix.custom.html` and `formatted_body` to:
+The recommended `format` is `org.matrix.custom.html`, with `formatted_body`:
 
 ```html
 <strong>Forwarded from <a href="{sender permalink}">{sender}</a> - <a href="{event permalink}">view original message</a></strong><blockquote>{original HTML}</blockquote>
