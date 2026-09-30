@@ -114,7 +114,13 @@ Progress reports are optional. Devices that ring for an invite MAY report `ringi
 inviter can tell a delivered invite from one that reached nothing. Devices standing in for an
 endpoint which cannot speak for itself, such as a SIP bridge dialling a phone, SHOULD report each
 state as they learn of it. Progress only moves forward: `ringing` may be followed by `connected`,
-`busy` or `unreachable`, and a device SHOULD send each state at most once per invite. Accepting and
+`busy` or `unreachable`, and a device SHOULD send each state at most once per invite. Once a device has
+reported on an invite, the inviter's client takes its reports over its `m.rtc.member` events: a bridge
+joins the slot to play ringback long before the phone answers, so its membership cannot mean "answered".
+A device that has reported `ringing` and then answers the call itself, by joining the slot, SHOULD
+therefore also report `connected`. Memberships of users whose devices have not reported anything mean
+what they always did, so a recipient that never reports is treated exactly as before this event
+existed. Accepting and
 declining an invite remain as described above: a device which answers joins the slot and one which
 declines sends `m.rtc.decline`. A `busy` or `unreachable` report from the only targeted device MAY be
 presented like a decline with a different label, and the inviter's client MAY act on it as it does
