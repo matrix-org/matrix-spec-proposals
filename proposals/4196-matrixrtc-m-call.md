@@ -76,7 +76,7 @@ creator. Thus, they could technically send the `m.rtc.slot` event themselves whe
 including the slot at room creation time, makes it explicit that calls are enabled and prevents
 clients from having to create the event later.
 
-Contratry to the above, including `m.rtc.slot` events in `initial_state` is not required when
+Contrary to the above, including `m.rtc.slot` events in `initial_state` is not required when
 the `public_chat` preset is used. Enabling calls by default is usually not desired here due to
 the open-access nature and the potentially large size of such rooms.
 
