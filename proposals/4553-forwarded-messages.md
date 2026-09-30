@@ -3,8 +3,8 @@
 Clients forward a message by copying it into a new event. Without metadata, recipients see the copy as if the
 forwarding user wrote it, and bridges have nothing to translate into their network's notion of a forward.
 
-[MSC2723] proposed an `m.forwarded` object for this but stalled. This MSC reuses that object and adds
-`m.forwarded_content`, a separate copy of the original content. The top-level fields can then carry a text fallback
+[MSC2723] proposed an `m.forwarded` object for this but stalled. This MSC reuses that object and adds a
+`content` field to it, a separate copy of the original content. The top-level fields can then carry a text fallback
 for clients that don't support this MSC, without affecting what supporting clients render.
 
 ## Proposal
@@ -27,28 +27,28 @@ fields:
 An event is a forward if its content has an `m.forwarded` object with all of these fields.
 
 If the event the user selected to forward is itself a forward, the sender MUST copy its `m.forwarded` unchanged, so
-the new event points at the original message rather than at the intermediate forward. Otherwise, the selected event is
-the original, and `m.forwarded` describes it.
+the new event points at the original message rather than at the intermediate forward. The only exception is a
+missing or invalid `content`, which the sender replaces as described below. Otherwise, the selected event is the
+original, and `m.forwarded` describes it.
 
-### `m.forwarded_content`
+### `m.forwarded.content`
 
-A forwarded message MUST also include `m.forwarded_content`, the content of the original message. `m.forwarded_content`
-is valid if it is an object with a string `msgtype` and a string `body`.
+`m.forwarded` MUST also include `content`, the content of the original message. `m.forwarded.content` is valid if it
+is an object with a string `msgtype` and a string `body`.
 
-If the selected event is a forward with a valid `m.forwarded_content`, the sender MUST copy it unchanged. Otherwise,
-the sender builds it from the selected event's content, decrypted if the event was encrypted:
+If the selected event is not a forward, or is a forward without a valid `m.forwarded.content`, the sender builds
+`content` from the selected event's content, decrypted if the event was encrypted:
 
 1. If the event has been edited, the sender MUST apply the latest edit available to it, as it would for display.
-2. The sender MUST remove `m.forwarded`, `m.forwarded_content`, and their unstable equivalents, and strip any legacy
-   reply fallback from `body` and `formatted_body`.
+2. The sender MUST remove `m.forwarded` and its unstable equivalents, and strip any legacy reply fallback from `body`
+   and `formatted_body`.
 
-The sender MUST NOT modify `m.forwarded_content` in any other way.
+The sender MUST NOT modify `m.forwarded.content` in any other way.
 
 ### Top-level content
 
-The top-level content is a copy of `m.forwarded_content` without `m.relates_to`, `m.mentions`, `m.new_content`,
-`m.forwarded`, and `m.forwarded_content`, with the fallback below applied and the new `m.forwarded` and
-`m.forwarded_content` added.
+The top-level content is a copy of `m.forwarded.content` without `m.relates_to`, `m.mentions`, `m.new_content`, and
+`m.forwarded`, with the fallback below applied and the new `m.forwarded` added.
 
 The sender MUST set its own top-level `m.mentions`, which stops legacy push rules from matching the fallback text. It
 MUST NOT mention the original sender just because the event attributes them. The sender MAY add its own
@@ -60,14 +60,14 @@ upload it again.
 
 ### Rendering
 
-A supporting client renders a forward with attribution from `m.forwarded`. If `m.forwarded_content` is valid, the
+A supporting client renders a forward with attribution from `m.forwarded`. If `m.forwarded.content` is valid, the
 client MUST render it as the message content and MUST NOT render the top-level `body` or `formatted_body`. Otherwise,
 as with [MSC2723] forwards, the client renders the top-level content.
 
-If `m.forwarded_content` is an `m.emote`, it MUST be rendered as an emote by `m.forwarded.sender`, not by the
+If `m.forwarded.content` is an `m.emote`, it MUST be rendered as an emote by `m.forwarded.sender`, not by the
 forwarding user.
 
-Relationships and mentions inside `m.forwarded_content` MUST NOT be treated as relationships or mentions in the
+Relationships and mentions inside `m.forwarded.content` MUST NOT be treated as relationships or mentions in the
 destination room.
 
 Forwards cannot be edited. Clients MUST NOT offer to edit a forward, and MUST ignore any edit whose target is a
@@ -75,15 +75,15 @@ forward.
 
 ### Fallback
 
-Supporting clients render `m.forwarded_content` and never parse the fallback, so the format below is a
+Supporting clients render `m.forwarded.content` and never parse the fallback, so the format below is a
 recommendation. Senders MAY deviate from it, for example to localise the wording.
 
 The sender SHOULD add a fallback when the message type's `body` holds message text, or supports
 [media captions](https://spec.matrix.org/v1.19/client-server-api/#media-captions). Message types whose `body` is
 something else, such as the description of an `m.location`, and message types the sender does not recognise, SHOULD
-keep `body`, `format`, and `formatted_body` as in `m.forwarded_content`.
+keep `body`, `format`, and `formatted_body` as in `m.forwarded.content`.
 
-In this section, "the source" means `m.forwarded_content`.
+In this section, "the source" means `m.forwarded.content`.
 
 For message types that support media captions, the sender SHOULD set top-level `filename` to the source's `filename`,
 or to its `body` if `filename` is absent. The fallback then becomes the media's caption. The source has an original
@@ -93,7 +93,7 @@ Clients that don't support this MSC would show a forwarded emote as an emote by 
 SHOULD set the top-level `msgtype` of a forwarded `m.emote` to `m.text` and put the original sender's display name, or
 their user ID if the forwarding client does not know it, in front of the quoted text. In `body` it is plain text; in
 `formatted_body` it is `<a href="{sender permalink}">{display name}</a>`, which clients may display as a mention.
-`m.forwarded_content` keeps `m.emote`.
+`m.forwarded.content` keeps `m.emote`.
 
 #### Plain text
 
@@ -141,13 +141,13 @@ A forwarded text message:
     "event_id": "$original:example.org",
     "room_id": "!source:example.org",
     "sender": "@alice:example.org",
-    "origin_server_ts": 1722451200000
-  },
-  "m.forwarded_content": {
-    "msgtype": "m.text",
-    "body": "Meeting starts at noon.",
-    "format": "org.matrix.custom.html",
-    "formatted_body": "<p>Meeting starts at noon.</p>"
+    "origin_server_ts": 1722451200000,
+    "content": {
+      "msgtype": "m.text",
+      "body": "Meeting starts at noon.",
+      "format": "org.matrix.custom.html",
+      "formatted_body": "<p>Meeting starts at noon.</p>"
+    }
   }
 }
 ```
@@ -165,11 +165,11 @@ A forwarded emote, originally `/me waves` from Alice:
     "event_id": "$emote:example.org",
     "room_id": "!source:example.org",
     "sender": "@alice:example.org",
-    "origin_server_ts": 1722451200000
-  },
-  "m.forwarded_content": {
-    "msgtype": "m.emote",
-    "body": "waves"
+    "origin_server_ts": 1722451200000,
+    "content": {
+      "msgtype": "m.emote",
+      "body": "waves"
+    }
   }
 }
 ```
@@ -189,12 +189,12 @@ A forwarded file without a caption. The source `body` was a filename, so it move
     "event_id": "$file:example.org",
     "room_id": "!source:example.org",
     "sender": "@alice:example.org",
-    "origin_server_ts": 1722451200000
-  },
-  "m.forwarded_content": {
-    "msgtype": "m.file",
-    "body": "agenda.pdf",
-    "url": "mxc://example.org/agenda"
+    "origin_server_ts": 1722451200000,
+    "content": {
+      "msgtype": "m.file",
+      "body": "agenda.pdf",
+      "url": "mxc://example.org/agenda"
+    }
   }
 }
 ```
@@ -208,12 +208,12 @@ The event carries the content twice, so senders SHOULD check that it fits within
 
 ## Security considerations
 
-Everything in `m.forwarded` is a claim by the forwarding user, and `m.forwarded_content` need not match the source
+Everything in `m.forwarded` is a claim by the forwarding user, and `m.forwarded.content` need not match the source
 event. Forwarding a forward repeats the previous forwarder's claims unchecked. Clients MAY verify a forward against the
 source event if they can access it, but MUST NOT present an unverified forward as verified. Clients MUST sanitise HTML
-in both the fallback and `m.forwarded_content` as usual.
+in both the fallback and `m.forwarded.content` as usual.
 
-The fallback and `m.forwarded_content` can also differ, so clients that don't support this MSC may see different content
+The fallback and `m.forwarded.content` can also differ, so clients that don't support this MSC may see different content
 from supporting clients.
 
 ## Alternatives
@@ -223,7 +223,7 @@ parsing two independently editable fields, and a malformed fallback can cause re
 
 Storing only the original `body` and `formatted_body` would save space but lose media and custom fields.
 
-Forwarding a forward could nest the previous forward inside `m.forwarded_content`. The event would grow with every
+Forwarding a forward could nest the previous forward inside `m.forwarded.content`. The event would grow with every
 hop, and clients would have to unwrap it to find the original message.
 
 [MSC2730] makes forwards verifiable by copying the original event's hashes, signatures, and other federation fields into
@@ -235,10 +235,9 @@ layer verification on top. Like [MSC2723], [MSC2730] has stalled.
 
 ## Unstable prefix
 
-Until this MSC is accepted, implementations use `org.matrix.msc4553.forwarded` and
-`org.matrix.msc4553.forwarded_content` in place of `m.forwarded` and `m.forwarded_content`. Clients SHOULD also treat
-`com.famedly.app.forwarded` from [MSC2723] implementations as `m.forwarded` when reading, but MUST NOT send it. Such
-events have no `m.forwarded_content`, so they are rendered from the top-level content.
+Until this MSC is accepted, implementations use `org.matrix.msc4553.forwarded` in place of `m.forwarded`. Clients
+SHOULD also treat `com.famedly.app.forwarded` from [MSC2723] implementations as `m.forwarded` when reading, but MUST
+NOT send it. Such events have no `content` in the forwarded object, so they are rendered from the top-level content.
 
 [MSC2723]: https://github.com/matrix-org/matrix-spec-proposals/pull/2723
 [MSC2730]: https://github.com/matrix-org/matrix-spec-proposals/pull/2730
