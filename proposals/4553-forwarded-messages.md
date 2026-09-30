@@ -5,7 +5,7 @@ forwarding user wrote it, and bridges have nothing to translate into their netwo
 
 [MSC2723] proposed an `m.forwarded` object for this but stalled. This MSC reuses that object and adds
 `m.forwarded_content`, a separate copy of the original content. The top-level fields can then carry a text fallback
-for clients and bridges that don't support this MSC, without affecting what supporting clients render.
+for clients that don't support this MSC, without affecting what supporting clients render.
 
 ## Proposal
 
@@ -211,8 +211,8 @@ event. Forwarding a forward repeats the previous forwarder's claims unchecked. C
 source event if they can access it, but MUST NOT present an unverified forward as verified. Clients MUST sanitise HTML
 in both the fallback and `m.forwarded_content` as usual.
 
-The fallback and `m.forwarded_content` can also differ, so clients and bridges that don't support this MSC may see
-different content from supporting clients.
+The fallback and `m.forwarded_content` can also differ, so clients that don't support this MSC may see different content
+from supporting clients.
 
 ## Alternatives
 
@@ -224,6 +224,13 @@ Storing only the original `body` and `formatted_body` would save space but lose 
 Forwarding a forward could nest the previous forward inside `m.forwarded_content`. The event would grow with every
 hop, and clients would have to unwrap it to find the original message.
 
+[MSC2730] makes forwards verifiable by copying the original event's hashes, signatures, and other federation fields into
+`m.forwarded`. Clients cannot check these themselves, so servers must implement a new endpoint for sending forwards and
+validate every forward they receive. Forwarding an encrypted message also means sending its Megolm keys along with it.
+Since the signatures cover the original content, the forward's content must match it exactly, which rules out a
+forwarding fallback for clients that don't support this MSC. Only client support is needed here, and a later MSC could
+layer verification on top. Like [MSC2723], [MSC2730] has stalled.
+
 ## Unstable prefix
 
 Until this MSC is accepted, implementations use `org.matrix.msc4553.forwarded` and
@@ -232,3 +239,4 @@ Until this MSC is accepted, implementations use `org.matrix.msc4553.forwarded` a
 events have no `m.forwarded_content`, so they are rendered from the top-level content.
 
 [MSC2723]: https://github.com/matrix-org/matrix-spec-proposals/pull/2723
+[MSC2730]: https://github.com/matrix-org/matrix-spec-proposals/pull/2730
