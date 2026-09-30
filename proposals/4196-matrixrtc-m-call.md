@@ -99,10 +99,10 @@ slots, looks as follows:
   if none of the other members in the call support rendering video streams. Clients SHOULD populate `capabilities`
   when joining a call. If `capabilities` is set, the absence of a value signals that the client doesn't support
   the respective capability. If `capabilities` is missing entirely, the client's capabilities are undetermined.
-  Allowed values for `capabilities` include:
-  - `render_audio`: The client can render audio streams. Note that this doesn't necessarily imply that the
+  Values inside `capabilities` MUST use the [Common Namespaced Identifier Grammar]. Allowed values include:
+  - `m.render_audio`: The client can render audio streams. Note that this doesn't necessarily imply that the
     client is able to also transmit its own audio.
-  - `render_video`: The client can render video streams. Note that this doesn't necessarily imply that the
+  - `m.render_video`: The client can render video streams. Note that this doesn't necessarily imply that the
     client is able to also transmit its own video.
 
 Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
@@ -146,6 +146,7 @@ the following additional codes:
 - `media_error`: The client failed to capture or transmit audio and/or video after joining.
 - `codec_mismatch`: The client could not decode/encode the call media.
 
+[Common Namespaced Identifier Grammar]: https://spec.matrix.org/v1.19/appendices/#common-namespaced-identifier-grammar
 [below]: #consent-to-share-media
 
 ### Usage with the LiveKit transport from [MSC4195]
