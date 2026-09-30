@@ -7,7 +7,7 @@ case of voice and video calling.
 
 The application is able to power a variety of calling use cases including but not limited to
 classical 1-on-1 and group calling as well as Discord-style [Voice Channels] (which, previously,
-[MSC3417] tried to introdcue based on the pre-MatrixRTC group calling mechanism from [MSC3401]).
+[MSC3417] tried to introduce based on the pre-MatrixRTC group calling mechanism from [MSC3401]).
 The application is compatible with the [LiveKit] transport introduced in [MSC4195].
 
 Note that call ringing and notifications are not in scope for this proposal. These are covered
