@@ -63,8 +63,8 @@ When clients create rooms with a `preset` of `private_chat` or `trusted_private_
 
 As per [MSC4143], encryption of MatrixRTC sessions is mandatory in encrypted rooms and forbidden
 in unencrypted rooms. Therefore, if [`m.room.encryption`] is also present in `initial_state`, the
-`encryption` content block on the initial slot event MUST be set to `{ "type": "m.per_member" }`.
-Otherwise, the `encryption` property MUST be omitted.
+`encryption` content block on the initial slot event MUST be set to a valid `type` (currently only
+`m.per_member`). Otherwise, the `encryption` property MUST be omitted.
 
 The default [power levels] assigned under the `private_chat` preset prevent room members other
 than the room creator from sending state events. Including the slot event at room creation time,
