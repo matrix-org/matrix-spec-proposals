@@ -152,7 +152,7 @@ As of writing, the only known MatrixRTC transport is the `m.livekit` transport f
 Clients can use the mechanisms from [MSC4195] for obtaining WebSocket URLs and access tokens
 for the LiveKit SFUs involved in a MatrixRTC session. The URLs and tokens can be used with one
 of the [LiveKit SDKs] to [publish] a user's own audio and video (including [screensharing]) and
-to [subscribe] to other member's published audio and video. Clients can map LiveKit participants
+to [subscribe] to other members published audio and video. Clients can map LiveKit participants
 and their media tracks to `m.rtc.member` events by means of the procedure for deriving LiveKit
 participant identities given in [MSC4195].
 
