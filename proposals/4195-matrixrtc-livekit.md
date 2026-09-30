@@ -660,9 +660,10 @@ to use MatrixRTC for now.
 ### Lack of peer-to-peer transport
 
 By design, the LiveKit transport specified in this proposal routes all RTC traffic through LiveKit
-SFUs. When compared to a peer-to-peer RTC transport, this leads to limitations in terms of privacy,
-latency and scalability. This shortcoming may be addressed in future by introducing a peer-to-peer
-capable transport or by LiveKit gaining peer-to-peer support.
+SFUs. While this is a far more generally applicable architecture than peer-to-peer transports, the
+SFUs also act as single points of failure and may cause limitations in terms of privacy, latency and
+scalability. This shortcoming is deliberately accepted here. Other transports are free to cater to
+different needs in the future.
 
 ## Alternatives
 
