@@ -365,11 +365,12 @@ to ensure these are set appropriately so that clients can connect correctly and 
 servers MUST apply the following settings:
 
 - `sub`: The LiveKit participant identity of the user that requested the token, derived as described above.
-- `exp`: When using a self-hosted LiveKit SFU, servers SHOULD use a sufficiently short expiration time (`exp`)
-  because [token revocation] is a LiveKit Cloud feature only. Otherwise, the expiration time is less
-  significant because the SFU [proactively refreshes tokens] via a client's WebSocket signalling connection.
-- `nbf`: The current time. This is required because LiveKit Cloud uses the token's not-before (`nbf`)
-  timestamp in [token revocation].
+- `nbf`: The current time. This is required because the token's not-before (`nbf`) timestamp is used in
+  [token revocation]. Note that, as of writing, token revocation is only a feature in the cloud version of
+  LiveKit. However, a pull request to add revocation in the open source version exists [upstream] and
+  has received code owner [commitment to merge] once the remaining comments are addressed. Until this has
+  landed, servers depending on a self-hosted LiveKit SFU SHOULD use a sufficiently short expiration time (`exp`)
+  when generating tokens.
 - `video.room`: The LiveKit room name, derived as described above.
 - `video.roomCreate`: Always `false`. This grant, somewhat [counterintuitively], also allows the token
   holder to delete *any* LiveKit room which includes kicking all joined participants. Since this is a possible
@@ -416,19 +417,18 @@ because a malicious user being kicked from a Matrix room could otherwise continu
 ongoing RTC session related to the room. To prevent this, servers SHOULD remove any associated LiveKit
 participant identities from the related LiveKit rooms when a user leaves or is banned from a Matrix room.
 
-As mentioned earlier, token revocation is only a feature on LiveKit Cloud. Homeservers that rely on a
-self-hosted LiveKit instance SHOULD, therefore, re-validate room membership when the SFU signals via
-one of its [webhooks] that a participant has joined. This mitigates malicious clients re-using older
-access tokens to connect without being part of the associated Matrix room. A draft fix for enabling
-token revocation in the self-hosted version of LiveKit exists [upstream].
+As mentioned earlier, token revocation is only a feature on LiveKit Cloud until the [upstream] PR lands.
+Homeservers that rely on a self-hosted LiveKit instance SHOULD, therefore, re-validate room membership when
+the SFU signals via one of its [webhooks] that a participant has joined. This mitigates malicious clients
+re-using older access tokens to connect without being part of the associated Matrix room.
 
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 [later]: #access-token-properties
 [creating]: https://docs.livekit.io/reference/other/roomservice-api/#createroom
 [token revocation]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-revocation
-[proactively refreshes tokens]: https://docs.livekit.io/frontends/reference/tokens-grants/#token-refresh
+[upstream]: https://github.com/livekit/livekit/pull/4344
+[commitment to merge]: https://github.com/livekit/livekit/pull/4919#issuecomment-5903381844
 [counterintuitively]: https://docs.livekit.io/frontends/reference/tokens-grants/#video-grant
-[upstream]: https://github.com/livekit/livekit/pull/4919.
 
 ### Optional delegated delayed leave events
 
