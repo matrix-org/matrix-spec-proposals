@@ -521,7 +521,7 @@ requests with HTTP 400 / `M_INVALID_PARAM` when the delegated event has a lower 
 If the server cannot find the delayed event based on the `delay_id` or if it can find the delayed event
 but it belongs to another room or user, the delegation request MUST be rejected with HTTP 400 / `M_INVALID_PARAM`.
 
-If `url` does not match any of the remote server's own SFUs, the request is rejected with
+If `url` does not match any of the homeserver's own SFUs, the request is rejected with
 HTTP 400 / `M_INVALID_PARAM`.
 
 Otherwise, the server responds with HTTP 200 and an empty JSON object to confirm the delegation.
