@@ -106,20 +106,36 @@ LiveKit encapsulates RTC sessions in so-called [LiveKit rooms]. Within a LiveKit
 access token. Publishing and subscribing to RTC streams then happens over WebRTC (see
 [here] for further details). A LiveKit room is identified by a unique room "name" string
 while a LiveKit participant is identified by a unique "identity" string. These LiveKit
-primitives need to be mapped to the `m.rtc.member` events for MatrixRTC members from
-[MSC4143].
+primitives need to be mapped to the `m.rtc.slot` and `m.rtc.member` events for MatrixRTC
+slots and members from [MSC4143].
 
 [here]: https://docs.livekit.io/reference/internals/client-protocol/
 
 #### LiveKit room names
 
 LiveKit room names are derived by homeservers and shared with clients as part of the
-LiveKit access token issued by the homeserver (see [below]). To ensure a baseline of
-pseudonymity and avoid exposing unnecessary metadata to the SFU, the derivation is
-performed using the following steps:
+LiveKit access token issued by the homeserver (see [below]). Therefore, the concrete
+procedure for deriving LiveKit room names is generally a server-side implementation
+detail. However, a few guardrails apply.
 
-1. Construct a JSON array containing the `room_id` and `slot_id` of the `m.rtc.member`
-   event (in that precise order).
+Firstly, in order to segregate MatrixRTC sessions, servers MUST NOT map different slots
+to the same LiveKit room.
+
+Secondly, servers MUST map different members of the same slot to same LiveKit room. This
+ensures that only one LiveKit room per slot is required on each involved SFU. As a result,
+the number of WebSocket and WebRTC connections required to participate in an RTC session
+scales with the number of participating SFUs which should commonly mean the number of
+participating homeservers. This is much more efficient for clients compared to using
+separate LiveKit rooms per MatrixRTC member where the number of required connections would
+scale with the number of session members.
+
+Thirdly, servers MUST pseudonymize the LiveKit room name to prevent leaking metadata
+such as the Matrix room ID or the slot ID to the SFU.
+
+As an example, [lk-jwt-service] uses the following process to derive LiveKit room names
+from the (Matrix) room and slot IDs associated with an `m.rtc.member` event:
+
+1. Construct a JSON array containing the `room_id` and `slot_id` (in that precise order).
 1. Perform a [Canonical JSON] serialization of the array.
 1. Take the UTF-8 encoding of the canonicalization output and hash it with SHA-256.
 1. Encode the result using [unpadded base64].
@@ -128,24 +144,18 @@ performed using the following steps:
 livekit_room_name = Base64( SHA256( Canonicalize( [ room_id, slot_id ] ) ) )
 ```
 
-This procedure ensures that each MatrixRTC slot unambiguously maps to one LiveKit room on
-each involved SFU. As a result, the number of connections (WebSocket + WebRTC) required to
-participate in an RTC session scales with the number of participating SFUs which should
-commonly mean the number of participating homeservers. This is much more efficient for
-clients compared to using separate LiveKit rooms per MatrixRTC member where the number
-of required connections would scale with the number of session members.
+For improved metadata protection, servers MAY rotate the LiveKit room name inbetween
+sessions (meaning when nobody is joined to the room). This ensures that a different
+room name is used for the next session in the same slot and further reduces the amount
+of metadata exposed to the SFU.
 
-For improved metadata protection, servers MAY add a `salt` generated from a cryptographically
-secure random number generator to the input JSON array when deriving LiveKit room names.
+Building upon the exemplary procedure from [lk-jwt-service] outlined above, this could
+be achieved by adding a `salt` to the input values and rotating it once all LiveKit
+participants have left the room.
 
 ```
 livekit_room_name = Base64( SHA256( Canonicalize( [ room_id, slot_id, salt ] ) ) )
 ```
-
-The value of `salt` MUST be persisted on the server and SHOULD be rotated once all
-LiveKit participants have left the LiveKit room. This ensures that a different LiveKit
-room is used for the next MatrixRTC session in the same slot and further reduces the
-amount of metadata exposed to the SFU.
 
 #### LiveKit participant identities
 
@@ -171,6 +181,7 @@ is not required here.
 [LiveKit rooms]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/rooms/
 [LiveKit participants]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/participants/
 [below]: #acquiring-livekit-access-tokens
+[lk-jwt-service]: https://github.com/element-hq/lk-jwt-service
 [Canonical JSON]: https://spec.matrix.org/v1.19/appendices/#canonical-json
 [unpadded base64]: https://spec.matrix.org/v1.19/appendices/#unpadded-base64
 
@@ -290,7 +301,7 @@ HTTP 403 / `M_FORBIDDEN` and HTTP 400 / `M_INVALID_PARAM` errors from the remote
 back to the client by the origin server. Any other error MUST result in HTTP 502 / `M_UNKNOWN` in
 the client response.
 
-If no errors occurred, the remote server ensures the room exists and generates a token for its SFU,
+If no errors occurred, the remote server creates the room (if needed) and generates a token for its SFU,
 returning it in the same response format used for the Client-Server endpoint.
 
 ```http
