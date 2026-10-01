@@ -174,9 +174,12 @@ process uses the following steps:
 livekit_participant_identity = Base64( SHA256( Canonicalize( [ sender, member.id ] ) ) )
 ```
 
-Note that `sender` is included here because according to [MSC4143], member IDs are unique per
-member and session for a single user only. Due to these uniqueness properties, additional salting
-is not required here.
+Note that `sender` is included here to prevent malicious users from impersonating other members.
+A user could only impersonate a `member.id` belonging to one of their own `m.rtc.member` events,
+thereby only harming themselves.
+
+As per [MSC4143], member IDs are cryptographically random and regenerated for each join. Therefore,
+a user's LiveKit participant identifier automatically rotates each time they join a slot.
 
 [LiveKit rooms]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/rooms/
 [LiveKit participants]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/participants/
@@ -748,8 +751,7 @@ described above, eliminates this leak, too.
 For another, [LiveKit participant identities] are pseudonymised as well which prevents the SFU from
 correlating SFU participants with Matrix users. The identity derivation process involves the value of
 `member.id` which, as per [MSC4143], is non-deterministic and changed every time a client joins a slot.
-As a result, the SFU is unable to track Matrix users across different calls and no further salting is
-required.
+As a result, the SFU is unable to track Matrix users across different calls.
 
 ### Trust relationship between homeservers and SFUs
 
