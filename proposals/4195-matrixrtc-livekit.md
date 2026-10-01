@@ -689,12 +689,11 @@ the SFU.
 
 ### Canonical JSON variations
 
-The procedure for deriving LiveKit participant identities involves [Canonical JSON].
-As an alternative, the hashing inputs could be concatenated with a suitable delimiter such as `|`. This
-is prone to delimiter injection, however. As an example, the inputs `("a|b", "c")` and `("a", "b|c")`
-both produce the concatenation `"a|b|c"` and, hence, the same hash. Using JSON arrays and Canonical JSON
-avoids this problem. Since the Canonical JSON serialisation of string arrays is trivial, this also doesn't
-meaningfully increase implementation complexity.
+The procedure for deriving LiveKit participant identities involves [Canonical JSON]. As an alternative,
+the hashing inputs could be concatenated with a suitable delimiter. This is prone to delimiter injection,
+however, if the delimiter can also occur in the input variables. Using JSON arrays and Canonical JSON
+avoids this problem entirely at little to now extra cost since the Canonical JSON serialisation of string
+arrays is trivial.
 
 Furthermore, instead of JSON arrays, JSON objects could be used for the hashing inputs. This would reduce
 the chances of accidentally using the wrong order of array elements. On the downside, however, the
