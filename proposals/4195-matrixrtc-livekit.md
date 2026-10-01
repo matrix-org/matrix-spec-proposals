@@ -434,9 +434,10 @@ ongoing RTC session related to the room. To prevent this, servers SHOULD remove 
 participant identities from the related LiveKit rooms when a user leaves or is banned from a Matrix room.
 
 As mentioned earlier, token revocation is only a feature on LiveKit Cloud until the [upstream] PR lands.
-Homeservers that rely on a self-hosted LiveKit instance SHOULD, therefore, re-validate room membership when
-the SFU signals via one of its [webhooks] that a participant has joined. This mitigates malicious clients
-re-using older access tokens to connect without being part of the associated Matrix room.
+Consequently, removing a participant from a LiveKit room doesn't currently prevent them from rejoining
+the room with their old access token. Homeservers that rely on a self-hosted LiveKit instance SHOULD,
+therefore, re-validate room membership when the SFU signals via one of its [webhooks] that a participant
+has joined.
 
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 [later]: #access-token-properties
