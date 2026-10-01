@@ -437,7 +437,7 @@ As mentioned earlier, token revocation is only a feature on LiveKit Cloud until 
 Consequently, removing a participant from a LiveKit room doesn't currently prevent them from rejoining
 the room with their old access token. Homeservers that rely on a self-hosted LiveKit instance SHOULD,
 therefore, re-validate room membership when the SFU signals via one of its [webhooks] that a participant
-has joined.
+has joined and remove the participant again if the check fails.
 
 [generate]: https://docs.livekit.io/frontends/build/authentication/custom/
 [later]: #access-token-properties
