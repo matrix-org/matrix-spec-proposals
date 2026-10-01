@@ -546,7 +546,7 @@ Otherwise, the server responds with HTTP 200 and an empty JSON object to confirm
 ```
 
 The server then takes the user's Matrix ID (as resolved from the request's access token) as well as the
-`room_id`, `slot_id` and `member_id` parameters from the request body to derive the LiveKit room alias
+`room_id`, `slot_id` and `member_id` parameters from the request body to derive the LiveKit room name
 and LiveKit participant identity. The procedure for this was given [earlier].
 
 Following that, the server waits for the participant to connect to the room on the SFU. How long the
@@ -837,6 +837,6 @@ printf '%s' "${CANONICAL_JSON}" | openssl dgst -sha256 -binary | openssl base64 
 
 | Case | Input (logical) | Canonical JSON | SHA-256 (hex) | Base64 (unpadded) |
 |------|-----------------|----------------|---------------|-------------------|
-| LiveKit room alias (no random bits) | `["!roomid:example.com", "slot1234"]` | `["!roomid:example.com","slot1234"]` | `3bce37ed6dfe8e6ccc563a083f7b4dc1b9be5f11d093688aa4e03b6aac37a927` | `O8437W3+jmzMVjoIP3tNwbm+XxHQk2iKpOA7aqw3qSc` |
-| LiveKit room alias (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
+| LiveKit room name (no random bits) | `["!roomid:example.com", "slot1234"]` | `["!roomid:example.com","slot1234"]` | `3bce37ed6dfe8e6ccc563a083f7b4dc1b9be5f11d093688aa4e03b6aac37a927` | `O8437W3+jmzMVjoIP3tNwbm+XxHQk2iKpOA7aqw3qSc` |
+| LiveKit room name (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
 | LiveKit participant identity | `["@alice:example.com", "memberABC"]` | `["@alice:example.com","memberABC"]` | `337567b0b5eb91bc480c83573bae2ef0f6731720fd6581624142d1d9db21598b` | `M3VnsLXrkbxIDINXO64u8PZzFyD9ZYFiQULR2dshWYs` |
