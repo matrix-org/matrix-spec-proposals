@@ -206,9 +206,10 @@ receipt is among the initial receipts.
 
 #### Long-polling
 
-A change to the receipts of an in-scope room counts as an update for the purposes of
-long-polling. The server MUST return immediately, even if there is nothing else to send. A change to
-the receipts of a room that is not in scope does not count.
+A change to a receipt that the extension would send counts as an update for the purposes of
+long-polling. The server MUST return immediately, even if there is nothing else to send. A change
+the extension would not send does not count, for example a change to another user's `m.read.private`
+receipt.
 
 ## Potential issues
 
