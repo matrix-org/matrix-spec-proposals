@@ -641,8 +641,8 @@ from Matrix’s goals or limit interoperability. This is mitigated by the follow
   or license were to change, Matrix could adopt the current protocol version and evolve it
   independently under an open governance model.
 - No lock-in at the Matrix level: As per [MSC4143], transports in MatrixRTC are a generic abstraction
-  that allows defining additional or alternative transport types in the future without breaking
-  compatibility.
+  that allows defining additional or alternative transport types in the future while allowing
+  for a migration path.
 - Extensibility: Because the LiveKit protocol is open source, nothing prevents the Matrix community
   from implementing additional functionality (such as cascading SFUs or other federation-oriented
   features) on top of the existing protocol if required. While this has been discussed with the
