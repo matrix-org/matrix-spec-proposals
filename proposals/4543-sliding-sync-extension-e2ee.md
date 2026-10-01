@@ -166,6 +166,12 @@ A client MAY enable the extension on more than one connection. Each connection r
 `device_lists` relative to its own `pos`, and the key fields are the same on every connection.
 Sending the section on one connection does not change what any other connection receives.
 
+A client SHOULD enable the extension on only one connection. Every connection reports the same key
+counts and leads to the same set of device lists, so a second connection adds nothing. The client
+also has to apply whatever arrives on each connection to a single crypto store. A client that does
+enable it on several MUST handle the same change arriving on each. The `pos` it persists for device
+list changes is per connection.
+
 #### Long-polling
 
 A non-empty `changed` or `left` counts as an update for the purposes of long-polling. The server
