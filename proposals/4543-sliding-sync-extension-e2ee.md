@@ -190,6 +190,15 @@ in the response returned when the request's `timeout` expires.
 
 ## Potential issues
 
+[`/keys/changes`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3keyschanges)
+returns users who have updated their device identity keys. `changed` also covers users who have
+updated their cross-signing keys. A client that catches up with `/keys/changes` can therefore miss a
+user who has reset their cross-signing keys without changing any device key. In practice a device
+that resets cross-signing keys also re-signs its own device key with the new keys. That is a device
+key change, so the user is normally returned anyway. The same gap exists for a client catching up
+from a `/v3/sync` token. This MSC therefore leaves `/keys/changes` alone. Bringing it into line with
+`changed` belongs in a separate MSC.
+
 The `changed` list for a connection has no upper bound. A server faced with an impractically large
 one MAY expire the connection with `M_UNKNOWN_POS`, as MSC4186 permits. This does not spare the
 server the work. The client will ask for the same list via `/keys/changes` from its persisted `pos`,
