@@ -14,8 +14,8 @@ state events, is out of scope.
 
 ### `m.forwarded`
 
-A forwarded message MUST include an `m.forwarded` object describing the original message, with the following required
-fields:
+A forwarded message MUST include an `m.forwarded` object with `content`, as defined below. The object MAY also contain
+any of these fields describing the original message:
 
 | Field | Type | Meaning |
 | --- | --- | --- |
@@ -24,7 +24,8 @@ fields:
 | `sender` | string | User ID of the original event's sender. |
 | `origin_server_ts` | integer | Origin server timestamp of the original event. |
 
-An event is a forward if its content has an `m.forwarded` object with all of these fields.
+Each of these fields is optional, independently of the others. An event is a forward if its content has an
+`m.forwarded` object.
 
 If the event the user selected to forward is itself a forward, the sender MUST copy its `m.forwarded` unchanged, so
 the new event points at the original message rather than at the intermediate forward. The only exception is a
@@ -64,8 +65,12 @@ A supporting client renders a forward with attribution from `m.forwarded`. If `m
 client MUST render it as the message content and MUST NOT render the top-level `body` or `formatted_body`. Otherwise,
 as with [MSC2723] forwards, the client renders the top-level content.
 
-If `m.forwarded.content` is an `m.emote`, it MUST be rendered as an emote by `m.forwarded.sender`, not by the
-forwarding user.
+If `sender` is absent, the client SHOULD use a generic forward label instead of attributing the original message to
+the forwarding user. If either `room_id` or `event_id` is absent, the client cannot link to the original event.
+
+If `m.forwarded.content` is an `m.emote`, it MUST be rendered as an emote by `m.forwarded.sender` when that field is
+present. Otherwise, the client SHOULD use a generic actor label, such as "Sender" (rendering `waves` as "Sender waves").
+It MUST NOT attribute the emote to the forwarding user.
 
 Relationships and mentions inside `m.forwarded.content` MUST NOT be treated as relationships or mentions in the
 destination room.
@@ -90,14 +95,17 @@ or to its `body` if `filename` is absent. The fallback then becomes the media's 
 caption only if its `filename` is present and differs from its `body`.
 
 Clients that don't support this MSC would show a forwarded emote as an emote by the forwarding user, so the sender
-SHOULD set the top-level `msgtype` of a forwarded `m.emote` to `m.text` and put the original sender's display name, or
-their user ID if the forwarding client does not know it, in front of the quoted text. In `body` it is plain text; in
-`formatted_body` it is `<a href="{sender permalink}">{display name}</a>`, which clients may display as a mention.
-`m.forwarded.content` keeps `m.emote`.
+SHOULD set the top-level `msgtype` of a forwarded `m.emote` to `m.text`. If `m.forwarded.sender` is present, the sender
+SHOULD put the original sender's display name, or their user ID if the forwarding client does not know it, in front of
+the quoted text. In `body` it is plain text; in `formatted_body` it is
+`<a href="{sender permalink}">{display name}</a>`, which clients may display as a mention. If `m.forwarded.sender` is
+absent, the sender SHOULD put a generic actor label, such as "Sender", before the quoted text in both `body` and
+`formatted_body`, without linking the label to a user. For example, an emote with `body` set to `waves` becomes
+`Sender waves`. `m.forwarded.content` keeps `m.emote`.
 
 #### Plain text
 
-The recommended top-level `body` is:
+When both `sender` and the original event's permalink are available, the recommended top-level `body` is:
 
 ```text
 Forwarded from {sender} - view original message: {permalink}
@@ -106,6 +114,10 @@ Forwarded from {sender} - view original message: {permalink}
 
 The newline and the second line are only included if the source has non-empty text or an original caption.
 
+If `sender` is absent, the first line starts with `Forwarded message` instead of `Forwarded from {sender}`. If either
+`room_id` or `event_id` is absent, omit ` - view original message: {permalink}`. If all three fields are absent, the
+first line is `Forwarded message`. The presence of `origin_server_ts` does not affect the fallback.
+
 `{sender}` is `m.forwarded.sender`. `{permalink}` is a
 [matrix.to event permalink](https://spec.matrix.org/v1.19/appendices/#matrixto-navigation) built from
 `m.forwarded.room_id` and `m.forwarded.event_id`, each percent-encoded. It SHOULD include `via` parameters so the
@@ -113,13 +125,34 @@ room can be found by users who are not in it.
 
 #### HTML
 
-The recommended `format` is `org.matrix.custom.html`, with `formatted_body`:
+The recommended `format` is `org.matrix.custom.html`. When both `sender` and the original event's permalink are
+available, the recommended `formatted_body` is:
 
 ```html
 <strong>Forwarded from <a href="{sender permalink}">{sender}</a> - <a href="{event permalink}">view original message</a></strong><blockquote>{original HTML}</blockquote>
 ```
 
-The `<blockquote>` is only included under the same condition as the second line of `body`.
+The `<blockquote>` is only included under the same condition as the second line of `body`. As in `body`, omit the
+sender link if `sender` is absent and omit the event link if either `room_id` or `event_id` is absent. Use
+`Forwarded message` when `sender` is absent.
+
+With no `sender`, but with `room_id` and `event_id`:
+
+```html
+<strong>Forwarded message - <a href="{event permalink}">view original message</a></strong><blockquote>{original HTML}</blockquote>
+```
+
+With `sender`, but without either `room_id` or `event_id`:
+
+```html
+<strong>Forwarded from <a href="{sender permalink}">{sender}</a></strong><blockquote>{original HTML}</blockquote>
+```
+
+With none of those three fields:
+
+```html
+<strong>Forwarded message</strong><blockquote>{original HTML}</blockquote>
+```
 
 `{sender permalink}` is a matrix.to link to `m.forwarded.sender`, and `{event permalink}` is the link used in `body`.
 The sender MUST HTML-escape the sender ID, display name, and link attributes. `{original HTML}` is the source's
@@ -152,6 +185,26 @@ A forwarded text message:
 }
 ```
 
+A forwarded text message with only the required `m.forwarded.content`:
+
+```json
+{
+  "msgtype": "m.text",
+  "body": "Forwarded message\nMeeting starts at noon.",
+  "format": "org.matrix.custom.html",
+  "formatted_body": "<strong>Forwarded message</strong><blockquote><p>Meeting starts at noon.</p></blockquote>",
+  "m.mentions": {},
+  "m.forwarded": {
+    "content": {
+      "msgtype": "m.text",
+      "body": "Meeting starts at noon.",
+      "format": "org.matrix.custom.html",
+      "formatted_body": "<p>Meeting starts at noon.</p>"
+    }
+  }
+}
+```
+
 A forwarded emote, originally `/me waves` from Alice:
 
 ```json
@@ -166,6 +219,24 @@ A forwarded emote, originally `/me waves` from Alice:
     "room_id": "!source:example.org",
     "sender": "@alice:example.org",
     "origin_server_ts": 1722451200000,
+    "content": {
+      "msgtype": "m.emote",
+      "body": "waves"
+    }
+  }
+}
+```
+
+A forwarded emote with no original sender metadata:
+
+```json
+{
+  "msgtype": "m.text",
+  "body": "Forwarded message\nSender waves",
+  "format": "org.matrix.custom.html",
+  "formatted_body": "<strong>Forwarded message</strong><blockquote>Sender waves</blockquote>",
+  "m.mentions": {},
+  "m.forwarded": {
     "content": {
       "msgtype": "m.emote",
       "body": "waves"
