@@ -386,6 +386,8 @@ servers MUST apply the following settings:
 - `video.canUpdateOwnMetadata`: This lets clients update their own metadata. Since no MatrixRTC applications
   currently make use of this metadata, servers SHOULD set the permission to `false` to grant clients the
   least amount of privileges required.
+- `video.hidden`: Always `false`. This would otherwise allow participants to lurk undetected in the LiveKit
+  room and subscribe to other's streams.
 
 Below is an example of the payload of a LiveKit JWT for a local user:
 
