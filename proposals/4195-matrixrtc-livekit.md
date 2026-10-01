@@ -610,13 +610,14 @@ Clients MUST apply the following settings when initialising the custom key provi
 
 ### Client-provided salts for LiveKit room names
 
-The method for mapping MatrixRTC sessions to [LiveKit room names] includes an optional server-side
-salt. Instead of doing this on the server, clients could generate this salt to reduce metadata  
-shared with the server. This is complicated, however, because it would require clients to coordinate
-in order to agree on the same salt. A natural place to maintain the salt with little to no client
-coordination is the `m.rtc.slot` state event. While state events are not encryptable, this still
-shares the salt with the homeserver, however. Maintaining the salt on the homeserver is a compromise
-that leaks some metadata to the homeserver but still hides it from the SFU.
+The method for mapping MatrixRTC sessions to [LiveKit room names] includes optionally rotating
+the room name inbetween sessions. This could also be achieved by introducing a client-generated
+salt to reduce metadata shared with the server. This is complicated, however, because it would
+require clients to coordinate in order to agree on the same salt. A natural place to maintain the
+salt with little to no client coordination is the `m.rtc.slot` state event. While state events are
+not encryptable, this still shares the salt with the homeserver, however. Maintaining the salt on
+the homeserver is a compromise that leaks some metadata to the homeserver but still hides it from
+the SFU.
 
 [LiveKit room names]: #livekit-room-names
 
@@ -683,7 +684,7 @@ different needs in the future.
 
 ### Canonical JSON variations
 
-The procedures for deriving LiveKit room names and LiveKit participant identities involve [Canonical JSON].
+The procedure for deriving LiveKit participant identities involves [Canonical JSON].
 As an alternative, the hashing inputs could be concatenated with a suitable delimiter such as `|`. This
 is prone to delimiter injection, however. As an example, the inputs `("a|b", "c")` and `("a", "b|c")`
 both produce the concatenation `"a|b|c"` and, hence, the same hash. Using JSON arrays and Canonical JSON
@@ -739,8 +740,8 @@ possible.
 
 For one thing, [LiveKit room names] are pseudonymised which prevents the SFU from learning about room
 or slot IDs. If the same slot is used repeatedly for a meeting, the SFU could still apply heuristics to
-establish a connection between RTC sessions and the room. The addition of the server-side salt described
-above, eliminates this leak, too.
+establish a connection between RTC sessions and the room. Rotating the room name inbetween sessions, as
+described above, eliminates this leak, too.
 
 For another, [LiveKit participant identities] are pseudonymised as well which prevents the SFU from
 correlating SFU participants with Matrix users. The identity derivation process involves the value of
