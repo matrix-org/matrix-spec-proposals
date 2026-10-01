@@ -621,9 +621,10 @@ LiveKit's frame-level encryption is based on [SFrame], which by design does not 
 sender of individual frames. A participant who has obtained another member's current `media_key` —
 including a colluding SFU operator — could therefore forge frames that appear to originate from that
 member. This is an inherent limitation of SFrame rather than something introduced by this proposal.
-Its practical impact is reduced by [MSC4143]'s requirement that clients rotate the key whenever the
-set of members joined to a slot changes, which follows the SFrame specification's [own recommendation]
-for achieving forward secrecy.
+Its practical impact is somewhat reduced by [MSC4143]'s requirement that clients rotate the key
+whenever the set of members joined to a slot changes. This follows SFrame's [own recommendation]
+for achieving forward secrecy and stops members who have left the slot from forging frames. However,
+it doesn't prevent joined members from doing so.
 
 [SFrame]: https://www.ietf.org/archive/id/draft-ietf-sframe-enc-04.html
 [not authenticate]: https://www.ietf.org/archive/id/draft-ietf-sframe-enc-04.html#name-no-per-sender-authentication
