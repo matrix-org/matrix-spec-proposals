@@ -141,6 +141,7 @@ Response body:
 
 ```jsonc
 {
+  // Optional. If omitted, has the same semantics as an empty map.
   "subscribed": {
     "!roomId1:example.org": {
       // New subscription
@@ -159,6 +160,7 @@ Response body:
       // ...
     }
   },
+  // Optional. If omitted, has the same semantics as an empty map.
   "unsubscribed": {
     "!roomId3:example.org": {
       // Represents a removed subscription
