@@ -726,7 +726,8 @@ Users publishing and subscribing to RTC data within LiveKit rooms has a larger r
 though. Any Matrix room member is able to connect to an associated LiveKit room and subscribe to media
 streams. Local room members can also publish media. Again, rate limiting the `/get_token` endpoints
 mitigates this concern. Servers MAY apply additional countermeasures such as limiting the maximum
-allowed lifetime of LiveKit rooms or restricting SFU access to trusted users and/or servers.
+allowed lifetime of LiveKit rooms, restricting SFU access to trusted users/servers or applying limits
+to the cumulative SFU usage of user accounts.
 
 ### Reducing metadata leakage to the SFU
 
