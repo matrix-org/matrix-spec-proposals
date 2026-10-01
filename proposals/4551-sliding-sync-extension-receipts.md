@@ -219,6 +219,10 @@ carry `timeline_limit` such events. A client can keep this down with a small `ti
 by scoping the extension to the rooms it is displaying, as for typing notifications in
 [MSC4508](https://github.com/matrix-org/matrix-spec-proposals/pull/4508).
 
+The initial receipts also grow with the number of threads the requesting user has read in the room,
+as all the user's receipts are returned. This is not ideal, but clients need all the receipts to
+calculate the unread state of the threads in the room.
+
 A client does not receive other users' receipts on events it fetches from
 [`/messages`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3roomsroomidmessages).
 The same applies to events outside the timeline of the response in which the room entered scope,
