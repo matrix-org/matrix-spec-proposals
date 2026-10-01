@@ -751,6 +751,8 @@ correlating SFU participants with Matrix users. The identity derivation process 
 As a result, the SFU is unable to track Matrix users across different calls and no further salting is
 required.
 
+### Trust relationship between homeservers and SFUs
+
 The LiveKit SFU and the homeserver necessarily form a high trust relationship. In order for the homeserver
 to extend SFU access tokens, secrets need to be agreed upon between the homeserver and the SFU. This
 is a one-time configuration step, however. No networking is required between the homeserver and the
