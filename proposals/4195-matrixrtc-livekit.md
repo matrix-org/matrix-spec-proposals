@@ -608,19 +608,6 @@ Clients MUST apply the following settings when initialising the custom key provi
 
 ## Potential issues
 
-### Client-provided salts for LiveKit room names
-
-The method for mapping MatrixRTC sessions to [LiveKit room names] includes optionally rotating
-the room name inbetween sessions. This could also be achieved by introducing a client-generated
-salt to reduce metadata shared with the server. This is complicated, however, because it would
-require clients to coordinate in order to agree on the same salt. A natural place to maintain the
-salt with little to no client coordination is the `m.rtc.slot` state event. While state events are
-not encryptable, this still shares the salt with the homeserver, however. Maintaining the salt on
-the homeserver is a compromise that leaks some metadata to the homeserver but still hides it from
-the SFU.
-
-[LiveKit room names]: #livekit-room-names
-
 ### Lack of HKDF support in some LiveKit client SDKs
 
 Some LiveKit SDKs currently only support PBKDF2 but don't allow using HKDF. One example of this is
@@ -681,6 +668,19 @@ scalability. This shortcoming is deliberately accepted here. Other transports ar
 different needs in the future.
 
 ## Alternatives
+
+### Client-provided salts for LiveKit room names
+
+The method for mapping MatrixRTC sessions to [LiveKit room names] includes optionally rotating
+the room name inbetween sessions. This could also be achieved by introducing a client-generated
+salt to reduce metadata shared with the server. This is complicated, however, because it would
+require clients to coordinate in order to agree on the same salt. A natural place to maintain the
+salt with little to no client coordination is the `m.rtc.slot` state event. While state events are
+not encryptable, this still shares the salt with the homeserver, however. Maintaining the salt on
+the homeserver is a compromise that leaks some metadata to the homeserver but still hides it from
+the SFU.
+
+[LiveKit room names]: #livekit-room-names
 
 ### Canonical JSON variations
 
