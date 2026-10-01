@@ -548,8 +548,8 @@ restarting the delayed event periodically – again, with sufficient headroom. T
 to monitor the participant's connection state. Once the server detects that the participant has
 disconnected, it MUST trigger the sending of the delegated leave event.
 
-For maximum reliability, it is RECOMMENDED to use a combination of polling and listening to SFU [webhooks]
-to monitor for SFU (dis)connections.
+Since the SFU [webhooks] have no [delivery guarantee], it is RECOMMENDED to use a combination of polling
+and listening to SFU (dis)connections for maximum reliability.
 
 The server MUST only maintain a single delegated event per `room_id`, `slot_id`, `member_id` and MXID.
 Requests to delegate a different `delay_id` MUST invalidate earlier delegations for the same parameters.
@@ -559,6 +559,7 @@ It is RECOMMENDED that servers apply rate limiting to the delegation endpoint.
 [MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 [earlier]: #mapping-matrixrtc-members-to-livekit
 [webhooks]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/
+[delivery guarantee]: https://docs.livekit.io/intro/basics/rooms-participants-tracks/webhooks-events/#delivery-and-retries
 
 ### End-to-end encryption
 
