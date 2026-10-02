@@ -588,7 +588,6 @@ that is distributed to other clients via `m.rtc.encryption_key` to-device messag
   "media_key": {
     "index": <index>,
     "key": "{encoded_key}",
-    "format": "m.base64"
   }
 }
 ```
