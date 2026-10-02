@@ -51,10 +51,9 @@ A `limit` that is not a positive integer MUST be rejected with a 400 and an erro
 `M_INVALID_PARAM`. The server MAY return fewer messages than `limit`. The send-to-device module
 recommends a limit of 100 for `/v3/sync`, and servers SHOULD support at least that here.
 
-Clients MUST treat `next_batch` as opaque. A client MUST send as `since` the `next_batch` from the
-last response of this extension it processed, on any connection (see [Connections](#connections)),
-or omit `since` if it has not yet received one. A `next_batch` MUST only be used by the device it
-was issued to.
+A client MUST send as `since` the `next_batch` from the last response of this extension it
+processed, on any connection (see [Connections](#connections)), or omit `since` if it has not yet
+received one. A `next_batch` MUST only be used by the device it was issued to.
 
 A `since` the server could not have issued MUST be rejected with a 400 and an error code of
 `M_INVALID_PARAM`. A `next_batch` the server has issued MUST remain valid for as long as the device
@@ -100,6 +99,8 @@ For example:
     }
 }
 ```
+
+Clients MUST treat `next_batch` as opaque.
 
 ### Semantics
 
