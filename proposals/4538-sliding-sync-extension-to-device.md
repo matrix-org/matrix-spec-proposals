@@ -136,7 +136,8 @@ return them again.
 
 `/v3/sync` reads the same queue and acknowledges it up to its own `since`. A client MUST NOT use
 `/v3/sync` and this extension concurrently on one device: each would delete messages the other has
-not yet returned. Migrating between the two is safe if only one is in flight at a time.
+not yet returned. Migrating between the two is safe if and only if one is in flight at a time,
+though clients MAY receive duplicate to-device messages when they switch.
 
 A message is therefore delivered at least once. A client receives a message more than once only
 when it repeats a request with the same `since` (a retry), or omits `since` after receiving the
