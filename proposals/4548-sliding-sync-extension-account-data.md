@@ -213,7 +213,7 @@ for this extension in `unstable_features` of
 [`/_matrix/client/versions`](https://spec.matrix.org/latest/client-server-api/#get_matrixclientversions)
 by setting the following flags to `true`:
 
-- `org.matrix.msc4548` while this MSC is unstabl; and
+- `org.matrix.msc4548` while this MSC is unstable; and
 - `org.matrix.msc4548.stable` once this MSC is accepted and the server supports the extension as
   specified here, under the unprefixed `account_data` key on the stable endpoint, until it
   advertises the spec version containing this MSC.
