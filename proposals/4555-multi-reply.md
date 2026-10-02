@@ -1,4 +1,4 @@
-# MSC0000: Multiple Replies
+# MSC4555: Multiple Replies
 
 Matrix already supports replies using `m.relates_to>m.in_reply_to`, but does not specify how to handle multiple `event_id` children fields. This could lead to breakage in clients, but it also presents opportunity for turning this into a feature. 
 
@@ -57,7 +57,7 @@ This, however, is problematic, as while technically possible, isn't supported be
 
 ## Unstable prefix
 
-Before this MSC is merged and part of a spec release, clients should use `eu.cyrneko.msc0000.event_ids` instead of `event_ids`. Additionally, the last-selected reply Event ID should remain in the existing `event_id` field for some amount of backwards-compatibility.
+Before this MSC is merged and part of a spec release, clients should use `eu.cyrneko.msc4555.event_ids` instead of `event_ids`. Additionally, the last-selected reply Event ID should remain in the existing `event_id` field for some amount of backwards-compatibility.
 
 the full JSON payload should then look like this:
 
@@ -67,7 +67,7 @@ the full JSON payload should then look like this:
     "m.relates_to": {
       "m.in_reply_to": {
         "event_id": "$another_event",
-        "eu.cyrneko.msc0000.event_ids": [
+        "eu.cyrneko.msc4555.event_ids": [
         	"$event",
         	"$another_event"
         ]
