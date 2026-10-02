@@ -48,7 +48,7 @@ For example:
 ```
 
 A `limit` that is not a positive integer MUST be rejected with a 400 and an error code of
-`M_INVALID_PARAM`. The server MAY return fewer messages than `limit`. The send-to-device module
+`M_BAD_JSON`. The server MAY return fewer messages than `limit`. The send-to-device module
 recommends a limit of 100 for `/v3/sync`, and servers SHOULD support at least that here.
 
 A client MUST send as `since` the `next_batch` from the last response of this extension it
@@ -239,9 +239,9 @@ No dependencies.
 
 Differences from the experimental implementation of simplified sliding sync in Synapse v1.151.0.
 
-1. `limit` must be a positive integer, and is rejected with `M_INVALID_PARAM` otherwise. Synapse
-   rejects a non-integer but accepts zero, which returns an empty response and acknowledges
-   everything queued.
+1. `limit` must be a positive integer, and is rejected with `M_BAD_JSON` otherwise. Synapse rejects
+   a non-integer but accepts zero (and accepts or 500s on negative integers), which returns an empty
+   response and acknowledges everything queued.
 2. The `to_device` section may be omitted when there are no messages to send. Synapse always
    includes it.
 3. The messages are returned under `messages`. Synapse returns them under `events`, following
