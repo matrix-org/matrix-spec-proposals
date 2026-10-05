@@ -751,7 +751,7 @@ impact of key exchanges.
 | `m.rtc.slot` | Event type | `org.matrix.msc4143.rtc.slot` |
 | `m.rtc.member` | Event type | `org.matrix.msc4143.rtc.member` |
 | `m.per_member` | Encryption type | `org.matrix.msc4143.per_member` |
-| `m.rtc.encryption_key` | To-device message event type | `org.matrix.msc4143.rtc.encryption_key` |
+| `m.rtc.encryption_key` | To-device message event type | `io.element.call.encryption_keys` |
 | `/_matrix/client/v1/rtc/transports` | Endpoint | `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` |
 
 Servers may advertise support for the feature by listing `org.matrix.msc4143` in the `unstable_features`
@@ -766,3 +766,42 @@ for the server to adopt a version of the spec that includes it.
 This proposal depends on:
 * [MSC4354: Sticky Events][MSC4354]
 * [MSC4140: Cancellable delayed events][MSC4140]
+
+## Appendix
+
+### Implementation differences in the reference implementation
+
+The reference implementation of this proposal is documented in a [file-level comment] and touches
+[matrix-js-sdk], [element-web], [element-call] and [synapse]. For practical reasons, some changes of
+the proposal text that resulted from iterating or from review comments have not been carried over into
+the implementation. As of writing, the full list of such implementation differences is as follows:
+
+- Membership events
+  - `m.rtc.member` events contain an additional `user_id` property inside the `member` object that is
+    by now unused.
+  - `m.rtc.member` events contain an additional `device_id` property inside the `member` object that
+    is by now unused.
+  - `m.rtc.member` events are missing the `member.membership` property. Instead the presence of a valid
+    `application` object is treated as `membership = "join"` while the absence of a valid `application`
+    object is treated as `membership = "leave"`.
+- Transport discovery
+  - `GET /_matrix/client/v1/rtc/transports` uses `rtc_transports` rather than `transports` as the
+    property name in its response.
+- Encryption
+  - The body of the `m.rtc.encryption_key` to-device message exhibits the following differences:
+    - The property name of the key object is `keys` rather than `media_key`.
+    - The `member_id` property is missing. Instead there is a `member` property that holds an object
+      with the member ID stored under `id`.
+    - The `member` object also includes a `claimed_device_id` property. This is required because
+      Element Web embeds Element Call as a widget and the widget API does not currently share
+      encryption metadata with widgets. For the same reason, there is currently no validation of
+      received to-device messages against `m.rtc.member` events.
+    - An extra property `session` is included and holds legacy session information
+      (`{ call_id, application, scope }`) that is by now unused.
+    - An extra property `sent_ts` is included that is only used for analytics.
+
+[file-level comment]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143/changes#r3644165815
+[matrix-js-sdk]: https://github.com/matrix-org/matrix-js-sdk/
+[element-web]: https://github.com/element-hq/element-web/
+[element-call]: https://github.com/element-hq/element-call
+[synapse]: https://github.com/element-hq/synapse/
