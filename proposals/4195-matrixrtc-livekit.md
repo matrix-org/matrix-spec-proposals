@@ -829,6 +829,8 @@ Apart from this, the endpoints introduced above should be referred to as follows
 
 This proposal depends on [MSC4143].
 
+## Appendix
+
 ## Appendix: hash derivation test vectors
 
 Below are provided verified test vectors for the LiveKit room name and LiveKit participant identity, derived as
@@ -844,3 +846,25 @@ printf '%s' "${CANONICAL_JSON}" | openssl dgst -sha256 -binary | openssl base64 
 | LiveKit room name (no random bits) | `["!roomid:example.com", "slot1234"]` | `["!roomid:example.com","slot1234"]` | `3bce37ed6dfe8e6ccc563a083f7b4dc1b9be5f11d093688aa4e03b6aac37a927` | `O8437W3+jmzMVjoIP3tNwbm+XxHQk2iKpOA7aqw3qSc` |
 | LiveKit room name (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
 | LiveKit participant identity | `["@alice:example.com", "memberABC"]` | `["@alice:example.com","memberABC"]` | `337567b0b5eb91bc480c83573bae2ef0f6731720fd6581624142d1d9db21598b` | `M3VnsLXrkbxIDINXO64u8PZzFyD9ZYFiQULR2dshWYs` |
+
+## Implementation differences in the reference implementation
+
+The reference implementation of this proposal is documented in its [pull request description] and touches
+[matrix-js-sdk], [element-call], [synapse] and [lk-jwt-service]. For practical reasons, some changes of
+the proposal text that resulted from iterating or from review comments have not been carried over into
+the implementation. As of writing, the full list of such implementation differences is as follows:
+
+- All implementations use `livekit` rather than `m.livekit` for the transport's type.
+- A key length of 16 rather than 32 bytes is used for the generic key material.
+- Some unspec'ed artifacts exist for backwards compatibility with implementations of previous versions
+  of this proposal where the Client-Server endpoints were provided by a standalone service separate from
+  the homeserver:
+  - `livekit_service_url` can be included alongside the `url` property defined by this proposal in the
+    response of `/_matrix/client/v1/rtc/transports` and `m.rtc.member` events.
+  - lk-jwt-service still includes the legacy endpoints `/sfu/get`, `/get_token` and `/delegate_delayed_leave`.
+
+[pull request description]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
+[matrix-js-sdk]: https://github.com/matrix-org/matrix-js-sdk/
+[element-call]: https://github.com/element-hq/element-call
+[synapse]: https://github.com/element-hq/synapse/
+[lk-jwt-service]: https://github.com/element-hq/lk-jwt-service
