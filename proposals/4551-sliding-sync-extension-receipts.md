@@ -251,7 +251,7 @@ receipts to the timeline, and this MSC keeps that.
 
 The server could send the initial receipts when a room re-enters scope, in place of the changes made
 while it was out. However, clients would then not know which of the previously returned receipts
-were stale and could would show the stale receipts on the older events.
+were stale and would show the stale receipts on the older events.
 
 [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575) proposed delta tokens so
 that a client could avoid receiving receipts it already holds on an initial sync. MSC4186 dropped
