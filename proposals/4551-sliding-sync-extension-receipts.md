@@ -97,8 +97,7 @@ would the `content` of an `m.receipt` event from `/v3/sync`.
 
 The server decides what to send from the connection's state at the request's `pos`.
 [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) does not let the server
-assume the client received a response until it sees a request carrying that response's `pos`. A
-retried request with the same `pos` MUST receive the receipts of the lost response again. As a
+assume the client received a response until it sees a request carrying that response's `pos`. As a
 specific example, a retried request with the same `pos` and request body MUST receive the receipts
 of the lost response again (unless they were since replaced).
 
