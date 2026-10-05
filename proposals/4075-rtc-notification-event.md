@@ -490,3 +490,24 @@ originally specified in [MSC4310] and, therefore, use that MSC number in their u
 ## Dependencies
 
 This proposal depends on [MSC4143] and [MSC4354].
+
+## Appendix
+
+### Implementation differences in the reference implementation
+
+The reference implementation of this proposal is documented in a [file-level comment] and touches
+[matrix-js-sdk], [element-web] and [synapse]. For practical reasons, some changes of the proposal
+text that resulted from iterating or from review comments have not been carried over into the
+implementation. As of writing, the full list of such implementation differences is as follows:
+
+- `m.rtc.invite` events contain a property `notification_type` that has been removed from the proposal.
+  Instead, receiving clients have control about how to present the invite.
+- `m.rtc.invite` events contain a property `m.call.intent` that has been removed from the proposal.
+  Instead, receiving clients can look up the intent from membership events.
+- `m.rtc.invite` events contain an `m.reference` relation to the sending user's `m.rtc.member`
+  event. Instead, receiving clients can look up membership events via the slot.
+
+[file-level comment]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075/changes#r4026443865
+[matrix-js-sdk]: https://github.com/matrix-org/matrix-js-sdk/
+[element-web]: https://github.com/element-hq/element-web
+[synapse]: https://github.com/element-hq/synapse
