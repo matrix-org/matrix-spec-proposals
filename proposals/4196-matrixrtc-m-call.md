@@ -247,6 +247,8 @@ and `m.rtc.member` events that are themselves guarded by the unstable prefix fro
 
 This proposal depends on [MSC4143] and [MSC4195].
 
+## Appendix
+
 ### Implementation differences in the reference implementation
 
 The reference implementation of this proposal is documented in a [file-level comment] and touches
