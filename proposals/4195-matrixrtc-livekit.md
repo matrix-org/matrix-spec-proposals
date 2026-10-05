@@ -831,7 +831,7 @@ This proposal depends on [MSC4143].
 
 ## Appendix
 
-## Appendix: hash derivation test vectors
+### Hash derivation test vectors
 
 Below are provided verified test vectors for the LiveKit room name and LiveKit participant identity, derived as
 described above. Further test vectors can be obtained with the following shell commands.
@@ -847,7 +847,7 @@ printf '%s' "${CANONICAL_JSON}" | openssl dgst -sha256 -binary | openssl base64 
 | LiveKit room name (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
 | LiveKit participant identity | `["@alice:example.com", "memberABC"]` | `["@alice:example.com","memberABC"]` | `337567b0b5eb91bc480c83573bae2ef0f6731720fd6581624142d1d9db21598b` | `M3VnsLXrkbxIDINXO64u8PZzFyD9ZYFiQULR2dshWYs` |
 
-## Implementation differences in the reference implementation
+### Implementation differences in the reference implementation
 
 The reference implementation of this proposal is documented in its [pull request description] and touches
 [matrix-js-sdk], [element-call], [synapse] and [lk-jwt-service]. For practical reasons, some changes of
