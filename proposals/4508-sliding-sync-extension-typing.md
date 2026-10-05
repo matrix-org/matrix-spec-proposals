@@ -282,3 +282,6 @@ Differences from the experimental implementation of simplified sliding sync in S
 1. Removed the special value `"*"` from the common room extension fields.
 2. The per-room value in the response is now a bare object with a `user_ids` field, rather than a
    full `m.typing` ephemeral event with `type` and `content` fields.
+3. Synapse has a bug where the `rooms` field would match all rooms, rather than just the
+   subscriptions. This means that if `rooms` is set to `"*"` then the various extensions will match
+   all rooms, rather than just the subscriptions.
