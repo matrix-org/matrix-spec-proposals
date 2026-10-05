@@ -246,3 +246,21 @@ and `m.rtc.member` events that are themselves guarded by the unstable prefix fro
 ## Dependencies
 
 This proposal depends on [MSC4143] and [MSC4195].
+
+### Implementation differences in the reference implementation
+
+The reference implementation of this proposal is documented in a [file-level comment] and touches
+[matrix-js-sdk], [element-web] and [element-call]. For practical reasons, some changes of the
+proposal text that resulted from iterating or from review comments have not been carried over into
+the implementation. As of writing, the full list of such implementation differences is as follows:
+
+- The call intent is stored in `m.call.intent` rather than `intent` on membership events.
+- Supplying an `m.rtc.slot` event for `m.call` in `initial_state` on `/createRoom` is not currently
+  implemented (but trivial). There is an [open discussion] about whether this should happen on the
+  client or the server.
+
+[file-level comment]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196/changes#r3931562047
+[matrix-js-sdk]: https://github.com/matrix-org/matrix-js-sdk/
+[element-web]: https://github.com/element-hq/element-web
+[element-call]: https://github.com/element-hq/element-call
+[open discussion]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196/changes#r3918135826
