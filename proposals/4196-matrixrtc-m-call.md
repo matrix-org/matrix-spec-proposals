@@ -258,9 +258,9 @@ the implementation. As of writing, the full list of such implementation differen
 
 - The application-specific slot ID is `ROOM` rather than `room`.
 - The call intent is stored in `m.call.intent` rather than `intent` on membership events.
-- Supplying an `m.rtc.slot` event for `m.call` in `initial_state` on `/createRoom` is not currently
-  implemented (but trivial). There is an [open discussion] about whether this should happen on the
-  client or the server.
+- Supplying a slot event for `m.call` in `initial_state` on `/createRoom` is not currently implemented
+  (but trivial). There is an [open discussion] about whether this should happen on the client or the
+  server.
 
 [file-level comment]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196/changes#r3931562047
 [matrix-js-sdk]: https://github.com/matrix-org/matrix-js-sdk/
