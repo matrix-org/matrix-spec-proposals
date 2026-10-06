@@ -146,12 +146,9 @@ included at or before the request's `pos`.
 > [!NOTE]
 >
 > `/v3/sync` lets a server omit an algorithm whose count is zero, and omit the whole field when
-> every count is zero. Clients treated an omitted field as no change, so they never learned that
-> their supply had run out
-> ([matrix-spec-proposals#3298](https://github.com/matrix-org/matrix-spec-proposals/issues/3298)).
-> Here the field is required whenever the section is present and replaces the client's state, so an
-> unlisted algorithm is unambiguously zero. A count falling to zero is a change, so the section is
-> sent, and the algorithm is unlisted or `0` in it.
+> every count is zero. Here the field is required whenever the section is present and replaces the
+> client's state, so an unlisted algorithm is unambiguously zero. A count falling to zero is a
+> change, so the section is sent, and the algorithm is unlisted or `0` in it.
 
 `device_unused_fallback_key_types` lists the algorithms for which the device has uploaded a fallback
 key that no
