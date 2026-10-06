@@ -860,7 +860,8 @@ the implementation. As of writing, the full list of such implementation differen
   of this proposal where the Client-Server endpoints were provided by a standalone service separate from
   the homeserver:
   - `livekit_service_url` can be included alongside the `url` property defined by this proposal in the
-    response of `/_matrix/client/v1/rtc/transports` and `m.rtc.member` events.
+    response of `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` and in `org.matrix.msc4143.rtc.member`
+    events.
   - lk-jwt-service still includes the legacy endpoints `/sfu/get`, `/get_token` and `/delegate_delayed_leave`.
 
 [pull request description]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
