@@ -500,12 +500,13 @@ The reference implementation of this proposal is documented in a [file-level com
 text that resulted from iterating or from review comments have not been carried over into the
 implementation. As of writing, the full list of such implementation differences is as follows:
 
-- `m.rtc.invite` events contain a property `notification_type` that has been removed from the proposal.
-  Instead, receiving clients have control about how to present the invite.
-- `m.rtc.invite` events contain a property `m.call.intent` that has been removed from the proposal.
-  Instead, receiving clients can look up the intent from membership events.
-- `m.rtc.invite` events contain an `m.reference` relation to the sending user's `m.rtc.member`
-  event. Instead, receiving clients can look up membership events via the slot.
+- `org.matrix.msc4075.rtc.notification` events contain a property `notification_type` that has been
+  removed from the proposal. Instead, receiving clients have control about how to present the invite.
+- `org.matrix.msc4075.rtc.notification` events contain a property `m.call.intent` that has been removed
+  from the proposal. Instead, receiving clients can look up the intent from membership events.
+- `org.matrix.msc4075.rtc.notification` events contain an `m.reference` relation to the sending user's
+  RTC member event that has been removed from the proposal. Instead, receiving clients can look up
+  membership events via the slot.
 
 [file-level comment]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075/changes#r4026443865
 [matrix-js-sdk]: https://github.com/matrix-org/matrix-js-sdk/
