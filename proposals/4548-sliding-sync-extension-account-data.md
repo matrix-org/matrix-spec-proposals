@@ -58,7 +58,7 @@ An `AccountData` has the format of the entries of the `account_data` sections of
 | `type` | `string` | Yes | The type of the account data. |
 | `content` | `object` | Yes | The content of the account data. |
 
-Each list contains at most one entry per `type`. A room with nothing to send MAY be omitted from
+Servers MUST NOT include more than one entry per `type` in a list. A room with nothing to send MAY be omitted from
 `rooms`. An empty list is equivalent to an absent entry.
 
 For example:
@@ -114,7 +114,7 @@ rule is a change to that account data.
 extension semantics of [MSC4508](https://github.com/matrix-org/matrix-spec-proposals/pull/4508). A
 room can be in scope without appearing in the top-level `rooms` section of the response.
 
-Room account data is returned for an in-scope room regardless of the user's membership in it,
+Room account data MUST br returned for an in-scope room regardless of the user's membership in it,
 whereas `/v3/sync` returns it for joined and left rooms only. The user can set account data for any
 room ID, including invites and knocks.
 
@@ -128,7 +128,7 @@ For an in-scope room:
 - Otherwise, the server MUST send the room's account data of every `type` that changed after the
   request's `pos`.
 
-When a room drops out of scope, the client keeps the account data it holds for it. The server sends
+When a room drops out of scope, the client SHOULD keep the account data it holds for it. The server sends
 no further updates for the room until it re-enters scope, so the data may be stale until then.
 
 As in `/v3/sync`, room tags are room account data of type
