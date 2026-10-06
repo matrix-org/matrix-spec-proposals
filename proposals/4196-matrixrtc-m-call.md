@@ -99,7 +99,7 @@ slots, looks as follows:
   if none of the other members in the call support rendering video streams. Clients SHOULD populate `capabilities`
   when joining a call. If `capabilities` is set, the absence of a value signals that the client doesn't support
   the respective capability. If `capabilities` is missing entirely, the client's capabilities are undetermined.
-  Values inside `capabilities` MUST use the [Common Namespaced Identifier Grammar]. Allowed values include:
+  Values inside `capabilities` MUST use the [Common Namespaced Identifier Grammar]. The following values are specified:
   - `m.render_audio`: The client can render audio streams. Note that this doesn't necessarily imply that the
     client is able to also transmit its own audio.
   - `m.render_video`: The client can render video streams. Note that this doesn't necessarily imply that the
