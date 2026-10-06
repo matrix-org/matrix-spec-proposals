@@ -94,8 +94,9 @@ For example:
 
 ### Semantics
 
-The fields have the meanings they have in `/v3/sync`. The rest of this section specifies how they
-interact with connections.
+Other than the difference mentioned below around an absent `device_one_time_keys_count`, the fields
+have the meanings they have in `/v3/sync`. The rest of this section specifies how they interact with
+connections.
 
 #### Device lists
 
