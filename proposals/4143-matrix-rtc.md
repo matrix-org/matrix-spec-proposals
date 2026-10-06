@@ -777,18 +777,18 @@ the proposal text that resulted from iterating or from review comments have not 
 the implementation. As of writing, the full list of such implementation differences is as follows:
 
 - Membership events
-  - `m.rtc.member` events contain an additional `user_id` property inside the `member` object that is
-    by now unused.
-  - `m.rtc.member` events contain an additional `device_id` property inside the `member` object that
-    is by now unused.
-  - `m.rtc.member` events are missing the `member.membership` property. Instead the presence of a valid
-    `application` object is treated as `membership = "join"` while the absence of a valid `application`
-    object is treated as `membership = "leave"`.
+  - `org.matrix.msc4143.rtc.member` events contain an additional `user_id` property inside the `member`
+    object that is by now unused.
+  - `org.matrix.msc4143.rtc.member` events contain an additional `device_id` property inside the `member`
+    object that is by now unused.
+  - `org.matrix.msc4143.rtc.member` events are missing the `member.membership` property. Instead the
+    presence of a valid `application` object is treated as `membership = "join"` while the absence of a
+    valid `application` object is treated as `membership = "leave"`.
 - Transport discovery
-  - `GET /_matrix/client/v1/rtc/transports` uses `rtc_transports` rather than `transports` as the
-    property name in its response.
+  - `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` uses `rtc_transports` rather than
+    `transports` as the property name in its response.
 - Encryption
-  - The body of the `m.rtc.encryption_key` to-device message exhibits the following differences:
+  - The body of the `io.element.call.encryption_keys` to-device message exhibits the following differences:
     - The property name of the key object is `keys` rather than `media_key`.
     - The `member_id` property is missing. Instead there is a `member` property that holds an object
       with the member ID stored under `id`.
