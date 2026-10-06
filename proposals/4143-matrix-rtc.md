@@ -792,7 +792,7 @@ the implementation. As of writing, the full list of such implementation differen
     - The property name of the key object is `keys` rather than `media_key`.
     - The `member_id` property is missing. Instead there is a `member` property that holds an object
       with the member ID stored under `id`.
-    - The `member` object also includes a `claimed_device_id` property. This is required because
+    - The `member` object also includes a `claimed_device_id` property. This is currently required because
       Element Web embeds Element Call as a widget and the widget API does not currently share
       encryption metadata with widgets. For the same reason, there is currently no validation of
       received to-device messages against `m.rtc.member` events.
