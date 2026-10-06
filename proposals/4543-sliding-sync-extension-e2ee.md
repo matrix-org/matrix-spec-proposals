@@ -205,7 +205,7 @@ or, if the server also rejects that `pos`, query every device list it tracks wit
 ## Alternatives
 
 Device list changes could carry a token of their own, as the to-device extension
-([MSC3885](https://github.com/matrix-org/matrix-spec-proposals/pull/3885)) does. The client would
+([MSC4538](https://github.com/matrix-org/matrix-spec-proposals/pull/4538)) does. The client would
 keep its position across connection resets and never need to catch up, and the server would have to
 honour that token for as long as the device exists. This MSC instead has the client keep the `pos`
 up to which it has applied changes and catch up with `/keys/changes`. The client still holds a token
