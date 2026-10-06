@@ -134,7 +134,7 @@ A `pos` can be used as `from` and `to` in `/keys/changes`, as
 issued it has expired, for longer than it keeps connections alive. A connection may be expired
 within hours, but a client may need to catch up after days offline. `/keys/changes` MAY reject a
 `pos` it can no longer resolve with a 400 and an error code of `M_UNKNOWN_POS`. The code is new for
-this endpoint. Existing clients never pass a `pos`, so they never see it.
+this endpoint. Existing client implementations never pass a `pos`, so they never see `M_UNKNOWN_POS`.
 
 #### Key counts
 
