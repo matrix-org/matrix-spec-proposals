@@ -250,18 +250,19 @@ POST /_matrix/client/v1/rtc/livekit/get_token
 }
 ```
 
-Upon receiving the request, the server verifies that the requesting user is joined to the room
-identified by `room_id`. If the user is not joined, or the server doesn't know the room, the request
-MUST be rejected with HTTP 403 / `M_FORBIDDEN`.
+The receiving server MUST reject the request in all of the following cases:
 
-If `server_name` is the server's own name and `url` does not match one of the server's own SFUs,
-the request is rejected with HTTP 400 / `M_INVALID_PARAM`.
+- If the requesting user is not joined to the room identified by `room_id`, reject the request with
+  HTTP 403 / `M_FORBIDDEN`.
+- If `server_name` is a remote server and that server is not joined to the room, reject the request
+  with HTTP 403 / `M_FORBIDDEN`.
+- If `server_name` is the server's own name and `url` does not match one of the server's own SFUs,
+  reject the request with HTTP 400 / `M_INVALID_PARAM`.
 
-If `server_name` is the server's own name and `url` matches one of the server's own SFUs, the server
-derives the associated LiveKit room name and ensures that the room exists, [creating] it if needed.
-This is REQUIRED because otherwise clients won't be able to connect to the room. The server then
-generates a token for the SFU and responds with HTTP 200 and a JSON object with a single required
-property `jwt` holding the token.
+Otherwise, if `server_name` is the server's own name, the server derives the associated LiveKit room
+name and ensures that the room exists, [creating] it if needed. This is REQUIRED because otherwise
+clients won't be able to connect to the room. The server then generates a token for the SFU and
+responds with HTTP 200 and a JSON object with a single required property `jwt` holding the token.
 
 ```http
 200 OK
@@ -292,13 +293,15 @@ POST /_matrix/federation/v1/rtc/livekit/get_token
 }
 ```
 
-Upon receiving the request, the remote server verifies that `user_id` belongs to the origin server and
-that the user is joined to the room identified by `room_id`. If the user is from another server or not
-not joined to the room or if the remote server doesn't know the room, the request MUST be rejected with
-HTTP 403 / `M_FORBIDDEN`.
+The remote server MUST reject the request in all of the following cases:
 
-If `url` does not match one of the remote server's own SFUs, the request is rejected with
-HTTP 400 / `M_INVALID_PARAM`.
+- If the receiving server is not joined to the room identified by `room_id`, reject the request with
+  HTTP 403 / `M_FORBIDDEN`.
+- If `user_id` does not belong to the origin server, reject the request with HTTP 403 / `M_FORBIDDEN`.
+- If `user_id` is not joined to the room identified by `room_id`, reject the request with HTTP 403 /
+  `M_FORBIDDEN`.
+- If `url` does not match one of the receiving server's own SFUs, reject the request with HTTP 400 /
+  `M_INVALID_PARAM`.
 
 HTTP 403 / `M_FORBIDDEN` and HTTP 400 / `M_INVALID_PARAM` errors from the remote server MUST be relayed
 back to the client by the origin server. Any other error MUST result in HTTP 502 / `M_UNKNOWN` in
