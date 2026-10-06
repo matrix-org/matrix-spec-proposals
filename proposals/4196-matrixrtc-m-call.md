@@ -256,6 +256,7 @@ The reference implementation of this proposal is documented in a [file-level com
 proposal text that resulted from iterating or from review comments have not been carried over into
 the implementation. As of writing, the full list of such implementation differences is as follows:
 
+- The application-specific slot ID is `ROOM` rather than `room`.
 - The call intent is stored in `m.call.intent` rather than `intent` on membership events.
 - Supplying an `m.rtc.slot` event for `m.call` in `initial_state` on `/createRoom` is not currently
   implemented (but trivial). There is an [open discussion] about whether this should happen on the
