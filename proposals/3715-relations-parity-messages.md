@@ -20,7 +20,7 @@ functionality. A simpler implementation would allow the client to:
 
 1 & 3 are currently possible; this MSC attempts to solve condition 2.
 
-With the `dir` paraemter on `/relations, it now becomes possible for a client to:
+With the `dir` parameter on `/relations, it now becomes possible for a client to:
 
 1. Call `/context` on the target event to get a pagination token.
 2. Call `/relations` twice (once with `dir=b` and once with `dir=f`) on the same
