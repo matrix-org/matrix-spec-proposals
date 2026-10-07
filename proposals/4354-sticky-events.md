@@ -428,6 +428,10 @@ a standardised mechanism for determining keys on sticky events, the `content.sti
 }
 ```
 
+Sticky Events without a `content.sticky_key` property are not considered part of an ephemeral map
+(they could be part of other primitives instead).
+Clients do not need to form ephemeral maps for event types that they do not process.
+
 `content.sticky_key` is ignored server-side[^encryption] and is purely informational. Clients which
 receive a sticky event with a `sticky_key` SHOULD keep a map with keys determined via the 4-uple[^3uple]
 `(room_id, sender, type, content.sticky_key)` to track the current values in the map. Nothing stops
