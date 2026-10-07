@@ -53,7 +53,7 @@ The schema of `m.rtc.invite` is as follows:
 
 The schema of `m.rtc.decline` is as follows:
 
-- `m.relates_to` (required, object): An `m.reference` relation to the `m.rtc.invite` event which is
+- `m.relates_to` (required, object): An [`m.reference` relation](https://spec.matrix.org/v1.19/client-server-api/#reference-relations) to the `m.rtc.invite` event which is
   being declined.
 - `sticky_key` (required, string): The event's sticky key as per [MSC4354]. MUST be equal to the
   event ID of the `m.rtc.invite` event that is being declined.
