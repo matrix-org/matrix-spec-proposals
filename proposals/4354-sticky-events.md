@@ -119,7 +119,8 @@ NOTE: The extension for MSC4186 Sliding Sync has been split out to [MSC4480: Sli
 
 #### Current `/sync`
 
-The new `/sync` section looks like:
+A new `rooms.join.{roomId}.sticky.events` section is introduced in the `/sync` response,
+containing unexpired sticky events in the room occurring before the first event in the timeline section, as follows:
 
 ```js
 {
