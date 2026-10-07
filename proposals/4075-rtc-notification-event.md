@@ -373,7 +373,7 @@ via SFU token requests. Not encrypting the invite event would, therefore, not in
 when using this transport. This might not be true for future MatrixRTC transports, however.
 
 [MSC4028]: https://github.com/matrix-org/matrix-spec-proposals/pull/4028
-[MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
+[MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
 
 ## Alternatives
 
