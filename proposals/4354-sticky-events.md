@@ -189,7 +189,7 @@ event S _once_, and subsequent requests with an advanced `since` token will not 
 
 Clients MUST tolerate an event being present in the `timeline` section in one sync response and then being
 present in the `sticky.events` section of a subsequent sync response (or vice-versa),
-though servers SHOULD avoid this happening where technically feasible to do so.
+though servers SHOULD avoid this happening where technically feasible to do so.[^whytoleratedupe]
 
 When sending sticky events down `/sync`, the `unsigned` section MUST have a `sticky_duration_remaining_ms` field
 to indicate how many milliseconds until the sticky event expires.
@@ -615,3 +615,21 @@ We do this because the `/sync` ordering may not match the sending order if A) se
 B) newer sticky events are retrieved transitively from a 3rd server via `/get_missing_events` _first_, then older sticky events are sent
 afterwards, C) when batches of sticky events are returned down `/sync`, newer sticky events may appear in the timeline before older sticky events are
 returned via batching.
+
+[^whytoleratedupe]: Suppose there are 200 sticky events waiting to be sent to the client and then suppose one of the sticky events
+  is delivered to the client in the `timeline` (as it is a recent enough event).
+
+  Then in a subsequent sync, the
+
+  To avoid this, we'd need to either:
+
+  1. have servers track which sticky events were already sent ahead of their position in the sticky events stream
+     (which is unfortunate, as there could be an unbounded number of such gaps that need tracking over the course
+     of multiple sync requests. These would all have to be tracked in the sync token, meaning we can't expect
+     to limit the size of a sync token.)
+  2. withhold the live timeline from clients when they are behind on sticky events. Essentially, slowing down the
+     timeline so it can't get ahead of the sticky event stream.
+     This seems plausible, but may go against the grain of Sliding Sync's design (which means we'd have to tolerate an
+     additional source of confusing divergence between v3 Sync and Sliding Sync)
+     and also increases the latency of real-time messages getting delivered to the client in all the client's rooms,
+     which feels unacceptable. (It also seems like it creates extra incentive for Sticky Event spam/abuse.)
