@@ -511,7 +511,7 @@ Note that encrypted sticky events will encrypt some parts of the 4-uple. An encr
 
 The decrypted event would contain the `type` and `content.sticky_key`.
 
-#### Spam
+#### Sync Bloat (as a result of not being able to prune obsolete Sticky Events)
 
 Under normal circumstances for the MatrixRTC use case there will be a window of time where clients will receive
 sticky events that are not useful. MatrixRTC defines an `m.rtc.member` event with an empty content (and optional `leave_reason`)
