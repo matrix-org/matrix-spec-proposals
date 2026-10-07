@@ -175,7 +175,7 @@ livekit_participant_identity = Base64( SHA256( Canonicalize( [ sender, member.id
 ```
 
 Note that `sender` is included here to prevent malicious users from impersonating other members.
-A user could only impersonate a `member.id` belonging to one of their own `m.rtc.member` events,
+This means that a user can only impersonate a `member.id` belonging to one of their own `m.rtc.member` events,
 thereby only harming themselves.
 
 As per [MSC4143], member IDs are cryptographically random and regenerated for each join. Therefore,
