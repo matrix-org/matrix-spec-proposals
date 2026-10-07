@@ -287,8 +287,8 @@ The rules are inserted into the existing default rule set as follows:
 The rules and their placement are designed to fit in with the common push rule configurations for setting
 rooms to muted or mentions-only.
 
-Muting is usually implemented via a user-defined `override` rule with empty `actions`. This overrides all
-three rules and silences any notification for `m.rtc.invite` events.
+Muting is usually implemented via a user-defined `override` rule with empty `actions`. This overrides both
+rules and silences any notification for `m.rtc.invite` events.
 
 Mentions-only rooms are commonly implemented via a room-specific rule with empty `actions`. The `override`
 rules `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` are processed before such a rule.
