@@ -44,6 +44,8 @@ This new primitive can be used to implement MatrixRTC participation and live loc
 
 Message events (specifically: PDUs) can be annotated with a new top-level `sticky` object[^toplevel], which MUST have a `duration_ms`,
 which is the number of milliseconds for the event to be sticky.
+'Sticky' means, informally, that the event is temporarily 'stuck' to the bottom of the timeline and will be reliably delivered
+to the client, regardless of gaps in syncing.
 The presence of `sticky.duration_ms` with an integer value makes the event “sticky”[^stickyobj].
 Intended values are the integer range 0-3600000 (1 hour), but any integer is valid (clamping is applied, see later).
 
