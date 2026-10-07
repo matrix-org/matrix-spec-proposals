@@ -318,6 +318,17 @@ following protections in place:
 * Servers sending lots of sticky events may be asked to try again later as a form of rate-limiting.
   Due to data expiring, subsequent requests will gradually have less data.
 
+### No guarantee that servers will ever agree on the 'current state'
+
+The soft-failed event re-evaluation behaviour can _help_ in giving servers a better chance of agreeing
+with each other on what state-dependent checks to apply to sticky events,
+but it can't guarantee the servers will actually agree.
+
+Therefore it is impossible to guarantee that all servers will agree in considering a given sticky event
+as soft-failed or not.
+
+In other words, there's no guarantee that all clients in a room will be sent a given event.
+
 
 ## Alternatives
 
@@ -550,7 +561,8 @@ Servers mostly load missed or historical timeline events lazily, for example by 
 prompts the server to hit `/backfill` to request events from federated servers.  
 [^sync]: Normal timeline events do not always appear in the sync response if the event is more than `timeline_limit` events away.  
 [^softfail]: Not all servers will agree on soft-failure status due to the check considering the “current state” of the room.
-To ensure all servers agree on which events are sticky, we need to re-evaluate soft-failed status when the current room state changes.
+To give a chance for all servers to agree on which sticky events are soft-failed or not (and therefore which should be sent to clients),
+we need to re-evaluate soft-failed status when the current room state changes.
 This becomes particularly important when room state is rolled back. For example, if Charlie sends some sticky event E and
 then Bob kicks Charlie, but concurrently Alice kicks Bob then whether or not a receiving server would accept E would depend
 on whether they saw “Alice kicks Bob” or “Bob kicks Charlie”. If they saw “Alice kicks Bob” then E would be accepted. If they
