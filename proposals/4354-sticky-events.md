@@ -109,9 +109,9 @@ To implement these properties, servers MUST:
 
 When an event loses its stickiness (by expiring or being redacted), these properties disappear with the stickiness.
 
-Policy servers and similar homeserver-specific anti-spam techniques (e.g. custom spam checker modules) still apply to these events,
+Servers MUST apply policy servers and similar homeserver-specific anti-spam techniques (e.g. custom spam checker modules) to these events,
 including events received over federation. If the anti-spam technique classifies a sticky event as spam,
-it is treated as a regular non-sticky event and does not enjoy the properties that an unexpired sticky event does.
+it MUST be treated as a regular non-sticky event and does not enjoy the properties that an unexpired sticky event does.
 
 These messages may be combined with [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
 to provide heartbeat semantics (e.g required for MatrixRTC). Note that the sticky duration in this proposal
