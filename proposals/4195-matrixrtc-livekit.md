@@ -436,8 +436,8 @@ because a malicious user being kicked from a Matrix room could otherwise continu
 ongoing RTC session related to the room. To prevent this, servers SHOULD remove any associated LiveKit
 participant identities from the related LiveKit rooms when a user leaves or is banned from a Matrix room.
 The corresponding [LiveKit API] SHOULD be called regardless of whether the participant is still connected
-to the SFU or not because it also handles token revocation. It is RECOMMENDED to use the default value
-for the `revoke_token_ts` parameter.
+to the SFU or not because it also handles token revocation. It is RECOMMENDED to use the current time
+for the `revoke_token_ts` parameter to achieve strict revocation without leeway.
 
 As mentioned earlier, token revocation is only a feature on LiveKit Cloud until the [upstream] PR lands.
 Consequently, removing a participant from a LiveKit room doesn't currently prevent them from rejoining
