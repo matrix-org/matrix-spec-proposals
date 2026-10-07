@@ -33,8 +33,8 @@ The schema of `m.rtc.invite` is as follows:
   of users in the room or the entire room. One of the two options MUST be used. An `m.mentions`
   object with both `room` missing or set to false and `user_ids` missing or empty makes the
   `m.rtc.invite` event invalid.
-- `sticky_key` (required, string): The event's sticky key as per [the addendum of MSC4354](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/persist-edu/proposals/4354-sticky-events.md#implementing-an-ephemeral-map). MUST be equal to `slot_id`.
-  This ensures that receivers only maintain one active invite per slot and sender.
+- `sticky_key` (required, string): The event's sticky key as per [the addendum of MSC4354]. MUST be
+  equal to `slot_id`. This ensures that receivers only maintain one active invite per slot and sender.
 
 ```json5
 {
@@ -53,7 +53,7 @@ The schema of `m.rtc.invite` is as follows:
 
 The schema of `m.rtc.decline` is as follows:
 
-- `m.relates_to` (required, object): An [`m.reference` relation](https://spec.matrix.org/v1.19/client-server-api/#reference-relations) to the `m.rtc.invite` event which is
+- `m.relates_to` (required, object): An [`m.reference` relation] to the `m.rtc.invite` event which is
   being declined.
 - `sticky_key` (required, string): The event's sticky key as per [MSC4354]. MUST be equal to the
   event ID of the `m.rtc.invite` event that is being declined.
@@ -81,6 +81,8 @@ necessary because there is no need to update them after being sent.
 Additionally, both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted when the room is encrypted.
 
 [mentions]: https://spec.matrix.org/v1.19/client-server-api/#user-and-room-mentions
+[the addendum of MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/persist-edu/proposals/4354-sticky-events.md#implementing-an-ephemeral-map
+[`m.reference` relation]: https://spec.matrix.org/v1.19/client-server-api/#reference-relations
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
 
 ### Sending invites
@@ -143,9 +145,9 @@ In effect, these conditions mean that when an invite comes in, the receiving cli
 options:
 
 1. It can accept the invite by joining the slot with an appropriate `m.rtc.member` event as
-   per [MSC4143]. The client will invalidate the invite due to the presence of a sticky join event.
-1. It can decline the invite by sending an `m.rtc.decline` event. Again, the client will invalidate
-   the invite due to the presence of a sticky decline event.
+   per [MSC4143]. The invite is deactivated due to the presence of a sticky join event.
+1. It can decline the invite by sending an `m.rtc.decline` event. Again, the invite is deactivated
+   due to the presence of a sticky decline event.
 1. It can ignore the event by doing nothing. The invite will remain valid until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
 
