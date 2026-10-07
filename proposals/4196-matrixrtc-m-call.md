@@ -90,7 +90,7 @@ The schema for the `application` content block in `m.rtc.member` events that are
 slots, looks as follows:
 
 - `type` (string, required): MUST be `m.call`.
-- `intent` (string): One of `audio`, `video`. Optionally discloses whether the member intends to
+- `intent` (string): One of `m.audio`, `m.video`. Optionally discloses whether the member intends to
   join the call with audio only or with audio and video. Clients SHOULD set this field when joining
   and update it as they en- or disable their video stream. This gives other members a hint as to whether
   the session presents an audio or video call.
@@ -118,7 +118,7 @@ Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
     },
     "application": {
       "type": "m.call",
-      "intent": "audio", // I'm going to connect with audio only.
+      "intent": "m.audio", // I'm going to connect with audio only.
       "capabilities": ["m.render_audio", "m.render_video"], // But I can render video calls, too.
     },
     "transports": {
@@ -130,10 +130,10 @@ Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
 }
 ```
 
-When a client joins an `m.call` slot where all other members have set their `intent` to `audio`,
+When a client joins an `m.call` slot where all other members have set their `intent` to `m.audio`,
 the joining client SHOULD NOT publish a video track by default. It MAY allow the user to overrule
 this initial setting both before and after joining though. If any other members have an `intent`
-of `video`, the joining client SHOULD assume the session to represent a video call. This does
+of `m.video`, the joining client SHOULD assume the session to represent a video call. This does
 *not* imply that the client should enter the call with video enabled, however (see [below]).
 
 When leaving a slot, [MSC4143] allows clients to optionally provide context with regards to the
@@ -230,7 +230,7 @@ Before joining a call, clients SHOULD demonstrate to the user what media (audio 
 they are about to share so that the user can meaningfully consent to sharing it.
 
 In particular, clients should be careful about the fact that remote users could fake a call's
-intent. If an `intent` of `video` would cause a client to automatically start sharing video upon
+intent. If an `intent` of `m.video` would cause a client to automatically start sharing video upon
 accepting an incoming call, then it SHOULD clearly differentiate the call from an audio call.
 This could be achieved for instance by presenting different text labels ("Incoming video call"
 / 'Join with video') or by showing the user a preview of their video.
@@ -257,7 +257,8 @@ proposal text that resulted from iterating or from review comments have not been
 the implementation. As of writing, the full list of such implementation differences is as follows:
 
 - The application-specific slot ID is `ROOM` rather than `room`.
-- The call intent is stored in `m.call.intent` rather than `intent` on membership events.
+- The call intent is stored in `m.call.intent` rather than `intent` on membership events and uses
+  `audio` and `video` rather than `m.audio` and `m.video`.
 - Supplying a slot event for `m.call` in `initial_state` on `/createRoom` is not currently implemented
   (but trivial). There is an [open discussion] about whether this should happen on the client or the
   server.
