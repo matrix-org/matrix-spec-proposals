@@ -368,7 +368,7 @@ mentions-only rooms. This means invites don't trigger push notifications on mobi
 is not unique to MatrixRTC invites and [MSC4028] is an ongoing attempt at solving it generally.
 
 A possible mediation could be to send `m.rtc.invite` events unencrypted. The only currently available
-MatrixRTC transport is [MSC4075] which already exposes user participation in slots to the homeserver
+MatrixRTC transport is [MSC4195] which already exposes user participation in slots to the homeserver
 via SFU token requests. Not encrypting the invite event would, therefore, not increase the leakage
 when using this transport. This might not be true for future MatrixRTC transports, however.
 
