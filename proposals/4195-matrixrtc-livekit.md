@@ -378,32 +378,32 @@ sequenceDiagram
 #### Access token properties
 
 Different properties and grants can be applied when generating tokens using LiveKit's SDKs. Servers need
-to ensure these are set appropriately so that clients can connect correctly and securely. In particular,
-servers MUST apply the following settings:
+to ensure these are set appropriately so that clients can connect correctly and securely.
 
-- `sub`: The LiveKit participant identity of the user that requested the token, derived as described above.
-- `nbf`: The current time. This is required because the token's not-before (`nbf`) timestamp is used in
-  [token revocation]. Note that, as of writing, token revocation is only a feature in the cloud version of
-  LiveKit. However, a pull request to add revocation in the open source version exists [upstream] and
-  has received code owner [commitment to merge] once the remaining comments are addressed. Until this has
-  landed, servers depending on a self-hosted LiveKit SFU SHOULD use a sufficiently short expiration time (`exp`)
+- `sub`: MUST be the LiveKit participant identity of the user that requested the token, derived as described
+  above.
+- `nbf`: MUST be the current time. This is required because the token's not-before (`nbf`) timestamp is used
+  in [token revocation]. Note that, as of writing, token revocation is only a feature in the cloud version of
+  LiveKit. However, a pull request to add revocation in the open source version exists [upstream] and has
+  received code owner [commitment to merge] once the remaining comments are addressed. Until this has landed,
+  servers depending on a self-hosted LiveKit SFU SHOULD use a sufficiently short expiration time (`exp`)
   when generating tokens.
-- `video.room`: The LiveKit room name, derived as described above.
-- `video.roomCreate`: Always `false`. This grant, somewhat [counterintuitively], also allows the token
+- `exp`: See the notes under `nbf` above.
+- `video.room`: MUST be the LiveKit room name, derived as described above.
+- `video.roomCreate`: MUST be `false`. This grant, somewhat [counterintuitively], also allows the token
   holder to delete *any* LiveKit room which includes kicking all joined participants. Since this is a possible
   denial-of-service vector, room creation is exclusively and preemptively performed by the homeserver as
   described above.
-- `video.roomJoin`: Always `true`. This enables clients to join the LiveKit room if it exists. Note that
+- `video.roomJoin`: MUST be `true`. This enables clients to join the LiveKit room if it exists. Note that
   when the [auto_create] feature is enabled on the SFU, this permission also allows a token holder to
   create the room it is trying to join in case it doesn't exist yet.
-- `video.canPublish`: `true` if the token was requested by a local user. `false` otherwise. This enforces
-  the multi-SFU configuration and ensures clients can only publish RTC data on a local SFU.
-- `video.canSubscribe`: Always `true`. This lets clients subscribe to RTC data on both local and
+- `video.canPublish`: MUST be `true` if the token was requested by a local user or `false` otherwise. This
+  enforces the multi-SFU configuration and ensures clients can only publish RTC data on a local SFU.
+- `video.canSubscribe`: MUST be `true`. This lets clients subscribe to RTC data on both local and
   remote SFUs.
-- `video.canUpdateOwnMetadata`: This lets clients update their own metadata. Since no MatrixRTC applications
-  currently make use of this metadata, servers SHOULD set the permission to `false` to grant clients the
-  least amount of privileges required.
-- `video.hidden`: Always `false`. This would otherwise allow participants to lurk undetected in the LiveKit
+- `video.canUpdateOwnMetadata`: SHOULD be `false`. This lets clients update their own metadata. No known
+  MatrixRTC application currently makes use of this metadata.
+- `video.hidden`: MUST be `false`. This would otherwise allow participants to lurk undetected in the LiveKit
   room and subscribe to other's streams.
 
 Below is an example of the payload of a LiveKit JWT for a local user:
