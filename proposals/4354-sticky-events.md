@@ -42,12 +42,17 @@ This new primitive can be used to implement MatrixRTC participation and live loc
 
 ## Proposal
 
-Message events can be annotated with a new top-level `sticky` object[^toplevel], which MUST have a `duration_ms`,
-which is the number of milliseconds for the event to be sticky. The presence of `sticky.duration_ms`
-with a valid value makes the event “sticky”[^stickyobj]. Valid values are the integer range 0-3600000 (1 hour).
-For use cases that require stickiness beyond this limit, the application is responsible for sending another
-event to make it happen. The `sticky` key is not protected from redaction. A redacted sticky event is the same
-as a normal event. Note: this new top-level object is added to the [`ClientEvent` format](https://spec.matrix.org/v1.16/client-server-api/#room-event-format)
+Message events (specifically: PDUs) can be annotated with a new top-level `sticky` object[^toplevel], which MUST have a `duration_ms`,
+which is the number of milliseconds for the event to be sticky.
+The presence of `sticky.duration_ms` with an integer value makes the event “sticky”[^stickyobj].
+Intended values are the integer range 0-3600000 (1 hour), but any integer is valid (clamping is applied, see later).
+
+For use cases that require stickiness beyond the 1 hour limit, the application is responsible for sending another
+sticky event to make it happen.
+The `sticky` key is not protected from redaction. A redacted sticky event is the same
+as a normal event.
+
+Note: this new top-level `sticky` object is added to the [`ClientEvent` format](https://spec.matrix.org/v1.16/client-server-api/#room-event-format)
 and the [`Persistent Data Unit`](https://spec.matrix.org/v1.16/rooms/v12/#event-format-1) for each room version.
 
 ```json
