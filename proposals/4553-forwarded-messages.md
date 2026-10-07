@@ -133,29 +133,29 @@ The recommended `format` is `org.matrix.custom.html`. When both `sender` and the
 available, the recommended `formatted_body` is:
 
 ```html
-<strong>Forwarded from <a href="{sender permalink}">{sender}</a> - <a href="{event permalink}">view original message</a></strong><blockquote>{original HTML}</blockquote>
+<strong>Forwarded from <a href="{sender permalink}">{sender}</a> - <a href="{event permalink}">view original message</a></strong><br><blockquote>{original HTML}</blockquote>
 ```
 
-The `<blockquote>` is only included under the same condition as the second line of `body`. As in `body`, omit the
+The `<br>` and `<blockquote>` are only included under the same condition as the second line of `body`. As in `body`, omit the
 sender link if `sender` is absent and omit the event link if either `room_id` or `event_id` is absent. Use
 `Forwarded message` when `sender` is absent.
 
 With no `sender`, but with `room_id` and `event_id`:
 
 ```html
-<strong>Forwarded message - <a href="{event permalink}">view original message</a></strong><blockquote>{original HTML}</blockquote>
+<strong>Forwarded message - <a href="{event permalink}">view original message</a></strong><br><blockquote>{original HTML}</blockquote>
 ```
 
 With `sender`, but without either `room_id` or `event_id`:
 
 ```html
-<strong>Forwarded from <a href="{sender permalink}">{sender}</a></strong><blockquote>{original HTML}</blockquote>
+<strong>Forwarded from <a href="{sender permalink}">{sender}</a></strong><br><blockquote>{original HTML}</blockquote>
 ```
 
 With none of those three fields:
 
 ```html
-<strong>Forwarded message</strong><blockquote>{original HTML}</blockquote>
+<strong>Forwarded message</strong><br><blockquote>{original HTML}</blockquote>
 ```
 
 `{sender permalink}` is a matrix.to link to `m.forwarded.sender`, and `{event permalink}` is the link used in `body`.
@@ -172,7 +172,7 @@ A forwarded text message:
   "msgtype": "m.text",
   "body": "Forwarded from @alice:example.org - view original message: https://matrix.to/#/!source%3Aexample.org/%24original%3Aexample.org?via=example.org\nMeeting starts at noon.",
   "format": "org.matrix.custom.html",
-  "formatted_body": "<strong>Forwarded from <a href=\"https://matrix.to/#/%40alice%3Aexample.org\">@alice:example.org</a> - <a href=\"https://matrix.to/#/!source%3Aexample.org/%24original%3Aexample.org?via=example.org\">view original message</a></strong><blockquote><p>Meeting starts at noon.</p></blockquote>",
+  "formatted_body": "<strong>Forwarded from <a href=\"https://matrix.to/#/%40alice%3Aexample.org\">@alice:example.org</a> - <a href=\"https://matrix.to/#/!source%3Aexample.org/%24original%3Aexample.org?via=example.org\">view original message</a></strong><br><blockquote><p>Meeting starts at noon.</p></blockquote>",
   "m.mentions": {},
   "m.forwarded": {
     "event_id": "$original:example.org",
@@ -196,7 +196,7 @@ A forwarded text message with only the required `m.forwarded.content`:
   "msgtype": "m.text",
   "body": "Forwarded message\nMeeting starts at noon.",
   "format": "org.matrix.custom.html",
-  "formatted_body": "<strong>Forwarded message</strong><blockquote><p>Meeting starts at noon.</p></blockquote>",
+  "formatted_body": "<strong>Forwarded message</strong><br><blockquote><p>Meeting starts at noon.</p></blockquote>",
   "m.mentions": {},
   "m.forwarded": {
     "content": {
@@ -216,7 +216,7 @@ A forwarded emote, originally `/me waves` from Alice:
   "msgtype": "m.text",
   "body": "Forwarded from @alice:example.org - view original message: https://matrix.to/#/!source%3Aexample.org/%24emote%3Aexample.org?via=example.org\nAlice waves",
   "format": "org.matrix.custom.html",
-  "formatted_body": "<strong>Forwarded from <a href=\"https://matrix.to/#/%40alice%3Aexample.org\">@alice:example.org</a> - <a href=\"https://matrix.to/#/!source%3Aexample.org/%24emote%3Aexample.org?via=example.org\">view original message</a></strong><blockquote><em><strong><a href=\"https://matrix.to/#/%40alice%3Aexample.org\">Alice</a></strong> waves</em></blockquote>",
+  "formatted_body": "<strong>Forwarded from <a href=\"https://matrix.to/#/%40alice%3Aexample.org\">@alice:example.org</a> - <a href=\"https://matrix.to/#/!source%3Aexample.org/%24emote%3Aexample.org?via=example.org\">view original message</a></strong><br><blockquote><em><strong><a href=\"https://matrix.to/#/%40alice%3Aexample.org\">Alice</a></strong> waves</em></blockquote>",
   "m.mentions": {},
   "m.forwarded": {
     "event_id": "$emote:example.org",
@@ -238,7 +238,7 @@ A forwarded emote with no original sender metadata:
   "msgtype": "m.text",
   "body": "Forwarded message\nSender waves",
   "format": "org.matrix.custom.html",
-  "formatted_body": "<strong>Forwarded message</strong><blockquote><em><strong>Sender</strong> waves</em></blockquote>",
+  "formatted_body": "<strong>Forwarded message</strong><br><blockquote><em><strong>Sender</strong> waves</em></blockquote>",
   "m.mentions": {},
   "m.forwarded": {
     "content": {
