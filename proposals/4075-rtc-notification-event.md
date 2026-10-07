@@ -33,7 +33,7 @@ The schema of `m.rtc.invite` is as follows:
   of users in the room or the entire room. One of the two options MUST be used. An `m.mentions`
   object with both `room` missing or set to false and `user_ids` missing or empty makes the
   `m.rtc.invite` event invalid.
-- `sticky_key` (required, string): The event's sticky key as per [MSC4354]. MUST be equal to `slot_id`.
+- `sticky_key` (required, string): The event's sticky key as per [the addendum of MSC4354](https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/persist-edu/proposals/4354-sticky-events.md#implementing-an-ephemeral-map). MUST be equal to `slot_id`.
   This ensures that receivers only maintain one active invite per slot and sender.
 
 ```json5
