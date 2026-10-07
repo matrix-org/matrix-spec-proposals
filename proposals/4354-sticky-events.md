@@ -236,7 +236,8 @@ As unexpired sticky events are sent to clients regardless of the timeline limit,
 that other room participants cannot send large volumes of sticky events.
 
 Servers MAY rate limit sticky events received over federation.
-As a suggested mechanism, servers MAY choose to persist, including deferred persistence, the sticky events but wait a while before delivering them to clients.
+As a suggested mechanism, servers MAY choose to delay the persistence of the events,
+or persist the sticky events but delay delivering them to clients.
 
 For cases of extreme load, servers can use any normal load-shedding mechanisms, such as responding to `/send` with non-`200 OK`
 response codes to cause the sender to back off.
