@@ -332,6 +332,11 @@ as soft-failed or not.
 
 In other words, there's no guarantee that all clients in a room will be sent a given event.
 
+### 'Flickering'
+
+[As discussed on the MSC](https://github.com/matrix-org/matrix-spec-proposals/pull/4354#discussion_r2413966087),
+The lack of atomicity in `/send` means clients may 'flicker' RTC member state (update to old values, then immediately to newer values).
+This happens today too with state events, but less often.
 
 ## Alternatives
 
