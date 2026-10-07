@@ -103,6 +103,10 @@ absent, the sender SHOULD put a generic actor label, such as "Sender", before th
 `formatted_body`, without linking the label to a user. For example, an emote with `body` set to `waves` becomes
 `Sender waves`. `m.forwarded.content` keeps `m.emote`.
 
+So that the fallback still reads as an emote, clients MAY wish to style it the way clients commonly render one in
+`formatted_body`: the actor in bold, and the whole emote in italics. The quoted HTML is then
+`<em><strong><a href="{sender permalink}">{display name}</a></strong> {original HTML}</em>`.
+
 #### Plain text
 
 When both `sender` and the original event's permalink are available, the recommended top-level `body` is:
@@ -212,7 +216,7 @@ A forwarded emote, originally `/me waves` from Alice:
   "msgtype": "m.text",
   "body": "Forwarded from @alice:example.org - view original message: https://matrix.to/#/!source%3Aexample.org/%24emote%3Aexample.org?via=example.org\nAlice waves",
   "format": "org.matrix.custom.html",
-  "formatted_body": "<strong>Forwarded from <a href=\"https://matrix.to/#/%40alice%3Aexample.org\">@alice:example.org</a> - <a href=\"https://matrix.to/#/!source%3Aexample.org/%24emote%3Aexample.org?via=example.org\">view original message</a></strong><blockquote><a href=\"https://matrix.to/#/%40alice%3Aexample.org\">Alice</a> waves</blockquote>",
+  "formatted_body": "<strong>Forwarded from <a href=\"https://matrix.to/#/%40alice%3Aexample.org\">@alice:example.org</a> - <a href=\"https://matrix.to/#/!source%3Aexample.org/%24emote%3Aexample.org?via=example.org\">view original message</a></strong><blockquote><em><strong><a href=\"https://matrix.to/#/%40alice%3Aexample.org\">Alice</a></strong> waves</em></blockquote>",
   "m.mentions": {},
   "m.forwarded": {
     "event_id": "$emote:example.org",
@@ -234,7 +238,7 @@ A forwarded emote with no original sender metadata:
   "msgtype": "m.text",
   "body": "Forwarded message\nSender waves",
   "format": "org.matrix.custom.html",
-  "formatted_body": "<strong>Forwarded message</strong><blockquote>Sender waves</blockquote>",
+  "formatted_body": "<strong>Forwarded message</strong><blockquote><em><strong>Sender</strong> waves</em></blockquote>",
   "m.mentions": {},
   "m.forwarded": {
     "content": {
