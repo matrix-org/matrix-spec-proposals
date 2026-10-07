@@ -195,7 +195,7 @@ From the client's point of view, this relative expiry timestamp is authoritative
 The server MUST have already applied the 1 hour bounded sticky duration; essentially, this timestamp MUST
 agree with when the server will consider the event to have lost its stickiness.
 When the sticky event is expired (and thus no longer considered a sticky event), the `sticky_duration_remaining_ms`
-field MUST be omitted.
+field MUST be omitted. (Servers should take care to not emit a zero or negative `sticky_duration_remaining_ms`.)
 
 When the user joins a room, the server MUST include all unexpired sticky events for that room in their subsequent
 sync response(s). The server MAY exceed the suggested 100 sticky event limit to do this, or MAY spread these
