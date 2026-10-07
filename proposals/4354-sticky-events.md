@@ -122,7 +122,7 @@ whereas the purpose of delayed events is to affect the send time (and thus start
 
 NOTE: The extension for MSC4186 Sliding Sync has been split out to [MSC4480: Sliding Sync Extension: Sticky Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4480).
 
-#### Current `/sync`
+#### `/v3/sync`
 
 A new `rooms.join.{roomId}.sticky.events` section is introduced in the `/sync` response,
 containing unexpired sticky events in the room occurring before the first event in the timeline section, as follows:
