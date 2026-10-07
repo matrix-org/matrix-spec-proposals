@@ -485,7 +485,7 @@ Note that the unstable identifier for invite events uses `rtc.notification` rath
 to an earlier iteration of this proposal having been implemented first. Moreover, decline events were
 originally specified in [MSC4310] and, therefore, use that MSC number in their unstable identifier.
 
-[MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
+[MSC4310]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
 
 ## Dependencies
 
