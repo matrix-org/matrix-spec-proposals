@@ -23,66 +23,23 @@ clients will receive profile data in roughly the following ways:
   * Updates to profile fields.
   * When lazy loading, full profiles if the user has events in the sync timeline.
 
-What is not covered by profile updates via sync streams is the following situation:
-
-* Alice, on a lazy loading client, syncs
-* Alice joins a room
-* Alice does a lazy loading incremental sync
-
-In this situation, Alice would receive the full profiles of any users who had timeline events in the
-lazy loading sync response. Alice's client would not receive profile information regarding users in
-the joined room that the client didn't know about before, unless those users had events in the timeline.
+There may be situations where the client does not receive profiles from the homeserver for users it
+has information about. This may be for example when a user joins a room, and the room membership count
+is too high for the homeserver to include all the full profiles in the sync response. 
 
 ## Proposal
 
-This MSC proposes two new endpoints.
-
-Just as we already have a `GET /_matrix/client/v3/rooms/{roomId}/members` to paginate through room members,
-a new endpoint `GET /_matrix/client/v3/rooms/{roomId}/profiles` would allow paginating through profiles
-of a room.
-
-Additionally, as clients may need to efficiently fetch certain profiles across multiple rooms, a new
-endpoint `POST /_matrix/client/v3/profiles/query` is suggested for this purpose.
-
-These endpoints would help clients efficiently fetch profiles for things like the room members list,
-when operating in lazy loading mode, for example to show user status of room members.
+This MSC proposes a new endpoint, `POST /_matrix/client/v3/profiles/query`, to help clients fill in
+their profile cache for users they have discovered, but have not yet received profile information about.
 
 ### Client-Server API Changes
-
-#### Fetch room profiles
-
-- **Endpoint**: `GET /_matrix/client/v3/rooms/{roomId}/profiles`
-- **Description**: Retrieve room member user profiles.
-- **Pagination**: *Yes. TODO what mechanism?*
-- **Parameters**:
-  - `fields` - (Optional) URL encoded JSON list of fields to include in the response. If not
-    given, all profile fields will be returned.
-
-    `GET /_matrix/client/v3/rooms/{roomId}/profiles?fields=%5B%22m.status%22%2C%22displayname%22%5D`
-- **Response**:
-
-  ```json
-  {
-    "@alice:example.com": {
-      "displayname": "Alice",
-      "m.status": {
-        "emoji": "💬",
-        "text": "In a meeting"
-      }
-    },
-    "@bob:domain.tld": {
-      "displayname": "Bob"
-    }
-  }
-  ```
-
-TODO: error codes
 
 #### Query profiles
 
 - **Endpoint**: `POST /_matrix/client/v3/profiles/query`
 - **Description**: Query a list of profiles from the server.
 - **Pagination**: No
+- **Authenticated**: Yes
 - **Request body**: Request body should contain a list of profiles, and optionally fields, to query.
 
   * `users` - (Required) List of user IDs to query for. The maximum amount of profiles the homeserver should
@@ -120,34 +77,38 @@ TODO: error codes
     }
   }
   ```
+- **Error codes**:
 
-The homeserver MUST check that the user has access to view the profile and/or profile
-fields. While at the time of writing this MSC profile fields are considered public
-information, this may change with future MSC.
-
-TODO: error codes
+  * 400 - Invalid user ID in users list, or missing user list
 
 ### Homeserver implementation details
 
 Fetching profiles via the new endpoints should never trigger lookups to fetch profiles from other
 homeservers. The response should be calculated from known profiles locally. It should be assumed that
 remote servers push profile changes over, so they would already be available
-(see [MSC4259](https://github.com/matrix-org/matrix-spec-proposals/pull/4259) as one possibility).
+(see [MSC4259](https://github.com/matrix-org/matrix-spec-proposals/pull/4259) as one possibility). Until then, homeservers should ignore requests for remote profiles.
+
+The homeserver MUST check that the user has access to view the profile and/or profile
+fields. While at the time of writing this MSC profile fields are considered public
+information, this may change with future MSCs.
+
+The homeserver SHOULD limit the amount of profiles returned to 100 profiles.
+
+Any profile lookup rate limits or other visibility constraints should be applied to this endpoint as well.
 
 ## Potential issues
 
-TBD
+None known as of writing.
 
 ## Alternatives
 
 ### Provide full profiles in sync based on the user joining a room
 
 It would be possible to solve missing profiles in clients for users joining new rooms in lazy loading mode
-by just delivering all the room member profiles to the client every time the syncing user joins a new room.
-This solution is not very elegant and would potentially cause a massive amount of traffic to clients, when
-the user joins a new large room. This solution does not give the control to the client on what users
-profiles they want to fetch. It also doesn't cover for any other cases there might be in the future for
-"I want to fetch all the profiles of a particular room". This kind of use case might not even involve syncing.
+by just delivering all the room member profiles to the client every time the syncing user joins a new room,
+regardless of room membership count. This solution is not very elegant and would potentially cause a massive
+amount of traffic to clients, when the user joins a new large room. In practice homeservers will need to restrict
+the amount of profiles delivered this way via the sync response. 
 
 ### Extend the room members endpoint to return profiles
 
@@ -163,7 +124,7 @@ outside of syncing clients.
 
 Extending `GET /_matrix/client/v3/rooms/{roomId}/joined_members` to return more profile information
 than just `display_name` and `avatar_url`, would allow for clients to use this endpoint to fetch
-profile information. However, this endpoint is not paginated, and thus could produce extremely large
+profile information. However, this endpoint is not paginated or limited, and thus could produce extremely large
 responses for large rooms, as the data stored in profiles may outweigh the current display names
 and avatar urls by many factors.
 
@@ -173,12 +134,11 @@ None foreseen at this moment.
 
 ## Unstable prefix
 
-While this MSC is unstable, the endpoints are:
+While this MSC is unstable, the endpoint is:
 
-* `GET /_matrix/client/unstable/org.matrix.msc4536/rooms/{roomId}/profiles`
 * `POST /_matrix/client/unstable/org.matrix.msc4536/profiles/query`
 
-Support for these endpoints should be advertised via the `org.matrix.msc4536` flag in `/_matrix/client/versions`.
+Support for this endpoint should be advertised via the `org.matrix.msc4536` flag in `/_matrix/client/versions`.
 
 ## Dependencies
 
