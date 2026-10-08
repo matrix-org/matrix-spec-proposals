@@ -70,11 +70,13 @@ and the [`Persistent Data Unit`](https://spec.matrix.org/v1.16/rooms/v12/#event-
 }
 ```
 
-This key can be set by clients in the CS API by a new query parameter `sticky_duration_ms`, which is
-added to the following endpoints:
+This key can be set by clients in the CS API by a new parameter `sticky_duration_ms`, which is
+added to following endpoints:
 
-* [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
-* `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` as defined in [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
+* [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid),
+  as a query parameter in the request URI
+* `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` as defined in [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140),
+  as a field in the request body that is mutually exclusive with the `state_key` field
 
 To calculate if any sticky event is still sticky:
 
