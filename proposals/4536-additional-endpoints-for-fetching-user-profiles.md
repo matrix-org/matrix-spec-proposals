@@ -29,14 +29,14 @@ is too high for the homeserver to include all the full profiles in the sync resp
 
 ## Proposal
 
-This MSC proposes a new endpoint, `POST /_matrix/client/v3/profiles/query`, to help clients fill in
+This MSC proposes a new endpoint, `POST /_matrix/client/v3/profile/query`, to help clients fill in
 their profile cache for users they have discovered, but have not yet received profile information about.
 
 ### Client-Server API Changes
 
 #### Query profiles
 
-- **Endpoint**: `POST /_matrix/client/v3/profiles/query`
+- **Endpoint**: `POST /_matrix/client/v3/profile/query`
 - **Description**: Query a list of profiles from the server.
 - **Pagination**: No
 - **Authenticated**: Yes
@@ -136,7 +136,7 @@ None foreseen at this moment.
 
 While this MSC is unstable, the endpoint is:
 
-* `POST /_matrix/client/unstable/org.matrix.msc4536/profiles/query`
+* `POST /_matrix/client/unstable/org.matrix.msc4536/profile/query`
 
 Support for this endpoint should be advertised via the `org.matrix.msc4536` flag in `/_matrix/client/versions`.
 
