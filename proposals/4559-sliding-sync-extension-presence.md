@@ -1,4 +1,4 @@
-# MSCXXXX: Sliding Sync Extensions: Presence
+# MSC4559: Sliding Sync Extensions: Presence
 
 [MSC4186: Simplified Sliding Sync][MSC4186] only includes core room data in the sync response. Other data, such as
 presence, comes from "extensions", which clients opt into individually using the `extensions` field of the sync request.
@@ -213,13 +213,13 @@ or more local users.
 
 | Stable identifier         | Purpose                                                            | Unstable identifier                                          |
 | ------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
-| `presence`                | The extension key for [MSC4186]'s `POST /_matrix/client/v4/sync`   | `org.continuwuity.presence_v2.mscXXXX.presence`              |
+| `presence`                | The extension key for [MSC4186]'s `POST /_matrix/client/v4/sync`   | `org.continuwuity.presence_v2.msc4559.presence`              |
 
-Servers may advertise support for this extension by listing `org.continuwuity.presence_v2.mscXXXX` in the
+Servers may advertise support for this extension by listing `org.continuwuity.presence_v2.msc4559` in the
 `unstable_features` section of the response to [`GET /_matrix/client/versions`].
 
 Once this proposal completes FCP, servers may advertise support for the stable identifiers by listing
-`org.continuwuity.presence_v2.mscXXXX.stable` in `unstable_features`; clients may use this while they are waiting for
+`org.continuwuity.presence_v2.msc4559.stable` in `unstable_features`; clients may use this while they are waiting for
 the server to adopt a version of the spec that includes it.
 
 [MSC4186]: https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4186-simplified-sliding-sync.md
