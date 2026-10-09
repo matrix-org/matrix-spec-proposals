@@ -13,8 +13,7 @@ following request extension shape:
 ``` js
 {
   "enabled": true,
-  "limit": 100, // optional (default 100, min 1): max number of events to return, server can override to a lower number
-  "since": "some_token" // optional: can be omitted on initial sync / when extension is only just enabled
+  "limit": 100 // optional (default 100, min 1): max number of events to return, server can override to a lower number
 }
 ```
 
@@ -22,7 +21,6 @@ and, when enabled, the following response extension shape:
 
 ``` js
 {
-  "next_batch": "some_token", // REQUIRED
   "rooms": {
       "!726s6s6q:example.com": {
           "events": [{
@@ -74,28 +72,19 @@ case, depending on implementation preference.
 
 Because sticky events and to-device messages are alike in the way that they should be *reliably*
 delivered to clients, without any gaps in the pagination, they follow the [MSC4538: Sliding Sync
-Extension: To-Device messages] model for pagination in sliding sync.
+Extension: To-Device messages] model for pagination in sliding sync, but without introducing
+an additional per-extension pagination token.
 
 In short: when there are too many sticky events to return in one response, the server returns a
 limited number of the oldest sticky events that have not yet been delivered.
 
-At every response, the server MUST return a `next_batch` token which the client MUST persist and send as
-a `since` token in the next Sliding Sync request (in the extension), if the client wishes to advance
-in the sticky events stream.
-
-Another concern is a potential problem that we are calling ‘flickering’. This is where due to
-oldest-first pagination, a client might briefly display stale data before near-immediately updating
-it with later data, despite that later data already having been ‘available’ on the server.
-
-With that said, given this is an edge case that requires a substantial number of sticky events to
-trigger, we don’t currently consider it worthwhile to add complexity to avoid.
-
-If flickering is a concern, clients MAY wait for the sticky events stream to be exhausted
-before triggering their effects.
+The server tracks this implicitly using the request-/response-wide `pos` token.
 
 ## Potential issues
 
 Nothing beyond what’s included in [MSC4354].
+
+Notably, the 'flickering' concern from [MSC4354] applies equally to Sliding Sync as it does to v3 Sync.
 
 ## Alternatives
 
