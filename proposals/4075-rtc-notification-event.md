@@ -380,6 +380,12 @@ when using this transport. This might not be true for future MatrixRTC transport
 [MSC4028]: https://github.com/matrix-org/matrix-spec-proposals/pull/4028
 [MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
 
+### Invalidation of existing call notification settings
+
+Users might already have specific notification settings for calls via the existing `.m.rule.call`
+push rule. These will not automatically apply to MatrixRTC invites which could lead to confusion.
+Servers may consider migrating push rules for their existing users.
+
 ## Alternatives
 
 ### Inferring notifications from membership events
