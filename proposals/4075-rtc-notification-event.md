@@ -27,7 +27,7 @@ The schema of `m.rtc.invite` is as follows:
   handed out.
 - `sender_ts` (required, integer): The timestamp (in milliseconds since the Unix epoch) when the sending
   client created the event.
-- `lifetime` (required, integer): The time in milliseconds that the invite is valid for. MUST be
+- `lifetime` (required, integer): The time in milliseconds that the invite is active for. MUST be
   non-negative and SHOULD NOT be larger than 2 minutes. The RECOMMENDED value is 90 seconds.
 - `m.mentions`: (required, object): A [mentions] object to direct the invite at either a set
   of users in the room or the entire room. One of the two options MUST be used. An `m.mentions`
@@ -87,7 +87,7 @@ Additionally, both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted whe
 
 ### Sending invites
 
-A sending client SHOULD only consider an issued invite valid as long as all of the following conditions
+A sending client SHOULD only consider an issued invite active as long as all of the following conditions
 apply:
 
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the
@@ -99,7 +99,7 @@ apply:
 - There are targeted room members who have neither accepted the invite (by sending an `m.rtc.member`
   event) nor declined it (by sending an `m.rtc.decline` event).
 
-To prevent duplicate invitations, senders SHOULD NOT emit invites when another valid invite exists
+To prevent duplicate invitations, senders SHOULD NOT emit invites when another active invite exists
 for the same slot and the same set of targeted users. Additionally, clients MAY emit invites automatically
 when joining a slot but SHOULD only do so when no other user is currently joined to the slot.
 
@@ -118,7 +118,7 @@ section) or expires.
 ### Receiving invites
 
 In line with the expected behaviour of sending clients that was outlined in the previous section,
-a receiving client SHOULD only consider an invite valid as long as all of the following conditions
+a receiving client SHOULD only consider an invite active as long as all of the following conditions
 apply:
 
 - The `sender` is not the same user as the recipient.
@@ -147,7 +147,7 @@ options:
    per [MSC4143]. The invite is deactivated due to the presence of a sticky join event.
 1. It can decline the invite by sending an `m.rtc.decline` event. Again, the invite is deactivated
    due to the presence of a sticky decline event.
-1. It can ignore the event by doing nothing. The invite will remain valid until either
+1. It can ignore the event by doing nothing. The invite will remain active until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
 
 Again, how exactly receiving clients render invites in their UI is left as an implementation
@@ -165,20 +165,20 @@ video calls.
 
 ### Exemplary invite flows
 
-To visualise how event stickiness, the rules for invite validity and actions taken on invites
+To visualise how event stickiness, the rules for invite activeness and actions taken on invites
 play together, a few examples are provided below. Note that, as mentioned before, the sticky
 duration of both invite events and events which react to invites SHOULD exceed the invite's
 `lifetime`. Additionally, the sticky duration of a leaving `m.rtc.member` event MUST be large
 enough to replace the corresponding joining member event in the sticky map as per [MSC4354].
 As a result, joins, leaves and declines always exceed the invite's `lifetime` which ensures
-that invalidated invites cannot be resurrected.
+that deactivated invites cannot be reactivated.
 
 All examples below use the following legend:
 
 ```
 [===]: Event is the current one in the sticky map
 [xxx]: Event is not the current one anymore
-[###]: Invite is considered valid
+[###]: Invite is considered active
 ```
 
 #### Example 1: User accepts invite, then leaves again
@@ -188,7 +188,7 @@ m.rtc.invite          [==========|==========|==========]
 m.rtc.member (join)   |          [==========|xxxxxxxxxxxxxxxxxxxxx]
 m.rtc.member (leave)  |          |          [================================]
                       |          |          |
-Invite valid          [##########]          |
+Invite active         [##########]          |
                       |          |          |
                       Invite     Invite     Invitee
                       sent       accepted   leaves
@@ -200,7 +200,7 @@ Invite valid          [##########]          |
 m.rtc.invite          [==========|=====================]
 m.rtc.decline.        |          [================================]
                       |          |
-Invite valid          [##########]
+Invite active         [##########]
                       |          |
                       Invite     Invite
                       sent       declined
@@ -213,7 +213,7 @@ m.rtc.invite                     [==========|=====================]
 m.rtc.member (join)   [==========|==========|xxxxxxxxxx]
 m.rtc.member (leave)  |          |          [================================]
                       |          |          |
-Invite valid          |          |          |
+Invite active         |          |          |
                       |          |          |
                       Slot       Invite     Invitee
                       joined     sent       leaves
