@@ -9,8 +9,9 @@ for clients that don't support this MSC, without affecting what supporting clien
 
 ## Proposal
 
-This MSC only covers `m.room.message` events. Forwarding other event types, such as stickers, polls, reactions, or
-state events, is out of scope.
+This MSC covers [`m.room.message`](https://spec.matrix.org/v1.19/client-server-api/#mroommessage) and
+[`m.sticker`](https://spec.matrix.org/v1.19/client-server-api/#msticker) events.
+Forwarding other event types, such as polls, reactions, or state events, is out of scope.
 
 ### `m.forwarded`
 
@@ -35,7 +36,7 @@ original, and `m.forwarded` describes it.
 ### `m.forwarded.content`
 
 `m.forwarded` MUST also include `content`, the content of the original message. `m.forwarded.content` is valid if it
-is an object with a string `msgtype` and a string `body`.
+meets the content requirements for the enclosing event's type, using the decrypted type if the event is encrypted.
 
 If the selected event is not a forward, or is a forward without a valid `m.forwarded.content`, the sender builds
 `content` from the selected event's content, decrypted if the event was encrypted:
@@ -47,6 +48,9 @@ If the selected event is not a forward, or is a forward without a valid `m.forwa
 The sender MUST NOT modify `m.forwarded.content` in any other way.
 
 ### Top-level content
+
+The sender MUST preserve the selected event's type, decrypted if encrypted. In an encrypted destination room, this
+is the type inside the encrypted payload.
 
 The top-level content is a copy of `m.forwarded.content` without `m.relates_to`, `m.mentions`, `m.new_content`, and
 `m.forwarded`, with the fallback below applied and the new `m.forwarded` added.
@@ -83,10 +87,12 @@ forward.
 Supporting clients render `m.forwarded.content` and never parse the fallback, so the format below is a
 recommendation. Senders MAY deviate from it, for example to localise the wording.
 
-The sender SHOULD add a fallback when the message type's `body` holds message text, or supports
+For `m.room.message`, the sender SHOULD add a fallback when the message type's `body` holds message text, or supports
 [media captions](https://spec.matrix.org/v1.19/client-server-api/#media-captions). Message types whose `body` is
 something else, such as the description of an `m.location`, and message types the sender does not recognise, SHOULD
 keep `body`, `format`, and `formatted_body` as in `m.forwarded.content`.
+
+For `m.sticker`, the sender SHOULD keep the original `body` and SHOULD NOT add the text or HTML fallback below.
 
 In this section, "the source" means `m.forwarded.content`.
 
@@ -274,10 +280,38 @@ A forwarded file without a caption. The source `body` was a filename, so it move
 }
 ```
 
+A forwarded sticker, sent as an `m.sticker` event:
+
+```json
+{
+  "body": "A waving cat",
+  "url": "mxc://example.org/waving-cat",
+  "info": {
+    "mimetype": "image/png",
+    "thumbnail_url": "mxc://example.org/waving-cat"
+  },
+  "m.mentions": {},
+  "m.forwarded": {
+    "event_id": "$sticker:example.org",
+    "room_id": "!source:example.org",
+    "sender": "@alice:example.org",
+    "origin_server_ts": 1722451200000,
+    "content": {
+      "body": "A waving cat",
+      "url": "mxc://example.org/waving-cat",
+      "info": {
+        "mimetype": "image/png",
+        "thumbnail_url": "mxc://example.org/waving-cat"
+      }
+    }
+  }
+}
+```
+
 ## Potential issues
 
-Message types without a fallback, such as `m.location`, appear as ordinary messages to clients that don't support
-this MSC.
+Messages without a forwarding fallback, such as `m.location` messages and `m.sticker` events, appear without
+forwarding attribution to clients that don't support this MSC.
 
 The event carries the content twice, so senders SHOULD check that it fits within the event size limit before sending.
 
