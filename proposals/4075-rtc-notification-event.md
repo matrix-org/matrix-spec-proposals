@@ -92,11 +92,10 @@ apply:
 
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the
   room where the invite was sent.
-- The `lifetime`, as measured from `sender_ts`, has not elapsed. If `sender_ts` is more than
-  20 seconds later than `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts`
-  instead. This limits the impact of a malicious user faking `sender_ts` to trigger long-lived
-  notifications. Regardless of the basis for measuring, the remaining lifetime MUST be capped
-  at 2 minutes.
+- The `lifetime`, as measured from `sender_ts`, has not elapsed. If `sender_ts` is later than
+  `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts` instead. This limits
+  the impact of a malicious user faking `sender_ts` to trigger long-lived notifications. Regardless
+  of the basis for measuring, the remaining lifetime MUST be capped at 2 minutes.
 - There are targeted room members who have neither accepted the invite (by sending an `m.rtc.member`
   event) nor declined it (by sending an `m.rtc.decline` event).
 
@@ -128,11 +127,10 @@ apply:
   for `sticky_key`).
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the room
   where the invite was received.
-- The `lifetime`, as measured from `sender_ts`, has not elapsed. If `sender_ts` is more than
-  20 seconds ahead of `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts`
-  instead. This limits the impact of a malicious user faking `sender_ts` to trigger long-lived
-  notifications. Regardless of the basis for measuring, the remaining lifetime MUST be capped
-  at 2 minutes.
+- The `lifetime`, as measured from `sender_ts`, has not elapsed. If `sender_ts` is later than
+  `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts` instead. This limits
+  the impact of a malicious user faking `sender_ts` to trigger long-lived notifications. Regardless
+  of the basis for measuring, the remaining lifetime MUST be capped at 2 minutes.
 - `m.mentions` either has `room` set to `true` (and the sender has sufficient power level to trigger
   a `room` notification at the time the invite is received[^mentions-pl]) or contains the current user
   in `user_ids`.
@@ -445,9 +443,9 @@ to support MatrixRTC themselves.
 
 A malicious client could send invites with a fake `sender_ts` that lies in the future and/or a
 large `lifetime` in an attempt to cause receiving clients to notify or ring their users for extended
-periods of time. This is mitigated by the recommendations given earlier, in particular the maximum
-allowed difference of 20 seconds between `sender_ts` and `origin_server_ts` and the maximum allowed
-`lifetime` of 2 minutes.
+periods of time. This is mitigated by the recommendations given earlier, in particular measuring the
+lifetime from `sender_ts` only if is before `origin_server_ts` and the maximum allowed `lifetime` of
+2 minutes.
 
 Similarly, a malicious server could fake `origin_server_ts` to be in the future to cause long-lived
 notifications. Again, the client-side 2 minute cap for the remaining lifetime acts as a mitigation.
@@ -518,6 +516,7 @@ implementation. As of writing, the full list of such implementation differences 
 - `org.matrix.msc4075.rtc.notification` events contain an `m.reference` relation to the sending user's
   RTC member event that has been removed from the proposal. Instead, receiving clients can look up
   membership events via the slot.
+- The value of `sender_ts` is allowed to be up to 20 seconds later than `origin_server_ts`.
 
 [^mentions-pl]: Note that this matches how `room` mentions are already handled in practice today even
                 though the spec doesn't make it explicit yet (see https://github.com/matrix-org/matrix-spec/issues/2443).
