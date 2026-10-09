@@ -283,10 +283,8 @@ containing the specified device ID):
 {
     "type": "m.login.protocol",
     "protocol": "device_authorization_grant",
-    "device_authorization_grant": {
-        "verification_uri": "https://auth-oidc.lab.element.dev/link",
-        "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456"
-    },
+    "verification_uri": "https://auth-oidc.lab.element.dev/link",
+    "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456",
     "device_id": "ABCDEFGH"
 }
 ```
@@ -336,13 +334,13 @@ sequenceDiagram
         N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:client:api:*+urn:matrix:client:device:ABCDEFGH...
         HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
-        N->>HS: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
+        N->>HS: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ..., "device_id": "ABCDEFGH"})
 
     deactivate N
     end
 
     rect rgba(0,255,0, 0.1)
-        HS->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
+        HS->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ..., "device_id": "ABCDEFGH"}
     end
 
     rect rgba(0,255,0, 0.1)
@@ -396,13 +394,13 @@ sequenceDiagram
         N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:client:api:*+urn:matrix:client:device:ABCDEFGH...
         HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
-        N->>HS: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
+        N->>HS: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ..., "device_id": "ABCDEFGH"})
 
     deactivate N
     end
 
     rect rgba(0,255,0, 0.1)
-        HS->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
+        HS->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ..., "device_id": "ABCDEFGH"}
     end
 
     rect rgba(0,255,0, 0.1)
@@ -753,13 +751,16 @@ Fields:
 |--- |--- |--- |
 |`type`|required `string`|`m.login.protocol`|
 |`protocol`|required `string`|One of: `device_authorization_grant`|
-|`device_authorization_grant`|Required `object` where `protocol` is `device_authorization_grant`|These values are taken from the RFC8628 Device Authorization Response that the new device received from the homeserver: <table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> </tr> <tr> <td><code>verification_uri</code> </td> <td>required <code>string</code> </td> </tr> <tr> <td><code>verification_uri_complete</code> </td> <td><code>string</code> </td> </tr></table>|
 |`device_id`|required `string`|The device ID that the new device will use|
+|`verification_uri`|required `string` where `protocol` is `device_authorization_grant`|The `verification_uri` from the RFC8628 Device Authorization Response that the new device received from the homeserver|
+|`verification_uri_complete`|`string` where `protocol` is `device_authorization_grant`|The `verification_uri_complete` from the RFC8628 Device Authorization Response that the new device received from the homeserver, if present|
 
-A future MSC adding a login protocol would define a new `protocol` value and a matching field named after it for its
-protocol-specific data. The `protocol` MUST be one offered in `m.login.protocols`; otherwise the existing device responds
-with an `m.login.failure` with reason `unsupported_protocol`, as described in
-[step 4](#4-existing-device-checks-protocol-and-device_id-and-accepts-protocol-to-use).
+The fields that are present, other than `type`, `protocol` and `device_id`, depend on the value of `protocol`. This
+follows the same pattern as other Matrix structures that are keyed on a discriminator field, such as `msgtype` in
+`m.room.message` or `type` in a User-Interactive Authentication dict. A future MSC adding a login protocol would define a
+new `protocol` value and the protocol-specific fields that accompany it. The `protocol` MUST be one offered in
+`m.login.protocols`; otherwise the existing device responds with an `m.login.failure` with reason `unsupported_protocol`,
+as described in [step 4](#4-existing-device-checks-protocol-and-device_id-and-accepts-protocol-to-use).
 
 Example:
 
@@ -767,10 +768,8 @@ Example:
 {
     "type": "m.login.protocol",
     "protocol": "device_authorization_grant",
-    "device_authorization_grant": {
-        "verification_uri_complete": "https://id.matrix.org/device/abcde",
-        "verification_uri": "..."
-    },
+    "verification_uri": "...",
+    "verification_uri_complete": "https://id.matrix.org/device/abcde",
     "device_id": "ABCDEFGH"
 }
 ```
