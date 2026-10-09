@@ -133,8 +133,9 @@ apply:
   instead. This limits the impact of a malicious user faking `sender_ts` to trigger long-lived
   notifications. Regardless of the basis for measuring, the remaining lifetime MUST be capped
   at 2 minutes.
-- `m.mentions` either has `room` set to `true` (and the sender had a sufficient power level at the
-  time of sending to trigger a `room` notification) or contains the current user in `user_ids`.
+- `m.mentions` either has `room` set to `true` (and the sender has sufficient power level to trigger
+  a `room` notification at the time the invite is received[^mentions-pl]) or contains the current user
+  in `user_ids`.
 - The user has no `m.rtc.member` event with a membership of `join` for the slot in the ephemeral
   sticky events map.
 - If the user has an `m.rtc.member` event with a membership of `leave` for the slot in the ephemeral
@@ -253,7 +254,8 @@ the list of `user_ids` under `m.mentions`.
 ```
 
 `.m.rule.rtc.invite_for_room` matches `m.rtc.invite` events with the `room` property of `m.mentions`
-set to `true` (provided that the sender has the proper power level to trigger room notifications).
+set to `true` (provided that the sender has the proper power level to trigger room notifications at
+the time the invite is received[^mentions-pl]).
 
 ```json5
 {
@@ -510,6 +512,9 @@ implementation. As of writing, the full list of such implementation differences 
 - `org.matrix.msc4075.rtc.notification` events contain an `m.reference` relation to the sending user's
   RTC member event that has been removed from the proposal. Instead, receiving clients can look up
   membership events via the slot.
+
+[^mentions-pl]: Note that this matches how `room` mentions are already handled in practice today even
+                though the spec doesn't make it explicit yet (see https://github.com/matrix-org/matrix-spec/issues/2443).
 
 [file-level comment]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075/changes#r4026443865
 [matrix-js-sdk]: https://github.com/matrix-org/matrix-js-sdk/
