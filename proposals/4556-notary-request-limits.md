@@ -23,12 +23,8 @@ defining behaviour for errors and rate-limits.
 
 ## Proposal
 
-For [`POST /_matrix/key/v2/query`][spec-qry] specifically, the endpoint becomes rate-limited, and
-to accompany this, optionally authenticated. Servers querying the endpoint SHOULD
-[authenticate the request][s2s-auth], so that notaries can rate-limit based on the server name,
-instead of source IP address.
-
-[s2s-auth]: https://spec.matrix.org/v1.19/server-server-api/#request-authentication
+A new endpoint is introduced: `POST /_matrix/key/v3/query`. Unlike its predecessor, it is
+rate-limited AND authenticated.
 
 Servers MAY wish to rate-limit based on the complexity of received requests, potentially taking into
 account how many requests required contacting origin servers - rather than the rate of requests - as
@@ -38,7 +34,6 @@ And to set baseline expectations for what a notary server can receive, the follo
 are defined on the request:
 
 * Servers MUST NOT ask for more than 4096 unique server names (object keys of `server_keys`).
-* Servers SHOULD NOT ask for more than 4 key IDs per server name.
 * Servers MUST NOT ask for more than 16384 total key IDs per request.
 
 Notary servers MAY reject requests with `413 / M_TOO_LARGE` if they exceed these limits.
@@ -46,12 +41,19 @@ When receiving this error from a notary server, servers MUST NOT retry the reque
 They MAY try another request with a smaller payload size (e.g. asking for half as many keys,
 splitting into two chunks).
 
+Upon receiving a `404 M_UNRECOGNIZED` response from a notary server, a homeserver SHOULD retry the
+same request to the previous version of this endpoint, [`POST /_matrix/key/v2/query`][spec-qry].
+
+Should this proposal be merged, the previous version of this endpoint becomes deprecated. Notary
+servers SHOULD continue to support it as long as it is in the specification, however MAY apply
+mitigation techniques on it to prevent service overload. Some approaches are listed in the
+alternatives section.
+
 ## Potential issues
 
-Servers that contact notary servers may not be aware of these limitations if they are outdated, and
-consequently will not have appropriate handling for the error response, or the rate-limit.
-This is acceptable, as existing implementations simply degrade by backing off from the notary, which
-ultimately achieves the end goal anyway.
+Notary servers are required to continue supporting the v2 query endpoint, which is not allowed to
+refuse large queries, which may impact service availability if appropriate mitigation technologies
+are not implemented.
 
 ## Alternatives
 
@@ -68,15 +70,14 @@ that may return the keys they want).
 
 ## Security considerations
 
-This pull request does not introduce any new security considerations, however it aims to resolve
-some potential problems with the existing system, as outlined in the opening paragraphs.
+Refer to the issue outlined in potential issues - inappropriate rate-limits may cause
+disproportionate strain on the notary server.
 
 ## Unstable prefix
 
-This MSC does not necessitate an unstable prefix, however notary server implementations should
-consider the adoption rate of this proposal before rejecting requests per the limits defined,
-opting to use one of the [alternative approaches](#alternatives) instead when a request exceeds the
-limits.
+| Stable                  | Unstable                                               |
+| ----------------------- | ------------------------------------------------------ |
+| `/_matrix/key/v3/query` | `/_matrix/key/unstable/org.continuwuity.msc4556/query` |
 
 ## Dependencies
 
