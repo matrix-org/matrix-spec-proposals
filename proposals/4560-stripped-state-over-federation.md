@@ -187,13 +187,31 @@ All checks use the room’s current state.
 
 1.  If the requesting server is ACLed from the room, deny.
 2.  If the server has at least one user joined to the room, allow.
-3.  Otherwise, use the [visibility checks for users](#Visibility-checks), treating the server as an unauthenticated
-    user.
+3.  If the room is `restricted`, and the requesting *server* [satisfies the join conditions], allow.
+4.  Otherwise, proceed through the [visibility checks for users](#Visibility-checks), treating the server as an
+    unauthenticated user.
 
-If the server does not pass the checks, a `M_FORBIDDEN` error MUST be returned.
-
+If the server does not pass the checks, an error MUST be returned, which SHOULD be `M_FORBIDDEN`.
 Servers MAY choose to return `M_NOT_FOUND` instead of `M_FORBIDDEN`, as with the visibility checks for users, and with
 the same tradeoff.
+
+[satisfies the join conditions]: #servers-and-join-conditions
+
+### Servers and join conditions
+
+To perform visibility checks for a remote server asking for a `restricted` room's stripped state, the local server
+must determine if the remote server satisfies the room's join conditions. The concept of a server satisfying join
+conditions is unusual, but is necessary to allow remote servers to view `restricted` rooms' stripped state; otherwise
+they would be treated as anonymous users and not allowed to see the state at all. What it means for a server to
+satisfy a join condition depends on the join condition in question, and for some join conditions it may be impossible
+for a server to adequately satisfy them. Generally a server should be seen as satisfying a join condition if
+it could easily puppet one of its users into satisfying the condition.
+
+#### `m.room_membership`
+
+A server satisfies a `m.room_membership` join condition if any of its users are joined to the room listed in the 
+condition.
+
 
 ## Changes to existing endpoints
 
