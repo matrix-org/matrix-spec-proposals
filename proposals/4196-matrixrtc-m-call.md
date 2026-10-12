@@ -24,8 +24,8 @@ in [MSC4075].
 ## Proposal
 
 A new MatrixRTC application type `m.call` is introduced. For now, only a single instance of `m.call`
-per room is supported. This is sufficient for the majority of use cases and avoids the risk of two
-competing slots being opened for the same call when room administrators race.
+per room is supported. This is sufficient for the majority of use cases, and simplifies the process
+of picking a slot for a call if there's only one slot available.
 
 ### Slot event
 
