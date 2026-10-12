@@ -90,7 +90,7 @@ slots, looks as follows:
 
 - `type` (string, required): MUST be `m.call`.
 - `intent` (string): One of `m.audio`, `m.video`. Optionally discloses whether the member intends to
-  join the call with audio only or with audio and video. Clients SHOULD set this field when joining
+  join the call while sending and receiving audio only or with both audio and video. Clients SHOULD set this field when joining
   and update it as they en- or disable their video stream. This gives other members a hint as to whether
   the session presents an audio or video call.
 - `capabilities` (array): Optionally discloses what call related features the client supports. This allows
