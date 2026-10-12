@@ -119,7 +119,7 @@ Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
     "application": {
       "type": "m.call",
       "intent": "m.audio", // I'm connecting as a voice call
-      "capabilities": ["m.render_audio", "m.render_video"], // But I can render video calls, too.
+      "capabilities": ["m.render_audio", "m.render_video"], // But I can render video too.
     },
     "transports": {
       ...
