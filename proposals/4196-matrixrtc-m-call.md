@@ -20,7 +20,6 @@ in [MSC4075].
 [MSC3401]: https://github.com/matrix-org/matrix-spec-proposals/pull/3401
 [MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
 [MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
-[MSC4310]: https://github.com/matrix-org/matrix-spec-proposals/pull/4310
 
 ## Proposal
 
