@@ -819,7 +819,7 @@ the implementation. As of writing, the full list of such implementation differen
     `transports` as the property name in its response.
 - Encryption
   - The body of the `io.element.call.encryption_keys` to-device message exhibits the following differences:
-    - The properties `keys` and `member` are still included redundantly for backwards compatiblity with
+    - The properties `keys` and `member` are still included redundantly for backwards compatibility with
       earlier implementations.
     - The `member` object also includes a `claimed_device_id` property. This is currently required because
       Element Web embeds Element Call as a widget and the widget API does not currently share
