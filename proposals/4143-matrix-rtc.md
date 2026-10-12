@@ -646,6 +646,15 @@ future proposal.
 
 [/messages]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3roomsroomidmessages
 
+### Lack of session identifiers
+
+Having reproducible identifiers for MatrixRTC sessions could be helpful for a number of use cases such
+as billing, debugging, call data records or mapping to bridged calls. However, this proposal deliberately
+doesn't define a session ID scheme since MatrixRTC applications might have quite different concepts of
+session semantics. Future application types are free to introduce identifier schemes as needed. Additionally,
+sessions that are initiated through an `m.rtc.invite` event as per [MSC4075] could use the invite event's ID
+as session identifier.
+
 ### Excessive key traffic
 
 In per-member encryption, keys are rotated and distributed to _all_ members whenever a
