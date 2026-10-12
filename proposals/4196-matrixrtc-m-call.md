@@ -11,7 +11,7 @@ classical 1-on-1 and group calling as well as Discord-style [Voice Channels] (wh
 The application is compatible with the [LiveKit] transport introduced in [MSC4195].
 
 Note that call ringing and notifications are not in scope for this proposal. These are covered
-in [MSC4075] and [MSC4310].
+in [MSC4075].
 
 [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
 [Voice Channels]: https://support.discord.com/hc/en-us/articles/19583625604887-Voice-Channels-FAQs
