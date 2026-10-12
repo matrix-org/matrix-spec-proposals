@@ -103,6 +103,7 @@ slots, looks as follows:
     client is able to also transmit its own audio.
   - `m.render_video`: The client can render video streams. Note that this doesn't necessarily imply that the
     client is able to also transmit its own video.
+  Another example capability in future could be whether a given client is able to consume out-of-band DTMF events or not.
 
 Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
 
