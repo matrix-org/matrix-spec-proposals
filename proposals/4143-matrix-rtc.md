@@ -30,7 +30,7 @@ end-to-end encryption. Applications and transports are treated as generic buildi
 defines how these components are plugged into the system while leaving the introduction of concrete applications
 and transports to other proposals.
 
-As first concrete instances, [MSC4196] proposes a voice and video conferencing application, and
+As first concrete instances, [MSC4196] proposes an application type for voice and video calling and conferencing, and
 [MSC4195] proposes a transport based on the [LiveKit SFU].
 
 [LiveKit SFU]: https://docs.livekit.io/reference/internals/livekit-sfu/
