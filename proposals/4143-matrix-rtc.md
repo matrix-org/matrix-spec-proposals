@@ -663,6 +663,13 @@ exchanged. To mitigate this, a future version of the key exchange mechanism coul
 Rather than rotating the key for all members, this would allow to ratchet the key and send it to the
 new joiner only.
 
+### Bot / bridge disclosure
+
+When bots are used to bridge RTC streams to other networks, this can involve terminating end-to-end
+encryption. This would be helpful to know for other session participants but is not currently possible
+under this proposal. A future proposal my enable this, for instance, by defining a generic self-disclosure
+mechanism for bots or by adding a dedicated entry in the `capabilities` array from [MSC4196].
+
 ## Alternatives
 
 ### Slot constraints
