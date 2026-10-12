@@ -132,6 +132,14 @@ neither `application_type` nor `application_slot_id` can contain the `#` charact
 
 #### Slot lifecycle
 
+Slots exist as a way to let admins configure what MatrixRTC applications are allowed in their rooms,
+while letting unprivileged clients participate in the resulting applications without having to have
+permission to send state events. They also provide a means of resolving races between end-users trying
+to initiate a MatrixRTC application. Since slot IDs are predetermined by the MatrixRTC application,
+(e.g. `m.call#room` for an [MSC4196] voice/video call), multiple end-users trying to initiate that
+application at the same time (e.g. "call glare") automatically converge on the same slot without
+negotiation.
+
 A slot is opened by sending an `m.rtc.slot` state event with `status = "open"`, a valid application
 object and, if needed, a valid encryption object as per the JSON schema above. Any slot that
 doesn't fulfill these requirements MUST be treated as closed. To explicitly close an open slot, the
