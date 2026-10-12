@@ -317,7 +317,11 @@ still cannot access data for non-public rooms, and it is still possible to hide 
 under an invite-only subspace or simply using `m.space.parent` relations only. In addition, exposing hierarchy
 information to spiders could be useful for public communities that want to show prospective joiners their structure.
 
-The ability to query `knock` rooms' stripped state allows slightly more information to be gleaned about the room's users before knocking. The room's creator list is accessible through the `m.room.create` event, and other events include `sender` fields that can reveal users who may have had powerlevels at some point in the room's history. Since this information is also available simply by knocking on the room and checking the stripped state in the response, this is deemed to be an acceptable tradeoff for the benefit of allowing clients to preview `knock` rooms.
+The ability to query `knock` rooms' stripped state allows slightly more information to be gleaned about the room's users
+before knocking. The room's creator list is accessible through the `m.room.create` event, and other events include
+`sender` fields that can reveal users who may have had powerlevels at some point in the room's history. Since this
+information is also available simply by knocking on the room and checking the stripped state in the response,
+this is deemed to be an acceptable tradeoff for the benefit of allowing clients to preview `knock` rooms.
 
 # Unstable prefix
 
