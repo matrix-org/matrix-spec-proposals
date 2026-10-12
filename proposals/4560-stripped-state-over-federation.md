@@ -204,8 +204,8 @@ must determine if the remote server satisfies the room's join conditions. The co
 conditions is unusual, but is necessary to allow remote servers to view `restricted` rooms' stripped state; otherwise
 they would be treated as anonymous users and not allowed to see the state at all. What it means for a server to
 satisfy a join condition depends on the join condition in question, and for some join conditions it may be impossible
-for a server to adequately satisfy them. Generally a server should be seen as satisfying a join condition if
-it could easily puppet one of its users into satisfying the condition.
+for a server to adequately satisfy them, but generally a server should be seen as satisfying a join condition if any of
+its users satisfy the condition.
 
 #### `m.room_membership`
 
