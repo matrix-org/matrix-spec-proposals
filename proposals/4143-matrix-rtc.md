@@ -178,7 +178,8 @@ state-like store of membership events.
 
 Within `m.rtc.member` events, `content` contains the following properties:
 
-- `slot_id` (required, string): The `state_key` of the slot that is being joined.
+- `slot_id` (required, string): The `state_key` of the slot that is being used.
+- `slot_event_id` (required, string): The event ID of the slot that is being used.
 - `member` (required, object): Information to identify the member.
   - `id` (required, string): Random identifier to distinguish this slot member. A fresh identifier
     MUST be generated for each join of a device to each slot in each room. Note that this
@@ -236,6 +237,7 @@ To join a slot, the client sends an `m.rtc.member` event with `membership = join
   "type": "m.rtc.member",
   "content": {
     "slot_id": "{application_type}#{application_slot_id}", // = m.rtc.slot state_key
+    "slot_event_id": "$1", // = m.rtc.slot event_id
     "member": {
       "id": "{member_id}",
       "membership": "join"
@@ -277,6 +279,11 @@ joined if all of the following conditions apply:
 If these conditions are not fulfilled, clients MUST treat the member as left and refrain
 from connecting to their transports. The conditions above also enable moderators to kick participants
 by redacting all of their still sticky `m.rtc.member` events.
+
+The `slot_event_id` field lets clients determine if other members are using the same slot event. This
+provides a signal as to whether potential updates to the slot event have propagated to all members yet.
+This can be important because differences in the resolved slot state can lead to subtle issue in applications.
+Clients SHOULD, therefore, visually annotate other members that are not using the same slot event as themselves.
 
 #### Leaving a slot
 
@@ -806,6 +813,7 @@ the implementation. As of writing, the full list of such implementation differen
   - `org.matrix.msc4143.rtc.member` events are missing the `member.membership` property. Instead the
     presence of a valid `application` object is treated as `membership = "join"` while the absence of a
     valid `application` object is treated as `membership = "leave"`.
+  - `org.matrix.msc4143.rtc.member` events don't yet include the `slot_event_id` property.
 - Transport discovery
   - `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` uses `rtc_transports` rather than
     `transports` as the property name in its response.
