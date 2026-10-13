@@ -109,7 +109,9 @@ The server returns the messages queued for the requesting device after the posit
 up to `limit` of them. If `since` is omitted, the server returns every message it holds for the
 device, up to `limit`.
 
-Messages from one sending device MUST be returned in the order that device sent them.
+Messages SHOULD be returned in order of arrival on the server. Messages from one sending device MUST
+be returned in the order that device sent them (this is consistent with arrival ordering as both
+clients and remote servers will send to-device messages in order).
 
 Servers MUST scope both the read and the deletion to the authenticated user and the device the
 request was made with.
