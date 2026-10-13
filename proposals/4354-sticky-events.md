@@ -194,7 +194,7 @@ Clients MUST tolerate an event being present in the `timeline` section in one sy
 present in the `sticky.events` section of a subsequent sync response (or vice-versa),
 though servers SHOULD avoid this happening where technically feasible to do so.[^whytoleratedupe]
 
-When sending sticky events down `/sync`, the `unsigned` section MUST have a `sticky_duration_remaining_ms` field
+When sending unexpired sticky events down `/sync`, the `unsigned` section MUST have a `sticky_duration_remaining_ms` field
 to indicate how many milliseconds until the sticky event expires.
 From the client's point of view, this relative expiry timestamp is authoritative. Clients MUST use this value to determine when the sticky event expires.
 The server MUST have already applied the 1 hour bounded sticky duration; essentially, this timestamp MUST
@@ -279,7 +279,7 @@ However, this does not need to be guaranteed, particularly when catching up send
 (either after a network partition or to a newly-joined server) at the same time as new unexpired sticky events
 are being created in real-time.
 
-When an unexpried sticky event was sent by a [user who has been erased](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3accountdeactivate),
+When an unexpired sticky event was sent by a [user who has been erased](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3accountdeactivate),
 servers SHOULD NOT send it to other homeservers as part of catch-up.
 
 ## Potential issues
