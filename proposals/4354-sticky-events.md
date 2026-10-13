@@ -47,7 +47,7 @@ which is the number of milliseconds for the event to be sticky.
 'Sticky' means, informally, that the event is temporarily 'stuck' to the imeline so that the user is sure to see it
 (like a sticky note stuck to your screen) and will be reliably delivered to the client, regardless of gaps in syncing.
 The presence of `sticky.duration_ms` with a positive integer value makes the event “sticky”[^stickyobj].
-Intended values are the integer range 0-3600000 (1 hour), but any positive (non-zero and non-negative)
+Intended values are the integer range 1-3600000 (1 hour), but any positive (non-zero and non-negative)
 integer is valid (clamping is applied, see later).
 
 For use cases that require stickiness beyond the 1 hour limit, the application is responsible for sending another
