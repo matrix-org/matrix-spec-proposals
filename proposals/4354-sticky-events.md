@@ -203,6 +203,10 @@ agree with when the server will consider the event to have lost its stickiness.
 When the sticky event is expired (and thus no longer considered a sticky event), the `sticky_duration_remaining_ms`
 field MUST be omitted. (Servers should take care to not emit a zero or negative `sticky_duration_remaining_ms`.)
 
+Events in the `sticky.events` section MUST be sticky (i.e. MUST have a positive `unsigned.sticky_duration_remaining_ms` field).
+Server implementations should be careful to ensure that timing issues (such as sticky events expiring during request processing)
+or response caching do not break this property.
+
 When the user joins a room, the server MUST include all unexpired sticky events for that room in their subsequent
 sync response(s). The server MAY exceed the suggested 100 sticky event limit to do this, or MAY spread these
 out across multiple sequential sync responses.
