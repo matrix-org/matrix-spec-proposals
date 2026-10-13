@@ -806,13 +806,8 @@ the proposal text that resulted from iterating or from review comments have not 
 the implementation. As of writing, the full list of such implementation differences is as follows:
 
 - Membership events
-  - `org.matrix.msc4143.rtc.member` events contain an additional `user_id` property inside the `member`
-    object that is by now unused.
-  - `org.matrix.msc4143.rtc.member` events contain an additional `device_id` property inside the `member`
-    object that is by now unused.
-  - `org.matrix.msc4143.rtc.member` events are missing the `member.membership` property. Instead the
-    presence of a valid `application` object is treated as `membership = "join"` while the absence of a
-    valid `application` object is treated as `membership = "leave"`.
+  - `org.matrix.msc4143.rtc.member` events contain the additional properties `user_id` and `device_id`
+    inside the `member` object for backwards compatibility with earlier implementations.
   - `org.matrix.msc4143.rtc.member` events don't yet include the `slot_event_id` property.
 - Transport discovery
   - `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` uses `rtc_transports` rather than
