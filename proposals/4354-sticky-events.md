@@ -44,8 +44,8 @@ This new primitive can be used to implement MatrixRTC participation and live loc
 
 Message events (specifically: PDUs) can be annotated with a new top-level `sticky` object[^toplevel], which MUST have a `duration_ms`,
 which is the number of milliseconds for the event to be sticky.
-'Sticky' means, informally, that the event is temporarily 'stuck' to the bottom of the timeline and will be reliably delivered
-to the client, regardless of gaps in syncing.
+'Sticky' means, informally, that the event is temporarily 'stuck' to the imeline so that the user is sure to see it
+(like a sticky note stuck to your screen) and will be reliably delivered to the client, regardless of gaps in syncing.
 The presence of `sticky.duration_ms` with a positive integer value makes the event “sticky”[^stickyobj].
 Intended values are the integer range 0-3600000 (1 hour), but any positive (non-zero and non-negative)
 integer is valid (clamping is applied, see later).
@@ -252,7 +252,7 @@ response codes to cause the sender to back off.
 As with regular events, servers are only responsible for sending unexpired sticky events originating from their own server. This ensures the server is aware
 of the `prev_events` of all sticky events they send to other servers. This is important because the receiving server will
 attempt to fetch those previous events if they are unaware of them, _rejecting the transaction_ if the sending server fails
-to provide them. For this reason, it is not possible for servers to reliably deliver _other server's_ unexpired sticky events.
+to provide them. For this reason, it is not possible for servers to reliably deliver _other servers'_ unexpired sticky events.
 
 In the common case, unexpired sticky events are sent over federation like any other event and do not cause any behavioural changes.
 The two cases where this is different is:
