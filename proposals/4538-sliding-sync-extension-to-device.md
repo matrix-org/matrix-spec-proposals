@@ -47,9 +47,9 @@ For example:
 }
 ```
 
-A `limit` that is not a positive integer MUST be rejected with a 400 and an error code of
-`M_BAD_JSON`. The server MAY return fewer messages than `limit`. The [send-to-device
-module](https://spec.matrix.org/v1.19/client-server-api/#send-to-device-messaging)
+A `limit` that is not a positive integer (i.e. one that is less-than-or-equal to 0) MUST be rejected
+with a 400 and an error code of `M_BAD_JSON`. The server MAY return fewer messages than `limit`. The
+[send-to-device module](https://spec.matrix.org/v1.19/client-server-api/#send-to-device-messaging)
 recommends a limit of 100 for `/v3/sync`, and servers SHOULD support at least that here.
 
 A client MUST send as `since` the `next_batch` from the last response of this extension it
