@@ -56,9 +56,9 @@ A client MUST send as `since` the `next_batch` from the last response of this ex
 processed, on any connection (see [Connections](#connections)), or omit `since` if it has not yet
 received one. A `next_batch` MUST only be used by the device it was issued to.
 
-A `since` the server could not have issued MUST be rejected with a 400 and an error code of
-`M_INVALID_PARAM`. A `next_batch` the server has issued MUST remain valid for as long as the device
-it was issued to exists.
+A `since` the server could not have issued for this extension MUST be rejected with a 400 and an
+error code of `M_INVALID_PARAM`. A `next_batch` the server has issued MUST remain valid for as long
+as the device it was issued to exists.
 
 ### Extension response
 
