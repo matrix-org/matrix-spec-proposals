@@ -48,7 +48,8 @@ For example:
 ```
 
 A `limit` that is not a positive integer MUST be rejected with a 400 and an error code of
-`M_BAD_JSON`. The server MAY return fewer messages than `limit`. The send-to-device module
+`M_BAD_JSON`. The server MAY return fewer messages than `limit`. The [send-to-device
+module](https://spec.matrix.org/v1.19/client-server-api/#send-to-device-messaging)
 recommends a limit of 100 for `/v3/sync`, and servers SHOULD support at least that here.
 
 A client MUST send as `since` the `next_batch` from the last response of this extension it
@@ -119,7 +120,9 @@ waiting out long polls.
 
 #### Acknowledgement
 
-The send-to-device module defines acknowledgement for
+The [send-to-device
+module](https://spec.matrix.org/v1.19/client-server-api/#send-to-device-messaging) defines
+acknowledgement for
 [`/v3/sync`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientv3sync):
 
 > When the client calls `/sync` again with the `next_batch` token from the first response, the server
@@ -141,7 +144,9 @@ though clients MAY receive duplicate to-device messages when they switch.
 
 A message is therefore delivered at least once. A client receives a message more than once only
 when it repeats a request with the same `since` (a retry), or omits `since` after receiving the
-message. The spec change for this MSC amends the send-to-device module's claim that a message is
+message. The spec change for this MSC amends the [send-to-device
+module's](https://spec.matrix.org/v1.19/client-server-api/#send-to-device-messaging) claim that a
+message is
 delivered exactly once to each device.
 
 #### Connections
