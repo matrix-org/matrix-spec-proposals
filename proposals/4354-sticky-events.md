@@ -78,6 +78,7 @@ added to following endpoints:
   as a query parameter in the request URI
 * `PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` as defined in [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140),
   as a field in the request body that is mutually exclusive with the `state_key` field
+  (Servers MUST return 400 Bad Request with `M_INVALID_PARAM` if they are both specified.)
 
 To calculate if any sticky event is still sticky:
 
