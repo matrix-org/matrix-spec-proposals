@@ -62,6 +62,55 @@ is present.
 
 The response is empty on success or otherwise a widget error response.
 
+### Getting the delayed event limits
+
+[MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) lets the homeserver limit the delay of a delayed
+event and the number of delayed events a user can have scheduled. The homeserver advertises these limits in the
+`m.delayed_events`
+[capability](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4140-delayed-events-futures.md#delayed-event-limits-as-a-capability).
+A widget cannot call `GET /_matrix/client/v3/capabilities` itself, so the client exposes the capability through a new
+`fromWidget` action, `get_delayed_events_capability`:
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestId": "generated-id-1234",
+  "action": "get_delayed_events_capability",
+  "data": {}
+}
+```
+
+If the widget did not get approved for the `m.send.delayed_event` capability, the client MUST send an error response
+(as required currently by the capabilities system for widgets).
+
+Otherwise, the client responds with the capability as advertised by its homeserver:
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestId": "generated-id-1234",
+  "action": "get_delayed_events_capability",
+  "data": {},
+  "response": {
+    "m.delayed_events": {
+      "max_delay_ms": 86400000,
+      "max_scheduled": 10
+    }
+  }
+}
+```
+
+The `response` mirrors the `capabilities` object of `GET /_matrix/client/v3/capabilities`, limited to
+`m.delayed_events`. `m.delayed_events` is absent if the homeserver does not advertise the capability, in which case the
+widget SHOULD assume that delayed events are disabled, as described in MSC4140.
+
+If the client cannot get the capabilities from the homeserver, it responds with a widget error response. The client
+SHOULD include the homeserver's error as `matrix_api_error`
+([MSC2813](https://github.com/matrix-org/matrix-spec-proposals/pull/2813)), so that the widget can tell a transient
+failure from an unsupported homeserver.
+
 ### Capabilities
 
 Two new capabilities will be introduces:
@@ -76,6 +125,9 @@ from the receiver side.
 
 For sending a delayed event two capabilities are required. One for sending the event type itself and the `m.send.delayed_event`
 capability to send it as a delayed event.
+
+The `get_delayed_events_capability` action does not get its own capability. It requires the `m.send.delayed_event`
+capability, since the limits only matter to a widget that sends delayed events.
 
 ## Alternatives
 
@@ -95,3 +147,5 @@ The following strings will have unstable prefixes:
   `m.send.delayed_event` -> `org.matrix.msc4157.send.delayed_event`
 - The update delayed event capability:\
   `m.update_delayed_event` -> `org.matrix.msc4157.update_delayed_event`
+- The get delayed events capability widget action:\
+  `get_delayed_events_capability` -> `org.matrix.msc4157.get_delayed_events_capability`
