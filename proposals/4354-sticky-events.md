@@ -395,6 +395,7 @@ In the common case, it provides protection against clock skew when clients have 
 ## Unstable Prefix
 
 - The `sticky_duration_ms` query param is `org.matrix.msc4354.sticky_duration_ms`.
+- The `sticky_duration_ms` request body parameter to `/delayed_event` is `org.matrix.msc4354.sticky_duration_ms`.
 - The `sticky` key in the PDU is `msc4354_sticky`.
 - The `/sync` response section is `msc4354_sticky`.
 - The sticky key in the `content` of the PDU is `msc4354_sticky_key`.
