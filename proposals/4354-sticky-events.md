@@ -72,7 +72,7 @@ and the [`Persistent Data Unit`](https://spec.matrix.org/v1.16/rooms/v12/#event-
 ```
 
 This key can be set by clients in the CS API by a new parameter `sticky_duration_ms`, which is
-added to following endpoints:
+added to following endpoints and required to be a strictly positive integer:
 
 * [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid),
   as a query parameter in the request URI
