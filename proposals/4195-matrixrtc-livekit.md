@@ -7,15 +7,16 @@ The SFU intelligently relays RTC data between members without them having to con
 directly.
 
 The LiveKit SFU is integrated into Matrix in a multi-SFU configuration. In this setup, a homeserver
-may operate one or more SFUs. RTC members always publish their RTC data to a local SFU managed by
-their homeserver and announce their SFU choice via their `m.rtc.member` event. Other members then
-subscribe to the RTC data on the publishing member's SFU – which might be different from the SFU
-they're publishing on themselves. The homeserver provides mechanisms for discovering local SFUs
-and for acquiring access tokens for both local and remote SFUs. This approach removes the need for
-an SFU election process and allows servers to guard access to their SFUs.
+may operate zero or more SFUs with at least one SFU required across all participating homeservers.
+RTC members announce the SFU they publish RTC data on via their `m.rtc.member` event. This may
+either be an SFU operated by their local homeserver or a remote SFU that another member has published
+via their `m.rtc.member` event. In order to subscribe to the RTC data, members connect to the
+publishing member's SFU – which might be different from the SFU they're publishing on themselves.
+The homeserver provides mechanisms for discovering local SFUs and for acquiring access tokens for
+both local and remote SFUs. This approach removes the need for an SFU election process.
 
-The example below illustrates how two members from different homeservers A and B publish and
-subscribe to each other's RTC streams.
+The example below illustrates how two members from different homeservers A and B, both of which
+operate an SFU, publish and subscribe to each other's RTC streams.
 
 ```
                   ┌─────────────────────────────────┐
@@ -36,6 +37,31 @@ subscribe │                         discover SFU │          │ publish
           │                                      │          │
           │       ┌──────────────────────────────┴──┐       │
           └──────▶│            Client B             ├───────┘
+                  └─────────────────────────────────┘
+```
+
+In contrast to this, the example below shows a scenario where only one of the homeservers operates
+an SFU and both participants use it for publishing and subscribing.
+
+```
+                  ┌─────────────────────────────────┐
+          ┌──────▶│            Client A             │
+          │       └──┬──────────────────────────────┘
+          │          │
+publish / │          │ discover SFU
+subscribe │          │ get SFU authorisation
+          │          │
+          ▼          ▼
+      ┌───────┐ ┌──────────┐   federation  ┌──────────┐
+      │ SFU A │ │ Server A │◀─────────────▶│ Server B │
+      └───────┘ └──────────┘               └──────────┘
+          ▲                                      ▲
+          │                                      │
+publish / │                get SFU authorisation │
+subscribe │                                      │
+          │                                      │
+          │       ┌──────────────────────────────┴──┐
+          └──────▶│            Client B             │
                   └─────────────────────────────────┘
 ```
 
@@ -87,7 +113,7 @@ Below is an example of an appropriate membership event:
     "transports": {
       "published": [{
         "type": "m.livekit",
-        "url": "wss://livekit.example.com"
+        "url": "wss://livekit.alice.com"
       }],
       "can_subscribe": [ "m.livekit" ]
     },
@@ -97,7 +123,36 @@ Below is an example of an appropriate membership event:
 }
 ```
 
+Clients SHOULD use a local SFU discovered via their home server's `/_matrix/client/v1/rtc/transports`
+endpoint for publishing if possible. Alternatively, clients MAY also use remote SFUs discovered from
+other member's `m.rtc.member` events. This makes it possible to establish LiveKit-based MatrixRTC
+sessions if at least one member's home server provides an SFU.
+
+As will be explained later in this proposal, access to SFUs is guarded by access tokens acquired through
+the home server associated with each SFU. Therefore, clients that publish on a remote SFU MUST include
+the associated [server name] in an additional `server_name` property under `published`.
+
+```json5
+{
+  "type": "m.rtc.member",
+  "sender": "@alice:alice.com",
+  "content": {
+    "transports": {
+      "published": [{
+        "type": "m.livekit",
+        "url": "wss://livekit.bob.com",
+        "server_name": "bob.com"
+      }],
+      ...
+    },
+    ...
+  },
+  ...
+}
+```
+
 [client SDKs]: https://docs.livekit.io/transport/sdk-platforms/
+[server name]: https://spec.matrix.org/v1.19/appendices/#server-name
 
 ### Mapping MatrixRTC members to LiveKit
 
@@ -221,18 +276,20 @@ following schema:
 - `member_id` (required, string): The `member.id` property of the requesting user's own `m.rtc.member`
   event.
 
-As mentioned before, clients always publish RTC media on a local SFU. Consequently, when requesting
-a token for publishing, the client uses its own server name for `server_name` and the WebSocket URL
-discovered from `/_matrix/client/v1/rtc/transports` for `url`.
+As mentioned before, clients publish on either a local or a remote SFU. Consequently, when requesting
+a token for publishing, the client uses the server name and WebSocket URL as discovered from either
+`/_matrix/client/v1/rtc/transports` or another member's `m.rtc.member` event for `server_name` and
+`url`, respectively.
 
 For subscribing to RTC media, clients need to connect to the publisher's chosen local SFU – which
 might be on a different server. In this case, the subscribing client derives the `server_name` and
 `url` parameters needed in the token request from the publisher's `m.rtc.member` event. In particular,
-`server_name` is obtained by parsing the event's `sender` and `url` is taken from the respective
-`transports` array element in the event.
+`url` is taken from the respective `transports.published` array element in the event. `server_name`
+is obtained from the `server_name` property in the same array element if available or otherwise by
+parsing the event's `sender`.
 
 Note that as explained [later], tokens always include the grant required for subscribing. This means
-that a token obtained for publishing on a local SFU also allows the bearer to subscribe to RTC streams
+that a token obtained for publishing on an SFU also allows the bearer to subscribe to RTC streams
 in the same LiveKit room on that SFU. As a result, clients only need to issue one token request per
 SFU involved in the session.
 
@@ -397,8 +454,9 @@ to ensure these are set appropriately so that clients can connect correctly and 
 - `video.roomJoin`: MUST be `true`. This enables clients to join the LiveKit room if it exists. Note that
   when the [auto_create] feature is enabled on the SFU, this permission also allows a token holder to
   create the room it is trying to join in case it doesn't exist yet.
-- `video.canPublish`: MUST be `true` if the token was requested by a local user or `false` otherwise. This
-  enforces the multi-SFU configuration and ensures clients can only publish RTC data on a local SFU.
+- `video.canPublish`: MUST be `true` when the requesting user belongs to the home server creating the
+  token to allow local users to publish RTC data. SHOULD also be `true` if the requesting user is from a
+  different server but servers MAY decide to restrict publishing rights.
 - `video.canSubscribe`: MUST be `true`. This lets clients subscribe to RTC data on both local and
   remote SFUs.
 - `video.canUpdateOwnMetadata`: SHOULD be `false`. This lets clients update their own metadata. No known
@@ -678,6 +736,15 @@ SFUs also act as single points of failure and may cause limitations in terms of 
 scalability. This shortcoming is deliberately accepted here. Other transports are free to cater to
 different needs in the future.
 
+### Downsides of different multi-SFU variations
+
+The pure multi-SFU mode, in which all RTC members publish to a local SFU, ensures fair resource sharing
+among servers. It does, however, also create multiple points of failure because a single SFU failing can
+fragment the session. The degenerate multi-SFU mode, in which all RTC members publish on a single SFU,
+inverses these up- and downsides in turn. This proposal chooses a middleground by recommending clients
+to publish on local SFUs while also allowing the usage of remote SFUs. A future proposal may further
+formalise the SFU convergence mechanism.
+
 ## Alternatives
 
 ### Client-provided salts for LiveKit room names
@@ -733,11 +800,11 @@ LiveKit rooms themselves are lightweight, however, and applying rate limiting on
 endpoints further mitigates this problem.
 
 Users publishing and subscribing to RTC data within LiveKit rooms has a larger resource impact
-though. Any Matrix room member is able to connect to an associated LiveKit room and subscribe to media
-streams. Local room members can also publish media. Again, rate limiting the `/get_token` endpoints
-mitigates this concern. Servers MAY apply additional countermeasures such as limiting the maximum
-allowed lifetime of LiveKit rooms, restricting SFU access to trusted users/servers or applying limits
-to the cumulative SFU usage of user accounts.
+though. Any Matrix room member is able to connect to an associated LiveKit room and publish or subscribe
+to media streams. Again, rate limiting the `/get_token` endpoints mitigates this concern. Servers MAY
+apply additional countermeasures such as limiting the maximum allowed lifetime of LiveKit rooms,
+restricting SFU access to trusted users/servers or applying limits to the cumulative SFU usage of
+user accounts.
 
 ### Reducing metadata leakage to the SFU
 
