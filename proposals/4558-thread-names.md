@@ -8,7 +8,8 @@ the release planning discussion is still listed as "hey, quick question".
 
 Other chat platforms let a thread carry a short title, set by whoever started it or by a moderator,
 shown in the thread list and the thread's header. This proposal adds that to Matrix with a single
-new event type and relation type, and no server changes.
+new event type and relation type. In encrypted rooms the name is encrypted but the relation is not,
+so the server can enforce who may name a thread and bundle the latest naming event with the root.
 
 ## Proposal
 
@@ -51,57 +52,112 @@ normalisation, or a `name` that is missing or not a string, means the thread has
 
 ### Who may name a thread
 
-Because a naming event is an ordinary room event, the server will accept one from any member who
-can send events. Clients therefore decide which naming events count. A naming event is **valid**
-if its sender is either:
+A naming event is **valid** if its sender is either:
 
 1. the sender of the thread root (it is their thread), or
-2. a user whose power level is at least the room's `redact` level (a moderator: someone who can
-   already remove other users' messages, and so could remove an abusive name anyway).
+2. a user whose power level is at least 50 (a moderator). 50 is RECOMMENDED as the conventional
+   moderator level; a room is not required to give anyone that level.
 
-Naming events from any other sender MUST be ignored. Power levels are evaluated against the
-current room state.
+Naming events from any other sender MUST be ignored. Validity depends only on the sender and the
+unencrypted `m.relates_to`, so it can be checked without decrypting the event. Power levels are
+evaluated against the room state at the naming event. Clients SHOULD trust a bundled
+`latest_event` (see below) without re-checking; clients resolving the name themselves usually only
+have the current room state, and use that.
 
-Rooms MAY additionally restrict who can send `m.thread.name` at all through the `events` map of
-`m.room.power_levels`, which the server enforces for non-state events too. That cannot express
-rule 1, which is why the rule above lives in the client.
+The `events` map of `m.room.power_levels` can't be used for this: it matches on event type, which
+is hidden in encrypted rooms, and it cannot express rule 1.
+
+#### Event authorization rules
+
+In a room version that adopts this rule, an event with `m.relates_to.rel_type` of `m.thread.name`
+is rejected unless:
+
+- (a) `m.relates_to.event_id` names an event in the room that has been added to the naming
+  event's `auth_events`, and
+- (b) the sender is that event's sender, or has a power level of at least 50.
+
+The thread root has to be in `auth_events` because its sender can't be found from room state. This
+needs review from server authors.
+
+In room versions without this rule, servers SHOULD apply the same check to their own users' events
+on `/send` and return `403 M_FORBIDDEN`. Clients MUST still ignore invalid naming events either
+way, since federation can deliver them.
 
 ### Resolving the current name
 
-The current name of a thread is taken from the valid naming event with the greatest
-`origin_server_ts` among those related to the root. Ties keep the order the server returned them
-in. If that event clears the name, the thread is unnamed; older naming events do not show through.
+The current name of a thread is taken from the most recent valid naming event related to the root,
+in event-graph order (not `origin_server_ts`). If that event clears the name, the thread is
+unnamed; older naming events do not show through.
 
-To load a thread's name, a client fetches the root's relations of this type, newest first:
+#### Bundled aggregation
+
+Servers SHOULD bundle the current naming event with the root, like `m.replace`, wherever the root
+is returned with other bundled aggregations:
+
+```json5
+"unsigned": {
+  "m.relations": {
+    "m.thread.name": {
+      "latest_event": { /* the full naming event */ }
+    }
+  }
+}
+```
+
+In encrypted rooms this is an `m.room.encrypted` event. The server applies the validity rules
+above, but can't tell whether an encrypted event clears the name, so the client decides that.
+
+#### Fetching without server support
+
+If the root has no bundled name, a client fetches the root's relations of this type, newest first:
 
 ```
 GET /_matrix/client/v1/rooms/{roomId}/relations/{rootId}/m.thread.name/m.thread.name?dir=b&limit=20
 ```
 
-and applies the rule above to the returned chunk. After that, clients keep the name current from
-sync: a new valid naming event for the root replaces the cached name if it is newer.
+and takes the first valid event (`/relations` returns topological order). After that, clients
+keep the name current from sync: a new valid naming event for the root replaces the cached name if
+it is newer.
 
 ### Redaction
 
 The redaction algorithm strips `name` and `m.relates_to` from a naming event, so a redacted naming
 event no longer targets any root and is ignored. When the naming event behind the current name is
-redacted, the client re-resolves the name, and the next-newest valid naming event (if any) takes
-over. A moderator removing an abusive name therefore restores the previous one.
+redacted, the server updates the bundle (or the client re-resolves the name), and the next-newest
+valid naming event (if any) takes over. A moderator removing an abusive name therefore restores the
+previous one.
 
 ### Encryption
 
-**Naming events are sent unencrypted, including in encrypted rooms.**
+**Naming events are encrypted in encrypted rooms.** Their `m.relates_to` stays unencrypted, as for
+any relation, so the server can still validate and bundle them. Only `name` and the event type are
+hidden.
 
 An encrypted naming event reaches the server as `m.room.encrypted`, which matches the default
 `.m.rule.encrypted` (or `.m.rule.encrypted_room_one_to_one`) push rule and notifies every member.
 Clients can suppress the notification once they decrypt the event, but some push paths cannot
 (for example a web push service worker that must display something for every push it receives),
-so every rename would become a phantom "new message" on members' devices. A cleartext
-`m.thread.name` event matches no default push rule and notifies no one.
+so every rename would become a phantom "new message" on members' devices. Poll votes and live
+location have the same problem, so it shouldn't be solved by sending names in cleartext.
 
-The consequence is that thread names are visible to the homeserver, in the same way room names
-(`m.room.name`) and topics (`m.room.topic`) are. Clients SHOULD tell users this when they name a
-thread in an encrypted room.
+Instead, servers SHOULD add a default override push rule that matches the unencrypted relation, so
+it needs no decryption:
+
+```json5
+{
+  "rule_id": ".m.rule.thread_name",
+  "default": true,
+  "enabled": true,
+  "conditions": [
+    {
+      "kind": "event_property_is",
+      "key": "content.m\\.relates_to.rel_type",
+      "value": "m.thread.name"
+    }
+  ],
+  "actions": []
+}
+```
 
 ### Display
 
@@ -115,20 +171,19 @@ naming to the users permitted by the rules above, and SHOULD hide the option fro
 - **Clients that don't support it** show nothing: the root preview stays the only label. This is
   the intended degradation, but it means a name chosen to disambiguate a thread is invisible to
   part of the room.
-- **`origin_server_ts` is chosen by the sender's server** and can be wrong or manipulated. A
-  permitted namer with a skewed clock could pin an old name over a newer one. Ordering by
-  topological order would be more robust, but `/relations` does not expose it and the current
-  behaviour matches how clients already order edits.
+- **Ordering follows the event graph.** Concurrent renames from different servers may disagree on
+  which is most recent. This is the same trade-off as edits.
 - **Spam can push valid events out of the first page.** If more than `limit` invalid naming events
   are sent after the last valid one, the first `/relations` page contains no valid event and the
-  thread looks unnamed. Clients MAY paginate further; room admins can also restrict the event type
-  in power levels.
+  thread looks unnamed. Clients MAY paginate further. Federation can still deliver invalid events,
+  but a server that bundles the name skips them.
 - **Root senders who leave** keep their right to rename the thread under rule 1 if they rejoin.
   This mirrors how a user can always edit their own messages.
-- **No server-side aggregation.** Every client fetches `/relations` once per thread it displays.
-  For a long thread list that is one request per thread. See Alternatives.
-- **Unencrypted in encrypted rooms** is a deliberate privacy trade-off (see Encryption), and may be
-  surprising to users who assume everything in an encrypted room is encrypted.
+- **Servers that don't bundle** leave clients to fetch `/relations` once per thread they display.
+- **Enforcement isn't federation-wide** without the new room version; the `/send` check only covers
+  local senders.
+- **The auth rule needs a new room version** and the thread root in `auth_events`.
+- **The relation is visible to the homeserver** even in encrypted rooms, though the name isn't.
 
 ## Alternatives
 
@@ -141,17 +196,18 @@ naming to the users permitted by the rules above, and SHOULD hide the option fro
 - **`rel_type: m.reference`** instead of a new relation type, with clients filtering by event type.
   This works with existing server relation handling and is a reasonable choice; a dedicated
   relation type was chosen so that `/relations` can be filtered precisely and so that servers can
-  later aggregate it (below) without inspecting event types.
+  validate and bundle it without seeing event types, which are hidden in encrypted rooms.
 - **`rel_type: m.thread`** (sending the name into the thread). This would count as a reply, bump
   unread counts and appear in the thread's timeline, which is the opposite of what a rename should
   do.
 - **Bundling the current name** in the `m.thread` bundled aggregation of the root
-  (`unsigned.m.relations["m.thread"]`), next to `latest_event` and `count`. This removes the extra
-  request per thread, but needs server changes and requires the server to apply the permission
-  rule. It is compatible with this proposal and could follow it.
-- **Encrypting the name and adding a default push rule** to suppress notifications for it. The
-  server cannot see the type of an encrypted event, so no server-side push rule can match it; this
-  only works if every push path can decrypt before notifying.
+  (`unsigned.m.relations["m.thread"]`), next to `latest_event` and `count`. That aggregation
+  describes replies, so the name gets its own `m.thread.name` entry instead.
+- **Sending the name unencrypted**, as an earlier version of this proposal did. This avoids phantom
+  notifications without a push rule, but exposes names to the homeserver, and the push problem is
+  better solved in general.
+- **Enforcing only on `/send` and in clients**, without an event authorization change. This needs no
+  new room version, but isn't enforced over federation.
 - **Using the root's content** (an edit adding a title). Only the root's sender can edit it, so
   moderators could not rename, and the name would be lost on clients that fold edits differently.
 
@@ -159,19 +215,18 @@ naming to the users permitted by the rules above, and SHOULD hide the option fro
 
 - Names are user-generated text shown in UI chrome. Clients MUST treat them as plain text and
   SHOULD cap their displayed length so a long name cannot cover other UI.
-- Because permission is enforced by clients, a misbehaving client may display names from senders
-  that should be ignored. This affects only that client's users.
-- Names in encrypted rooms are visible to the homeserver (see Encryption).
-- A moderator can rename any thread, including one started by a higher-powered user. This matches
-  their existing ability to redact that user's messages.
+- Without the auth rule, server validation only covers local senders, so clients validate too.
+- A moderator (power level 50 or above) can rename any thread, including one started by a
+  higher-powered user. This matches their existing ability to redact that user's messages.
 
 ## Unstable prefix
 
-Until this proposal is accepted, implementations use `moe.crafty.matrix.thread_name` for both the
-event type and the relation type. This is the identifier already used by the existing
-implementation in the Zam client.
+Until this proposal is accepted, implementations use `moe.crafty.matrix.thread_name` for the event
+type, the relation type and the bundle key. This is the identifier already used by the existing
+implementation in the Zam client, which doesn't yet use the bundle or server validation.
 
 ## Dependencies
 
-None. This proposal uses only existing endpoints (`/send`, `/relations`) and existing power level
-semantics.
+- The `event_property_is` push rule condition (already in the spec).
+- A new room version for the auth rule. The `/send` check and client validation work without it.
+- Bundling is optional for servers.
