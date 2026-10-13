@@ -343,8 +343,20 @@ In other words, there's no guarantee that all clients in a room will be sent a g
 ### 'Flickering'
 
 [As discussed on the MSC](https://github.com/matrix-org/matrix-spec-proposals/pull/4354#discussion_r2413966087),
-The lack of atomicity in `/send` means clients may 'flicker' RTC member state (update to old values, then immediately to newer values).
+The federation `/send` endpoint is not atomic in its persistence of a batch of events (and more generally, neither is the transmission of all historical sticky events, particularly as they may span several requests).
+Homeservers may persist events one at a time and therefore notify clients about historical sticky events one at a time, without a good way to know
+when the backlog of sticky events has been exhausted.
+(Put another way: clients can get 'drip-fed' sticky events without a way to know which drip will be their last.)
+
+The drip-feed effect is perhaps exacerabated by sticky events being noncontiguous and 'scattered' throughout arbitrary points in the room DAG,
+which means that homeservers will be slowed down in event processing by having to make outbound federation requests to fetch authorising events.
+
+The end-user visible effect of this is that clients may 'flicker' RTC member state (update to old values, then nearly immediately to newer values),
+in a way that impacts what is shown in the User Interface.
+
 This happens today too with state events, but less often.
+
+(This also happens with today's 'legacy'/stable VoIP calls, but that is not really a good justification to carry the bug forward either.)
 
 ## Alternatives
 
