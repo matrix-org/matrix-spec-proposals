@@ -227,7 +227,8 @@ implementations use (see the [Changelog](#changelog)).
 Per the common extension semantics of
 [MSC4508](https://github.com/matrix-org/matrix-spec-proposals/pull/4508), servers advertise support
 for this extension in `unstable_features` of
-[`/_matrix/client/versions`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientversions):
+[`/_matrix/client/versions`](https://spec.matrix.org/v1.17/client-server-api/#get_matrixclientversions)
+by setting the following flags to `true`:
 
 - `org.matrix.msc4538` while this MSC is unstable, covering both the `org.matrix.msc4538.to_device`
   key on the stable endpoint and the unprefixed `to_device` key on the unstable endpoint; and
