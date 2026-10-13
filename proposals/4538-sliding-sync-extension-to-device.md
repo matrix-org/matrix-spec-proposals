@@ -149,6 +149,10 @@ module's](https://spec.matrix.org/v1.19/client-server-api/#send-to-device-messag
 message is
 delivered exactly once to each device.
 
+Clients SHOULD, therefore, store the received to-device messages and `since` token in a suitable way
+to avoid receiving/reprocessing the same to-device messages. Typically, clients store both the
+received to-device messages and `next_batch` token together atomically.
+
 #### Connections
 
 The token is independent of the connection.
