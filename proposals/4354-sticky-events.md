@@ -568,8 +568,7 @@ needs cannot be within `content`.
 [^stickyobj]: The presence of the `sticky` object alone is insufficient.  
 [^prop]: An interesting observation is that these additional properties are entirely to handle edge cases. In the happy case,
 events _are sent_ to others over federation, they _aren't_ soft-failed and they _do appear_ down `/sync`. This MSC just makes this
-reliable. These properties are also properties which _state events_ already have, so we need the equivalent functionality if this
-proposal wants to replace [MSC3757: Restricting who can overwrite a state event](https://github.com/matrix-org/matrix-spec-proposals/pull/3757).
+reliable.
 [^partial]: Over federation, servers are not required to send all timeline events to every other server.
 Servers mostly load missed or historical timeline events lazily, for example by relying on clients hitting `/messages` which in turn
 prompts the server to hit `/backfill` to request events from federated servers.  
@@ -581,8 +580,8 @@ This becomes particularly important when room state is rolled back. For example,
 then Bob kicks Charlie, but concurrently Alice kicks Bob then whether or not a receiving server would accept E would depend
 on whether they saw “Alice kicks Bob” or “Bob kicks Charlie”. If they saw “Alice kicks Bob” then E would be accepted. If they
 saw “Bob kicks Charlie” then E would be rejected, and would need to be rolled back when they see “Alice kicks Bob”.
-[^hisvis]: This ensures that newly joined servers can see sticky events sent from before they were joined to the room, regardless
-of the history visibility setting. This matches the behaviour of state events.
+[^hisvis]: This ensures that newly joined servers and users can see sticky events sent from before they were joined to the room, regardless
+of the history visibility setting.
 [^origin]: That is, the domain of the sender of the sticky event is the sending server.
 [^newjoiner]: We restrict delivery of sticky events to ones sent locally to reduce the number of events sent on join. If
 we sent all active sticky events then the number of received events by the new joiner would be `O(nm)` where `n` = number of joined servers,
