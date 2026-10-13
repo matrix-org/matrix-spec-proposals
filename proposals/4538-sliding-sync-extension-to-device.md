@@ -171,9 +171,9 @@ nothing else to send.
 
 ## Potential issues
 
-The queue is per-device, so two sync loops for one device (a push notification process and the main
-application, for example) can delete each other's messages unless they coordinate, as required
-under [Connections](#connections).
+The queue is per-device, so two sync loops with the to-device extension enabled for one device (a
+push notification process and the main application, for example) can delete each other's messages
+unless they coordinate, as required under [Connections](#connections).
 
 The same collision is why a client cannot use `/v3/sync` and this extension at once (see
 [Acknowledgement](#acknowledgement)). A client migrating to sliding sync has to stop one before
