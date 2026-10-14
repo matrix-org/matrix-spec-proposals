@@ -7,10 +7,10 @@ Some other chat protocols, like Discord or Telegram, offer a way to hide potenti
 
 In the event that a message has both a spoiler on the body and the image, clients should reveal the spoilers separate from each other.
 
-In events with an image, video, or audio file, there will be an optional `m.spoiler` field as a boolean. If true, then clients should show a blurred version of the image. If not present, it will be assumed to be false. There will also be a `m.spoiler.reason` field as a text value that will optionally display text for why the image has a spoiler.
+In events with an image, video, or audio file, there will be an optional `m.spoiler` field containing a `reason` string. If present, the client should show a blurred version of the image and require user interaction to show the full image.
 ## Example
 ```
-    "body": "amazing-test.png",
+    "body": "example.png",
     "info": {
       "size": 12607,
       "mimetype": "image/png",
@@ -20,12 +20,13 @@ In events with an image, video, or audio file, there will be an optional `m.spoi
     },
     "msgtype": "m.image",
     "m.mentions": {},
-    "m.spoiler": true,
-    "m.spoiler.reason": "Shockingly bad graphic design",
-    "url": "mxc://chat.blahaj.zone/UMjvQObiMNEyMunrldKQVYcT"
+    "m.spoiler": {
+      "reason": "example"
+    }
+    "url": "mxc://example.com/example-media"
 ```
 ## Potential issues
-A user with malicious intent may put something inappropriate in the reason field. Additionally, clients that do not support this feature will show all media without a spoiler.
+Clients that do not support this feature will show all media without a spoiler. This is not practically fixable.
 ## Alternatives
 One alternative is the [Spoilerinator](https://codeberg.org/cf/spoilerinator) tool. However, it depends on HTML, which not all clients implement, and it needs you to copy the media URL, then running the external tool. Additionally, [MSC3725](https://github.com/matrix-org/matrix-spec-proposals/pull/3725) provides a similar way to do this.
 ## Security considerations
