@@ -144,8 +144,8 @@ In effect, these conditions mean that when an invite comes in, the receiving cli
 options:
 
 1. It can accept the invite by joining the slot with an appropriate `m.rtc.member` event as
-   per [MSC4143]. The invite is deactivated due to the presence of a sticky join event.
-1. It can decline the invite by sending an `m.rtc.decline` event. Again, the invite is deactivated
+   per [MSC4143]. The invite is inactivated due to the presence of a sticky join event.
+1. It can decline the invite by sending an `m.rtc.decline` event. Again, the invite is inactivated
    due to the presence of a sticky decline event.
 1. It can ignore the event by doing nothing. The invite will remain active until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
@@ -171,7 +171,7 @@ duration of both invite events and events which react to invites SHOULD exceed t
 `lifetime`. Additionally, the sticky duration of a leaving `m.rtc.member` event MUST be large
 enough to replace the corresponding joining member event in the sticky map as per [MSC4354].
 As a result, joins, leaves and declines always exceed the invite's `lifetime` which ensures
-that deactivated invites cannot be reactivated.
+that inactivated invites cannot be reactivated.
 
 All examples below use the following legend:
 
