@@ -122,3 +122,6 @@ The following strings will have unstable prefixes:
   `m.send.delayed_event` -> `org.matrix.msc4157.send.delayed_event`
 - The update delayed event capability:\
   `m.update_delayed_event` -> `org.matrix.msc4157.update_delayed_event`
+
+Only call/support the `send_delayed_event` action if an API version of `org.matrix.msc4157_send_delayed_event` is
+advertised.
