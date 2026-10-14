@@ -103,6 +103,9 @@ slots, looks as follows:
     client is able to also transmit its own audio.
   - `m.render_video`: The client can render video streams. Note that this doesn't necessarily imply that the
     client is able to also transmit its own video.
+  - `m.exposes_e2ee`: The client breaks end-to-end encryption by bridging the decrypted data to other networks. An example
+    where this happens is when the client is a SIP bridge. Receiving clients MAY use this information to inform their users
+    accordingly.
   - Another example capability in future could be whether a given client is able to consume out-of-band DTMF events or not.
 
 Below is an example of an `m.rtc.member` event for joining an `m.call` slot.
