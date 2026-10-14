@@ -753,12 +753,12 @@ aware that slots don't provide access control, however, and adopt appropriate me
 
 ### Unmappable RTC streams
 
-Clients SHOULD notify their users about the existence of RTC streams (or, if applicable, identities) that
-cannot be mapped to an `m.rtc.member` event in the slot. Such streams can signal an eavesdropping or
-impersonation attack which is why it is important to not blanketly ignore them. The way the client
-notifies the user is left as an implementation detail. In a video conferencing application, for instance,
-rendering a blank tile with some warning text could be sufficient. A plain label explaining the situation
-could also be acceptable.
+Clients SHOULD notify their users about the existence of RTC streams (or, if applicable, identities) which
+are discovered from the transport that cannot be mapped to an `m.rtc.member` event in the slot. Such streams
+can signal an eavesdropping or impersonation attack which is why it is important to not blanketly ignore them.
+The way the client notifies the user is left as an implementation detail. In a video conferencing application,
+for instance, rendering a blank tile with some warning text could be sufficient. A plain label explaining the
+situation could also be acceptable.
 
 ### Discoverability of RTC infrastructure
 
