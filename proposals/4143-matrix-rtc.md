@@ -634,6 +634,12 @@ a single application ([MSC4196]) and transport ([MSC4195]) exist. Additionally, 
 streams. A more advanced negotiation mechanism for applications and transports is left to a
 future proposal.
 
+### Compatibility with other RTC protocols
+
+Compatibility between MatrixRTC and other RTC mechanisms such as the [legacy VoIP system] or SIP
+would be desirable. This is explicitly left out of scope in this proposal. A future MSC may explore
+this area further and define concrete compatibility mechanisms and best practices for RTC bridging.
+
 ### Accurate session reconstruction
 
 Historic MatrixRTC sessions can technically be reconstructed from `m.rtc.slot` and `m.rtc.member`
