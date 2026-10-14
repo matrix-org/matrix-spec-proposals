@@ -830,6 +830,24 @@ correlating SFU participants with Matrix users. The identity derivation process 
 `member.id` which, as per [MSC4143], is non-deterministic and changed every time a client joins a slot.
 As a result, the SFU is unable to track Matrix users across different calls.
 
+### Leaking IP addresses to the SFU
+
+Clients connect to SFUs directly, both via the signalling WebSocket and via WebRTC. As a result, a
+client's IP address is exposed to every SFU that it connects to. Session members, in turn, never learn
+about each other's IP addresses because no media or ICE candidates are exchanged between them.
+
+However, under this proposal, clients connect to the SFU of every member that publishes media in the
+session. Therefore, any member that is able to run their own homeserver and SFU, can obtain the IP
+addresses of all other session members.
+
+Using a TURN server does not solve this problem because such a server only relays media while the
+signalling WebSocket still connects to the SFU directly.
+
+As a mitigation, server operators MAY restrict the SFUs which their users are permitted to connect to
+when handling `/get_token` Client-Server requests. A future proposal could also allow room administrators
+to pin permitted SFUs in a room. Additionally, clients MAY inform their users which SFUs they will connect
+to before making the connection.
+
 ### Trust relationship between homeservers and SFUs
 
 The LiveKit SFU and the homeserver necessarily form a high trust relationship. In order for the homeserver
