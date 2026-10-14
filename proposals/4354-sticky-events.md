@@ -195,7 +195,7 @@ Clients MUST tolerate an event being present in the `timeline` section in one sy
 present in the `sticky.events` section of a subsequent sync response (or vice-versa),
 though servers SHOULD avoid this happening where technically feasible to do so.[^whytoleratedupe]
 
-When sending unexpired sticky events down `/sync`, the `unsigned` section MUST have a `sticky_duration_remaining_ms` field
+When exposing unexpired sticky events to clients through any Client-Server API endpoint, the `unsigned` section MUST have a `sticky_duration_remaining_ms` field
 to indicate how many milliseconds until the sticky event expires.
 From the client's point of view, this relative expiry timestamp is authoritative. Clients MUST use this value to determine when the sticky event expires.
 The server MUST have already applied the 1 hour bounded sticky duration; essentially, this timestamp MUST
