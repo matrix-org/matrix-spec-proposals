@@ -757,9 +757,10 @@ tradeoff and introduce a shared-key system via a new encryption `type`.
 
 Malicious clients could ignore slot events and consider members to be joined regardless of slot
 restrictions. This would allow them to engage in "shadow sessions" in the room that would be ignored
-by other, conforming clients in the room. While this undermines the authoritativeness of slots, it
-does not impact conforming clients in any way. RTC application and transport designers should be
-aware that slots don't provide access control, however, and adopt appropriate measures.
+by other, conforming clients in the room. This undermines the authoritativeness of slots and risks SFU
+resources being consumed. It does not impact conforming clients in any way, however. RTC application
+and transport designers should be aware that slots don't provide access control and adopt appropriate
+measures.
 
 ### Unmappable RTC streams
 
