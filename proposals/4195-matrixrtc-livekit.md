@@ -571,7 +571,8 @@ sequenceDiagram
     deactivate H
 ```
 
-Having scheduled a delayed leave event, clients then delegate this event to their homeserver by `POST`ing to a new authenticated, rate limited, and guest-accessible endpoint
+Having scheduled a delayed leave event, clients then delegate this event to their homeserver by
+`POST`ing to a new authenticated, rate limited, and guest-accessible endpoint
 `/_matrix/client/v1/rtc/livekit/delegate_delayed_leave`. Servers supporting `m.livekit`
 MUST support this endpoint too. The body of the request contains a JSON
 object with the following schema:
@@ -635,6 +636,9 @@ The server MUST only maintain a single delegated event per `room_id`, `slot_id`,
 Requests to delegate a different `delay_id` MUST invalidate earlier delegations for the same parameters.
 
 It is RECOMMENDED that servers apply rate limiting to the delegation endpoint.
+
+Note that, for now, delegating delayed events only works when using a local SFU because delayed events
+are a server-local construct and the server needs admin access to the SFU in order to monitor participants.
 
 [MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 [earlier]: #mapping-matrixrtc-members-to-livekit
@@ -744,6 +748,14 @@ fragment the session. The degenerate multi-SFU mode, in which all RTC members pu
 inverses these up- and downsides in turn. This proposal chooses a middleground by recommending clients
 to publish on local SFUs while also allowing the usage of remote SFUs. A future proposal may further
 formalise the SFU convergence mechanism.
+
+### No delegation of delayed leaves on remote SFUs
+
+As mentioned earlier, delayed leave events cannot be delegated to the home server when publishing on a
+remote SFU. This means clients need to resort to maintaining their delayed leave event themselves which
+is less accurate. A future proposal may solve this, for instance, by adding a way to trigger the sending
+of delayed events over federation. Another option could be to instead forward participant disconnects
+over federation so that the local server can trigger the delayed event.
 
 ## Alternatives
 
@@ -937,6 +949,8 @@ the implementation. As of writing, the full list of such implementation differen
     response of `/_matrix/client/unstable/org.matrix.msc4143/rtc/transports` and in `org.matrix.msc4143.rtc.member`
     events.
   - lk-jwt-service still includes the legacy endpoints `/sfu/get`, `/get_token` and `/delegate_delayed_leave`.
+- Publishing on a remote SFU is not currently implemented (though very similar to Element Call's previous
+  "oldest membership" SFU election mode).
 
 [pull request description]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
 [matrix-js-sdk]: https://github.com/matrix-org/matrix-js-sdk/
