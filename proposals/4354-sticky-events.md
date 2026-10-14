@@ -183,7 +183,7 @@ However, the `timeline` filter MUST be applied before applying the deduplication
 In other words, if a sticky event would normally appear in both the `timeline.events` section and the `sticky.events` section,
 but is filtered out by the `timeline` filter, the sticky event MUST appear in `sticky.events`.
 
-**Ignored users:** Servers MUST omit sticky events sent by ignored users.
+**Ignored users:** Servers MUST omit sticky events sent by ignored users from the `sticky.events` section.
 
 **Lazy-loading members:** Servers MUST treat sticky events the same as timeline events, for the purposes of
 calculating which lazy-loaded membership events to include in the sync response.
