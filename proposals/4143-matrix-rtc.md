@@ -158,6 +158,10 @@ creator from sending state events. To avoid leaving normal room members stuck wa
 administrator to recreate a slot following a room upgrade, servers SHOULD include `m.rtc.slot`
 events in the set of state events that are replicated during [room upgrades].
 
+Additionally, it is RECOMMENDED to create slot events at room creation time if possible to minimise
+the risk of races between two admins creating slots at the same time and subsequent anti-glare logic
+being needed in clients.
+
 [power levels]: https://spec.matrix.org/v1.18/client-server-api/#mroompower_levels
 [room upgrades]: https://spec.matrix.org/v1.18/client-server-api/#server-behaviour-21
 
