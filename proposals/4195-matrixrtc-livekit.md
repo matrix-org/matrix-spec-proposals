@@ -204,14 +204,6 @@ sessions (meaning when nobody is joined to the room). This ensures that a differ
 room name is used for the next session in the same slot and further reduces the amount
 of metadata exposed to the SFU.
 
-Building upon the exemplary procedure from [lk-jwt-service] outlined above, this could
-be achieved by adding a `salt` to the input values and rotating it once all LiveKit
-participants have left the room.
-
-```
-livekit_room_name = Base64( SHA256( Canonicalize( [ room_id, slot_id, salt ] ) ) )
-```
-
 #### LiveKit participant identities
 
 LiveKit participant identities are derived by both homeservers and clients. Homeservers require
@@ -929,8 +921,7 @@ printf '%s' "${CANONICAL_JSON}" | openssl dgst -sha256 -binary | openssl base64 
 
 | Case | Input (logical) | Canonical JSON | SHA-256 (hex) | Base64 (unpadded) |
 |------|-----------------|----------------|---------------|-------------------|
-| LiveKit room name (no random bits) | `["!roomid:example.com", "slot1234"]` | `["!roomid:example.com","slot1234"]` | `3bce37ed6dfe8e6ccc563a083f7b4dc1b9be5f11d093688aa4e03b6aac37a927` | `O8437W3+jmzMVjoIP3tNwbm+XxHQk2iKpOA7aqw3qSc` |
-| LiveKit room name (with random bits) | `["!roomid:example.com", "slot123", "random123"]` | `["!roomid:example.com","slot123","random123"]` | `20c78377e2b7308a894c8db4117048adea4a92184e46f7f7abc7f1deb96b8539` | `IMeDd+K3MIqJTI20EXBIrepKkhhORvf3q8fx3rlrhTk` |
+| LiveKit room name | `["!roomid:example.com", "slot1234"]` | `["!roomid:example.com","slot1234"]` | `3bce37ed6dfe8e6ccc563a083f7b4dc1b9be5f11d093688aa4e03b6aac37a927` | `O8437W3+jmzMVjoIP3tNwbm+XxHQk2iKpOA7aqw3qSc` |
 | LiveKit participant identity | `["@alice:example.com", "memberABC"]` | `["@alice:example.com","memberABC"]` | `337567b0b5eb91bc480c83573bae2ef0f6731720fd6581624142d1d9db21598b` | `M3VnsLXrkbxIDINXO64u8PZzFyD9ZYFiQULR2dshWYs` |
 
 ### Implementation differences in the reference implementation
