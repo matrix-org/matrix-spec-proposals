@@ -85,10 +85,16 @@ Additionally, both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted whe
 [`m.reference` relation]: https://spec.matrix.org/v1.19/client-server-api/#reference-relations
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
 
-### Sending invites
+### Invite activeness
 
-A sending client SHOULD only consider an issued invite active as long as all of the following conditions
-apply:
+For a particular user, an invite event is in exactly one of two states at any time: active or inactive.
+Active invites are "live" and MAY be acted upon by either senders or receivers whereas inactive invites
+SHOULD be ignored. Note that the view onto the state of an invite can differ between senders and receivers
+depending on what users the invite was addressed at and which of these users have already accepted or
+declined the invite.
+
+Senders and receivers share a common subset of requirements that MUST be met for considering an invite
+active. This subset is as follows:
 
 - An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the
   room where the invite was sent.
@@ -96,8 +102,28 @@ apply:
   `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts` instead. This limits
   the impact of a malicious user faking `sender_ts` to trigger long-lived notifications. Regardless
   of the basis for measuring, the remaining lifetime MUST be capped at 2 minutes.
+- The invite is the current invite entry in the ephemeral sticky events map for the sender
+  and slot, and is not a withdrawal (that is, an invite event whose `content` is empty except
+  for `sticky_key`).
+
+For sending clients the following conditions MUST hold in addition to the common requirements:
+
 - There are targeted room members who have neither accepted the invite (by sending an `m.rtc.member`
   event) nor declined it (by sending an `m.rtc.decline` event).
+
+For receiving clients, in turn, the below conditions MUST be met additionally to the common requirements:
+
+- The `sender` is not the same user as the recipient.
+- `m.mentions` either has `room` set to `true` (and the sender has sufficient power level to trigger
+  a `room` notification at the time the invite is received[^mentions-pl]) or contains the current user
+  in `user_ids`.
+- The user has no `m.rtc.member` event with a membership of `join` for the slot in the ephemeral
+  sticky events map.
+- If the user has an `m.rtc.member` event with a membership of `leave` for the slot in the ephemeral
+  sticky events map, its `origin_server_ts` is less than the `origin_server_ts` of the invite event.
+- The user has no currently sticky `m.rtc.decline` event referencing the invite event.
+
+### Sending invites
 
 To prevent duplicate invitations, senders SHOULD NOT emit invites when another active invite exists
 for the same slot and the same set of targeted users. Additionally, clients MAY emit invites automatically
@@ -117,31 +143,8 @@ section) or expires.
 
 ### Receiving invites
 
-In line with the expected behaviour of sending clients that was outlined in the previous section,
-a receiving client SHOULD only consider an invite active as long as all of the following conditions
-apply:
-
-- The `sender` is not the same user as the recipient.
-- The invite is the current invite entry in the ephemeral sticky events map for the sender
-  and slot, and is not a withdrawal (that is, an invite event whose `content` is empty except
-  for `sticky_key`).
-- An `m.rtc.slot` event with `state_key = slot_id` and `status = "open"` exists in the state of the room
-  where the invite was received.
-- The `lifetime`, as measured from `sender_ts`, has not elapsed. If `sender_ts` is later than
-  `origin_server_ts`, the `lifetime` SHOULD be measured from `origin_server_ts` instead. This limits
-  the impact of a malicious user faking `sender_ts` to trigger long-lived notifications. Regardless
-  of the basis for measuring, the remaining lifetime MUST be capped at 2 minutes.
-- `m.mentions` either has `room` set to `true` (and the sender has sufficient power level to trigger
-  a `room` notification at the time the invite is received[^mentions-pl]) or contains the current user
-  in `user_ids`.
-- The user has no `m.rtc.member` event with a membership of `join` for the slot in the ephemeral
-  sticky events map.
-- If the user has an `m.rtc.member` event with a membership of `leave` for the slot in the ephemeral
-  sticky events map, its `origin_server_ts` is less than the `origin_server_ts` of the invite event.
-- The user has no currently sticky `m.rtc.decline` event referencing the invite event.
-
-In effect, these conditions mean that when an invite comes in, the receiving client has three
-options:
+The conditions for invite activeness outlined above, in effect, mean that when an active invite comes
+in, the receiving client has three options:
 
 1. It can accept the invite by joining the slot with an appropriate `m.rtc.member` event as
    per [MSC4143]. The invite is inactivated due to the presence of a sticky join event.
