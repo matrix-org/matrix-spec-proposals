@@ -183,7 +183,7 @@ state-like store of membership events.
 Within `m.rtc.member` events, `content` contains the following properties:
 
 - `slot_id` (required, string): The `state_key` of the slot that is being used.
-- `slot_event_id` (string): The event ID of the slot that is being used. REQUIRED if `membership = join`.
+- `slot_event_id` (required, string): The event ID of the slot that is being used.
 - `member` (required, object): Information to identify the member.
   - `id` (required, string): Random identifier to distinguish this slot member. A fresh identifier
     MUST be generated for each join of a device to each slot in each room. Note that this
