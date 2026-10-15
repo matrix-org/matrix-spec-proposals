@@ -93,6 +93,10 @@ To calculate if any sticky event is still sticky:
 As it depends on the server-private timestamp of receipt, this calculation is carried out by servers.
 Clients will instead use the `unsigned.sticky_duration_remaining_ms` field described below.
 
+(Explanation: The time of receipt/persistence of an event is not exposed to clients, so clients can't
+get the authoritative stickiness duration except by relying on `unsigned.sticky_duration_remaining_ms`.
+This is also useful as soft protection against clients with desynchronised clocks.)
+
 Sticky events are like normal message events and are authorised using normal PDU checks.
 Unexpired sticky events have the following _additional_ properties[^prop]:
 
