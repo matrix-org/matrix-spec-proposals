@@ -395,6 +395,25 @@ Users might already have specific notification settings for calls via the existi
 push rule. These will not automatically apply to MatrixRTC invites which could lead to confusion.
 Servers may consider migrating push rules for their existing users.
 
+### Stale notifications on other clients of the same user
+
+The push rules introduced in this proposal only cover `m.rtc.invite` events but don't provide a signal
+to other clients of the same user when an invite is accepted or declined. As a result, those clients
+may continue notifying or ringing the user erroneously until they have synced the respective
+`m.rtc.member` or `m.rtc.decline` event.
+
+The same limitation also exists in [legacy VoIP] where the `.m.rule.call` push rule only covers
+`m.call.invite` events.
+
+This problem cannot currently be solved with push rules because the spec [excludes] a user's own
+events when generating notifications:
+
+> Homeservers MUST NOT notify the Push Gateway for events that the user has sent themselves.
+
+Resolving this existing issue is deemed out of scope here and may be tackled by a future proposal.
+
+[excludes]: https://spec.matrix.org/latest/client-server-api/#push-rules
+
 ## Alternatives
 
 ### Inferring notifications from membership events
