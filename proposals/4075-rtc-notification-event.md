@@ -144,8 +144,8 @@ An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with
 and an otherwise empty content and the same or a larger sticky duration. Alternatively, the event
 MAY also be redacted which will remove it from the ephemeral map of sticky events.
 
-To prevent stale invitations, clients SHOULD withdraw previously sent invitations when the
-inviter themselves leaves the slot with no other members currently joined to the slot.
+To prevent stale invitations, clients SHOULD withdraw previously sent invitations when the slot is
+closed or when the inviter themselves leaves the slot with no other members currently joined to the slot.
 
 How exactly sending clients present issued invitations in their UI is left as an implementation
 detail. For instance, a sending client could use a ringing UI in [direct chats] while it is waiting
