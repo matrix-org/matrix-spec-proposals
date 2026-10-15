@@ -249,6 +249,14 @@ Servers MAY rate limit sticky events received over federation.
 As a suggested mechanism, servers MAY choose to delay the persistence of the events,
 or persist the sticky events but delay delivering them to clients.
 
+Servers MAY limit the number of unexpired sticky events that can be sent by a given sender.
+A plausible value might be 60 across all rooms (one per minute, assuming each event sticks around for 1h).
+If a sender exceeds this limit, the server MAY expire the sender's existing sticky events (treat them as no longer sticky),
+oldest first, to ensure no more than 60 are unexpired at any given point.
+
+Servers MAY apply rate limits against local users sending sticky events at a high rate on the Client-Server API,
+such as using the existing 429/`M_TOO_MANY_REQUESTS` pattern.
+
 For cases of extreme load, servers can use any normal load-shedding mechanisms, such as responding to `/send` with non-`200 OK`
 response codes to cause the sender to back off.
 
