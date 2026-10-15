@@ -263,9 +263,14 @@ response codes to cause the sender to back off.
 ### Federation behaviour
 
 As with regular events, servers are only responsible for sending unexpired sticky events originating from their own server. This ensures the server is aware
-of the `prev_events` of all sticky events they send to other servers. This is important because the receiving server will
-attempt to fetch those previous events if they are unaware of them, _rejecting the transaction_ if the sending server fails
-to provide them. For this reason, it is not possible for servers to reliably deliver _other servers'_ unexpired sticky events.
+of the `prev_events` of all sticky events they send to other servers.
+
+This is important because the receiving server will attempt to fetch those previous events if they are unaware of them in order to calculate the state needed to auth the event,
+refusing to accept the event if the sending server fails to provide them.
+For this reason, it is not possible for servers to reliably deliver other server's unexpired sticky events until [MSC4242 (State DAGs)][MSC4242] lands
+(at which point this step of fetching the `prev_events` will not be required).
+This is considered acceptable, given transitive delivery of sticky events is an edge case for now anyway (and already suffers from other problems, such as E2EE keys not being deliverable transitively).
+Although these circumstances are quite rare, we intend to wait until [MSC4242 (State DAGs)][MSC4242] lands before reconsidering this.
 
 In the common case, unexpired sticky events are sent over federation like any other event and do not cause any behavioural changes.
 The two cases where this is different is:
@@ -660,3 +665,5 @@ returned via batching.
        additional source of confusing divergence between v3 Sync and Sliding Sync)
        and also increases the latency of real-time messages getting delivered to the client in all the client's rooms,
        which feels unacceptable. (It also seems like it creates extra incentive for Sticky Event spam/abuse.)
+
+[MSC4242]: https://github.com/matrix-org/matrix-spec-proposals/pull/4242
