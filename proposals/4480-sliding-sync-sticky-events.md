@@ -58,10 +58,9 @@ As with timeline events, sticky events sent by ignored users MUST NOT be deliver
 Servers MUST treat sticky events the same as timeline events, for the purposes of
 calculating which lazy-loaded membership events to include in the sync response.
 
-The server MUST include sticky events across all rooms that would be matched by at least one
-subscription or list (i.e. all rooms that the client is interested in), even if the room does not
-appear in top-N window for that subscription list at this time. Rooms that would not be matched by a
-list are not included, as this means the client is not interested in those rooms.
+The server MUST include sticky events across all rooms that are in scope for the extension, as defined
+by the common per-room extension semantics of [MSC4508]. A room can be in scope without appearing in
+the top-level `rooms` section of the response.
 
 As with regular `/sync`, when a user joins a room, the server MUST include all unexpired sticky
 events for that room in their subsequent sync responses. The server MAY spread them across multiple
@@ -109,3 +108,4 @@ This MSC builds on [MSC4354] and [MSC4186].
   [MSC4186]: https://github.com/matrix-org/matrix-spec-proposals/pull/4186
   [state filter]: https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3useruseridfilter_request_roomeventfilter
   [MSC4538: Sliding Sync Extension: To-Device messages]: https://github.com/matrix-org/matrix-spec-proposals/pull/4538
+  [MSC4508]: https://github.com/matrix-org/matrix-spec-proposals/pull/4508
