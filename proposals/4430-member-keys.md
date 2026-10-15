@@ -101,6 +101,59 @@ The `m.room.member` event with co-signatures from the server signing key:
 }
 ```
 
+It is possible for moderators/admins in a room to deface a member key if they kick/ban a user and set linkage information to something
+they control e.g:
+```json
+{
+  "type": "m.room.member",
+  "state_key": "@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ", // <-- innocent user who was previously in the room
+  "content": {
+    "membership": "invite",
+    "localpart": "some_abusive_localpart", // <-- set by the moderator
+    "domain": "evil.com" // <-- controlled by the moderator
+  },
+  "room_id": "!K3DOWWLmkHLl52yJ-vT8J5jX5wuYZati_KvC6PliIPE",
+  "sender": "@YCI-hDtoUxpf8Cng3TSsxJXv1zKVbNgjw8vaBVaLXXU", // <-- the moderator's key
+  "signatures": {
+    "sender": {
+      "ed25519:1": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+    },
+    "evil.com": {
+      "ed25519:123def": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+    }
+  }
+}
+```
+To guard against this, linkage information for membership events where `sender != state_key` must be ignored UNLESS the `state_key` has
+also signed the event (co-co-signed):
+```json
+{
+  "type": "m.room.member",
+  "state_key": "@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ",
+  "content": {
+    "membership": "invite",
+    "localpart": "some_localpart",
+    "domain": "example.com"
+  },
+  "room_id": "!K3DOWWLmkHLl52yJ-vT8J5jX5wuYZati_KvC6PliIPE",
+  "sender": "@YCI-hDtoUxpf8Cng3TSsxJXv1zKVbNgjw8vaBVaLXXU",
+  "signatures": {
+    "sender": {
+      "ed25519:1": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+    },
+    "example.com": {
+      "ed25519:123def": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+    },
+    // NEW: the signature from @l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ
+    "state_key": {
+      "ed25519:1": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+    }
+  }
+}
+```
+The lack of a signature from `state_key` does not affect event validity. It only affects whether the linkage information should be processed.
+The invited server should sign the event under `signatures.state_key` when received via [`PUT /v1/invite/{roomId}/{eventId}`](https://spec.matrix.org/unstable/server-server-api/#put_matrixfederationv1inviteroomideventid).
+
 #### Server behaviour
 
 When a server receives new `m.room.member` events, it will receive
