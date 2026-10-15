@@ -585,6 +585,24 @@ for unauthorised updates, we ensure that the arrival order doesn't affect the en
 choose whether or not to materialise/show/process a given key based on the current PL event.
 
 
+#### Concern: `sticky_key` is encrypted
+
+It might be convenient if clients could have the server filter sticky events before sending them down.
+
+Since the `sticky_key` can be encrypted, the server can't help to filter the ephemeral state map.
+
+In the future we can consider introducing a 'Keyed Sticky Event' concept, where the key is first-class
+in `sticky.key` of the PDU. This would give
+
+Having a first-class `sticky.key` would also allow us to define replacement semantics so that
+stale sticky events that no longer are represented in the 'current ephemeral state map' are no longer
+reliably delivered to new clients and servers. As a result, that would prevent flickering in many cases.
+
+We could consider allowing `sticky.key` to be a list of strings to accept hierarchical keys and thus represent
+the full 4-tuple for ephemeral state, though this will need to be weighed up with the inconsistency that'd cause with `state_key` on state events.
+
+For now, we leave this as future work.
+
 ## Notable changes to this MSC
 
 - **No longer adds a way to create sticky state events as a client**: In a previous draft of this MSC, it was proposed that
