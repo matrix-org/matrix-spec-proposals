@@ -13,7 +13,7 @@ following request extension shape:
 ``` js
 {
   "enabled": true,
-  "limit": 100 // optional (default 100, min 1): max number of events to return, server can override to a lower number
+  "limit": 100 // optional (default 100, min 1): max number of events to return, server MAY override to a lower number
 }
 ```
 
