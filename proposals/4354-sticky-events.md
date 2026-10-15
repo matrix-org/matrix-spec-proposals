@@ -647,8 +647,9 @@ or [MSC3871](https://github.com/matrix-org/matrix-spec-proposals/pull/3871) then
 into the timeline without any additional section, hence “MAY” would enable this behaviour in the future.  
 [^encryption]: Previous versions of this proposal had the key be at the top-level of the event JSON so servers could
 implement map-like semantics on client’s behalf. However, this would force the key to remain visible to the server and
-thus leak metadata. As a result, the key now falls within the encrypted `content` payload, and clients are expected to
-implement the map-like semantics should they wish to.  
+thus leak metadata, which after a discussion was considered the worse trade-off. As a result, the key now falls within the encrypted `content` payload, and clients are expected to
+implement the map-like semantics should they wish to.
+    If our minds were changed in the future, we could specify and implement the 'Keyed Sticky Events' sketch proposal described in this document.
 [^ttl]: Earlier designs had servers inject a new `unsigned.ttl_ms` field into the PDU to say how many milliseconds were left.
 This was problematic because it would have to be modified every time the server attempted delivery of the event to another server.
 Furthermore, it didn’t really add any more protection because it assumed servers honestly set the value.
