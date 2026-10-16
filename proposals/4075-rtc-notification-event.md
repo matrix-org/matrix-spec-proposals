@@ -164,6 +164,9 @@ in, the receiving client has three options:
 1. It can ignore the event by doing nothing. The invite will remain active until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
 
+To prevent duplicate invitations, receivers SHOULD ignore or coalesce invites to a given slot from
+different members if the invites are active at the same time.
+
 Again, how exactly receiving clients render invites in their UI is left as an implementation
 detail. A reasonable choice could, for instance, be to use a ringing UI in [direct chats] and
 a banner notification in group chats.
