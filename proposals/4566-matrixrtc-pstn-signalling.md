@@ -1,4 +1,4 @@
-# MSC4566: MatrixRTC call signalling events
+# MSC4566: MatrixRTC PSTN signalling
 
 [MSC4075] lets a user invite others into a MatrixRTC session and lets them accept, decline or ignore
 the invite. That is enough for calls between Matrix clients. It is not enough for calls that leave
@@ -15,23 +15,27 @@ the slot, and if Bob's line is busy the bridge can only decline, which Alice's c
 "declined". With this proposal, the bridge reports `ringing` once the phone network says the phone is
 alerting, joins the slot early to play the network's ringback tone or announcement to Alice, answers
 by updating that membership when Bob picks up, and declines with `busy` if the line was engaged.
+Once Bob's voicemail answers instead, Alice can press `1` to skip the greeting, because her client
+sends the digit to the bridge, which plays it to the phone network.
 
-This proposal adds the call progress needed for this on top of [MSC4075]: why an invite was declined,
-per-device reports of ringing and failure, and early media. It is purely additive. Clients that only
-implement [MSC4075] keep working, and a native Matrix client only needs the parts that concern an
-inviter, plus reporting `ringing` if it chooses to.
+This proposal adds what is needed for this on top of [MSC4075]: why an invite was declined,
+per-device reports of ringing and failure, early media, and DTMF. It is purely additive. Clients
+that only implement [MSC4075] keep working, and a native Matrix client only needs the parts that
+concern an inviter, plus reporting `ringing` if it chooses to.
 
 [MSC4075]: https://github.com/matrix-org/matrix-spec-proposals/pull/4075
 
 ## Proposal
 
-Three additions are made to the events of [MSC4075] and [MSC4143]:
+Four additions are made to the events of [MSC4075] and [MSC4143]:
 
 - `m.rtc.decline` gains an optional `decline_reason`.
 - A new [sticky][MSC4354] room event, `m.rtc.invite_progress`, reports the progress of an invite on
   one of the recipient's devices.
 - `m.rtc.member` gains an optional `early` flag, so that a device can join a session to carry early
   media without that join counting as answering an invite.
+- A new room event, `m.rtc.dtmf`, sends keypad digits to a member that stands in for a non-Matrix
+  endpoint, together with a `dtmf` capability for such members to advertise.
 
 [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
@@ -164,6 +168,72 @@ The third requirement, that there is no `m.rtc.decline` from the user referencin
 unchanged.
 
 [call progress and early media]: #call-progress-and-early-media
+
+### DTMF
+
+[MSC4143] describes who is in a call and where the media is. Once a Matrix user is talking to a
+bridged phone there is no way to send `1` to an IVR, enter a conference PIN or navigate a voicemail
+menu. [Legacy VoIP] had [`m.call.dtmf`]; MatrixRTC has nothing, and the member that needs it is
+always one standing in for a non-Matrix endpoint, which on SIP turns the digits into [RFC 4733]
+telephone-events or in-band tones. Between Matrix clients DTMF is meaningless, so this is
+deliberately narrow: a point-to-point event aimed at one member of the session, ignored by everyone
+else.
+
+The schema of `m.rtc.dtmf`, a message-like room event sent in the room of the session, is as follows:
+
+- `slot_id` (required, string): The `state_key` of the `m.rtc.slot` event the session belongs to, as
+  in `m.rtc.member` and `m.rtc.invite`. A recipient not joined to that slot ignores the event.
+- `device_id` (required, string): The sender's device, so that the recipient can match the event to
+  the sender's `m.rtc.member` event and its media. MUST be the device that sends the event.
+- `target` (required, object): The member the digits are for. Other members MUST ignore the event.
+  This is not `m.mentions`: the event never notifies anyone.
+  - `user_id` (required, string): The target member's Matrix ID.
+  - `device_id` (optional, string): Narrows the target to one of that user's memberships. MAY be
+    omitted when the user has a single membership in the slot.
+- `digits` (required, string): One or more of `0`-`9`, `*`, `#` and `A`-`D`, played in order. A `,`
+  is a one second pause, as in `tel:` URIs ([RFC 3966]).
+- `duration_ms`, `gap_ms` (optional, integer): The tone length and the silence between tones, in
+  milliseconds. Default to 100 and 70 respectively. Recipients clamp them to what the far end accepts
+  ([RFC 4733] allows 40 ms to several seconds).
+
+```json5
+{
+  "type": "m.rtc.dtmf",
+  "content": {
+    "slot_id": "m.call#room",
+    "device_id": "WEB1234",
+    "target": {
+      "user_id": "@_sip_441onelondon:example.org",
+      "device_id": "SIPBRIDGE"
+    },
+    "digits": "1#",
+    "duration_ms": 100,
+    "gap_ms": 70
+  }
+}
+```
+
+The recipient applies the event only if the sender is a current member of the slot. A stale event
+from a device that has since left is dropped. It relays the digits to the endpoint it stands in for,
+as [RFC 4733] events or in-band tones, whichever its leg negotiated. Digits are played after any
+already queued from the same sender, never interleaved. There is no acknowledgement: a sender that
+wants to know whether the far end reacted has the audio.
+
+`m.rtc.dtmf` MUST be sent encrypted when the room is encrypted. Nothing in it needs to be readable
+by the server, and digits are as sensitive as the call audio they are part of, such as a PIN typed
+into an IVR. Clients SHOULD hide the event from the timeline, and no push rule is introduced for it.
+
+#### Advertising a keypad
+
+A member that can act on `m.rtc.dtmf` advertises this by including `dtmf` in the `capabilities`
+list of its `m.rtc.member` event's `application` object, as defined for `m.call` in [MSC4196]. A
+client SHOULD offer a keypad only while some other member of the session advertises `dtmf`, and
+SHOULD send the digits to that member. A recipient that does not understand the event ignores it.
+
+[`m.call.dtmf`]: https://spec.matrix.org/v1.19/client-server-api/#mcalldtmf
+[RFC 3966]: https://www.rfc-editor.org/rfc/rfc3966
+[RFC 4733]: https://www.rfc-editor.org/rfc/rfc4733
+[MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
 
 ### Stickiness and encryption
 
@@ -408,6 +478,21 @@ break calls to users with several devices, just as a single busy branch does not
 SIP. The proposal keeps per-device failures in `m.rtc.invite_progress`, and leaves a decline with a
 reason to devices that know they are the user's only endpoint.
 
+### Sending DTMF as to-device messages
+
+To-device messages would keep the digits out of the timeline and avoid `target`. But the room is
+where the session is, DTMF to a device one is not in a session with is meaningless anyway, and
+to-device delivery gives no ordering with the session's other events.
+
+### Reusing legacy `m.call.dtmf`
+
+Its `call_id` and `party_id` describe legacy VoIP signalling, not slots and memberships.
+
+### Sending DTMF over the transport
+
+A data channel of the transport, such as a LiveKit data track, would work within one SFU but not
+across federated foci, and would tie the application to one transport.
+
 ### Reporting progress via to-device messages
 
 Progress could be sent as to-device messages to the inviter's devices instead of as room events. They
@@ -441,6 +526,15 @@ A targeted user could also join early to play arbitrary audio to the inviter wit
 Inviting clients only play an early member's media while an invite to that member's user is active,
 which bounds this to the invite's `lifetime`.
 
+### Digits into somebody else's IVR session
+
+`m.rtc.dtmf` lets a room member send digits into another member's IVR session. The recipient MUST
+only act on events whose sender and `device_id` are a current member of the slot, and SHOULD only
+act on events from the member it is actually bridged to (in a direct chat, the other user; in a
+group session, a member with a live leg to it), never from an arbitrary room member. In encrypted
+rooms, recipients SHOULD discard an `m.rtc.dtmf` event whose `device_id` does not match the device
+they have established as the sender of the Megolm session that encrypted it.
+
 ## Appendix: Comparison to [legacy VoIP]
 
 These rows extend the comparison table in [MSC4075].
@@ -450,6 +544,7 @@ These rows extend the comparison table in [MSC4075].
 | Reason for an unanswered call | ⚠️ `user_busy` and `invite_timeout` on [`m.call.hangup`] | ✅ via `decline_reason` on `m.rtc.decline`, with SIP and Q.850 codes |
 | Ringing feedback to the caller | ❌ Not possible | ✅ via `m.rtc.invite_progress` events |
 | Early media | ❌ Not possible | ✅ via early `m.rtc.member` events |
+| DTMF | ✅ via [`m.call.dtmf`] events | ✅ via `m.rtc.dtmf` events, targeted at one member |
 
 [`m.call.hangup`]: https://spec.matrix.org/v1.19/client-server-api/#mcallhangup
 
@@ -485,7 +580,7 @@ cover them, but nothing in it prevents future proposals from doing so.
 | Call diversion | Redirection information | Redirecting number | 3xx, Diversion, History-Info | ❌ Not covered |
 | Call transfer | ECT | — | REFER, Replaces | ⚠️ Invite a third party, then leave; no identity update |
 | Call hold | CPG (remote hold) | HOLD, RETRIEVE | re-INVITE (`sendonly`) | ❌ Not covered; left to applications such as [MSC4196] |
-| DTMF | In-band | INFORMATION, keypad | [RFC 4733], INFO | ❌ Not covered; left to transports |
+| DTMF | In-band | INFORMATION, keypad | [RFC 4733], INFO | `m.rtc.dtmf` |
 | Conference | Conference supplementary service | — | Conference focus | ✅ Inherent: a slot is a conference |
 | Precedence and preemption | MLPP | MLPP | Resource-Priority ([RFC 4412]) | ❌ Not covered |
 
@@ -496,8 +591,6 @@ cover them, but nothing in it prevents future proposals from doing so.
 [RFC 3262]: https://www.rfc-editor.org/rfc/rfc3262
 [RFC 3326]: https://www.rfc-editor.org/rfc/rfc3326
 [RFC 4412]: https://www.rfc-editor.org/rfc/rfc4412
-[RFC 4733]: https://www.rfc-editor.org/rfc/rfc4733
-[MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
 [stale notifications]: #stale-notifications-on-other-devices
 
 ## Unstable prefix
@@ -507,13 +600,18 @@ cover them, but nothing in it prevents future proposals from doing so.
 | `m.rtc.invite_progress` | Event type | `org.matrix.msc4075.rtc.invite_progress` |
 | `decline_reason` | Property of `m.rtc.decline` | `org.matrix.msc4566.decline_reason` |
 | `early` | Property of `member` in `m.rtc.member` | `org.matrix.msc4566.early` |
+| `m.rtc.dtmf` | Event type | `io.element.call.dtmf` |
+| `dtmf` | Value in `application.capabilities` of `m.rtc.member` | `dtmf` |
 
 The unstable identifier for `m.rtc.invite_progress` uses the number of [MSC4075] because the event
-was first implemented as part of that proposal before being split out into this one.
+was first implemented as part of that proposal before being split out into this one. `m.rtc.dtmf`
+and the `dtmf` capability were implemented in Element Call and the MatrixRTC SIP bridge before this
+proposal was written, hence their unstable identifiers.
 
 ## Dependencies
 
-This proposal depends on [MSC4075], and through it on [MSC4143] and [MSC4354].
+This proposal depends on [MSC4075], and through it on [MSC4143] and [MSC4354]. The `dtmf`
+capability depends on [MSC4196].
 
 ## Appendix: Implementation status
 
@@ -521,3 +619,9 @@ The MatrixRTC SIP bridge and Element Web implement an earlier draft of this prop
 the sticky key of `org.matrix.msc4075.rtc.invite_progress` is the invite's event ID alone and a
 free-text `reason` is used. There is also a `connected` state instead of an early membership, and
 failures are reported only as progress rather than as a decline with a `decline_reason`.
+
+The bridge relays `io.element.call.dtmf` as [RFC 4733] telephone-events and in-band tones, and
+advertises `dtmf` in its membership's capabilities, for which Element Call offers a keypad. The
+events it receives today carry only `digits`: `slot_id`, `device_id`, `target` and the timing
+properties are new in this proposal. The bridge accepts both shapes, treating an event without
+`target` as meant for the room's only bridged member, which is the direct chat case.
