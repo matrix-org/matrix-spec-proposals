@@ -250,9 +250,9 @@ the list of `user_ids` under `m.mentions`.
   "default": true,
   "enabled": true,
   "conditions": [{
-    "kind": "event_match",
+    "kind": "event_property_is",
     "key": "type",
-    "pattern": "m.rtc.invite"
+    "value": "m.rtc.invite"
   }, {
     "kind": "event_property_contains",
     "key": "content.m\\.mentions.user_ids",
@@ -275,9 +275,9 @@ the time the invite is received[^mentions-pl]).
   "default": true,
   "enabled": true,
   "conditions": [{
-    "kind": "event_match",
+    "kind": "event_property_is",
     "key": "type",
-    "pattern": "m.rtc.invite"
+    "value": "m.rtc.invite"
   }, {
     "kind": "event_property_is",
     "key": "content.m\\.mentions.room",
