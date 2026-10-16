@@ -27,13 +27,16 @@ concern an inviter, plus reporting `ringing` if it chooses to.
 
 ## Proposal
 
-Four additions are made to the events of [MSC4075] and [MSC4143]:
+This proposal uses the terms of [MSC4075] and [MSC4143]. A session is the span during which members
+are continuously joined to a slot. A call starts with an invite, is identified by its call ID, and
+ends when it is declined, cancelled, expires unanswered or is hung up. Four additions are made:
 
-- `m.rtc.decline` gains an optional `decline_reason`.
+- `decline_reason` on `m.rtc.decline`, as defined in [MSC4075], gains further codes and fields
+  describing why a call to a telephone network failed.
 - A new [sticky][MSC4354] room event, `m.rtc.invite_progress`, reports the progress of an invite on
   one of the recipient's devices.
-- `m.rtc.member` gains an optional `early` flag, so that a device can join a session to carry early
-  media without that join counting as answering an invite.
+- `m.rtc.member` gains an optional `early` flag, so that a device can join a slot to carry early
+  media without that join counting as answering a call.
 - A new room event, `m.rtc.dtmf`, sends keypad digits to a member that stands in for a non-Matrix
   endpoint, together with a `dtmf` capability for such members to advertise.
 
@@ -42,18 +45,18 @@ Four additions are made to the events of [MSC4075] and [MSC4143]:
 
 ### Decline reasons
 
-`m.rtc.decline` gains the following property:
+[MSC4075] gives `m.rtc.decline` a `decline_reason` object with a `code` of `declined` or `busy` and an
+optional human-readable `reason`. This proposal adds the codes `no_answer` and `unreachable`, listed
+with the others under [call outcome codes], and two optional fields to the object:
 
-- `decline_reason` (optional, object): Why the invite was not accepted. Mirrors `leave_reason` on
-  `m.rtc.member` in [MSC4143].
-  - `code` (required, string): One of the [call outcome codes] below. Receivers MUST treat a missing
-    `decline_reason` and any `code` they do not recognise as `declined`.
-  - `reason` (optional, string): Human-readable detail for diagnostics, such as a SIP status line.
-    Clients MAY display it but MUST NOT interpret it.
-  - `sip_status` (optional, integer): The SIP status code that led to this outcome, when the decline
-    is sent on behalf of a SIP or PSTN endpoint. Informational only.
-  - `q850_cause` (optional, integer): The [Q.850] cause value that led to this outcome, when the
-    decline is sent on behalf of a PSTN endpoint. Informational only.
+- `sip_status` (optional, integer): The SIP status code that led to this outcome, when the decline
+  is sent on behalf of a SIP or PSTN endpoint. Informational only.
+- `q850_cause` (optional, integer): The [Q.850] cause value that led to this outcome, when the
+  decline is sent on behalf of a PSTN endpoint. Informational only.
+
+A bridge would typically put the SIP status line into `reason`. As in [MSC4075], receivers treat
+codes they do not recognise as `declined`, so clients that only implement [MSC4075] show a
+`no_answer` or `unreachable` decline as declined.
 
 ```json5
 {
@@ -176,12 +179,12 @@ bridged phone there is no way to send `1` to an IVR, enter a conference PIN or n
 menu. [Legacy VoIP] had [`m.call.dtmf`]; MatrixRTC has nothing, and the member that needs it is
 always one standing in for a non-Matrix endpoint, which on SIP turns the digits into [RFC 4733]
 telephone-events or in-band tones. Between Matrix clients DTMF is meaningless, so this is
-deliberately narrow: a point-to-point event aimed at one member of the session, ignored by everyone
+deliberately narrow: a point-to-point event aimed at one member of the call, ignored by everyone
 else.
 
-The schema of `m.rtc.dtmf`, a message-like room event sent in the room of the session, is as follows:
+The schema of `m.rtc.dtmf`, a message-like room event sent in the room of the call, is as follows:
 
-- `slot_id` (required, string): The `state_key` of the `m.rtc.slot` event the session belongs to, as
+- `slot_id` (required, string): The `state_key` of the `m.rtc.slot` event the call takes place in, as
   in `m.rtc.member` and `m.rtc.invite`. A recipient not joined to that slot ignores the event.
 - `device_id` (required, string): The sender's device, so that the recipient can match the event to
   the sender's `m.rtc.member` event and its media. MUST be the device that sends the event.
@@ -227,7 +230,7 @@ into an IVR. Clients SHOULD hide the event from the timeline, and no push rule i
 
 A member that can act on `m.rtc.dtmf` advertises this by including `dtmf` in the `capabilities`
 list of its `m.rtc.member` event's `application` object, as defined for `m.call` in [MSC4196]. A
-client SHOULD offer a keypad only while some other member of the session advertises `dtmf`, and
+client SHOULD offer a keypad only while some other member joined to the slot advertises `dtmf`, and
 SHOULD send the digits to that member. A recipient that does not understand the event ignores it.
 
 [`m.call.dtmf`]: https://spec.matrix.org/v1.19/client-server-api/#mcalldtmf
@@ -265,8 +268,9 @@ The protocol keeps two things apart, as SIP does between provisional and final r
 #### Call outcome codes
 
 The following codes are used both as `decline_reason.code` and, except for `declined`, as the failure
-values of `m.rtc.invite_progress.state`. The SIP and Q.850 values listed are typical, after
-[RFC 3398]. They show what a bridge would map to each code and are not exhaustive.
+values of `m.rtc.invite_progress.state`. `declined` and `busy` are defined in [MSC4075]; `no_answer`
+and `unreachable` are added here. The SIP and Q.850 values listed are typical, after [RFC 3398]. They
+show what a bridge would map to each code and are not exhaustive.
 
 | Code | Meaning | Q.850 cause | SIP status |
 | ---- | ------- | ----------- | ---------- |
@@ -275,10 +279,9 @@ values of `m.rtc.invite_progress.state`. The SIP and Q.850 values listed are typ
 | `no_answer` | The endpoint alerted but nobody answered. | 19 | 408 or 480 after alerting |
 | `unreachable` | The endpoint could not be reached or alerted. | 1, 3, 18, 20, 27, 34, 38 | 404, 410, 408 or 480 without alerting, 502, 503, 504 |
 
-`busy` is not meant for a native Matrix client merely because it is already in another call. As with
-`user_busy` in [legacy VoIP], such a client would not generally decline a new call unless the user
-chose to. Future proposals MAY define further codes. Receivers treat unknown codes as `declined` in a
-decline and as no report at all in progress.
+As [MSC4075] says, a native Matrix client does not decline with `busy` merely because its user is in
+another call. Future proposals MAY define further codes. Receivers treat unknown codes as `declined`
+in a decline and as no report at all in progress.
 
 #### Reporting progress
 
@@ -416,11 +419,11 @@ invite never reached, and a bridge relays whatever the far side told it. Sending
 therefore not depend on progress reports for correctness, and SHOULD treat an invite without any
 reports as they would without this proposal.
 
-### Early media in group sessions
+### Early media in group calls
 
 An early member is a full member as far as [MSC4143] and its transports are concerned. Clients that
-do not implement this proposal will treat it as present and may play its early media to everyone in
-the session. This proposal asks clients other than the inviter not to do so. Restricting early media
+do not implement this proposal will treat it as present and may play its early media to everyone joined
+to the slot. This proposal asks clients other than the inviter not to do so. Restricting early media
 to the inviter at the transport level, for instance through SFU subscription permissions, is left to
 transport specifications.
 
@@ -481,8 +484,8 @@ reason to devices that know they are the user's only endpoint.
 ### Sending DTMF as to-device messages
 
 To-device messages would keep the digits out of the timeline and avoid `target`. But the room is
-where the session is, DTMF to a device one is not in a session with is meaningless anyway, and
-to-device delivery gives no ordering with the session's other events.
+where the call is, DTMF to a device one is not in a call with is meaningless anyway, and
+to-device delivery gives no ordering with the call's other events.
 
 ### Reusing legacy `m.call.dtmf`
 
@@ -516,7 +519,7 @@ they have established as the sender of the Megolm session that encrypted it.
 
 ### Early media
 
-An early member publishes media to the session before answering, and could receive the session's
+An early member publishes media to the slot before answering, and could receive other members'
 media before answering. The rule that an early member does not present other members' media until it
 answers keeps media flowing backwards only, as in the PSTN, so that an unanswered phone cannot
 overhear the caller. This rule is enforced by the early member's own client or bridge, not by the
@@ -526,12 +529,12 @@ A targeted user could also join early to play arbitrary audio to the inviter wit
 Inviting clients only play an early member's media while an invite to that member's user is active,
 which bounds this to the invite's `lifetime`.
 
-### Digits into somebody else's IVR session
+### Digits into somebody else's IVR
 
-`m.rtc.dtmf` lets a room member send digits into another member's IVR session. The recipient MUST
+`m.rtc.dtmf` lets a room member send digits into another member's IVR. The recipient MUST
 only act on events whose sender and `device_id` are a current member of the slot, and SHOULD only
 act on events from the member it is actually bridged to (in a direct chat, the other user; in a
-group session, a member with a live leg to it), never from an arbitrary room member. In encrypted
+group call, a member with a live leg to it), never from an arbitrary room member. In encrypted
 rooms, recipients SHOULD discard an `m.rtc.dtmf` event whose `device_id` does not match the device
 they have established as the sender of the Megolm session that encrypted it.
 
@@ -541,7 +544,7 @@ These rows extend the comparison table in [MSC4075].
 
 | Feature | Legacy VoIP | MatrixRTC |
 | ------- | ----------- | --------- |
-| Reason for an unanswered call | ⚠️ `user_busy` and `invite_timeout` on [`m.call.hangup`] | ✅ via `decline_reason` on `m.rtc.decline`, with SIP and Q.850 codes |
+| Reason for an unanswered call | ⚠️ `user_busy` and `invite_timeout` on [`m.call.hangup`] | ✅ `no_answer` and `unreachable` in `decline_reason`, with SIP and Q.850 values |
 | Ringing feedback to the caller | ❌ Not possible | ✅ via `m.rtc.invite_progress` events |
 | Early media | ❌ Not possible | ✅ via early `m.rtc.member` events |
 | DTMF | ✅ via [`m.call.dtmf`] events | ✅ via `m.rtc.dtmf` events, targeted at one member |
@@ -563,16 +566,16 @@ cover them, but nothing in it prevents future proposals from doing so.
 | Called party alerting | ACM or CPG (alerting) | ALERTING | 180 Ringing | `m.rtc.invite_progress` with `ringing` |
 | Early media | ACM or CPG with in-band information | PROGRESS (in-band information available) | 183 Session Progress with SDP | Early `m.rtc.member` join publishing media |
 | Answer | ANM or CON | CONNECT | 200 OK, ACK | Non-early `m.rtc.member` join |
-| Caller abandons before answer | REL | DISCONNECT | CANCEL | Withdrawn or redacted `m.rtc.invite` |
+| Caller abandons before answer | REL | DISCONNECT | CANCEL | Withdrawn `m.rtc.invite` with `withdraw_reason` `cancelled`, or redacted |
 | Called party busy | REL, cause 17 | DISCONNECT, cause 17 | 486, 600 | `m.rtc.decline` with `busy` |
 | Called party rejects | REL, cause 21 | DISCONNECT, cause 21 | 603 | `m.rtc.decline` with `declined` |
 | No answer | REL, cause 19 | DISCONNECT, cause 19 | 480 or 408 after alerting | `m.rtc.decline` with `no_answer`, or `lifetime` expiry |
 | Unreachable | REL, cause 1, 18, 20, 27, 34 or 38 | DISCONNECT, same causes | 404, 410, 480, 502, 503, 504 | `m.rtc.decline` with `unreachable` |
-| Release after answer | REL, RLC | DISCONNECT, RELEASE | BYE | Leaving `m.rtc.member` |
+| Release after answer | REL, RLC | DISCONNECT, RELEASE | BYE | Leaving `m.rtc.member` with `leave_reason` `leave`; a two-party call then ends ([MSC4075]) |
 | Reliable provisional responses | Inherent in the signalling link | Inherent | PRACK ([RFC 3262]) | Sticky events ([MSC4354]) |
 | Parallel alerting of several terminals | — | — | Forking; the best final response wins | Per-device `m.rtc.invite_progress`; the first non-early join answers |
 | Answered elsewhere | — | — | CANCEL with Reason "Call completed elsewhere" ([RFC 3326]) | ⚠️ Other devices see the join (see [stale notifications]) |
-| Call identifier | CIC | Call reference | Call-ID | Event ID of the session's first `m.rtc.invite` ([MSC4075]) |
+| Call identifier | CIC | Call reference | Call-ID | Call ID: event ID of the call's first `m.rtc.invite` ([MSC4075]) |
 | Crossing setups (glare) | Dual seizure resolution | — | Two independent dialogs | Lowest invite event ID wins ([MSC4075]); media is unaffected |
 | **Supplementary services** | | | | |
 | Calling line identity | Calling party number, CLIP | Calling party number | From, P-Asserted-Identity | The sender's Matrix ID |
@@ -598,7 +601,8 @@ cover them, but nothing in it prevents future proposals from doing so.
 | Stable identifier | Purpose | Unstable identifier |
 | ----------------- | ------- | --------------------|
 | `m.rtc.invite_progress` | Event type | `org.matrix.msc4075.rtc.invite_progress` |
-| `decline_reason` | Property of `m.rtc.decline` | `org.matrix.msc4566.decline_reason` |
+| `no_answer`, `unreachable` | Values of `decline_reason.code` | `org.matrix.msc4566.no_answer`, `org.matrix.msc4566.unreachable` |
+| `sip_status`, `q850_cause` | Properties of `decline_reason` | `org.matrix.msc4566.sip_status`, `org.matrix.msc4566.q850_cause` |
 | `early` | Property of `member` in `m.rtc.member` | `org.matrix.msc4566.early` |
 | `m.rtc.dtmf` | Event type | `io.element.call.dtmf` |
 | `dtmf` | Value in `application.capabilities` of `m.rtc.member` | `dtmf` |
