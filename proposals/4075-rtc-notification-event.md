@@ -9,7 +9,9 @@ is to construct a minimal solution that achieves feature parity with notificatio
 and doesn't design out future improvements. This is achieved by mediating notifications via dedicated
 room events that invite recipients to join a MatrixRTC session. Invites can be accepted by joining
 the session with an appropriate `m.rtc.member` event, declined by sending a dedicated decline event
-or ignored entirely. Under this model, notifications are agnostic of the particular MatrixRTC
+or ignored entirely. Invites also give the sessions they start an identity: the event ID of the
+invite serves as the session ID, and when invites to the same slot cross, a deterministic tie-break
+settles which one counts. Under this model, notifications are agnostic of the particular MatrixRTC
 application, yet form a solid foundation for future extension.
 
 [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
@@ -35,6 +37,11 @@ The schema of `m.rtc.invite` is as follows:
   `m.rtc.invite` event invalid.
 - `sticky_key` (required, string): The event's sticky key as per [the addendum of MSC4354]. MUST be
   equal to `slot_id`. This ensures that receivers only maintain one active invite per slot and sender.
+- `session_id` (optional, string): The event ID of the invite that started the session which this
+  invite invites into (see [sessions]). MUST be absent on an invite that starts a session.
+- `reason` (optional, string): Only meaningful on a withdrawal (see [sending invites]). Why the
+  invite was withdrawn. This proposal defines `glare` (see [crossing invites]). Receivers MUST ignore
+  values they do not recognise.
 
 ```json5
 {
@@ -83,6 +90,9 @@ Additionally, both `m.rtc.invite` and `m.rtc.decline` MUST be sent encrypted whe
 [the addendum of MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/blob/kegan/persist-edu/proposals/4354-sticky-events.md#implementing-an-ephemeral-map
 [`m.reference` relation]: https://spec.matrix.org/v1.19/client-server-api/#reference-relations
 [MSC4354]: https://github.com/matrix-org/matrix-spec-proposals/pull/4354
+[sending invites]: #sending-invites
+[sessions]: #sessions
+[crossing invites]: #crossing-invites
 
 ### Invite activeness
 
@@ -125,7 +135,8 @@ Given these definitions, the following requirements MUST hold for clients to con
   Regardless of the basis for measuring, the remaining lifetime MUST be capped at 2 minutes.
 - The invite is the current invite entry in the ephemeral sticky events map for the sender
   and slot, and is not a withdrawal (that is, an invite event whose `content` is empty except
-  for `sticky_key`).
+  for `sticky_key` and, optionally, `reason`).
+- The invite has not lost a tie-break against another invite (see [crossing invites]).
 - If the client is the receiver of the invite:
   - The client's current user is targeted by the invite but has not yet acted on it (as per the definitions
     above).
@@ -140,9 +151,9 @@ To prevent duplicate invitations, senders SHOULD NOT emit invites when another a
 for the same slot and the same set of targeted users. Additionally, clients MAY emit invites automatically
 when joining a slot but SHOULD only do so when no other user is currently joined to the slot.
 
-An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
-and an otherwise empty content and the same or a larger sticky duration. Alternatively, the event
-MAY also be redacted which will remove it from the ephemeral map of sticky events.
+An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`,
+an otherwise empty content (apart from an optional `reason`) and the same or a larger sticky duration.
+Alternatively, the event MAY also be redacted which will remove it from the ephemeral map of sticky events.
 
 To prevent stale invitations, clients SHOULD withdraw previously sent invitations when the slot is
 closed or when the inviter themselves leaves the slot with no other members currently joined to the slot.
@@ -164,8 +175,9 @@ in, the receiving client has three options:
 1. It can ignore the event by doing nothing. The invite will remain active until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
 
-To prevent duplicate invitations, receivers SHOULD ignore or coalesce invites to a given slot from
-different members if the invites are active at the same time.
+If several invites to a given slot are active at the same time, they either invite into the same
+session or cross each other. Receivers SHOULD present only one of them, as described under [sessions]
+and [crossing invites].
 
 Again, how exactly receiving clients render invites in their UI is left as an implementation
 detail. A reasonable choice could, for instance, be to use a ringing UI in [direct chats] and
@@ -179,6 +191,62 @@ video calls.
 
 [direct chats]: https://spec.matrix.org/v1.19/client-server-api/#direct-messaging
 [MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
+
+### Sessions
+
+[MSC4143] forms sessions indirectly from the temporal overlap of members joined to a slot and
+deliberately defines no session identifier. For slots that host calls, invites are what carve the
+comings and goings of members into sessions: a call begins when somebody is invited into the slot.
+This proposal therefore uses the invite to identify the session, as [MSC4143] suggests.
+
+For this purpose, a session is a session in the sense of [MSC4143], extended to begin at an invite
+sent while the slot has no joined members. It ends when the slot next has no joined members or is
+closed, or, if nobody joins at all, when that invite becomes inactive.
+
+A session is identified by the event ID of the invite that started it. Concretely, the session ID is
+the event ID that sorts first, when compared as Unicode code points, among the `m.rtc.invite` events
+sent for the session which have no `session_id`. Sessions for which no invite is ever sent have no
+identifier, as in [MSC4143]. Senders set `session_id` on every invite into a session they know to
+be running, so normally exactly one invite without `session_id` exists per session: the one that
+started it. Several exist only when invites cross, as described in the next section.
+
+Which session a member belongs to follows from timing: a member is part of the session running while
+it is joined. Each `m.rtc.member` event, and the media it publishes, can thus be attributed to a
+session ID without any new property on it. Declines, and any future events that reference an invite,
+are attributed through the invite they reference.
+
+None of this affects media. Transports connect the members of a slot as per [MSC4143] regardless of
+which invite, if any, brought them there. Session IDs are a labelling over memberships that already
+exist, for use by call history, call data records, bridges and future signalling that needs to refer
+to a particular call.
+
+### Crossing invites
+
+Two users may call each other, or several users may invite the room, in the same slot at about the
+same time, each before having seen the others' invites. This is glare. Each sender believes it is
+starting a session and so sends an invite without `session_id`. As [MSC4143] notes, membership is
+conflict-free, so glare cannot break media: every sender can join the slot and their transports
+connect as usual. What needs resolving is purely at the signalling layer: which invite identifies
+the session, and which invite receivers act on.
+
+By the rule above, all such invites belong to one session and the one whose event ID sorts first
+identifies it. That invite wins, the others lose, and the following applies:
+
+- The sender of a losing invite SHOULD withdraw it with `reason` set to `glare`. If it is targeted
+  by the winning invite, it SHOULD accept the winning invite on behalf of its user, by joining the
+  slot unless already joined. Its user has evidently chosen to be in this session.
+- Receivers MUST consider losing invites inactive and SHOULD present only the winning invite, whether
+  or not the withdrawal has arrived yet.
+- An invite whose `session_id` names a losing invite invites into the winner's session.
+- Members already joined to the slot stay joined. Nothing is torn down or renegotiated, and media
+  that is already flowing is not interrupted.
+
+As every client applies the same comparison to the same event IDs, they agree on the outcome without
+further signalling. The withdrawal exists for receivers that have only seen the losing invite so far.
+This is the same resolution that [legacy VoIP glare] uses, with the invite's event ID in place of
+`call_id`, except that no call is hung up.
+
+[legacy VoIP glare]: https://spec.matrix.org/v1.19/client-server-api/#glare
 
 ### Exemplary invite flows
 
@@ -234,6 +302,26 @@ Invite active         |          |          |
                       |          |          |
                       Slot       Invite     Invitee
                       joined     sent       leaves
+```
+
+#### Example 4: Alice and Bob call each other at the same time
+
+Both join the slot and invite the other before seeing the other's invite. Bob's invite `$b` sorts
+before Alice's `$a`, so `$b` identifies the session and Alice withdraws `$a` with `reason: "glare"`.
+Both were joined before being invited, so neither invite rings anyone, and their media connected as
+soon as both had joined.
+
+```
+m.rtc.member (Alice: join)   [==========|==========|==========|==========]
+m.rtc.member (Bob: join)     |          [==========|==========|==========]
+m.rtc.invite ($a, Alice)     |          |          [xxxxxxxxxx|xxxxxxxxxx]
+m.rtc.invite ($b, Bob)       |          |          [==========|==========]
+m.rtc.invite ($a withdrawn)  |          |          |          [==========]
+                             |          |          |          |
+Session $b                   [=======================================
+                             |          |          |          |
+                             Alice      Bob        Invites    Alice
+                             joins      joins      cross      withdraws
 ```
 
 ### Push rules
@@ -366,6 +454,21 @@ ringing acknowledgements could be communicated back via to-device messages. Alte
 progress updates could be mediated via sticky room messages. Lastly, a general event delivery receipt
 mechanism could also be sufficient to cover some use cases.
 
+### Sessions without invites have no identifier
+
+Session IDs are only defined for sessions that have an invite. Ad-hoc sessions, where members join a
+slot without inviting anybody, remain as in [MSC4143]. Applications that need identifiers for these
+can define their own.
+
+### Session boundaries depend on observed order
+
+Whether a session is running when a sender invites depends on the order in which it has seen
+membership and invite events, which can briefly differ between clients as discussed under accurate
+session reconstruction in [MSC4143]. A sender that has not yet seen a session start will omit
+`session_id`, and its invite then competes under the tie-break, which can give the session a
+different ID than clients that saw the earlier invite first assumed. The outcome is still the same
+for everybody once all events have been seen, and only invites without `session_id` ever compete.
+
 ### Device-specific invites
 
 This proposal uses `m.mentions` to target invite recipients. Mentions can currently be directed at either
@@ -447,6 +550,26 @@ reliably evaluate the lifetime against `sender_ts` anymore. This is because when
 ends, the invite may not even be delivered to clients anymore. This would make it impossible to
 account for clock-drift between inviting clients and servers.
 
+### Sender-chosen session identifiers
+
+Invites could carry a `session_id` chosen freely by the sender, as `call_id` is in [legacy VoIP].
+Deriving the identifier from the starting invite's event ID instead cannot collide or be forged, and
+leaves nothing for the sender to choose. It also matches the suggestion in [MSC4143].
+
+### Inferring the session of an invite from timing alone
+
+Instead of `session_id`, an invite could be taken to invite into whatever session is running when it
+is sent. Clients can disagree on whether a session was running when an invite arrived, which would
+make the session ID depend on the order in which each client saw events. `session_id` makes the
+sender's intent explicit, and the tie-break covers the only case where several invites legitimately
+claim to start the same session.
+
+### Tie-breaking on timestamps or senders
+
+Crossing invites could be resolved by `origin_server_ts` or by comparing sender Matrix IDs. Timestamps
+are set by different homeservers and can be faked, and a comparison of Matrix IDs would always favour
+the same user. Event IDs are random, known to every client, and settle a tie without bias.
+
 ## Security considerations
 
 ### Inviting without a valid `m.rtc.member` event
@@ -506,6 +629,8 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 | Inviting without starting a call | ❌ Not possible | ✅ Explicitly allowed if an open slot exists |
 | Withdrawing invites | ✅ via [`m.call.hangup`] events | ✅ via empty or redacted `m.rtc.invite` events |
 | Declining invites | ✅ via [`m.call.hangup`] events | ✅ via `m.rtc.decline` events |
+| Session identifiers | ✅ `call_id` | ✅ event ID of the session's first `m.rtc.invite` |
+| Glare | ✅ lexicographic comparison of `call_id`; the losing call is hung up | ✅ comparison of invite event IDs; media is unaffected |
 | Notifications in default rooms | ✅ via `.m.rule.call` push rule | ✅ via `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` push rules |
 | Notifications in mentions-only rooms | ❌ Not possible | ✅ via `.m.rule.rtc.invite_for_me` and `.m.rule.rtc.invite_for_room` push rules |
 | Events required to validate session invites | ✅ 1 ([`m.call.invite`]) | ⚠️ 2 (`m.rtc.slot` and `m.rtc.invite`; since `m.rtc.slot` is a state event both can be fetched in the same `/sync`, however) |
@@ -520,6 +645,8 @@ mitigate this by adapting their push rules, [ignoring] the sender or leaving the
 | ----------------- | ------- | --------------------|
 | `m.rtc.invite` | Event type | `org.matrix.msc4075.rtc.notification` |
 | `m.rtc.decline` | Event type | `org.matrix.msc4310.rtc.decline` |
+| `session_id` | Property of `m.rtc.invite` | `org.matrix.msc4075.session_id` |
+| `reason` | Property of `m.rtc.invite` | `org.matrix.msc4075.reason` |
 | `.m.rule.rtc.invite_for_me` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_me` |
 | `.m.rule.rtc.invite_for_room` | Push rule ID | `.org.matrix.msc4075.rule.rtc.invite_for_room` |
 
