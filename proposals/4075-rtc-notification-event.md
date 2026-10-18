@@ -190,7 +190,7 @@ purposes of CDRs, E911, coherent bridging to VoIP protocols like SIP/H.225/ISUP,
 debugging, etc. In the case of E911 and similar there may even be a legal requirement to have
 a unique ID for the call/session.
 
-Therefore, we use event_id of the `m.rtc.invite` event as the unique ID of a given session.
+Therefore, we use the `event_id` of the `m.rtc.invite` event as the unique ID of a given session.
 
 Signalling events (`m.rtc.decline`, `m.rtc.member`) associated with a specific session MUST reference
 the `m.rtc.invite` of that session via an `m.reference` `rel_type` - see `m.rtc.decline` above.
