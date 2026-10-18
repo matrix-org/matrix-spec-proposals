@@ -337,9 +337,9 @@ Inviting clients:
 
 - MAY play a local ringback tone while an invite is active for a targeted user, and SHOULD do so once
   any device of a targeted user has reported `ringing`.
-- MUST stop any local ringback tone and play the early member's media instead while a targeted user
-  has an early member in the slot. This avoids the two being heard at once, and lets a caller hear
-  an announcement such as "the number you have called is not available".
+- MUST stop any local ringback tone while a targeted user has an early member in the slot, so that
+  the two are not heard at once, and lets the caller hear an announcement such as "the number you
+  have called is not available".
 - SHOULD summarise progress per targeted user across all of that user's devices, rather than showing
   the latest report alone. For example, the user is "ringing" if any device's current report is
   `ringing`, and "busy" only if every device that reported has failed with `busy`.
@@ -349,9 +349,9 @@ Inviting clients:
   a `decline_reason` to say "busy" rather than "declined".
 - SHOULD start any call timer from the answer rather than from the first join.
 
-Clients other than the inviter SHOULD present early members as connecting rather than present, and
-SHOULD NOT play their media. In a group call, a bridge dialling out on someone's behalf would
-otherwise play ringback to everybody.
+An early member is a member like any other as far as media goes: everyone joined to the slot hears
+what it publishes, as they would expect of any member publishing media. Clients MAY present early
+members as connecting rather than present, so that users can tell a ringing phone from a person.
 
 Receivers MUST ignore `m.rtc.invite_progress` and `m.rtc.decline` events whose sender is not targeted
 by the referenced invite (see [security considerations]).
@@ -450,12 +450,11 @@ invite without any reports as they would without this proposal.
 
 ### Early media in group calls
 
-An early member is a full member as far as [MSC4143] and its transports are concerned. Clients that
-do not implement this proposal will treat it as present and may play its early media to everyone
-joined to the slot, and clients that only implement [MSC4075] will take its join as the answer. This
-proposal asks clients other than the inviter not to play early media. Restricting early media to the
-inviter at the transport level, for instance through SFU subscription permissions, is left to
-transport specifications.
+An early member is a full member as far as [MSC4143] and its transports are concerned, so in a group
+call a bridge dialling out on someone's behalf plays ringback or an announcement to everybody. This is
+deliberate: a member publishing media is heard. Clients that only implement [MSC4075] will also take
+its join as the answer. A future proposal could restrict early media to the inviter at the transport
+level, for instance through SFU subscription permissions, if that turns out to be wanted.
 
 ### A legacy device answering next to a reporting one
 
@@ -571,9 +570,9 @@ answers keeps media flowing backwards only, as in the PSTN, so that an unanswere
 overhear the caller. This rule is enforced by the early member's own client or bridge, not by the
 protocol. A transport that supports it SHOULD also deny early members subscriptions until they answer.
 
-A targeted user could also join early to play arbitrary audio to the inviter without ever answering.
-Inviting clients only play an early member's media while an invite to that member's user is active,
-which bounds this to the invite's `lifetime`.
+A targeted user could also join early to play arbitrary audio to the session without ever answering.
+This is no different from any member publishing media, which [MSC4143] already permits, and the
+invite's `lifetime` bounds how long the join counts as early.
 
 ## Appendix: Comparison to [legacy VoIP]
 
