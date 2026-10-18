@@ -622,7 +622,7 @@ cover them, but nothing in it prevents future proposals from doing so.
 | Call diversion | Redirection information | Redirecting number | 3xx, Diversion, History-Info | ❌ Not covered |
 | Call transfer | ECT | — | REFER, Replaces | ⚠️ Invite a third party, then leave; no identity update |
 | Call hold | CPG (remote hold) | HOLD, RETRIEVE | re-INVITE (`sendonly`) | ❌ Not covered; left to applications such as [MSC4196] |
-| DTMF | In-band | INFORMATION, keypad | [RFC 4733], INFO | Separate proposal, `m.rtc.dtmf` |
+| DTMF | In-band | INFORMATION, keypad | [RFC 4733], INFO | `m.rtc.dtmf` ([MSC4568]) |
 | Conference | Conference supplementary service | — | Conference focus | ✅ Inherent: a slot is a conference |
 | Precedence and preemption | MLPP | MLPP | Resource-Priority ([RFC 4412]) | ❌ Not covered |
 
@@ -635,6 +635,7 @@ cover them, but nothing in it prevents future proposals from doing so.
 [RFC 4412]: https://www.rfc-editor.org/rfc/rfc4412
 [RFC 4733]: https://www.rfc-editor.org/rfc/rfc4733
 [MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
+[MSC4568]: https://github.com/matrix-org/matrix-spec-proposals/pull/4568
 [stale notifications]: #stale-notifications-on-other-devices
 
 ## Unstable prefix
