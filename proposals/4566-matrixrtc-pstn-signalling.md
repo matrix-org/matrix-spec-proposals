@@ -156,8 +156,9 @@ every device, exactly as in [MSC4075]. `decline_reason` only explains why.
 
 ### Withdraw reasons
 
-[MSC4075] withdraws an invite by sending another `m.rtc.invite` with the same `sticky_key` and an
-otherwise empty content. This proposal lets the withdrawal carry one optional property:
+[MSC4075] withdraws an invite by sending another `m.rtc.invite` with the same `sticky_key`, an
+`m.reference` relation to the invite being withdrawn and an otherwise empty content. This proposal
+lets the withdrawal carry one optional property:
 
 - `withdraw_reason` (optional, object): Why the invite was withdrawn, as a [reason codes] object with
   a `code` of `cancelled` or `glare`. Absent means `cancelled`.
@@ -166,6 +167,10 @@ otherwise empty content. This proposal lets the withdrawal carry one optional pr
 {
   "type": "m.rtc.invite",
   "content": {
+    "m.relates_to": {
+      "rel_type": "m.reference",
+      "event_id": "$1"
+    },
     "sticky_key": "m.call#room",
     "withdraw_reason": {
       "code": "glare"
@@ -175,7 +180,7 @@ otherwise empty content. This proposal lets the withdrawal carry one optional pr
 ```
 
 Accordingly, [MSC4075]'s definition of a withdrawal is amended to an `m.rtc.invite` event whose
-`content` has no properties other than `sticky_key` and `withdraw_reason`. A client that only
+`content` has no properties other than `sticky_key`, `m.relates_to` and `withdraw_reason`. A client that only
 implements [MSC4075] sees such an event as an invite without `slot_id` or `m.mentions`, which that
 proposal already makes invalid, so it still stops treating the withdrawn invite as active.
 
@@ -266,8 +271,8 @@ the transitions below are the ones that matter to signalling.
          | (no ringing report: answers)                    |
          |                                                 |
          |   from any pre-answer state:                    |
-         |     m.rtc.invite withdrawn, cancelled   -> ENDED (cancelled)                           
-         |     m.rtc.invite withdrawn, glare       -> ENDED (glare)
+         |     m.rtc.invite withdrawn {X}, cancelled -> ENDED (cancelled)
+         |     m.rtc.invite withdrawn {X}, glare     -> ENDED (glare)
          |     m.rtc.decline {X}                   -> ENDED (declined / busy / no_answer / unreachable)
          |     invite lifetime elapses             -> ENDED (no_answer)
          |     inviter's m.rtc.member leaves       -> ENDED (cancelled)
