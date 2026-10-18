@@ -59,7 +59,12 @@ equivalent provided for sticky events e.g. to filter sticky events by event type
 As with timeline events, sticky events sent by ignored users MUST NOT be delivered to clients.
 
 Servers MUST treat sticky events the same as timeline events, for the purposes of
-calculating which lazy-loaded membership events to include in the sync response.
+calculating which lazy-loaded membership events to include in the sync response. That is, when a
+room's combined `required_state` has `lazy_members` set, the senders of sticky events returned for
+that room in this extension count as senders of `timeline` events for the purposes of the
+lazy-loaded memberships of [MSC4186]. Their membership events are returned in the room's
+`required_state`, so the room appears in the `rooms` section of the response even if it has no
+other updates.
 
 ### Scope
 
