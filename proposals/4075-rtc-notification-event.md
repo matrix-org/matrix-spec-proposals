@@ -126,7 +126,7 @@ Given these definitions, the following requirements MUST hold for clients to con
   Regardless of the basis for measuring, the remaining lifetime MUST be capped at 2 minutes.
 - The invite is the current invite entry in the ephemeral sticky events map for the sender
   and slot, and is not a withdrawal (that is, an invite event whose `content` is empty except
-  for `sticky_key`).
+  for `sticky_key` and `m.relates_to`).
 - If the client is the receiver of the invite:
   - The client's current user is targeted by the invite but has not yet acted on it (as per the definitions
     above).
@@ -141,9 +141,26 @@ To prevent duplicate invitations, senders SHOULD NOT emit invites when another a
 for the same slot and the same set of targeted users. Additionally, clients MAY emit invites automatically
 when joining a slot but SHOULD only do so when no other user is currently joined to the slot.
 
-An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
-and an otherwise empty content and the same or a larger sticky duration. Alternatively, the event
-MAY also be redacted which will remove it from the ephemeral map of sticky events.
+An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`,
+an [`m.reference` relation] to the invite being withdrawn, an otherwise empty content and the same or
+a larger sticky duration. The relation names the session that is being ended (see [Session IDs]
+below); the sticky key alone only says that whichever invite was current is no longer. Alternatively,
+the event MAY also be redacted which will remove it from the ephemeral map of sticky events.
+
+```json5
+{
+  "type": "m.rtc.invite",
+  "content": {
+    "m.relates_to": {
+      "rel_type": "m.reference",
+      "event_id": "$1"
+    },
+    "sticky_key": "m.call#room"
+  }
+}
+```
+
+[Session IDs]: #session-ids
 
 To prevent stale invitations, clients SHOULD withdraw previously sent invitations when the slot is
 closed or when the inviter themselves leaves the slot with no other members currently joined to the slot.
@@ -184,7 +201,8 @@ A side-effect of defining a unique identifier per session is that if multiple in
 will temporarily overlap within a given slot.  In order to converge on a single session, clients MUST
 pick the event_id with the oldest origin_server_ts and failing that lowest lexicographic event_id.
 
-The losing invite(s) MUST then be withdrawn by the inviter(s).
+The losing invite(s) MUST then be withdrawn by the inviter(s), with the withdrawal relating to the
+losing invite as described above.
 
 As the session ID is only used in practice to correlate signalling for a given session, when clients
 next change their signalling in the session (e.g. by posting a new `m.rtc.member` sticky event, to leave it)
@@ -210,8 +228,8 @@ join and leave as per [MSC4143]; the transitions below are the ones that matter 
                        |
        +---------------+--------------------------------------------------------------+
        |                                                                              |
-       | targeted user's m.rtc.member join {X}   m.rtc.invite withdrawn (cancel)      |
-       |                                         m.rtc.invite withdrawn (lost glare)  |
+       | targeted user's m.rtc.member join {X}   m.rtc.invite withdrawn {X} (cancel)  |
+       |                                         m.rtc.invite withdrawn {X} (glare)   |
        |                                         m.rtc.decline {X}                    |
        |                                         invite lifetime elapses              |
        |                                         inviter's m.rtc.member leave {X}     |
@@ -659,6 +677,8 @@ implementation. As of writing, the full list of such implementation differences 
   RTC member event that has been removed from the proposal. Instead, receiving clients can look up
   membership events via the slot.
 - The value of `sender_ts` is allowed to be up to 20 seconds later than `origin_server_ts`.
+- Withdrawals are sent with a bare `sticky_key` and no `m.reference` relation to the invite they
+  withdraw.
 
 [^mentions-pl]: Note that this matches how `room` mentions are already handled in practice today even
                 though the spec doesn't make it explicit yet (see https://github.com/matrix-org/matrix-spec/issues/2443).
