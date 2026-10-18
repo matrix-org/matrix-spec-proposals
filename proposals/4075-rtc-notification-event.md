@@ -155,21 +155,23 @@ section) or expires.
 
 ### Session IDs
 
-It's often desirable to have a unique identifier for a given session which is active within a given slot.
-Use cases include referring to VoIP calls uniquely for the purposes of CDRs, E911, coherent
-bridging to VoIP protocols like SIP/H.225/ISUP, call-tracing and debugging, etc.
-
-Moreover, the decentralised nature of Matrix means that we need to have a way of telling which invite a
+The decentralised nature of Matrix means that we need to have a way of telling which invite a
 given session membership belongs to, otherwise delayed member events may end up impacting the wrong session.
 For instance, if joining a session by sending an m.rtc.member signals accepting a call, and leaving it signals
 hanging up that call, we need to have an ID for the call in question.
 
-Concretely in the case of VoIP calls:
-If we see Bob’s membership leave, does that mean he’s hanging up the current call or is it a delayed
-leave from a previous one?  Similarly if we see Bob’s membership join, does that mean he’s actually answering the
-current call, or could it be a delayed answer from a previous one? If the calls get out of sync, it will appear to the
-users like a failed call: Bob hit answer, but the call actually hung up on him.  Or Bob hit hangup, but Alice found
+Concretely in the case of VoIP calls: if we see Bob’s membership leave, does that mean he’s hanging
+up the current call or is it a delayed leave from a previous one?  Similarly if we see Bob’s
+membership join, does that mean he’s actually answering the current call, or could it be a delayed
+answer from a previous one? If the calls get out of sync, it will appear to the users like a failed
+call: Bob hit answer, but the call actually hung up on him.  Or Bob hit hangup, but Alice found
 herself staring at a grey tile thinking he’d answered.
+
+There are other scenarios where it's very desirable to have a unique identifier for the session
+which is active within a given slot. Use cases include referring to VoIP calls uniquely for the
+purposes of CDRs, E911, coherent bridging to VoIP protocols like SIP/H.225/ISUP, call-tracing and
+debugging, etc. In the case of E911 and similar there may even be a legal requirement to have
+a unique ID for the call/session.
 
 Therefore, we use event_id of the `m.rtc.invite` event as the unique ID of a given session.
 
