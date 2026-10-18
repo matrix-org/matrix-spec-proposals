@@ -1,4 +1,4 @@
-# MSCxxxx: DTMF for MatrixRTC
+# MSC4568: DTMF for MatrixRTC
 
 [MSC4143] describes who is in a MatrixRTC session and where the media is. Once a Matrix user is
 talking to a bridged phone there is no way to send `1` to an IVR, enter a conference PIN or navigate
