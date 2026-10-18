@@ -192,14 +192,15 @@ on the fly, which would result in an amplification attack vector.
 #### Session lifecycle
 
 Putting the above together, a session identified by invite `X` moves through the following states.
-Members join and leave as per [MSC4143]; the transitions below are the ones that matter to signalling.
+`{X}` marks an event that relates back to invite `X` via `m.reference`, as required above. Members
+join and leave as per [MSC4143]; the transitions below are the ones that matter to signalling.
 
 ```text
                     +------+
                     | IDLE |
                     +------+
                        |
-                       | m.rtc.invite X + inviter's m.rtc.member join
+                       | m.rtc.invite X + inviter's m.rtc.member join {X}
                        v
                  +----------+
                  | INVITING |
@@ -207,14 +208,14 @@ Members join and leave as per [MSC4143]; the transitions below are the ones that
                        |
        +---------------+--------------------------------------------------------------+
        |                                                                              |
-       | targeted user's m.rtc.member join       m.rtc.invite withdrawn (cancel)      |
+       | targeted user's m.rtc.member join {X}   m.rtc.invite withdrawn (cancel)      |
        |                                         m.rtc.invite withdrawn (lost glare)  |
        |                                         m.rtc.decline {X}                    |
        |                                         invite lifetime elapses              |
-       |                                         inviter's m.rtc.member leaves        |
+       |                                         inviter's m.rtc.member leave {X}     |
        v                                                                              v
- +----------+       every member of the session has left                          +-------+
- | ANSWERED |----------------------------------------------------------------------->| ENDED |
+ +----------+       every m.rtc.member {X} has left                               +-------+
+ | ANSWERED |-------------------------------------------------------------------->| ENDED |
  +----------+                      (hangup)                                       +-------+
 ```
 
