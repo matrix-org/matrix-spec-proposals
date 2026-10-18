@@ -482,7 +482,7 @@ This could potentially be deferred to yet another MSC; however given the need to
 membership transitions refer to feels like a fundamental requirement for this MSC to be robust, they
 are included here.
 
-### Designing out VoIP early media.
+### Designing out VoIP early media
 
 Early media in VoIP occurs when a participant in a call wishes to send media *without* having
 explicitly accepted the call.  For instance, relaying accurate ring-back tones, engaged tone
