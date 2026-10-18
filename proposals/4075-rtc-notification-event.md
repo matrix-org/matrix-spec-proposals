@@ -1,15 +1,16 @@
-# MSC4075: MatrixRTC invites and notifications
+# MSC4075: MatrixRTC session signalling
 
 [MSC4143] introduces MatrixRTC as an extensible framework for real-time communication in Matrix.
 MatrixRTC sessions are formed around `m.rtc.slot` state events to which users join by sending
 `m.rtc.member` room events.
 
-This proposal introduces a scheme for notifying users about MatrixRTC sessions. The goal explicitly
+This proposal introduces a scheme for managing the lifecycle of sessions within MatrixRTC;
+specifically notifying users when a session starts, is answered/declined and ends. The goal explicitly
 is to construct a minimal solution that achieves feature parity with notifications in [legacy VoIP]
 and doesn't design out future improvements. This is achieved by mediating notifications via dedicated
 room events that invite recipients to join a MatrixRTC session. Invites can be accepted by joining
 the session with an appropriate `m.rtc.member` event, declined by sending a dedicated decline event
-or ignored entirely. Under this model, notifications are agnostic of the particular MatrixRTC
+or ignored entirely. Under this model, signalling is agnostic of the particular MatrixRTC
 application, yet form a solid foundation for future extension.
 
 [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
@@ -125,7 +126,7 @@ Given these definitions, the following requirements MUST hold for clients to con
   Regardless of the basis for measuring, the remaining lifetime MUST be capped at 2 minutes.
 - The invite is the current invite entry in the ephemeral sticky events map for the sender
   and slot, and is not a withdrawal (that is, an invite event whose `content` is empty except
-  for `sticky_key`).
+  for `sticky_key` and `m.relates_to`).
 - If the client is the receiver of the invite:
   - The client's current user is targeted by the invite but has not yet acted on it (as per the definitions
     above).
@@ -140,9 +141,26 @@ To prevent duplicate invitations, senders SHOULD NOT emit invites when another a
 for the same slot and the same set of targeted users. Additionally, clients MAY emit invites automatically
 when joining a slot but SHOULD only do so when no other user is currently joined to the slot.
 
-An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`
-and an otherwise empty content and the same or a larger sticky duration. Alternatively, the event
-MAY also be redacted which will remove it from the ephemeral map of sticky events.
+An existing invite MAY be withdrawn by sending another `m.rtc.invite` event with the same `sticky_key`,
+an [`m.reference` relation] to the invite being withdrawn, an otherwise empty content and the same or
+a larger sticky duration. The relation names the session that is being ended (see [Session IDs]
+below); the sticky key alone only says that whichever invite was current is no longer. Alternatively,
+the event MAY also be redacted which will remove it from the ephemeral map of sticky events.
+
+```json5
+{
+  "type": "m.rtc.invite",
+  "content": {
+    "m.relates_to": {
+      "rel_type": "m.reference",
+      "event_id": "$1"
+    },
+    "sticky_key": "m.call#room"
+  }
+}
+```
+
+[Session IDs]: #session-ids
 
 To prevent stale invitations, clients SHOULD withdraw previously sent invitations when the slot is
 closed or when the inviter themselves leaves the slot with no other members currently joined to the slot.
@@ -151,6 +169,82 @@ How exactly sending clients present issued invitations in their UI is left as an
 detail. For instance, a sending client could use a ringing UI in [direct chats] while it is waiting
 for the invite to be acted on and stop ringing when the invite is accepted, declined (see the next
 section) or expires.
+
+### Session IDs
+
+The decentralised nature of Matrix means that we need to have a way of telling which invite a
+given session membership belongs to, otherwise delayed member events may end up impacting the wrong session.
+For instance, if joining a session by sending an m.rtc.member signals accepting a call, and leaving it signals
+hanging up that call, we need to have an ID for the call in question.
+
+Concretely in the case of VoIP calls: if we see Bob’s membership leave, does that mean he’s hanging
+up the current call or is it a delayed leave from a previous one?  Similarly if we see Bob’s
+membership join, does that mean he’s actually answering the current call, or could it be a delayed
+answer from a previous one? If the calls get out of sync, it will appear to the users like a failed
+call: Bob hit answer, but the call actually hung up on him.  Or Bob hit hangup, but Alice found
+herself staring at a grey tile thinking he’d answered.
+
+There are other scenarios where it's very desirable to have a unique identifier for the session
+which is active within a given slot. Use cases include referring to VoIP calls uniquely for the
+purposes of CDRs, E911, coherent bridging to VoIP protocols like SIP/H.225/ISUP, call-tracing and
+debugging, etc. In the case of E911 and similar there may even be a legal requirement to have
+a unique ID for the call/session.
+
+Therefore, we use the `event_id` of the `m.rtc.invite` event as the unique ID of a given session.
+
+Signalling events (`m.rtc.decline`, `m.rtc.member`) associated with a specific session MUST reference
+the `m.rtc.invite` of that session via an `m.reference` `rel_type` - see `m.rtc.decline` above.
+
+#### Crossing invites (glare)
+
+A side-effect of defining a unique identifier per session is that if multiple invites race, signalling
+will temporarily overlap within a given slot.  In order to converge on a single session, clients MUST
+pick the `event_id` with the oldest `origin_server_ts` and failing that lowest lexicographic `event_id`.
+
+The losing invite(s) MUST then be withdrawn by the inviter(s), with the withdrawal relating to the
+losing invite as described above.
+
+As the session ID is only used in practice to correlate signalling for a given session, when clients
+next change their signalling in the session (e.g. by posting a new `m.rtc.member` sticky event, to leave it)
+then they MUST relate the event to the winning `m.rtc.invite` event.  There is no need to update `m.rtc.member`
+on the fly, which would result in an amplification attack vector.
+
+#### Session lifecycle
+
+Putting the above together, a session identified by invite `X` moves through the following states.
+`{X}` marks an event that relates back to invite `X` via `m.reference`, as required above. Members
+join and leave as per [MSC4143]; the transitions below are the ones that matter to signalling.
+
+```text
+                    +------+
+                    | IDLE |
+                    +------+
+                       |
+                       | m.rtc.invite X + inviter's m.rtc.member join {X}
+                       v
+                 +----------+
+                 | INVITING |
+                 +----------+
+                       |
+       +---------------+--------------------------------------------------------------+
+       |                                                                              |
+       | targeted user's m.rtc.member join {X}   m.rtc.invite withdrawn {X} (cancel)  |
+       |                                         m.rtc.invite withdrawn {X} (glare)   |
+       |                                         m.rtc.decline {X}                    |
+       |                                         invite lifetime elapses              |
+       |                                         inviter's m.rtc.member leave {X}     |
+       v                                                                              v
+ +----------+       every m.rtc.member {X} has left                               +-------+
+ | ANSWERED |-------------------------------------------------------------------->| ENDED |
+ +----------+                      (hangup)                                       +-------+
+```
+
+- In a group, several targeted users may join; the session is `ANSWERED` from the first.
+- The loser of crossing invites withdraws its own invite and, if it had joined, relates its next
+  `m.rtc.member` event to the winning invite, as described above.
+- In a two-party call, the remaining member leaves once the other has, so "every member has left"
+  happens promptly.
+- Ringing feedback and early media are deliberately absent here; see "Lack of feedback" below.
 
 ### Receiving invites
 
@@ -163,9 +257,6 @@ in, the receiving client has three options:
    due to the presence of a sticky decline event.
 1. It can ignore the event by doing nothing. The invite will remain active until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
-
-To prevent duplicate invitations, receivers SHOULD ignore or coalesce invites to a given slot from
-different members if the invites are active at the same time.
 
 Again, how exactly receiving clients render invites in their UI is left as an implementation
 detail. A reasonable choice could, for instance, be to use a ringing UI in [direct chats] and
@@ -234,6 +325,21 @@ Invite active         |          |          |
                       |          |          |
                       Slot       Invite     Invitee
                       joined     sent       leaves
+```
+
+#### Example 4: Crossed invites (glare)
+
+```
+m.rtc.invite from A      [=====|====|====|xxxxx]
+m.rtc.invite from B      |     [====|====|=====|==================]
+m.rtc.member C joins A   |     |    [====|=====|==========|xxxxxxxxxxxxxxxxxxxxx]
+m.rtc.member D joins B   |     |    |    [=====|==========|xxxxxxxxxxxxxxxxxxxxx]
+m.rtc.invite B withdraws |     |    |    |     |==========]        
+m.rtc.member C leaves A  |     |    |    |                [=====================]
+m.rtc.member D leaves A  |     |    |    |                [=====================]
+                         |     |    |    |      
+Invite A active          [#####|####]    |      
+Invite B active                [####|####]
 ```
 
 ### Push rules
@@ -365,6 +471,27 @@ proposal and various solutions may be plugged into the system by a future MSC. A
 ringing acknowledgements could be communicated back via to-device messages. Alternatively, richer invite
 progress updates could be mediated via sticky room messages. Lastly, a general event delivery receipt
 mechanism could also be sufficient to cover some use cases.
+
+### Inclusion of session IDs
+
+Original drafts of MSC4075 did not include the concept of defining a unique session ID per session.
+As a result, there was no way to determine the intent of a member when joining or leaving a session
+in terms of which invite they were responding to, in the event of member events arriving late.
+
+This could potentially be deferred to yet another MSC; however given the need to know which invite
+membership transitions refer to feels like a fundamental requirement for this MSC to be robust, they
+are included here.
+
+### Designing out VoIP early media
+
+Early media in VoIP occurs when a participant in a call wishes to send media *without* having
+explicitly accepted the call.  For instance, relaying accurate ring-back tones, engaged tone
+or "we're sorry we could not connect your call, please top up" style audio announcements from the
+PSTN require early media support.
+
+The semantics of this MSC mean that early media being published would be misinterpreted as accepting
+the invite. A future MSC that maps out VoIP signalling (see "lack of feedback" above) could
+distinguish between explicitly accepting the invite versus implicitly accepting it.
 
 ### Device-specific invites
 
@@ -550,6 +677,8 @@ implementation. As of writing, the full list of such implementation differences 
   RTC member event that has been removed from the proposal. Instead, receiving clients can look up
   membership events via the slot.
 - The value of `sender_ts` is allowed to be up to 20 seconds later than `origin_server_ts`.
+- Withdrawals are sent with a bare `sticky_key` and no `m.reference` relation to the invite they
+  withdraw.
 
 [^mentions-pl]: Note that this matches how `room` mentions are already handled in practice today even
                 though the spec doesn't make it explicit yet (see https://github.com/matrix-org/matrix-spec/issues/2443).
