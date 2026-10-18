@@ -199,7 +199,7 @@ the `m.rtc.invite` of that session via an `m.reference` `rel_type` - see `m.rtc.
 
 A side-effect of defining a unique identifier per session is that if multiple invites race, signalling
 will temporarily overlap within a given slot.  In order to converge on a single session, clients MUST
-pick the event_id with the oldest origin_server_ts and failing that lowest lexicographic event_id.
+pick the `event_id` with the oldest `origin_server_ts` and failing that lowest lexicographic `event_id`.
 
 The losing invite(s) MUST then be withdrawn by the inviter(s), with the withdrawal relating to the
 losing invite as described above.
