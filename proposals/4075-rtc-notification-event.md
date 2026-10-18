@@ -1,15 +1,16 @@
-# MSC4075: MatrixRTC invites and notifications
+# MSC4075: MatrixRTC session signalling
 
 [MSC4143] introduces MatrixRTC as an extensible framework for real-time communication in Matrix.
 MatrixRTC sessions are formed around `m.rtc.slot` state events to which users join by sending
 `m.rtc.member` room events.
 
-This proposal introduces a scheme for notifying users about MatrixRTC sessions. The goal explicitly
+This proposal introduces a scheme for managing the lifecycle of sessions within MatrixRTC;
+specifically notifying users when a session starts, is answered/declined and ends. The goal explicitly
 is to construct a minimal solution that achieves feature parity with notifications in [legacy VoIP]
 and doesn't design out future improvements. This is achieved by mediating notifications via dedicated
 room events that invite recipients to join a MatrixRTC session. Invites can be accepted by joining
 the session with an appropriate `m.rtc.member` event, declined by sending a dedicated decline event
-or ignored entirely. Under this model, notifications are agnostic of the particular MatrixRTC
+or ignored entirely. Under this model, signalling is agnostic of the particular MatrixRTC
 application, yet form a solid foundation for future extension.
 
 [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
@@ -152,6 +153,42 @@ detail. For instance, a sending client could use a ringing UI in [direct chats] 
 for the invite to be acted on and stop ringing when the invite is accepted, declined (see the next
 section) or expires.
 
+### Session IDs
+
+It's often desirable to have a unique identifier for a given session which is active within a given slot.
+Use cases include referring to VoIP calls uniquely for the purposes of CDRs, E911, coherent
+bridging to VoIP protocols like SIP/H.225/ISUP, call-tracing and debugging, etc.
+
+Moreover, the decentralised nature of Matrix means that we need to have a way of telling which invite a
+given session membership belongs to, otherwise delayed member events may end up impacting the wrong session.
+For instance, if joining a session by sending an m.rtc.member signals accepting a call, and leaving it signals
+hanging up that call, we need to have an ID for the call in question.
+
+Concretely in the case of VoIP calls:
+If we see Bob’s membership leave, does that mean he’s hanging up the current call or is it a delayed
+leave from a previous one?  Similarly if we see Bob’s membership join, does that mean he’s actually answering the
+current call, or could it be a delayed answer from a previous one? If the calls get out of sync, it will appear to the
+users like a failed call: Bob hit answer, but the call actually hung up on him.  Or Bob hit hangup, but Alice found
+herself staring at a grey tile thinking he’d answered.
+
+Therefore, we use event_id of the `m.rtc.invite` event as the unique ID of a given session.
+
+Signalling events (`m.rtc.decline`, `m.rtc.member`) associated with a specific session MUST reference
+the `m.rtc.invite` of that session via an `m.reference` `rel_type` - see `m.rtc.decline` above.
+
+#### Crossing invites (glare)
+
+A side-effect of defining a unique identifier per session is that if multiple invites race, signalling
+will temporarily overlap within a given slot.  In order to converge on a single session, clients MUST
+pick the event_id with the oldest origin_server_ts and failing that lowest lexicographic event_id.
+
+The losing invite(s) MUST then be withdrawn by the inviter(s).
+
+As the session ID is only used in practice to correlate signalling for a given session, when clients
+next change their signalling in the session (e.g. by posting a new `m.rtc.member` sticky event, to leave it)
+then they MUST relate the event to the winning `m.rtc.invite` event.  There is no need to update `m.rtc.member`
+on the fly, which would result in an amplification attack vector.
+
 ### Receiving invites
 
 The conditions for invite activeness outlined above, in effect, mean that when an active invite comes
@@ -163,9 +200,6 @@ in, the receiving client has three options:
    due to the presence of a sticky decline event.
 1. It can ignore the event by doing nothing. The invite will remain active until either
    the user accepts or declines the invite on another device or its `lifetime` has elapsed.
-
-To prevent duplicate invitations, receivers SHOULD ignore or coalesce invites to a given slot from
-different members if the invites are active at the same time.
 
 Again, how exactly receiving clients render invites in their UI is left as an implementation
 detail. A reasonable choice could, for instance, be to use a ringing UI in [direct chats] and
@@ -234,6 +268,21 @@ Invite active         |          |          |
                       |          |          |
                       Slot       Invite     Invitee
                       joined     sent       leaves
+```
+
+#### Example 4: Crossed invites (glare)
+
+```
+m.rtc.invite from A      [=====|====|====|xxxxx]
+m.rtc.invite from B      |     [====|====|=====|==================]
+m.rtc.member C joins A   |     |    [====|=====|==========|xxxxxxxxxxxxxxxxxxxxx]
+m.rtc.member D joins B   |     |    |    [=====|==========|xxxxxxxxxxxxxxxxxxxxx]
+m.rtc.invite B withdraws |     |    |    |     |==========]        
+m.rtc.member C leaves A  |     |    |    |                [=====================]
+m.rtc.member D leaves A  |     |    |    |                [=====================]
+                         |     |    |    |      
+Invite A active          [#####|####]    |      
+Invite B active                [####|####]
 ```
 
 ### Push rules
@@ -365,6 +414,27 @@ proposal and various solutions may be plugged into the system by a future MSC. A
 ringing acknowledgements could be communicated back via to-device messages. Alternatively, richer invite
 progress updates could be mediated via sticky room messages. Lastly, a general event delivery receipt
 mechanism could also be sufficient to cover some use cases.
+
+### Inclusion of session IDs
+
+Original drafts of MSC4075 did not include the concept of defining a unique session ID per session.
+As a result, there was no way to determine the intent of a member when joining or leaving a session
+in terms of which invite they were responding to, in the event of member events arriving late.
+
+This could potentially be deferred to yet another MSC; however given the need to know which invite
+membership transitions refer to feels like a fundamental requirement for this MSC to be robust, they
+are included here.
+
+### Designing out VoIP early media.
+
+Early media in VoIP occurs when a participant in a call wishes to send media *without* having
+explicitly accepted the call.  For instance, relaying accurate ring-back tones, engaged tone
+or "we're sorry we could not connect your call, please top up" style audio announcements from the
+PSTN require early media support.
+
+The semantics of this MSC mean that early media being published would be misinterpreted as accepting
+the invite. A future MSC that maps out VoIP signalling (see "lack of feedback" above) could
+distinguish between explicitly accepting the invite versus implicitly accepting it.
 
 ### Device-specific invites
 
