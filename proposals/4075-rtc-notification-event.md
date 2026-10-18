@@ -189,6 +189,42 @@ next change their signalling in the session (e.g. by posting a new `m.rtc.member
 then they MUST relate the event to the winning `m.rtc.invite` event.  There is no need to update `m.rtc.member`
 on the fly, which would result in an amplification attack vector.
 
+#### Session lifecycle
+
+Putting the above together, a session identified by invite `X` moves through the following states.
+Members join and leave as per [MSC4143]; the transitions below are the ones that matter to signalling.
+
+```text
+                    +------+
+                    | IDLE |
+                    +------+
+                       |
+                       | m.rtc.invite X + inviter's m.rtc.member join
+                       v
+                 +----------+
+                 | INVITING |
+                 +----------+
+                       |
+       +---------------+--------------------------------------------------------------+
+       |                                                                              |
+       | targeted user's m.rtc.member join       m.rtc.invite withdrawn (cancel)      |
+       |                                         m.rtc.invite withdrawn (lost glare)  |
+       |                                         m.rtc.decline {X}                    |
+       |                                         invite lifetime elapses              |
+       |                                         inviter's m.rtc.member leaves        |
+       v                                                                              v
+ +----------+       every member of the session has left                          +-------+
+ | ANSWERED |----------------------------------------------------------------------->| ENDED |
+ +----------+                      (hangup)                                       +-------+
+```
+
+- In a group, several targeted users may join; the session is `ANSWERED` from the first.
+- The loser of crossing invites withdraws its own invite and, if it had joined, relates its next
+  `m.rtc.member` event to the winning invite, as described above.
+- In a two-party call, the remaining member leaves once the other has, so "every member has left"
+  happens promptly.
+- Ringing feedback and early media are deliberately absent here; see "Lack of feedback" below.
+
 ### Receiving invites
 
 The conditions for invite activeness outlined above, in effect, mean that when an active invite comes
