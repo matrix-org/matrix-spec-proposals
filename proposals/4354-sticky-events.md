@@ -571,9 +571,9 @@ The decrypted event would contain the `type` and `content.sticky_key`.
 #### Sync Bloat (as a result of not being able to prune obsolete Sticky Events)
 
 Under normal circumstances for the MatrixRTC use case there will be a window of time where clients will receive
-sticky events that are not useful. MatrixRTC defines an `m.rtc.member` event with an empty content (and optional `leave_reason`)
-as having left the session.
-This is conceptually the same as deleting a key from the map. However, as the server is unaware of the `sticky_key`, it
+sticky events that are not useful. MatrixRTC represents leaving a session via an `m.rtc.member` event with `membership = leave`.
+This overwrites any previous `m.rtc.member` event with `membership = join` in the map and is conceptually the
+same as deleting a key from the map. However, as the server is unaware of the `sticky_key`, it
 cannot perform the delete operation for clients, and will instead send the empty content event down `/sync`. This means if
 N users leave a call, there will be N sticky events present in `/sync` for the sticky duration specified.
 
