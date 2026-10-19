@@ -376,6 +376,13 @@ This happens today too with state events, but less often.
 
 (This also happens with today's 'legacy'/stable VoIP calls, but that is not really a good justification to carry the bug forward either.)
 
+#### Worked example of 'Flickering'
+
+1. Let's say a user `@a:a` sends 20 sticky events over some time. Server `b` is offline at the moment, or otherwise under network partition.
+2. Server `b` then comes online and server `a` starts sending Sticky Events to server `b`. It sends them oldest-first (as per the MSC).
+3. Server `b` persists them one at a time, including persisting some `prev_events` in each gap for each one. (NOTE: This describes Synapse behaviour.) It's not unreasonable to believe it might be a slow and gradual process to persist those 20 sticky events.
+4. Whilst those sticky events are being persisted slowly on server `b`, user `@b:b` is receiving them down sync one at a time. Starting with the oldest one, potentially corresponding to a stale entry in the Ephemeral Map.
+
 ## Alternatives
 
 ### Use state events
