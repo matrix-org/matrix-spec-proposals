@@ -52,10 +52,11 @@ This maps to the previous states as follows:
 | `offline`      | *                  | `offline`      |
 
 From this point onwards, these terms will be used instead of their existing counterparts except for where it is
-explicitly necessary to reference the existing model. The old values of **`"online"` and `"unavailable"` are
-deprecated** from the federation [User Presence Update] type, the [`m.presence` Sync Event], the [Presence Client-Server
-Endpoints], and [`GET /_matrix/client/v3/sync`] by this proposal. The new states `"active"`, `"idle"`, and `"busy"` are
-introduced to all of these mechanisms in their place.
+explicitly necessary to reference the existing model. This proposal **deprecates the old values of `"online"` and
+`"unavailable"`** from the federation [User Presence Update] type, the [`m.presence` Sync Event], the [Presence
+Client-Server Endpoints], and the `set_presence` parameters of both [`GET /_matrix/client/v3/sync`] and [`POST
+/_matrix/client/v4/sync`]. The new states `"active"`, `"idle"`, and `"busy"` are introduced to all of these mechanisms
+in their place.
 
 For servers that advertise support for this proposal, clients SHOULD use the query parameter defined in [Sending Revised
 States]. Otherwise, clients SHOULD reinterpret legacy presence states and `currently_active` values received via an
@@ -70,16 +71,15 @@ by a curated set of user actions, rather than connection properties or general a
 
 If a `"busy"` state is manually selected by a user, it is set via [Presence Overrides] to prevent autonomous regression
 to other states, as with other overrides. If a client wishes to set a `"busy"` state autonomously following a select
-user action \- for example, if the user joins a call \- it SHOULD do so via the [`GET /_matrix/client/v3/sync`] endpoint
-or the [Presence Client-Server Endpoints], as with other states. It is by design that the latter case does not override
-the overrides mechanism to prevent clients from interfering with each other's automated actions and being unsure which
-state to return the override to.
+user action \- for example, if the user joins a call \- it SHOULD do so via `/sync` or the [Presence Client-Server
+Endpoints], as with other states. It is by design that this does not override the overrides mechanism, to prevent
+clients from interfering with each other's automated actions and being unsure which state to return the override to.
 
 #### Serving Revised States
 
 To create a transition window for clients to implement this proposal, a new query parameter `?revised_presence=true` is
 added to [`GET /_matrix/client/v3/sync`] and [`GET /_matrix/client/v3/presence/{userId}/status`]. This parameter is
-immediately deprecated by this proposal, and it is intended to be removed at the same time as the legacy pressence
+immediately deprecated by this proposal, and it is intended to be removed at the same time as the legacy presence
 states, marking the end of the transition window.
 
 When this parameter is not set, servers MAY return legacy `presence` fields from these endpoints using the following
@@ -153,8 +153,8 @@ For backwards compatibility rules, see the corresponding section in [Simplified 
 Since clients are expected to determine when their users are idle, and servers only determine when clients are offline,
 [Idle Timeouts] are replaced with offline timeouts. Servers implementing this proposal MUST NOT mark a client as idle
 automatically. Servers SHOULD determine a client is offline after a threshold value of time \- for example, 5 minutes \-
-has passed since the client's most recent request to [`GET /_matrix/client/v3/sync`] or [`PUT
-/_matrix/client/v3/presence/{userId}/status`] completed.
+has passed since the client's most recent request to `/sync` or [`PUT /_matrix/client/v3/presence/{userId}/status`]
+completed.
 
 #### Provisions for Application Services
 
@@ -221,7 +221,7 @@ The `status_msg` request body property of the [`PUT /_matrix/client/v3/presence/
 **deprecated** without replacement. Clients that wish to manage [Presence Overrides] MUST do so via the
 `m.presence.persistent` account data to ensure the data is consistent across all a user's clients. It should be noted
 that this deprecation also means [`PUT /_matrix/client/v3/presence/{userId}/status`] is no longer useful to clients that
-call [`GET /_matrix/client/v3/sync`].
+call `/sync`.
 
 ### `m.presence` EDU and Sync Event Examples
 
@@ -401,5 +401,6 @@ the server to adopt a version of the spec that includes it.
 [`GET /_matrix/client/v3/presence/{userId}/status`]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3presenceuseridstatus
 [`PUT /_matrix/client/v3/presence/{userId}/status`]: https://spec.matrix.org/v1.19/client-server-api/#put_matrixclientv3presenceuseridstatus
 [`GET /_matrix/client/v3/sync`]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3sync
+[`POST /_matrix/client/v4/sync`]: https://github.com/matrix-org/matrix-spec-proposals/pull/4186
 [cs-versions]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientversions
 [XEP-0319]: https://xmpp.org/extensions/xep-0319.html
