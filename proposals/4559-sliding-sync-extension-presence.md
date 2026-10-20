@@ -44,7 +44,7 @@ The `ExtensionResult` has the following format:
 |--------------|----------------------------|----------|----------------------------------------|
 | `user_ids`   | `{string: PresenceUpdate}` | No       | A map of user IDs to presence updates. |
 
-A `PresenceUpdate` has the same format as an [`m.presence` Sync Event], as modified by [MSC4532]:
+A `PresenceUpdate` has the following fields of an [`m.presence` Sync Event], as modified by [MSC4532]:
 
 | Name              | Type              | Required | Comment                                                            |
 |-------------------|-------------------|----------|--------------------------------------------------------------------|
