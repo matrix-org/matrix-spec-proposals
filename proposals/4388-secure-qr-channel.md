@@ -285,15 +285,17 @@ accepted and the `M_CONCURRENT_WRITE` error is returned. On receipt of a `M_CONC
 to fetch the latest data and `sequence_token` and then send again with a new `{txnId}`.
 
 To support idempotent retries (e.g. when a client did not receive the response to a previous `PUT` and so does not know
-whether it succeeded), the server MUST record the response to each `PUT` against the `{txnId}` used, for at least the
-lifetime of the rendezvous session. If it receives a `PUT` with a `{txnId}` it has already seen for that rendezvous
-session then it MUST NOT re-evaluate the compare-and-swap or advance the payload, and MUST instead return the recorded
-response, including the same `sequence_token`. This allows a client to safely repeat the same `PUT` request without
-first issuing a `GET`.
+whether it succeeded), the server MUST record the `sequence_token` returned by each successful `PUT` against the
+`{txnId}` used, for the lifetime of the rendezvous session. If it receives a `PUT` with a `{txnId}` it has recorded for
+that rendezvous session then it MUST return the recorded response, including the same `sequence_token`, without
+modifying the payload. This allows a client to safely repeat the same `PUT` request without first issuing a `GET`.
+
+Rejected `PUT`s need not be recorded: a stale `sequence_token` never becomes valid again (see
+[`sequence_token` values](#sequence_token-values)), so repeating one would be rejected regardless.
 
 A `{txnId}` therefore identifies a single send attempt rather than a payload: a client which changes the `data` or
-`sequence_token` it is sending MUST use a new `{txnId}`, and a client which re-sends with a previously used `{txnId}`
-will receive the earlier response - which may be a `M_CONCURRENT_WRITE` - without the new request being considered.
+`sequence_token` it is sending MUST use a new `{txnId}`. Re-sending a `{txnId}` whose earlier request succeeded returns
+the earlier response without the new request being considered.
 
 Unlike elsewhere in the Client-Server API, transaction IDs here are not scoped to a single device or access token: the
 rendezvous session is unauthenticated and shared between two devices, so a `{txnId}` is scoped to the rendezvous session
@@ -452,6 +454,8 @@ sequenceDiagram
 The server MUST enforce a maximum `data` field size of 4096 bytes.
 
 #### `sequence_token` values
+
+Each successful write MUST produce a `sequence_token` not previously used by that rendezvous session.
 
 A recommended implementation is the decimal representation of a counter, scoped to the rendezvous session, which is
 incremented on each successful write. The `sequence_token` is only used to detect concurrent writes and to bind the
