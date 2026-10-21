@@ -496,6 +496,7 @@ implementations and administrators:
 
 - rate limiting of requests
 - limiting the number of concurrent sessions
+- limiting the number of transaction IDs remembered per session, since a normal exchange needs only a handful
 
 Furthermore, this proposal limits the maximum payload size to 4KB.
 
