@@ -73,7 +73,7 @@ future work in this area is welcome to explore that avenue as a way to establish
 Bridges could use inconsistent `remote_network` identifiers for the same service.
 For example, two distinct telegram bridges could use `org.telegram` and `im.telegram`.
 Additionally a bridged network could be renamed or rebranded, for example `com.hotmail` and `com.outlook`.
-To allievate this issue we propose the following solutions for further exploration in other proposals:
+To alleviate this issue we propose the following solutions for further exploration in other proposals:
 
 - Maintainers of policy consumers could collect the known inconsistencies and merge them together at ingress e.g. .
 
