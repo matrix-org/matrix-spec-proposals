@@ -1,4 +1,4 @@
-# MSCXXXX: Remote Network Targeting Policies
+# MSC4570: Remote Network Targeting Policies
 
 This MSC introduces the `remote_network` and `remote_id` fields as optional keys for membership events.
 This allows policies to target bridged users without relying on globs, while still allowing those
@@ -112,8 +112,8 @@ Before this proposal is stable the following prefix maps apply.
 
 | Stable           | Unstable                                |
 |------------------|-----------------------------------------|
-| `remote_network` | `support.feline.mscXXXX.remote_network` |
-| `remote_id`      | `support.feline.mscXXXX.remote_id`      |
+| `remote_network` | `support.feline.msc4570.remote_network` |
+| `remote_id`      | `support.feline.msc4570.remote_id`      |
 
 ## Dependencies
 
