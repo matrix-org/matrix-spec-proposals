@@ -19,7 +19,8 @@ The policy side of this proposal is achieved by extending the current `m.policy.
 
 `remote_network` takes the form of a string that identifies the remote side of the bridge. This proposal
 does not specify strict rules for how remote networks should be identified, beyond following the Matrix
-namespace rules.
+namespace rules. Typically however, bridge maintainers will use the primary domain of the network for
+this identifier.
 
 An example shape for identifying a centralized network such as Telegram is `org.telegram`. This follows
 the standard Matrix naming conventions. The proposal intentionally leaves this loosely defined so that
@@ -58,7 +59,7 @@ placeholder._
 For bridges compatible with this proposal, the policy instead targets any user whose membership event contains
 a matching set of `remote_network` and `remote_id` fields.
 
-When writing a policy that targets a user with `remote_network` and `remote_id` set, implementations must
+When writing a policy that targets a user with `remote_network` and `remote_id`, implementations must
 ensure that the supplied data is trustworthy to avoid banning innocent users. How a user is determined to
 belong to a trusted namespace is left as an implementation detail.
 
@@ -67,8 +68,19 @@ future work in this area is welcome to explore that avenue as a way to establish
 
 ## Potential issues
 
-This proposal does open the door to disagreement between bridges about how to identify a remote network,
-but that issue is intentionally left as an implementation detail.
+### Inconsistent ´remote_network´ identifier
+
+Bridges could use inconsistent `remote_network` identifiers for the same service.
+For example, two distinct telegram bridges could use `org.telegram` and `im.telegram`.
+Additionally a bridged network could be renamed or rebranded, for example `com.hotmail` and `com.outlook`.
+To allievate this issue we propose the following solutions for further exploration in other proposals:
+
+- Maintainers of policy consumers could collect the known inconsistencies and merge them together at ingress e.g. .
+
+- A remote network registry containing all well-known names for the same remote network.
+Including renames for a given remote network.
+
+### Networks lacking immutable identifiers
 
 This proposal also does not work well with networks that do not have a true immutable identifier, including
 networks that allow account migration. That limitation is accepted as its not a problem for matrix to solve,
@@ -84,6 +96,10 @@ For this metadata to be useful, it needs to be available without additional look
 
 The primary security consideration introduced by this MSC is that implementations must trust the bridges
 that provide the metadata and originate users.
+
+Implementations must take care to not trust this data for invites as in the case of invites the data is able to be 
+set on behalf of another user. If the sender of the membership event does not match the subject of the event its
+exposed to this flaw.
 
 Anyone can set these fields to arbitrary values, but as long as policy authors do not trust unverified data,
 the harm is limited. This proposal is intended to be used with approved bridges that are trusted to supply
