@@ -20,32 +20,57 @@ Since Element Call (EC) is a widget and based on MatrixRTC this widget api propo
 
 ### Sending delayed events
 
-We extend the `"send_event"` request defined by [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762)
-as follows:
+To schedule a delayed event, widgets use a new `fromWidget` request with action `send_delayed_event`:
 
-```jsonc
+```json
 {
-    state_key?: string;
-    type: string;
-    content: unknown;
-    room_id?: string;
-    delay?: number; // new field
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestId": "generated-id-1234",
+  "action": "send_delayed_event",
+  "data": {
+    "state_key": "",
+    "type": "m.room.topic",
+    "content": {
+      "topic": "Hello world!"
+    },
+    "delay_ms": 60000
+  }
 }
 ```
 
-and the `"send_event"` response:
+`data` takes the same properties as the `send_event` request defined by
+[MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762), plus a required `delay_ms`: the number of
+milliseconds the homeserver should wait before sending the event.
 
-```jsonc
+If the widget did not get approved for the capabilities required to send the event as a delayed event, the client MUST
+send an error response (as required currently by the capabilities system for widgets).
+
+Otherwise, the client handles the request like a `send_event` request, except that it schedules the event with the
+`PUT /_matrix/client/v3/rooms/{roomId}/delayed_event/{eventType}/{txnId}` endpoint of
+[MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140), and responds with the `delay_id` returned by
+the homeserver:
+
+```json
 {
-    room_id: string;
-    event_id?: string; // now optional
-    delay_id?: string; // new field
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestId": "generated-id-1234",
+  "action": "send_delayed_event",
+  "data": {
+    "state_key": "",
+    "type": "m.room.topic",
+    "content": {
+      "topic": "Hello world!"
+    },
+    "delay_ms": 60000
+  },
+  "response": {
+    "room_id": "!room:example.org",
+    "delay_id": "1234567890"
+  }
 }
 ```
-
-To provide the same properties needed for [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140).
-The client is responsible to check for the `delay` field of the widget action and send the correct HTTP request if it
-is present.
 
 ### Sending `update_delayed_event` actions
 
@@ -116,7 +141,7 @@ failure from an unsupported homeserver.
 Two new capabilities will be introduces:
 
 - `m.send.delayed_event`\
-  allows to send delayed events by using the optional `delay` property in a `fromWidget send_event` widget action.
+  allows to send delayed events using the `fromWidget send_delayed_event` widget action.
 - `m.update_delayed_event`\
   allows to update delayed events using the `fromWidget update_delayed_event` widget action.
 
@@ -141,7 +166,9 @@ But it is then possible to send any of the events the widget can sent as delayed
 
 The following strings will have unstable prefixes:
 
-- The widget action:\
+- The send delayed event widget action:\
+  `send_delayed_event` -> `org.matrix.msc4157.send_delayed_event`
+- The update delayed event widget action:\
   `update_delayed_event` -> `org.matrix.msc4157.update_delayed_event`
 - The send delayed event capability:\
   `m.send.delayed_event` -> `org.matrix.msc4157.send.delayed_event`
@@ -149,3 +176,6 @@ The following strings will have unstable prefixes:
   `m.update_delayed_event` -> `org.matrix.msc4157.update_delayed_event`
 - The get delayed events capability widget action:\
   `get_delayed_events_capability` -> `org.matrix.msc4157.get_delayed_events_capability`
+
+Only call/support the `send_delayed_event` action if an API version of `org.matrix.msc4157_send_delayed_event` is
+advertised.
