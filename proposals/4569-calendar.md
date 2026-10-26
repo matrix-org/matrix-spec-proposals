@@ -39,6 +39,9 @@ considered "empty," and any other calendar-related events MUST NOT be processed 
 
 Effectively, an `m.calendar` room acts as a container for a `@type:Group`.
 
+This room type does not act as a calendar unconditionally itself. Instead, it just marks the rooms main purpose to
+contain calendar events. Similar to the room type `m.space`, the room can still be used for e.g. sending messages.
+
 Clients MUST NOT rely on `m.room.name` or `m.room.topic` for these rooms. Instead, they should use the `title` and
 `description` provided in the `m.jscalendar.group` state event.
 
@@ -48,7 +51,7 @@ Clients MUST NOT rely on `m.room.name` or `m.room.topic` for these rooms. Instea
 
 A new state event `m.jscalendar.group` is introduced.
 This event MUST have an empty `state_key`.
-Consequently, an `m.calendar` room can only host one `@type:Group` at a time.
+Consequently, a room can only host one `@type:Group` at a time.
 
 The content of this state event contains a `m.jscalendar.group` block. The following properties MUST NOT be included in
 this content block:
@@ -217,11 +220,11 @@ It contains the content block `m.jscalendar.patch` of the JSCalendar type `Patch
 
 ### Calendar
 
-While rooms with type `m.calendar` can exist independently, users may want to group them. Usually, this is referred to
-as a calendar. This is possible by adding `m.calendar` rooms into a Matrix space. All data of `@type:Group` still lies
-within the `m.calendar` rooms. This is intentional, because being a member of a space (e.g., a company) does not
-mean that one has access to all calendar data. If, for example, a company wants to share events for all members, these
-JSCalendar data could be put directly into the space room.
+While rooms with calendar events can exist independently, users may want to group them. Usually, this is referred to
+as a calendar. This is possible by adding rooms with a `m.jscalendar.group` state event into a Matrix space. All data of
+`@type:Group` still lies within these rooms. This is intentional, because being a member of a space (e.g., a
+company) does not mean that one has access to all calendar data. If, for example, a company wants to share events for
+all members, these JSCalendar data could be put directly into the space room.
 
 ## Appendix
 
