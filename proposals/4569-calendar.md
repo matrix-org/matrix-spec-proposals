@@ -30,6 +30,18 @@ import/export functionality, and bridging to existing services (such as CalDAV/i
 JSCalendar 2.0 defines three primary objects: `Event`, `Task`, and `Group`. To distinguish them from standard Matrix
 events, these are referred to as `@type:Event`, `@type:Task`, and `@type:Group` from now on.
 
+The following sections define various Matrix components for mapping JSCalendar data to Matrix. Here is a table for a
+better overview.
+
+| Matrix component                                   | Purpose                                                              |
+|----------------------------------------------------|----------------------------------------------------------------------|
+| `m.calendar` room type                             | Optional container for a single `@type:Group`                        |
+| `m.jscalendar.group` state event                   | Stores the `@type:Group`, such as its title and description          |
+| `m.jscalendar.event` state event                   | Stores an individual `@type:Event`                                   |
+| `m.jscalendar.task` state event                    | Stores an individual `@type:Task`                                    |
+| `m.jscalendar.patch` message event                 | Updates participant information within `@type:Event` or `@type:Task` |
+| `m.jscalendar.patch.<state_key>` room account data | Stores private changes within `@type:Event` or `@type:Task`          |
+
 ### New room type
 
 A new room type `m.calendar` is introduced.
