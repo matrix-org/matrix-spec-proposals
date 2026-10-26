@@ -184,7 +184,7 @@ Content-Type: application/json
 The body could be extended in future to provide any other information that the requester might require to use the
 rendezvous API.
 
-The server can chose what level of authentication is required to create a rendezvous session. Please see the description
+The server can choose what level of authentication is required to create a rendezvous session. Please see the description
 of `POST /_matrix/client/v1/rendezvous` for a description of this.
 
 ### `POST /_matrix/client/v1/rendezvous` - Create a rendezvous session and send initial payload
@@ -238,7 +238,7 @@ Content-Type: application/json
 }
 ```
 
-The server can chose what level of authentication is required to create a rendezvous session. Suitable policies might
+The server can choose what level of authentication is required to create a rendezvous session. Suitable policies might
 include:
 
 - Requires authenticated user - this would reduce abuse to known users. This should be the default.
@@ -347,7 +347,7 @@ Response body for `200 OK` is `application/json` with contents:
 |Field|Type||
 |-|-|-|
 |`data`|required `string`|The data payload from the last POST or PUT.|
-|`sequence_token`|required `string`|The token opaque token to identify if the payload has changed|
+|`sequence_token`|required `string`|The opaque token to identify if the payload has changed|
 |`expires_in_ms`|required `integer`|The number of milliseconds remaining until the rendezvous session expires|
 
 ```http
