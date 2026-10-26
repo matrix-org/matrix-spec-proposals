@@ -245,12 +245,14 @@ all members, these JSCalendar data could be put directly into the space room.
 To better understand the use cases this proposal covers, here are a few examples and how they could
 be mapped:
 
-* **Business Meeting:** A single room containing one `@type:Event` object.
-* **Team Calendar:** A single room containing multiple `@type:Event` objects for daily standups or weekly meetings.
-* **Hybrid Conferences:** A Space containing multiple `m.calendar` rooms, where each room represents a different track
-  or session.
-* **Public Holiday Subscription List:** A single room containing multiple `@type:Event` objects.
-* **TODO List:** A single room containing multiple `@type:Task` objects.
+* **Business Meeting:** A single `m.calendar` room containing one `@type:Event` object and a MatrixRTC call.
+* **Team Calendar:** A single `m.space` room containing multiple `@type:Event` objects for daily standups or weekly
+  meetings and multiple children for external business meetings.
+* **Hybrid Conferences:** A single `m.space` with multiple children, where each room represents a different track
+  or session including a widget for live-streaming.
+* **Friend Group:** A single `m.room` room containing multiple `@type:Event` objects.
+* **Public Holiday Subscription List:** A single `m.calendar` room containing multiple `@type:Event` objects.
+* **TODO List:** A single `m.calendar` room containing multiple `@type:Task` objects.
 
 There are a few other use cases that would require further MSCs based on this proposal:
 
