@@ -297,10 +297,10 @@ reconstruction) to ensure that the distributed state remains consistent and func
 
 ### One room as one calendar
 
-Instead of having "one room per calendar event," calendar events could always be grouped into rooms and calendar events
-copy-share out-of-band, similar to E-Mail. This approach is used
+Instead a calendar being a view of various rooms containing synchronized calendar events, a calendar could always be
+exactly one room and the updates are sent and received via copy-share, similar to email. This approach is used
 in [MSC4496](https://github.com/matrix-org/matrix-spec-proposals/pull/4496). While this mimics the way
-calendar events are shared today via E-Mail, it also inherits all the problems discussed in the introduction of this
+calendar events are shared today via email, it also inherits all the problems discussed in the introduction of this
 proposal.
 
 ### Matrix native events
