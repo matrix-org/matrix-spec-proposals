@@ -128,14 +128,23 @@ Applications MAY define further properties.
 publisher can then stop sending what nobody looks at and send smaller video to small tiles. It is an
 object keyed by stream ID. Each value is an object with these properties:
 
-- `in_use` (boolean): Whether the subscriber uses the stream. Defaults to `true`. While it is `false`,
-  the publisher SHOULD stop sending the stream: for media by sending no track (`replaceTrack(null)`) or
-  deactivating its encodings, for data by not sending on its channel. This keeps the stream and its
-  transceiver, so turning it back on needs no renegotiation.
-- `max_width`, `max_height` (integer): The largest video resolution, in pixels, that the subscriber can
-  show. The publisher SHOULD scale its video down to fit, for example with `scaleResolutionDownBy` in
-  `RTCRtpSender.setParameters()`.
-- `max_framerate` (number): The highest video frame rate the subscriber wants.
+- For `m.usermedia` and `m.screenshare`:
+  - `audio_in_use` (boolean): Whether the subscriber uses the stream's audio. Defaults to `true`.
+  - `video_in_use` (boolean): Whether the subscriber uses the stream's video. Defaults to `true`.
+  - `max_width`, `max_height` (integer): The largest video resolution, in device pixels, that the
+    subscriber can show. The publisher SHOULD scale its video down to fit, for example with
+    `scaleResolutionDownBy` in `RTCRtpSender.setParameters()`.
+  - `max_framerate` (number): The highest video frame rate the subscriber wants.
+- For `m.data`:
+  - `in_use` (boolean): Whether the subscriber uses the stream. Defaults to `true`.
+
+Audio and video are in use separately because a stream carries both, and a subscriber usually still
+plays the audio of a member whose video it doesn't show.
+
+While a stream's audio or video isn't in use, the publisher SHOULD stop sending it: by sending no track
+(`replaceTrack(null)`) or deactivating its encodings. While a data stream isn't in use, the publisher
+SHOULD not send on its channel. This keeps the stream and its transceiver, so turning it back on needs
+no renegotiation.
 
 Streams that aren't listed use the defaults. All of these are hints: the publisher MAY ignore them, so a
 subscriber has to cope with receiving a stream at full size.
@@ -143,7 +152,7 @@ subscriber has to cope with receiving a stream at full size.
 ```json5
 "consumption_metadata": {
   "{3f2a9c1e-7b4d-4e8a-9c2f-1d5e6a7b8c9d}": { "max_width": 320, "max_height": 180 },
-  "{b0c4e2d8-1a3f-4c5e-8d7b-9f0e1a2b3c4d}": { "in_use": false }
+  "{b0c4e2d8-1a3f-4c5e-8d7b-9f0e1a2b3c4d}": { "video_in_use": false }
 }
 ```
 
@@ -190,8 +199,9 @@ Asks the publisher to open a connection and send its streams. It contains only t
 
 #### `m.rtc.full_mesh.description` (both directions)
 
-Carries the initial SDP offer (publisher → subscriber) or answer (subscriber → publisher). Later offers
-and answers go over the [control channel](#control-channel).
+Carries an SDP offer (publisher → subscriber) or answer (subscriber → publisher) until the
+[control channel](#control-channel) is open. Usually that is just the initial offer and answer, but the
+publisher may renegotiate before the channel opens, for example when a screenshare starts during ICE.
 
 - `description` (required, object): An [`RTCSessionDescriptionInit`].
   - `type` (required, string): `offer` or `answer`.
@@ -290,6 +300,11 @@ The publisher announces every change over the control channel:
   renegotiation is needed. The subscriber matches the channel from `ondatachannel` by its label.
 - **Removing a data stream:** `stream_metadata` without the stream, then the channel is closed.
 
+Each data channel is its own SCTP stream, and SCTP only orders messages within a stream. A new channel
+can therefore arrive before the `stream_metadata` naming it. A subscriber MUST keep a channel whose label
+isn't in the stream metadata yet, and decide about it once the metadata names it. If no metadata names
+it within a short time (RECOMMENDED: 10 seconds), the subscriber ignores the channel.
+
 The publisher MUST NOT send a new offer while a previous one is still unanswered (signalling state not
 `stable`). Instead it waits for the answer and combines all changes made in the meantime into one offer.
 
@@ -299,6 +314,15 @@ The to-device offer and answer carry the initial `stream_metadata` and `consumpt
 side has to wait for the control channel before it knows what a track is or what to send, and the channel
 only carries updates. It opens after the offer and answer are applied, so updates can't overtake the
 initial state.
+
+Metadata can change before the channel opens, for example when someone mutes during ICE, which can take
+seconds with TURN. There is no to-device message for metadata, so each side keeps its latest metadata.
+Once the channel is open, each side sends its current metadata if it changed since the description that
+carried it. Both messages replace the previous state, so sending the latest is enough.
+
+A subscriber usually doesn't know yet how it will show the streams when it answers: it only learns about
+them from that offer. It SHOULD leave `consumption_metadata` out of the answer, rather than mark the
+streams unused, until it does know.
 
 ### Procedures
 
@@ -316,8 +340,8 @@ A subscriber (Alice) that wants media from a joined member (Bob) whose `transpor
    it with `stream_metadata` in an `m.rtc.full_mesh.description` message.
 4. Alice creates an `RTCPeerConnection` using her own ICE servers and sets the offer as the remote
    description. She creates her side of the control channel. She then creates an answer (`recvonly`),
-   sets it as the local description and sends it in an `m.rtc.full_mesh.description` message, optionally
-   with her initial `consumption_metadata`.
+   sets it as the local description and sends it in an `m.rtc.full_mesh.description` message, with her
+   initial `consumption_metadata` if she already knows how she will show the streams.
 5. Both sides send `m.rtc.full_mesh.candidates` as they gather candidates.
 6. Once the connection is up, the control channel opens. All further signalling uses it.
 
@@ -353,7 +377,11 @@ Dashed arrows are to-device messages. Solid arrows go directly between the peers
 
 If a connection's ICE state becomes `failed`, or its control channel closes, the subscriber MAY send
 `m.rtc.full_mesh.close` and then subscribe again with a new `connection_id`. It SHOULD use exponential
-backoff between attempts. Publishers don't retry.
+backoff between attempts.
+
+Publishers don't retry. If the control channel of a connection closes, the publisher closes the
+connection and sends `m.rtc.full_mesh.close`: without the channel it can't announce changes, so it
+shouldn't keep sending media that the subscriber can't interpret.
 
 ### End-to-end encryption
 
@@ -361,8 +389,8 @@ WebRTC always encrypts media with DTLS-SRTP, and data channels with DTLS. Each s
 fingerprint is part of its SDP. The SDP is carried in Olm-encrypted to-device messages, and recipients
 check that the sending device matches the member's `m.rtc.member` event. As a result, the fingerprints are
 authenticated end to end between the two member devices, and everything on the connection is end-to-end
-encrypted. Renegotiation offers arrive over the control channel and are authenticated by that DTLS
-session. TURN servers relay ciphertext only. DTLS uses an ephemeral key exchange, so every connection
+encrypted. Renegotiation offers arrive either in the same way or over the control channel, which that
+DTLS session authenticates. TURN servers relay ciphertext only. DTLS uses an ephemeral key exchange, so every connection
 also has forward secrecy.
 
 `m.full_mesh` therefore doesn't use the `m.per_member` key material from [MSC4143], and its required key
@@ -382,7 +410,9 @@ quadratic growth.
 ### To-device latency
 
 Connection setup needs about two to-device round trips, possibly over federation. This is slower than
-connecting to an SFU. After setup, nothing goes through the homeserver any more.
+connecting to an SFU. Once the control channel is open, nothing goes through the homeserver any more.
+Media can flow slightly before that, because it only needs DTLS while the channel needs SCTP on top, so
+a few candidates may still go through the homeserver after the first frames arrive.
 
 ### Twice the connections for bidirectional media
 
