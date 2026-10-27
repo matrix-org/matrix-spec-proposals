@@ -17,7 +17,7 @@ ensuring the user can give informed consent to clients that wish to perform admi
 ## Proposal
 
 A new scope is added to the specification, which clients using OAuth MAY request:
-`urn:matrix:client:server_administration` (herein referred to as "the scope" for brevity). Clients using OAuth
+`urn:matrix:client:admin:*` (herein referred to as "the scope" for brevity). Clients using OAuth
 MUST request the scope to use any of the endpoints in the Server Administration module (all of which are currently
 under the `/_matrix/client/*/admin/` path).
 
@@ -83,7 +83,7 @@ user's extant OAuth sessions that have the scope.
 
 While this proposal is unstable, clients and servers should use the
 `urn:matrix:client:cc.c10y.msc4484.server_administration` scope instead of the
-`urn:matrix:client:api:server_administration` scope. Servers may use the `org.continuwuity.msc4484.unstable`
+`urn:matrix:client:admin:*` scope. Servers may use the `org.continuwuity.msc4484.unstable`
 unstable feature flag to indicate that clients using OAuth must request the unstable
 `urn:matrix:client:cc.c10y.msc4484.server_administration` scope to use the Server Administration endpoints.
 
