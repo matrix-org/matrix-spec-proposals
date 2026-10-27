@@ -15,7 +15,7 @@ The first option above is clear - the client knows it needs a profile, and it fe
 just want a single field, and can fetch it when needed. However, this method is inefficient if the
 client needs to fetch multiple profiles.
 
-The second option, profile data down sync streams works for many cases. As per the MSC's involved,
+The second option, profile data down sync streams works for many cases. As per the MSCs involved,
 clients will receive profile data in roughly the following ways:
 
 * For initial sync, full profiles always for members in the rooms the sync relates to.
