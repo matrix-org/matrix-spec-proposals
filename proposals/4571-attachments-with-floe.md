@@ -69,7 +69,7 @@ doesn't matter.
 ## Potential issues
 The new encryption algorithm is not backwards-compatible. Old clients will be unable to view
 attachments encrypted with the new algorithm. Clients are discouraged from using this for anything
-other than streaming until the algorithm in the spec is widely supported.
+other than streaming until the algorithm is in the spec and widely supported.
 
 Unlike the old AES-CTR scheme, the ciphertext length is no longer equal to the plaintext length,
 which could complicate implementation in SDKs that assumed the length to be the same.
