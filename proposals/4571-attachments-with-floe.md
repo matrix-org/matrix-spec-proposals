@@ -36,6 +36,12 @@ All other parameters are also hardcoded as they are in the FLOE specification:
 As per the FLOE spec, clients MUST verify that the parameters embedded in the header sent over the
 wire match the hardcoded parameters. This includes the ENC_SEG_LEN hardcoded to 4096 by this MSC.
 
+The `size` field under `info` is now defined to be the unencrypted file length, which means it will
+be less than the ciphertext length when using FLOE. The field is still informational and doesn't
+have any additional behavior (for instance, it is not used to truncate the file after decryption).
+For the old AES-CTR encryption, the ciphertext and plaintext are the same length, so the distinction
+doesn't matter.
+
 ### Example
 ```json
 {
