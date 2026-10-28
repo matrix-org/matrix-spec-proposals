@@ -70,6 +70,20 @@ A full event looks like this:
 }
 ```
 
+### Choosing which links to send
+
+Which links to send with the attribute is up to the sending client. For example, this MSC does not specify whether
+clients send a plain URL such as `https://matrix.to/#/@bob:example.org` with it.
+
+Markdown links are one case where the sender's intent is clear. A link such as
+`[join our room](https://matrix.to/#/#room:example.org)` shows that the sender chose the link text and wants an
+ordinary link, so clients MAY add `data-mx-link` to the `a` tag they generate from it. Markdown is not part of the
+spec, so only the resulting HTML is sent:
+
+```html
+<a data-mx-link href="https://matrix.to/#/#room:example.org">join our room</a>
+```
+
 ### Relationship to `m.mentions`
 
 The attribute only changes how clients display the link.
