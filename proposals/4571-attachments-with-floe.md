@@ -75,10 +75,18 @@ Unlike the old AES-CTR scheme, the ciphertext length is no longer equal to the p
 which could complicate implementation in SDKs that assumed the length to be the same.
 
 ## Alternatives
+### Other streaming encryption schemes
 [MSC4016](https://github.com/matrix-org/matrix-spec-proposals/pull/4016) proposed a custom
 scheme based on AES-GCM. FLOE is also based on AES-GCM, but has been externally reviewed,
 which makes it a better option.
 
+libsodium has an [encrypted stream API](https://doc.libsodium.org/secret-key_cryptography/secretstream),
+which uses XChaCha20-Poly1305 instead of AES-GCM + SHA2. Neither it nor FLOE is formally standardized
+by a standards organization, but FLOE at least has a specification and [a security analysis paper].
+
+[a security analysis paper]: https://eprint.iacr.org/2025/2275.pdf
+
+### Alternative JSON structuring
 The `key` field could technically be reused for the FLOE key. However, as mentioned in the opening,
 JWK is a bad format and we don't want to keep using it. To avoid mixed types where `key` can be
 either an object or a string depending on the version, a new field is used instead. Also, the header
