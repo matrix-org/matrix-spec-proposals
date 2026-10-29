@@ -96,7 +96,7 @@ for this, the metric can and does change as those projects update. For example:
   website with updated (reproducible) results. 
   
 * Server projects with an Long-Term Stable (LTS) release channel alongside a "bleeding edge" or community
-  channel will have that non-LTS channel evaulated instead. 
+  channel will have that non-LTS channel evaluated instead. 
 
 In order to ensure the fullest possible set of Complement tests, the proposal process is modified to
 require a Complement test PR be opened as an implementation requirement on all MSCs (unless the proposal
