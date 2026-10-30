@@ -212,6 +212,8 @@ Content-Type: application/json
 HTTP response codes, and Matrix error codes:
 
 - `200 OK` - rendezvous session created
+- `400 Bad Request` (`M_NOT_JSON`) - the request body was not JSON
+- `400 Bad Request` (`M_BAD_JSON`) - the request body was JSON but a required field was missing or of the wrong type
 - `403 Forbidden` (`M_FORBIDDEN`) - the requester is not authorized to create the rendezvous session
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied `data` value is larger than the 4096 byte limit
@@ -295,7 +297,8 @@ Rejected `PUT`s need not be recorded: a stale `sequence_token` never becomes val
 
 A `{txnId}` therefore identifies a single send attempt rather than a payload: a client which changes the `data` or
 `sequence_token` it is sending MUST use a new `{txnId}`. Re-sending a `{txnId}` whose earlier request succeeded returns
-the earlier response without the new request being considered.
+the earlier response without the new request being considered. The server MUST check for a recorded `{txnId}` before
+validating the request body, so the `400`, `409` and `413` errors below do not apply to such a request.
 
 Unlike elsewhere in the Client-Server API, transaction IDs here are not scoped to a single device or access token: the
 rendezvous session is unauthenticated and shared between two devices, so a `{txnId}` is scoped to the rendezvous session
@@ -306,6 +309,9 @@ saw a colliding transaction ID would replay the other device's response and sile
 HTTP response codes, and Matrix error codes:
 
 - `200 OK` - payload updated
+- `400 Bad Request` (`M_INVALID_PARAM`) - `txnId` does not comply with the opaque identifier grammar
+- `400 Bad Request` (`M_NOT_JSON`) - the request body was not JSON
+- `400 Bad Request` (`M_BAD_JSON`) - the request body was JSON but a required field was missing or of the wrong type
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `409 Conflict` (`M_CONCURRENT_WRITE`, a new error code) - when the `sequence_token` does not match
