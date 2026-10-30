@@ -198,6 +198,9 @@ When a user is invited to the room and the client is able to see a single `m.jsc
 client SHOULD allow the user to set his `participationStatus` by automatically join and send the patch event. The client
 SHOULD leave the room after that action when `participationStatus` has been set to `declined`.
 
+When a user is not member of a room anymore, his `m.jscalendar.patch` is still considered valid as long as it is not
+redacted.
+
 ### Patching privately via room account data events
 
 For private metadata (e.g., `alerts` or snoozed notifications), a room account data event
