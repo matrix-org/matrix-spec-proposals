@@ -193,6 +193,11 @@ Patches target specific state versions. To find all valid patches. clients SHOUL
 the currently active `m.jscalender.event`/`m.jscalender.task` state event (as long as the `sequence` is the same) to
 find valid `m.jscalendar.patch` relations.
 
+When a user is invited to the room and the client is able to see a single `m.jscalender.event`/`m.jscalender.task`
+(needs [MSC4565: Share additional invite state](https://github.com/matrix-org/matrix-spec-proposals/pull/4565)), the
+client SHOULD allow the user to set his `participationStatus` by automatically join and send the patch event. The client
+SHOULD leave the room after that action when `participationStatus` has been set to `declined`.
+
 ### Patching privately via room account data events
 
 For private metadata (e.g., `alerts` or snoozed notifications), a room account data event
