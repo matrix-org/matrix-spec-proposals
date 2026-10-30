@@ -377,11 +377,18 @@ Requires authentication: No
 
 HTTP response codes:
 
-- `200 OK` - rendezvous session cancelled
+- `200 OK` - rendezvous session cancelled with response body `{}`.
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired,
   or been cancelled by a previous `DELETE` request).
 - `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
+
+```http
+HTTP 200 OK
+Content-Type: application/json
+
+{}
+```
 
 Cancelling a session will cause all future reads and writes to fail with a `404 M_NOT_FOUND`.
 
