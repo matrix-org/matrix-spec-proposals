@@ -114,6 +114,8 @@ The content of the state event contains a content block `m.jscalendar.event`/`m.
   message events (this also applies within `recurrenceOverrides`). Other participants ids are allowed. This maintains
   the ability to add participants via email invites, for example.
 
+When updating the content, the `sequence` SHOULD be incremented according to the rules linked in JSCalender.
+
 **Example `m.jscalendar.event` state event:**
 
 ```json
@@ -124,7 +126,8 @@ The content of the state event contains a content block `m.jscalendar.event`/`m.
       "title": "Some event",
       "start": "2020-01-15T13:00:00",
       "timeZone": "America/New_York",
-      "duration": "PT1H"
+      "duration": "PT1H",
+      "sequence": 3
     }
   },
   "event_id": "$143273976499sgjks",
@@ -150,7 +153,8 @@ To update participant information (e.g., `participationStatus`) with some room-a
 event `m.jscalendar.patch` is introduced. It contains the content block `m.jscalendar.patch` of the JSCalendar type
 `PatchObject`.
 
-This event MUST include a `m.relates_to` relation of type `m.jscalendar.patch` pointing to the target state event.
+This event MUST include a `m.relates_to` relation of type `m.jscalendar.patch` pointing to the target state event. The
+additionally mandatory parameter `sequence` MUST be set based on the patched `@type:event`/`@type:task`.
 
 A pointer within the `PatchObject` MUST only modify the following properties, where `<user_id>` is the MXID of the
 sender of the patch:
@@ -174,7 +178,8 @@ message.
     },
     "m.relates_to": {
       "rel_type": "m.jscalendar.patch",
-      "event_id": "$143273976499sgjks"
+      "event_id": "$143273976499sgjks",
+      "sequence": 3
     }
   },
   "event_id": "$14327werw499sgjks",
@@ -184,9 +189,9 @@ message.
 }
 ```
 
-Since patches target specific state versions, clients SHOULD follow the `replaces_state` history of an event to find
-relevant relations and attempt to apply them to the current state. Clients SHOULD notify users if participant
-information may be outdated due to state changes.
+Patches target specific state versions. To find all valid patches. clients SHOULD follow the `replaces_state` history of
+the currently active `m.jscalender.event`/`m.jscalender.task` state event (as long as the `sequence` is the same) to
+find valid `m.jscalendar.patch` relations.
 
 ### Patching privately via room account data events
 
