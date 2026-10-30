@@ -22,8 +22,8 @@ AAD. Only the `FLOE_BODY` part of the FLOE ciphertext is uploaded to the media r
 
 The `hashes` -> `sha256` field is used as before, covering the entire `FLOE_BODY`. However, the hash
 is no longer required for data that is not fully available at message send time, like a video stream.
-Clients MUST still include the hash for normal file uploads that are fully available at send time.
-If the hash is present, it MUST be verified when downloading the file.
+Clients MUST still include the hash for normal file uploads. If the hash is present, it MUST be
+verified when downloading the file.
 
 FLOE only has one parameter which can take different values: `ENC_SEG_LEN`. This MSC restricts that
 parameter to 4 KiB, i.e. `4096`. The value has to be restricted, because it determines how large
@@ -68,11 +68,14 @@ doesn't matter.
 
 ## Potential issues
 The new encryption algorithm is not backwards-compatible. Old clients will be unable to view
-attachments encrypted with the new algorithm. Clients are discouraged from using this for anything
-other than streaming until the algorithm is in the spec and widely supported.
+attachments encrypted with the new algorithm. Clients SHOULD NOT use this for sending normal files
+before the algorithm is in the spec and decryption is widely supported.
 
 Unlike the old AES-CTR scheme, the ciphertext length is no longer equal to the plaintext length,
 which could complicate implementation in SDKs that assumed the length to be the same.
+
+FLOE is quite new and not widely adopted by the industry yet, so only a few independent
+implementations exist.
 
 ## Alternatives
 ### Other streaming encryption schemes
