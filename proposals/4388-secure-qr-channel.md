@@ -233,7 +233,7 @@ Content-Type: application/json
 
 {
     "id": "abcdEFG12345",
-    "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=",
+    "sequence_token": "1",
     "expires_in_ms": 300000
 }
 ```
@@ -274,7 +274,7 @@ PUT /_matrix/client/v1/rendezvous/abcdEFG12345/mLDVAsAqLnzUonKnmnzUyC7B HTTP/1.1
 Content-Type: application/json
 
 {
-    "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=",
+    "sequence_token": "1",
     "data": "new data"
 }
 ```
@@ -325,7 +325,7 @@ HTTP 200 OK
 Content-Type: application/json
 
 {
-    "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o="
+    "sequence_token": "2"
 }
 ```
 
@@ -356,7 +356,7 @@ Content-Type: application/json
 
 {
     "data": "data from the previous POST/PUT",
-    "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=",
+    "sequence_token": "2",
     "expires_in_ms": 300000
 }
 ```
