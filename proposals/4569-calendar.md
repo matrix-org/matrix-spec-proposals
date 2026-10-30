@@ -170,11 +170,11 @@ message.
     "m.jscalendar.patch": {
       "recurrenceOverrides/2020-01-15T13:00:00/participants/@example:example.org": {
         "participationStatus": "declined"
-      },
-      "m.relates_to": {
-        "rel_type": "m.jscalendar.patch",
-        "event_id": "$143273976499sgjks"
       }
+    },
+    "m.relates_to": {
+      "rel_type": "m.jscalendar.patch",
+      "event_id": "$143273976499sgjks"
     }
   },
   "event_id": "$14327werw499sgjks",
