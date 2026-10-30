@@ -110,8 +110,9 @@ The content of the state event contains a content block `m.jscalendar.event`/`m.
 - `@type`: Inferred from the event type.
 - `uid`: Inferred from the `state_key`.
 - `version`: This is derived from the parent `@type:Group`.
-- `participants/<user_id>`: The `<user_id>` MUST be a valid MXID (this also applies within `recurrenceOverrides`). Other
-  participants are allowed. This maintains the ability to add participants via email invites, for example.
+- `participants/<id>`: When the `<id>` is a valid MXID. Participants with MXIDs are derived from `m.jscalendar.patch`
+  message events (this also applies within `recurrenceOverrides`). Other participants ids are allowed. This maintains
+  the ability to add participants via email invites, for example.
 
 **Example `m.jscalendar.event` state event:**
 
