@@ -25,7 +25,7 @@ This MSC provides the foundational primitives required for calendar-based featur
 
 This MSC adopts [IETF JSCalendar 2.0](https://datatracker.ietf.org/doc/draft-ietf-calext-jscalendarbis/) as the basis
 for the calendar data model. Using an established specification allows for easier implementation of UI components,
-import/export functionality, and bridging to existing services (such as CalDAV/iCalendar).
+import/export functionality, and bridging to existing services (that might use CalDAV/iCalendar).
 
 JSCalendar 2.0 defines three primary objects: `Event`, `Task`, and `Group`. To distinguish them from standard Matrix
 events, these are referred to as `@type:Event`, `@type:Task`, and `@type:Group` from now on.
