@@ -22,6 +22,8 @@ any of these fields describing the original message:
 | --- | --- | --- |
 | `event_id` | string | Event ID of the original event. |
 | `room_id` | string | Room ID of the original event. |
+| `room_name` | string | Display name of the room containing the original event. |
+| `room_avatar_url` | string | MXC URI of that room's avatar. |
 | `sender` | string | User ID of the original event's sender. |
 | `origin_server_ts` | integer | Origin server timestamp of the original event. |
 
@@ -183,6 +185,8 @@ A forwarded text message:
   "m.forwarded": {
     "event_id": "$original:example.org",
     "room_id": "!source:example.org",
+    "room_name": "Meeting Announcements",
+    "room_avatar_url": "mxc://example.org/abc123",
     "sender": "@alice:example.org",
     "origin_server_ts": 1722451200000,
     "content": {
