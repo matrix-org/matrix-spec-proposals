@@ -1,4 +1,4 @@
-# MSCXXXX: Full mesh transport for MatrixRTC
+# MSC4575: Full mesh transport for MatrixRTC
 
 [MSC4143] introduces MatrixRTC. Concrete transports are defined in separate proposals. [MSC4195] defines an
 SFU based transport (livekit). This proposal defines a peer-to-peer transport. Which is less performant, more
@@ -514,12 +514,12 @@ the application would allow anyway.
 
 | Stable identifier | Purpose | Unstable identifier |
 | ----------------- | ------- | ------------------- |
-| `m.full_mesh` | Transport type | `org.matrix.mscXXXX.full_mesh` |
-| `m.rtc.full_mesh.subscribe` | To-device event type | `org.matrix.mscXXXX.rtc.full_mesh.subscribe` |
-| `m.rtc.full_mesh.description` | To-device event type | `org.matrix.mscXXXX.rtc.full_mesh.description` |
-| `m.rtc.full_mesh.candidates` | To-device event type | `org.matrix.mscXXXX.rtc.full_mesh.candidates` |
-| `m.rtc.full_mesh.close` | To-device event type | `org.matrix.mscXXXX.rtc.full_mesh.close` |
-| `m.rtc.full_mesh.control` | Control channel label | `org.matrix.mscXXXX.rtc.full_mesh.control` |
+| `m.full_mesh` | Transport type | `org.matrix.msc4575.full_mesh` |
+| `m.rtc.full_mesh.subscribe` | To-device event type | `org.matrix.msc4575.rtc.full_mesh.subscribe` |
+| `m.rtc.full_mesh.description` | To-device event type | `org.matrix.msc4575.rtc.full_mesh.description` |
+| `m.rtc.full_mesh.candidates` | To-device event type | `org.matrix.msc4575.rtc.full_mesh.candidates` |
+| `m.rtc.full_mesh.close` | To-device event type | `org.matrix.msc4575.rtc.full_mesh.close` |
+| `m.rtc.full_mesh.control` | Control channel label | `org.matrix.msc4575.rtc.full_mesh.control` |
 
 ## Dependencies
 
