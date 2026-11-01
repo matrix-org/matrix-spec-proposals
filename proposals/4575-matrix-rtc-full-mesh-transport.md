@@ -1,15 +1,15 @@
 # MSC4575: Full mesh transport for MatrixRTC
 
 [MSC4143] introduces MatrixRTC. Concrete transports are defined in separate proposals. [MSC4195] defines an
-SFU based transport (livekit). This proposal defines a peer-to-peer transport. Which is less performant, more
-upload and download, but easier to host (a lot of homeservers already have all infrastructre setup as its the same
-that is already used for 1:1 calls as they are currently (2026) defined in the spec)
+SFU-based transport (LiveKit). This proposal defines a peer-to-peer transport. It is less efficient, as it
+needs more upload and download bandwidth, but it is easier to host: many homeservers already have all the
+infrastructure set up, because it is the same as for 1:1 calls as currently (2026) defined in the spec.
 
 Every subscriber opens a direct WebRTC connection to every publisher it wants to receive media from.
 No server-side infrastructure is needed apart from the TURN servers homeservers already provide for [VoIP].
 
 The transport only covers establishing WebRTC connections between two MatrixRTC members. Calls, ringing,
-invites and membership are all handled by [MSC4143] and the respective rtc applications like `m.call` [MSC4196].
+invites and membership are all handled by [MSC4143] and the respective RTC applications like `m.call` ([MSC4196]).
 
 [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
 [MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
@@ -45,8 +45,8 @@ Members able to subscribe add `m.full_mesh` to `transports.can_subscribe`.
 ```
 
 Clients MUST ignore an `m.full_mesh` transport whose `device_id` isn't the device that
-sent the `m.rtc.member` event. (Only applicable in encrypted rooms, where `device_id`.
-Is known from the encryption metadata.)
+sent the `m.rtc.member` event. (This only applies in encrypted rooms, where the sending device is known
+from the encryption metadata.)
 
 A member MUST NOT list more than one `m.full_mesh` object in `transports.published`.
 
@@ -58,25 +58,26 @@ Each WebRTC connection is **unidirectional** and belongs to exactly one *(subscr
 MatrixRTC members:
 
 - The **subscriber** starts the connection by requesting media.
-- The **publisher** is always the SDP offerer is the only one sending media and data. The subscriber
-  only receives them. Except on the [control channel](#control-channel): it carries control messages[^1] in
-  both directions.
+- The **publisher** is always the SDP offerer and the only one sending media and data. The subscriber
+  only receives them, except on the [control channel](#control-channel), which carries control
+  messages[^1] in both directions.
 - If two members subscribe to each other, they use two independent connections.
 
 This lets transports be mixed per direction. Alice can subscribe to Bob over `m.full_mesh` while Bob
-subscribes to Alice over `m.livekit`. Only the publisher creates offers, clear ownership, there are no glares.
+subscribes to Alice over `m.livekit`. Only the publisher creates offers. This gives clear ownership, so
+there is no glare.
 
 Only one connection is allowed to exist per (subscriber `member.id`, publisher `member.id`) pair.
 
-Only the connections initial setup uses [to-device messages](#to-device-messages). After that,
+Only the connection's initial setup uses [to-device messages](#to-device-messages). After that,
 all signalling goes directly between the peers over the connection's [control channel](#control-channel).
 
 [^1]: Control messages announce changes, like a new track or a mute, and tell the publisher how the
-subscriber shows each track. [Control messages](#control-messages)
+subscriber shows each track. See [control messages](#control-messages).
 
 ### TURN servers
 
-Each client gets ICE servers from its own homeserver as described in:
+Each client gets ICE servers from its own homeserver as described in
 [`GET /_matrix/client/v3/voip/turnServer`][turnServer]. A client passes `uris`, `username` and
 `password` to every `RTCPeerConnection` it creates.
 
@@ -89,9 +90,9 @@ They MUST NOT fall back to a third-party STUN/TURN server without user consent.
 
 ### Tracks and metadata
 
-The publisher sends each audio video or data track on its own transceiver. Both sides identify a track by the
+The publisher sends each audio, video or data track on its own transceiver. Both sides identify a track by the
 `mid` of its transceiver in the SDP. The following two metadata objects are keyed by `mid`.
-Custom Applications MAY can add additional/new properties.
+Custom applications MAY add new properties.
 
 #### Track metadata (publisher → subscriber)
 
@@ -116,7 +117,7 @@ Publishers SHOULD put tracks that belong together, like a microphone and a camer
 #### Consumption metadata (subscriber → publisher)
 
 `consumption_metadata` tells the publisher how their tracks are used. This allows a publisher to stop
-sending what nobody looks at or send in lower resolution:
+sending what nobody looks at, or to send it at a lower resolution:
 
 - `in_use` (boolean): Whether the subscriber uses the track. Defaults to `true`. While it is `false`, the
   publisher SHOULD send nothing on the track (`replaceTrack(null)`), which needs no renegotiation to undo.
@@ -160,8 +161,8 @@ Every message contains these common properties:
 - `slot_id` (required, string): The ID of the slot.
 - `member_id` (required, string): The sender's `member.id`.
 - `claimed_device_id` (required, string): The sender's device ID, which replies are sent to. SDKs and the widget
-  API often don't expose the Olm sending device, so the sender states it, like `claimed_device_id` in
-  [MSC4143]'s reference implementation.
+  API often don't expose the Olm sending device, so the sender states it, as [MSC4143]'s reference
+  implementation does.
 - `target_member_id` (required, string): The recipient's `member.id`.
 - `connection_id` (required, string): A random identifier the subscriber generates for each subscription
   attempt. All messages of the connection use it.
@@ -317,7 +318,7 @@ late.
 
 ### Procedures
 
-This is an example procedures to summarise the previous section and making it more concrete.
+This section walks through an example to summarise the previous sections and make them more concrete.
 
 #### Subscribing
 
@@ -380,7 +381,7 @@ shouldn't keep sending media that the subscriber can't interpret.
 
 WebRTC always encrypts media with DTLS-SRTP (data channels with DTLS). Each side's DTLS certificate
 fingerprint is part of its SDP.
- - The SDP is carried in Olm-encrypted to-device messages
+ - The SDP is carried in Olm-encrypted to-device messages.
  - Recipients check that the sending device matches the member's `m.rtc.member` event.
 
 As a result, the fingerprints are authenticated end to end between the two member devices, and everything
@@ -388,8 +389,9 @@ on the connection is end-to-end encrypted.
 This also holds for renegotiation offers: they arrive either over Olm like the first one, or over the
 control channel, which that DTLS session authenticates.
 
-TURN servers dont weaken the encryption. They only relay packets, but can't decrypt or alter the media,
-because they don't take part in the DTLS handshake. They do see the peers' IP addresses and the traffic's timing and volume.
+TURN servers don't weaken the encryption. They only relay packets and can't decrypt or alter the media,
+because they don't take part in the DTLS handshake. They do see the peers' IP addresses and the
+traffic's timing and volume.
 
 DTLS uses an ephemeral key exchange, so every connection also has forward secrecy.
 
@@ -492,7 +494,7 @@ by their owner, as described in [MSC4153].
 
 ### Claimed device IDs
 
-A recipient that can't check `device_id` against the Olm sending device only knows that the message
+A recipient that can't check `claimed_device_id` against the Olm sending device only knows that the message
 comes from the right user. Another device of that same user could pretend to be the device of the
 member and receive its media. Only that user's own devices can do this, the same as for `claimed_device_id`
 in [MSC4143]'s reference implementation. Clients SHOULD check the Olm sending device wherever their SDK
