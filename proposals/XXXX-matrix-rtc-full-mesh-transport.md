@@ -1,18 +1,20 @@
 # MSCXXXX: Full mesh transport for MatrixRTC
 
 [MSC4143] introduces MatrixRTC. Concrete transports are defined in separate proposals. [MSC4195] defines an
-SFU based transport (livekit). This proposal defines a peer-to-peer transport.
+SFU based transport (livekit). This proposal defines a peer-to-peer transport. Which is less performant, more
+upload and download, but easier to host (a lot of homeservers already have all infrastructre setup as its the same
+that is already used for 1:1 calls as they are currently (2026) defined in the spec)
 
-In one sentence:\
-Every subscriber opens a direct WebRTC connection to every publisher it wants to receive media from. No server-side infrastructure is
-needed apart from the TURN servers homeservers already provide for [VoIP].
+Every subscriber opens a direct WebRTC connection to every publisher it wants to receive media from.
+No server-side infrastructure is needed apart from the TURN servers homeservers already provide for [VoIP].
 
 The transport only covers establishing WebRTC connections between two MatrixRTC members. Calls, ringing,
-invites, call IDs and membership are all handled by [MSC4143] and the respective application.
+invites and membership are all handled by [MSC4143] and the respective rtc applications like `m.call` [MSC4196].
 
 [MSC4143]: https://github.com/matrix-org/matrix-spec-proposals/pull/4143
 [MSC4195]: https://github.com/matrix-org/matrix-spec-proposals/pull/4195
 [VoIP]: https://spec.matrix.org/v1.18/client-server-api/#voice-over-ip
+[MSC4196]: https://github.com/matrix-org/matrix-spec-proposals/pull/4196
 
 ## Proposal
 
@@ -22,8 +24,7 @@ A new transport type `m.full_mesh` is introduced. A member publishing on it adds
 to `transports.published` in its `m.rtc.member` event:
 
 - `type` (required, string): `m.full_mesh`.
-- `device_id` (required, string): The device ID of the publishing client, which subscribers send
-  to-device messages to.
+- `device_id` (required, string): The device ID of the publishing client.
 
 Members able to subscribe add `m.full_mesh` to `transports.can_subscribe`.
 
@@ -43,8 +44,9 @@ Members able to subscribe add `m.full_mesh` to `transports.can_subscribe`.
 }
 ```
 
-In encrypted rooms, clients MUST ignore an `m.full_mesh` transport whose `device_id` isn't the device that
-sent the `m.rtc.member` event.
+Clients MUST ignore an `m.full_mesh` transport whose `device_id` isn't the device that
+sent the `m.rtc.member` event. (Only applicable in encrypted rooms, where `device_id`.
+Is known from the encryption metadata.)
 
 A member MUST NOT list more than one `m.full_mesh` object in `transports.published`.
 
@@ -55,106 +57,95 @@ Servers don't need to advertise `m.full_mesh` in `/_matrix/client/v1/rtc/transpo
 Each WebRTC connection is **unidirectional** and belongs to exactly one *(subscriber, publisher)* pair of
 MatrixRTC members:
 
-- The **subscriber** starts the connection by asking the publisher for its media.
-- The **publisher** is always the SDP offerer and only sends media and data. The subscriber only receives
-  them. The [control channel](#control-channel) is the one exception: it carries control messages in
+- The **subscriber** starts the connection by requesting media.
+- The **publisher** is always the SDP offerer is the only one sending media and data. The subscriber
+  only receives them. Except on the [control channel](#control-channel): it carries control messages[^1] in
   both directions.
 - If two members subscribe to each other, they use two independent connections.
 
 This lets transports be mixed per direction. Alice can subscribe to Bob over `m.full_mesh` while Bob
-subscribes to Alice over `m.livekit`. Because only the publisher creates offers, there is no glare.
+subscribes to Alice over `m.livekit`. Only the publisher creates offers, clear ownership, there are no glares.
 
-At most one connection exists per (subscriber `member.id`, publisher `member.id`) pair.
+Only one connection is allowed to exist per (subscriber `member.id`, publisher `member.id`) pair.
 
-Connections are set up with [to-device messages](#to-device-messages). After that, all signalling goes
-directly between the peers over the connection's [control channel](#control-channel).
+Only the connections initial setup uses [to-device messages](#to-device-messages). After that,
+all signalling goes directly between the peers over the connection's [control channel](#control-channel).
+
+[^1]: Control messages announce changes, like a new track or a mute, and tell the publisher how the
+subscriber shows each track. [Control messages](#control-messages)
 
 ### TURN servers
 
-Each client gets ICE servers from its own homeserver via the existing
-[`GET /_matrix/client/v3/voip/turnServer`][turnServer] endpoint and passes `uris`, `username` and
-`password` to every `RTCPeerConnection` it creates. Clients SHOULD fetch the credentials again before
-`ttl` expires and use the new ones for new connections. If the response is empty, the homeserver has no
-TURN server. Clients then use host and server-reflexive candidates only. They MUST NOT fall back to a
-third-party STUN/TURN server without user consent.
+Each client gets ICE servers from its own homeserver as described in:
+[`GET /_matrix/client/v3/voip/turnServer`][turnServer]. A client passes `uris`, `username` and
+`password` to every `RTCPeerConnection` it creates.
+
+Clients SHOULD fetch the credentials again before `ttl` expires and use the new ones for new connections.
+Clients use host and server-reflexive candidates only.
+
+They MUST NOT fall back to a third-party STUN/TURN server without user consent.
 
 [turnServer]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3voipturnserver
 
-### Streams
+### Tracks and metadata
 
-A publisher sends **streams**. Each stream has an ID that is unique within the connection, and a
-`purpose`:
+The publisher sends each audio video or data track on its own transceiver. Both sides identify a track by the
+`mid` of its transceiver in the SDP. The following two metadata objects are keyed by `mid`.
+Custom Applications MAY can add additional/new properties.
 
-| Purpose | Carried as | Stream ID |
-| ------- | ---------- | --------- |
-| `m.usermedia` | Audio and/or video tracks (SDP `m=audio` / `m=video`) | The `MediaStream` ID: the first value of the tracks' `a=msid` lines |
-| `m.screenshare` | Video and optionally audio tracks (SDP `m=audio` / `m=video`) | The `MediaStream` ID, as above |
-| `m.data` | A WebRTC data channel (in the connection's single SDP `m=application` section) | The data channel's `label` |
+#### Track metadata (publisher → subscriber)
 
-Tracks that share a `MediaStream` ID belong to the same stream. New application types MAY introduce additional purposes. Clients MUST ignore streams with a purpose they
-don't know, and SHOULD ignore a mismatch between a stream's purpose and the SDP media type carrying it.
+`track_metadata` describes every track the publisher currently sends:
 
-The [control channel](#control-channel) is not a stream and never appears in the stream metadata.
-
-#### Stream metadata (publisher → subscriber)
-
-`stream_metadata` describes every stream the publisher currently sends. It is an object keyed by stream ID.
-Each value is an object with these properties:
-
-- `purpose` (required, string): The stream's purpose, as above.
-- For `m.usermedia` and `m.screenshare`:
-  - `audio_muted` (boolean): Whether the stream's audio is muted on purpose. Defaults to `false`.
-  - `video_muted` (boolean): Whether the stream's video is muted on purpose. Defaults to `false`.
-- For `m.data`:
-  - `protocol` (required, string): Names what the stream carries and how its messages are encoded. Uses
-    the [Common Namespaced Identifier Grammar]. Applications define their protocols. A subscriber MUST
-    ignore data streams with a protocol it doesn't know.
-
-Applications MAY define further properties.
+- `purpose` (required, string): `m.usermedia` or `m.screenshare`, as in [VoIP]. Together with the
+  track's media type, it tells a microphone from a camera, or a screenshare from its audio.
+  Applications MAY define more purposes. Subscribers MUST ignore tracks whose purpose they don't know.
+- `muted` (boolean): Whether the track is muted on purpose. Defaults to `false`.
 
 ```json5
-"stream_metadata": {
-  "{3f2a9c1e-7b4d-4e8a-9c2f-1d5e6a7b8c9d}": { "purpose": "m.usermedia", "video_muted": true },
-  "{b0c4e2d8-1a3f-4c5e-8d7b-9f0e1a2b3c4d}": { "purpose": "m.screenshare" },
-  "mouse_position": { "purpose": "m.data", "protocol": "m.call.mouse_position" }
+"track_metadata": {
+  "0": { "purpose": "m.usermedia" },
+  "1": { "purpose": "m.usermedia", "muted": true },
+  "2": { "purpose": "m.screenshare" }
 }
 ```
 
-[Common Namespaced Identifier Grammar]: https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar
+Publishers SHOULD put tracks that belong together, like a microphone and a camera, in one `MediaStream`
+(`a=msid`), so that the subscriber's browser plays them in sync.
 
 #### Consumption metadata (subscriber → publisher)
 
-`consumption_metadata` tells the publisher which streams the subscriber actually uses, and how. The
-publisher can then stop sending what nobody looks at and send smaller video to small tiles. It is an
-object keyed by stream ID. Each value is an object with these properties:
+`consumption_metadata` tells the publisher how their tracks are used. This allows a publisher to stop
+sending what nobody looks at or send in lower resolution:
 
-- For `m.usermedia` and `m.screenshare`:
-  - `audio_in_use` (boolean): Whether the subscriber uses the stream's audio. Defaults to `true`.
-  - `video_in_use` (boolean): Whether the subscriber uses the stream's video. Defaults to `true`.
-  - `max_width`, `max_height` (integer): The largest video resolution, in device pixels, that the
-    subscriber can show. The publisher SHOULD scale its video down to fit, for example with
-    `scaleResolutionDownBy` in `RTCRtpSender.setParameters()`.
-  - `max_framerate` (number): The highest video frame rate the subscriber wants.
-- For `m.data`:
-  - `in_use` (boolean): Whether the subscriber uses the stream. Defaults to `true`.
+- `in_use` (boolean): Whether the subscriber uses the track. Defaults to `true`. While it is `false`, the
+  publisher SHOULD send nothing on the track (`replaceTrack(null)`), which needs no renegotiation to undo.
+- `max_width`, `max_height` (integer): The largest size, in device pixels, at which the subscriber shows
+  the video. The publisher SHOULD scale its video down to fit, for example with `scaleResolutionDownBy`
+  in `RTCRtpSender.setParameters()`.
 
-Audio and video are in use separately because a stream carries both, and a subscriber usually still
-plays the audio of a member whose video it doesn't show.
-
-While a stream's audio or video isn't in use, the publisher SHOULD stop sending it: by sending no track
-(`replaceTrack(null)`) or deactivating its encodings. While a data stream isn't in use, the publisher
-SHOULD not send on its channel. This keeps the stream and its transceiver, so turning it back on needs
-no renegotiation.
-
-Streams that aren't listed use the defaults. All of these are hints: the publisher MAY ignore them, so a
-subscriber has to cope with receiving a stream at full size.
+Tracks that aren't listed use the defaults. These are hints: the publisher MAY ignore them.
 
 ```json5
 "consumption_metadata": {
-  "{3f2a9c1e-7b4d-4e8a-9c2f-1d5e6a7b8c9d}": { "max_width": 320, "max_height": 180 },
-  "{b0c4e2d8-1a3f-4c5e-8d7b-9f0e1a2b3c4d}": { "video_in_use": false }
+  "1": { "max_width": 320, "max_height": 180 },
+  "2": { "in_use": false }
 }
 ```
+
+#### Data channels
+
+The publisher MAY open further data channels for application data. It sets each channel's
+[`protocol`][RTCDataChannelInit], which WebRTC sends to the subscriber together with the channel
+([RFC 8832]), to an identifier in the [Common Namespaced Identifier Grammar] naming what the channel
+carries and how. Subscribers MUST ignore channels whose protocol they don't know.
+
+This proposal defines no protocols. Each MatrixRTC application, like `m.call` ([MSC4196]), defines the
+protocols it uses, and a client MAY use its own namespaced protocols for features of its own.
+
+[RTCDataChannelInit]: https://www.w3.org/TR/webrtc/#dom-rtcdatachannelinit-protocol
+[RFC 8832]: https://www.rfc-editor.org/rfc/rfc8832
+[Common Namespaced Identifier Grammar]: https://spec.matrix.org/v1.16/appendices/#common-namespaced-identifier-grammar
 
 ### To-device messages
 
@@ -168,7 +159,7 @@ Every message contains these common properties:
 - `room_id` (required, string): The room containing the slot.
 - `slot_id` (required, string): The ID of the slot.
 - `member_id` (required, string): The sender's `member.id`.
-- `device_id` (required, string): The sender's device ID, which replies are sent to. SDKs and the widget
+- `claimed_device_id` (required, string): The sender's device ID, which replies are sent to. SDKs and the widget
   API often don't expose the Olm sending device, so the sender states it, like `claimed_device_id` in
   [MSC4143]'s reference implementation.
 - `target_member_id` (required, string): The recipient's `member.id`.
@@ -185,8 +176,8 @@ Recipients MUST discard a message if any of these is true:
 - `target_member_id` is not their own current `member.id`.
 - No joined `m.rtc.member` event matches `member_id`.
 - That event's sender is not the sender of the to-device message.
-- `device_id` is not the device that event belongs to.
-- The client knows the Olm sending device of the to-device message, and it differs from `device_id`.
+- `claimed_device_id` is not the device that event belongs to.
+- The client knows the Olm sending device of the to-device message, and it differs from `claimed_device_id`.
 - The message is not `m.rtc.full_mesh.subscribe` and its `connection_id` is not the current connection
   for this member pair. This drops late messages belonging to a replaced or closed connection.
 
@@ -195,7 +186,7 @@ a request for a short grace period (RECOMMENDED: 10 seconds) before discarding i
 
 #### `m.rtc.full_mesh.subscribe` (subscriber → publisher)
 
-Asks the publisher to open a connection and send its streams. It contains only the common properties.
+Asks the publisher to open a connection. It contains only the [common properties](#to-device-messages).
 
 #### `m.rtc.full_mesh.description` (both directions)
 
@@ -203,28 +194,30 @@ Carries an SDP offer (publisher → subscriber) or answer (subscriber → publis
 [control channel](#control-channel) is open. Usually that is just the initial offer and answer, but the
 publisher may renegotiate before the channel opens, for example when a screenshare starts during ICE.
 
+It contains the [common properties](#to-device-messages) and:
+
 - `description` (required, object): An [`RTCSessionDescriptionInit`].
   - `type` (required, string): `offer` or `answer`.
   - `sdp` (required, string): The SDP.
-- `stream_metadata` (object): REQUIRED on offers. The publisher's [stream metadata](#stream-metadata-publisher--subscriber)
-  at the time of the offer.
-- `consumption_metadata` (object): Optional on answers. The subscriber's initial
-  [consumption metadata](#consumption-metadata-subscriber--publisher).
-
-See [initial metadata](#initial-metadata).
+- `track_metadata` (object): REQUIRED on offers. The publisher's
+  [track metadata](#track-metadata-publisher--subscriber) once the offer is applied.
 
 ```json5
 {
+  // Common properties
   "room_id": "!room:example.org",
   "slot_id": "m.call#room",
   "member_id": "bobMemberId",
-  "device_id": "BOBDEVICE",
+  "claimed_device_id": "BOBDEVICE",
   "target_member_id": "aliceMemberId",
   "connection_id": "c0nn3ct10n1d",
   "seq": 0,
+
+  // Specific to m.rtc.full_mesh.description
   "description": { "type": "offer", "sdp": "v=0\r\n..." },
-  "stream_metadata": {
-    "{3f2a9c1e-7b4d-4e8a-9c2f-1d5e6a7b8c9d}": { "purpose": "m.usermedia", "video_muted": true }
+  "track_metadata": {
+    "0": { "purpose": "m.usermedia" },
+    "1": { "purpose": "m.usermedia", "muted": true }
   }
 }
 ```
@@ -232,6 +225,8 @@ See [initial metadata](#initial-metadata).
 #### `m.rtc.full_mesh.candidates` (both directions)
 
 Carries trickled ICE candidates until the control channel is open.
+
+It contains the [common properties](#to-device-messages) and:
 
 - `candidates` (required, array): An array of [`RTCIceCandidateInit`] objects (`candidate`, `sdpMid`,
   `sdpMLineIndex`, `usernameFragment`). A `candidate` set to the empty string signals end-of-candidates.
@@ -243,6 +238,8 @@ description. Recipients MUST still wait for `setRemoteDescription` to complete b
 #### `m.rtc.full_mesh.close` (both directions)
 
 Closes the connection. The recipient closes the corresponding `RTCPeerConnection`.
+
+It contains the [common properties](#to-device-messages) and:
 
 - `reason` (string): An optional human-readable reason.
 
@@ -265,66 +262,62 @@ connection is up. It is set up as follows:
 The publisher creates the channel before its first offer, so that the offer contains the connection's
 `m=application` section. The subscriber creates its side right after applying that offer.
 
-The label and ID `0` are reserved. Data streams (`m.data`) are separate channels with other labels and
-browser-assigned IDs (`negotiated: false`). A channel with the reserved label that arrives through
-`ondatachannel` is ignored.
+ID `0` is reserved for it. [Data channels](#data-channels) are announced in-band (`negotiated: false`)
+and get their IDs from the browser.
 
-#### Messages
+#### Control messages
 
 Each message is one UTF-8 JSON object, sent as a text message, with a `type` property:
 
 | `type` | Direction | Content |
 | ------ | --------- | ------- |
-| `stream_metadata` | publisher → subscriber | `stream_metadata`: the complete current [stream metadata](#stream-metadata-publisher--subscriber). It replaces the previous one. |
-| `consumption_metadata` | subscriber → publisher | `consumption_metadata`: the complete current [consumption metadata](#consumption-metadata-subscriber--publisher). It replaces the previous one. |
-| `description` | both | `description`: an [`RTCSessionDescriptionInit`]. Offers come from the publisher and also contain the `stream_metadata` that applies once the offer is applied. Answers come from the subscriber. |
+| `track_metadata` | publisher → subscriber | `track_metadata`: the complete current [track metadata](#track-metadata-publisher--subscriber). |
+| `consumption_metadata` | subscriber → publisher | `consumption_metadata`: the complete current [consumption metadata](#consumption-metadata-subscriber--publisher). |
+| `description` | both | `description`: an [`RTCSessionDescriptionInit`]. Offers come from the publisher and also contain its `track_metadata`, as in [`m.rtc.full_mesh.description`](#mrtcfull_meshdescription-both-directions). Answers come from the subscriber. |
 | `candidates` | both | `candidates`: as in [`m.rtc.full_mesh.candidates`](#mrtcfull_meshcandidates-both-directions). |
 
-Receivers MUST ignore messages with an unknown `type`, so that future versions can add types.
+Each metadata message replaces the previous one. Receivers MUST ignore messages with an unknown `type`,
+so that future versions can add types.
 
 The channel is ordered, reliable and belongs to one connection, so messages need no `seq` or
 `connection_id`.
 
-Once the control channel is open, both sides MUST send every message of the connection over it, apart
-from `close`. A single ordered path keeps updates from racing each other. If the channel closes, the
-connection has [failed](#failure).
+Once a side has [switched to the control channel](#switching-to-the-control-channel), it MUST send every
+message of the connection over it, apart from `close`. A single ordered path keeps updates from racing
+each other. If the channel closes, the connection has [failed](#failure).
 
-#### Changing streams
+#### Changing tracks
 
-The publisher announces every change over the control channel:
-
-- **Muting, unmuting or other metadata changes:** a `stream_metadata` message. No renegotiation.
-- **Adding or removing a media stream:** a `description` offer carrying the new `stream_metadata`, which
-  the subscriber answers. The metadata applies with the offer, so no track arrives without it.
-- **Adding a data stream:** `stream_metadata` including the stream, then the channel with that label. No
-  renegotiation is needed. The subscriber matches the channel from `ondatachannel` by its label.
-- **Removing a data stream:** `stream_metadata` without the stream, then the channel is closed.
-
-Each data channel is its own SCTP stream, and SCTP only orders messages within a stream. A new channel
-can therefore arrive before the `stream_metadata` naming it. A subscriber MUST keep a channel whose label
-isn't in the stream metadata yet, and decide about it once the metadata names it. If no metadata names
-it within a short time (RECOMMENDED: 10 seconds), the subscriber ignores the channel.
+- **Muting or unmuting:** the publisher sends `track_metadata`. No renegotiation.
+- **Adding or removing a track:** the publisher sends an offer with the new `track_metadata`, which the
+  subscriber answers. No track arrives without its metadata.
+- **Adding or removing a data channel:** the publisher opens or closes it. No renegotiation.
 
 The publisher MUST NOT send a new offer while a previous one is still unanswered (signalling state not
 `stable`). Instead it waits for the answer and combines all changes made in the meantime into one offer.
 
-#### Initial metadata
+#### Switching to the control channel
 
-The to-device offer and answer carry the initial `stream_metadata` and `consumption_metadata`. Neither
-side has to wait for the control channel before it knows what a track is or what to send, and the channel
-only carries updates. It opens after the offer and answer are applied, so updates can't overtake the
-initial state.
+The subscriber starts using the control channel as soon as it is open.
 
-Metadata can change before the channel opens, for example when someone mutes during ICE, which can take
-seconds with TURN. There is no to-device message for metadata, so each side keeps its latest metadata.
-Once the channel is open, each side sends its current metadata if it changed since the description that
-carried it. Both messages replace the previous state, so sending the latest is enough.
+The publisher can only start using the control channel once all its to-device offers have been
+answered, to avoid races: a to-device message can arrive after channel messages sent later, so a late
+offer could overwrite newer metadata. The publisher switches once the channel is open and no offer it
+sent as a to-device message is waiting for an answer.
 
-A subscriber usually doesn't know yet how it will show the streams when it answers: it only learns about
-them from that offer. It SHOULD leave `consumption_metadata` out of the answer, rather than mark the
-streams unused, until it does know.
+Until then, both sides send offers, answers and candidates as to-device messages. Metadata has no
+to-device message of its own. If the publisher's track metadata changes without a new offer, for example
+on a mute, it sends its current `track_metadata` when it switches. The subscriber sends its first
+`consumption_metadata` when it switches. Until that arrives, the publisher sends every track at full
+size.
+
+After switching, both sides MUST still accept `m.rtc.full_mesh.description` and
+`m.rtc.full_mesh.candidates` of the current connection: messages sent before the switch can arrive
+late.
 
 ### Procedures
+
+This is an example procedures to summarise the previous section and making it more concrete.
 
 #### Subscribing
 
@@ -337,28 +330,28 @@ A subscriber (Alice) that wants media from a joined member (Bob) whose `transpor
    `member.id`, he closes it and replaces it with the new one.
 3. Bob creates an `RTCPeerConnection` using his own ICE servers, creates the control channel, and adds
    his current tracks as `sendonly`. He then creates an offer, sets it as the local description and sends
-   it with `stream_metadata` in an `m.rtc.full_mesh.description` message.
+   it with `track_metadata` in an `m.rtc.full_mesh.description` message.
 4. Alice creates an `RTCPeerConnection` using her own ICE servers and sets the offer as the remote
    description. She creates her side of the control channel. She then creates an answer (`recvonly`),
-   sets it as the local description and sends it in an `m.rtc.full_mesh.description` message, with her
-   initial `consumption_metadata` if she already knows how she will show the streams.
+   sets it as the local description and sends it in an `m.rtc.full_mesh.description` message.
 5. Both sides send `m.rtc.full_mesh.candidates` as they gather candidates.
-6. Once the connection is up, the control channel opens. All further signalling uses it.
+6. Once the connection is up, the control channel opens. All further signalling uses it, starting with
+   Alice's `consumption_metadata`.
 
 ```mermaid
 sequenceDiagram
     participant A as Alice (subscriber)
     participant B as Bob (publisher)
     A-->>B: subscribe
-    B-->>A: description (offer + stream_metadata)
-    A-->>B: description (answer + consumption_metadata)
+    B-->>A: description (offer + track_metadata)
+    A-->>B: description (answer)
     A-->>B: candidates
     B-->>A: candidates
     B->>A: media (DTLS-SRTP)
     Note over A,B: control channel open
-    A->>B: consumption_metadata (tile got smaller)
-    B->>A: stream_metadata (camera muted)
-    B->>A: description (offer + stream_metadata: screenshare added)
+    A->>B: consumption_metadata (tile sizes)
+    B->>A: track_metadata (camera muted)
+    B->>A: description (offer + track_metadata: screenshare added)
     A->>B: description (answer)
 ```
 
@@ -385,13 +378,20 @@ shouldn't keep sending media that the subscriber can't interpret.
 
 ### End-to-end encryption
 
-WebRTC always encrypts media with DTLS-SRTP, and data channels with DTLS. Each side's DTLS certificate
-fingerprint is part of its SDP. The SDP is carried in Olm-encrypted to-device messages, and recipients
-check that the sending device matches the member's `m.rtc.member` event. As a result, the fingerprints are
-authenticated end to end between the two member devices, and everything on the connection is end-to-end
-encrypted. Renegotiation offers arrive either in the same way or over the control channel, which that
-DTLS session authenticates. TURN servers relay ciphertext only. DTLS uses an ephemeral key exchange, so every connection
-also has forward secrecy.
+WebRTC always encrypts media with DTLS-SRTP (data channels with DTLS). Each side's DTLS certificate
+fingerprint is part of its SDP.
+ - The SDP is carried in Olm-encrypted to-device messages
+ - Recipients check that the sending device matches the member's `m.rtc.member` event.
+
+As a result, the fingerprints are authenticated end to end between the two member devices, and everything
+on the connection is end-to-end encrypted.
+This also holds for renegotiation offers: they arrive either over Olm like the first one, or over the
+control channel, which that DTLS session authenticates.
+
+TURN servers dont weaken the encryption. They only relay packets, but can't decrypt or alter the media,
+because they don't take part in the DTLS handshake. They do see the peers' IP addresses and the traffic's timing and volume.
+
+DTLS uses an ephemeral key exchange, so every connection also has forward secrecy.
 
 `m.full_mesh` therefore doesn't use the `m.per_member` key material from [MSC4143], and its required key
 length is 0 bytes. A client whose published transports are all `m.full_mesh` doesn't need to send
@@ -432,7 +432,7 @@ handling for renegotiation.
 ### Subscriber as offerer
 
 The subscriber could send an offer with `recvonly` transceivers directly, saving one message. However, the
-subscriber doesn't know how many streams the publisher has, so the publisher would need to make offers
+subscriber doesn't know how many tracks the publisher has, so the publisher would need to make offers
 for renegotiation anyway. Making the publisher the only offerer keeps a single code path.
 
 ### Reusing `m.call.*` events
@@ -457,8 +457,20 @@ network, and a muted track may still send silence or black frames.
 
 ### Mixing data into the control channel
 
-Application data could be another message type on the control channel. Separate `m.data` channels keep
-it from delaying signalling, can each choose their reliability, and can be turned off like media.
+Application data could be another message type on the control channel. Separate data channels keep it
+from delaying signalling and can each choose their reliability.
+
+### Metadata per stream
+
+The legacy [VoIP] `sdp_stream_metadata` describes each `MediaStream`, with a purpose and separate audio
+and video mute flags. This proposal keeps the purposes but describes tracks. A stream mixes audio and
+video, so per-stream consumption metadata couldn't stop a video while keeping its audio, which is what a
+subscriber wants for a member it doesn't show. Keyed by `mid`, every property belongs to exactly one
+track. The browser already groups tracks by `msid`.
+
+Describing data channels in the metadata as well would repeat the channel's own `protocol`, and could
+arrive after the channel: each data channel is a separate SCTP stream, and SCTP doesn't order messages
+across streams.
 
 ## Security considerations
 
@@ -495,7 +507,7 @@ or removing someone from the room also cuts their media.
 
 The control channel only connects the two members of the connection, but each side can still send
 anything over it. Receivers MUST validate metadata before acting on it, for example by bounding
-`max_width` and `max_height`. They MUST NOT treat a `protocol` or `purpose` as permission to do more than
+`max_width` and `max_height`. They MUST NOT treat a `purpose` or `protocol` as permission to do more than
 the application would allow anyway.
 
 ## Unstable prefix
@@ -508,7 +520,6 @@ the application would allow anyway.
 | `m.rtc.full_mesh.candidates` | To-device event type | `org.matrix.mscXXXX.rtc.full_mesh.candidates` |
 | `m.rtc.full_mesh.close` | To-device event type | `org.matrix.mscXXXX.rtc.full_mesh.close` |
 | `m.rtc.full_mesh.control` | Control channel label | `org.matrix.mscXXXX.rtc.full_mesh.control` |
-| `m.data` | Stream purpose | `org.matrix.mscXXXX.data` |
 
 ## Dependencies
 
