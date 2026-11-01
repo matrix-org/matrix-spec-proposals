@@ -80,6 +80,30 @@ If not possible to support opening webviews on the clients platform it is enough
 communicate to the user that they need to use another client/platform that supports opening webviews to interact
 with the widget.
 
+### Default webview capabilities
+
+Until a dedicated capability negotiation is specified (see `Alternatives`/
+`Add iframe capabilities to this (state event) MSC`), clients SHOULD load every widget with the following default
+set of capabilities. This matches what is deployed in practice today (Element Web) and is sufficient for the
+existing widget ecosystem (e.g. Element Call, Neoboard).
+
+Web clients SHOULD use:
+```html
+<iframe
+  sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts
+           allow-presentation allow-downloads"
+  allow="microphone; camera; encrypted-media; autoplay; display-capture; clipboard-write; clipboard-read"
+></iframe>
+```
+
+Native clients SHOULD grant the equivalent capabilities through their platform's webview permission mechanism:
+running scripts, persistent storage, forms, opening popups/external links, downloads, presentation, microphone,
+camera, encrypted media, media autoplay, screen capture and clipboard read/write.
+
+Clients MUST NOT allow a widget to navigate the client itself (e.g. `allow-top-navigation`).
+Granting a capability in the webview does not bypass the platform's own user prompt (e.g. for camera or
+microphone access); clients MAY additionally prompt the user before granting sensitive capabilities.
+
 ### Remove `$matrix_widget_id`
 [MSC2774](https://github.com/matrix-org/matrix-spec-proposals/pull/2774) introduced `$matrix_widget_id` and got
 merged. This proposal removes the template variable concept
@@ -141,36 +165,49 @@ As the only place the MSC implementation is referencing `widget` is the state ev
 Another MSC for the new name could be opened while its in unstable phase.
 
 ### Add iframe capabilities to this (state event) MSC
-(this section is also relevant for the Security considerations)
+(This section is also relevant for the security considerations.)
 
-Iframes and webviews can be restricted via `sandbox` and `allow lists` on most platforms.
- - `allow-downloads`
- - `allow-popups`
- - ...
-(see: [sandbox](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox) for a
-complete list)
+Webviews can be restricted in two independent ways. On the web these are the
+[`sandbox`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe#sandbox) attribute and the
+[`allow`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy#directives)
+attribute (Permissions Policy). Native platforms have equivalent mechanisms (e.g. Android
+`WebChromeClient.onPermissionRequest`, iOS `WKUIDelegate` media capture callbacks).
 
- - `background-sync`
- - `microphone`, `camera`
- - `notifications`
- - ...
-(see: [permissions api](https://developer.mozilla.org/en-US/docs/Web/API/Permissions_API#permission-aware_apis)
-for a complete list)
+Sandbox capabilities relevant for widgets:
+ - `allow-scripts`, `allow-same-origin`: required by practically every widget (the widget is loaded cross-origin
+   to the client, which is what makes this combination acceptable)
+ - `allow-forms`
+ - `allow-popups`, `allow-popups-to-escape-sandbox`: opening links, OAuth/SSO login windows
+ - `allow-downloads`: exporting files
+ - `allow-presentation`, `allow-pointer-lock`, `allow-orientation-lock`, `allow-modals`: niche
+ - `allow-top-navigation*`: should never be granted, since the widget could navigate the client away
 
-The base state event could be extended with a `webview_allowlist` and `webview_sandbox` object.
-These contain the configurations that are needed for this app.
+Permissions Policy features relevant for widgets:
+ - `camera`, `microphone`, `display-capture`, `speaker-selection`: calls and screen sharing
+ - `autoplay`, `fullscreen`, `picture-in-picture`, `encrypted-media`: media
+ - `clipboard-read`, `clipboard-write`: editors, whiteboards
+ - `screen-wake-lock`, `web-share`, `geolocation`
+ - Hardware and other sensitive features (`usb`, `serial`, `hid`, `bluetooth`, `midi`, `payment`,
+   `publickey-credentials-get`, sensors, ...) are niche and should require an explicit user prompt.
 
-A client can then prompt the user based on the requested permissions and sandbox values.
+Some permissions cannot be delegated to an embedded webview at all. Browsers do not allow cross-origin iframes to
+request `notifications`; this would need to be proxied by the client through the postmessage API
+([MSC4412](https://github.com/matrix-org/matrix-spec-proposals/pull/4412)).
 
-This can also be added as a follow up MSC.
-It can also be done via the postmessage api. (Which has the advantage that the user who sets up the widget does
-not need to know what permissions are required. The widget implementation has full control over what it
-requests)
+The default set of capabilities clients use today is defined in `Proposal`/`Default webview capabilities`.
 
-This can be pushed to a follow up MSC. Which asks clients to prompt users if a widget is setup without any
-`webview_allowlist` and `webview_sandbox`.
-Those widgets then get all permissions for backwards compatibility but users will get prompted to update their
-widget.
+The base state event could be extended with a field listing the capabilities the widget needs. To stay platform
+independent this should use abstract capability names (camera, microphone, screen capture, clipboard, fullscreen,
+downloads, popups, ...) rather than raw HTML tokens, which clients map to their platform's mechanism.
+A client can then prompt the user based on the requested capabilities.
+
+Alternatively, this can be done via the postmessage API. This has the advantage that the user who sets up the
+widget does not need to know which capabilities are required: the widget implementation has full control over
+what it requests.
+
+Either way, this is left to a follow-up MSC. Such an MSC could ask clients to prompt users if a widget is set up
+without any capability declaration. Those widgets then get the default set of capabilities (see
+`Default webview capabilities`) for backwards compatibility, but users get prompted to update their widget.
 
 ## Security considerations
 
