@@ -19,10 +19,11 @@ event with `msgtype` `m.video` whose `content` includes:
 "m.circle": true
 ```
 
-The flag is only a rendering and UX hint. All existing `m.video` fields continue to apply. Circles
-inherit `m.video` behaviour, with circular timeline rendering and the same recording and playback UX
-as voice messages.
+The flag is only a rendering and UX hint. When a client encounters a valid `m.circle` event, it SHOULD
+treat the event with a similar voice message UX but with video, for example:
+autoplay, autoload, simple player, and so on.
 
+All existing `m.video` fields continue to apply.
 The key MUST be omitted when the video is not a Circle.
 Any other value, including `false`, MUST be treated as if the key were absent.
 
