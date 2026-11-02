@@ -72,7 +72,7 @@ sequenceDiagram
         E->>N: Existing device sends new device the E2EE secrets<br>=>m.login.secrets
 
         note over N: New device stores secrets and verifies itself
-        N->>HS: New device uploads device verification signature to homeserver
+        N->>HS: New device uploads device keys and verification signature to homeserver
     end
 ```
 
@@ -94,7 +94,7 @@ discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-disc
    cross-signing set up and the existing device has the Master Signing Key, Self Signing Key, and User Signing Key
    stored locally so that they can be shared with the new device.
 
-Note that the we do not check for the availability of the rendezvous session API because the new device will be choosing
+Note that we do not check for the availability of the rendezvous session API because the new device will be choosing
 the homeserver for the rendezvous which might be different from the actual homeserver.
 
 #### Existing device generating the QR code
@@ -1187,7 +1187,7 @@ Scenario:
 
 Result:
 
-- The victim's trusted client opens an attacker-controlled URL. For example, this could be a spoofed consent/login page
+- The victim's trusted browser opens an attacker-controlled URL. For example, this could be a spoofed consent/login page
   attempting to capture the user's homeserver credentials, or a URI with a non-`https` scheme that deep-links into
   another application.
 
