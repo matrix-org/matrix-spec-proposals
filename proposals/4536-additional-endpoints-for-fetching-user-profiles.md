@@ -42,10 +42,11 @@ their profile cache for users they have discovered, but have not yet received pr
 - **Authenticated**: Yes
 - **Request body**: Request body should contain a list of profiles, and optionally fields, to query.
 
-  * `users` - (Required) List of user IDs to query for, minimum 1. The maximum amount of profiles the homeserver should
-    accept to be requested in one go should be limited to 100.
+  * `users` - (Required) List of user IDs to query for, minimum 1. The homeserver MUST accept at most 100
+    users in one request, responding with `M_BAD_JSON` if the amount is higher.
   * `fields` - (Optional) List of fields to include in the response. If not
-    given, all profile fields will be returned.
+    given, all profile fields will be returned. The homeserver MUST accept at most 30 field names in one request,
+    responding with `M_BAD_JSON` if the amount is higher.
 
     Example request body:
     
