@@ -610,18 +610,23 @@ The existing device sends a `m.login.secrets` message via the secure channel:
 ```json
 {
     "type": "m.login.secrets",
-    "cross_signing": {
-        "master_key": "$base64_of_the_key",
-        "self_signing_key": "$base64_of_the_key",
-        "user_signing_key": "$base64_of_the_key"
+    "secrets": {
+        "m.cross_signing.master": "$base64_of_the_key",
+        "m.cross_signing.self_signing": "$base64_of_the_key",
+        "m.cross_signing.user_signing": "$base64_of_the_key",
+        "m.megolm_backup.v1": "$base64_of_the_backup_decryption_key"
     },
     "backup": {
-        "algorithm": "foobar",
-        "key": "$base64_of_the_backup_decryption_key",
-        "backup_version": "version_string"
+        "algorithm": "m.megolm_backup.v1.curve25519-aes-sha2",
+        "version": "version_string"
     }
 }
 ```
+
+The keys of the `secrets` object are the same identifiers that are used for these secrets in
+[secret storage](https://spec.matrix.org/v1.19/client-server-api/#secret-storage), so that this proposal does not
+introduce a second set of names for the same secrets. The `m.megolm_backup.v1` secret and the `backup` object are
+only present if the existing device is using server-side key backup.
 
 #### 3. New device cross-signs itself and uploads device keys
 
@@ -684,7 +689,7 @@ activate HS
               HS->>E: 200 OK
 deactivate HS
 
-              E->>-N: 2) SecureSendReceive({ "type": "m.login.secrets", "cross_signing": {...}, "backup": {...} })
+              E->>-N: 2) SecureSendReceive({ "type": "m.login.secrets", "secrets": {...}, "backup": {...} })
 
               activate N
               note over N: 3) New device stores the secrets locally
@@ -859,23 +864,23 @@ Fields:
 |Field|Type||
 |--- |--- |--- |
 |`type`|required `string`|`m.login.secrets`|
-|`cross_signing`|required `object`|<table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> <td> </td> </tr> <tr> <td><code>master_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>self_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>user_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr></table>|
-|`backup`|`object`|<table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private/secret key</td> </tr> <tr> <td><code>backup_version</code></td> <td>required <code>string</code></td> <td>The backup version as returned by [`POST /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3room_keysversion) or [`GET /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3room_keysversion)</td> </tr></table>|
+|`secrets`|required `object`|The secrets being shared, keyed by the same identifiers used for them in <a href="https://spec.matrix.org/v1.19/client-server-api/#secret-storage">secret storage</a>: <table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> <td> </td> </tr> <tr> <td><code>m.cross_signing.master</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private master cross-signing key </td> </tr> <tr> <td><code>m.cross_signing.self_signing</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private self-signing key </td> </tr> <tr> <td><code>m.cross_signing.user_signing</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private user-signing key </td> </tr> <tr> <td><code>m.megolm_backup.v1</code></td> <td><code>string</code></td> <td>Unpadded base64 encoded private/secret key for the server-side key backup. Present if and only if <code>backup</code> is present.</td> </tr></table>|
+|`backup`|`object`|Details of the server-side key backup that <code>m.megolm_backup.v1</code> decrypts. Present if and only if <code>m.megolm_backup.v1</code> is present. <table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.19/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.19/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>version</code></td> <td>required <code>string</code></td> <td>The backup version as returned by [`POST /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.19/client-server-api/#post_matrixclientv3room_keysversion) or [`GET /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3room_keysversion)</td> </tr></table>|
 
 Example:
 
 ```json
 {
     "type": "m.login.secrets",
-    "cross_signing": {
-        "master_key": "$base64_of_the_key",
-        "self_signing_key": "$base64_of_the_key",
-        "user_signing_key": "$base64_of_the_key"
+    "secrets": {
+        "m.cross_signing.master": "$base64_of_the_key",
+        "m.cross_signing.self_signing": "$base64_of_the_key",
+        "m.cross_signing.user_signing": "$base64_of_the_key",
+        "m.megolm_backup.v1": "$base64_of_the_backup_recovery_key"
     },
     "backup": {
-        "algorithm": "foobar",
-        "key": "$base64_of_the_backup_recovery_key",
-        "backup_version": "version_string"
+        "algorithm": "m.megolm_backup.v1.curve25519-aes-sha2",
+        "version": "version_string"
     }
 }
 ```
