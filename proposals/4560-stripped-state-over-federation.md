@@ -222,7 +222,7 @@ convenience”](https://github.com/deepbluev7/matrix-doc/blob/room-summaries/pro
 in the room summary MSC itself, and as clients have many other ways to access this information this MSC does not include
 an equivalent field for the sake of simplicity.
 
-`GET /_matrix/client/v1/rooms/{roomId}/hierarchy` and `GET /_matrix/client/v1/rooms/{roomId}/hierarchy` are deprecated
+`GET /_matrix/client/v1/rooms/{roomId}/hierarchy` and `GET /_matrix/federation/v1/hierarchy/{roomId}` are deprecated
 by this proposal, to be removed in a future spec version. Clients should traverse the space hierarchy by fetching
 `m.room.child` events using this proposal’s endpoints. This will require clients to adjust their logic for displaying
 space hierarchies, but has several benefits:
