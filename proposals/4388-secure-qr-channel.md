@@ -98,11 +98,13 @@ can then "receive" the payload by polling via a `GET` request, and "send" a new 
 
 In this way, Device A and Device B can communicate by repeatedly inspecting and updating the payload at the rendezvous session.
 
-This has consequences for how clients use the session: a client cannot tell whether its previous payload has been
-received by the remote client until that remote client itself writes a new payload and the original client observes the
-change. This favours a "ping-pong" architecture, where a client sends a message, waits for a reply, and only then sends
-its next message. If a client needs to send several messages in a row without an intervening reply, it should update
-the payload to contain a list of those messages rather than overwriting it repeatedly.
+This has consequences for how clients use the session: a client cannot tell from the session alone whether its
+previous payload has been received by the remote client until that remote client itself writes a new payload and the
+original client observes the change. This favours a "ping-pong" architecture, where a client sends a message, waits for
+a reply, and only then sends its next message. If a client needs to send several messages in a row without an
+intervening reply, it could update the payload to contain a list of those messages rather than overwriting it
+repeatedly. Alternatively, a protocol built on top of the session could rely on some out-of-band signal that the remote
+client has read the payload, as the secure channel below does in step 7.
 
 ### The send mechanism
 
@@ -947,13 +949,24 @@ CheckCode := NumToString((CheckBytes[0] % 9) + 1) || NumToString(CheckBytes[1] %
 
 If the code that the user enters matches then the secure channel is established.
 
+Device G MUST NOT write to the rendezvous session after sending **LoginOkMessage** in step 5 until the user has
+entered a matching **CheckCode**. This restricts only writes: Device S has already verified the channel in step 6 and
+can send (see [Secure operations](#secure-operations)) as soon as it has done so, and Device G can receive such a
+payload while it is still waiting for the **CheckCode**.
+
+This is also what allows Device G to write twice in a row, **LoginOkMessage** and then its first payload after
+establishment, without the first being lost: a **CheckCode** can only be shown by a Device S which has already opened
+**LoginOkMessage**, so by the time Device G may write again Device S has consumed it. Otherwise a Device S which first
+polled after the second write would fail closed, since the **ResponseNonce** is carried only in **LoginOkMessage**.
+
 #### Fail-closed behaviour
 
 During establishment each device writes to the rendezvous session exactly once after the session has been created:
 Device S in step 4 and Device G in step 5. Neither device otherwise has any reason to write, and each waits for exactly
-one payload from the other. Any deviation from this pattern is indistinguishable from a third party who knows the
-rendezvous session ID writing to the session. A device MUST NOT attempt to tell the two apart, for example by assuming
-that the other device is merely faulty, and MUST fail closed rather than attempt to recover.
+one payload from the other. Device G makes no further write until step 7 has succeeded. Any deviation from this
+pattern is indistinguishable from a third party who knows the rendezvous session ID writing to the session. A device
+MUST NOT attempt to tell the two apart, for example by assuming that the other device is merely faulty, and MUST fail
+closed rather than attempt to recover.
 
 Device S MUST abort if:
 
@@ -1020,10 +1033,10 @@ Because a send is only accepted if its `sequence_token` matches the token of the
 tokens above are the same. Each payload is therefore bound to one position in the session's sequence and cannot be
 replayed or reordered within it.
 
-Note that this is not simply "the token from the sender's last `GET`": a device that sends two payloads in a row, as G
-does with **LoginOkMessage** followed by the first message from [MSC4108], binds the second to the `sequence_token`
-returned by the `PUT` that sent the first. The additional authentication data in establishment steps 4 to 6 above are
-instances of this same rule.
+Note that this is not simply "the token from the sender's last `GET`". If Device S has not written since
+**LoginOkMessage** when Device G sends its first payload after step 7, as in [MSC4108] when the existing device
+generated the QR code, that payload is bound to the `sequence_token` returned by the `PUT` in step 5. The additional
+authentication data in establishment steps 4 to 6 above are instances of this same rule.
 
 ### Sequence diagram
 
@@ -1088,6 +1101,7 @@ sequenceDiagram
     deactivate S
 
     note over G: 7) Device G asks the user to confirm that the other device is showing a green checkmark and enter the CheckCode
+    note over G: Device G does not write to the rendezvous session again until the CheckCode has been entered
     note over G: If the user enters the correct CheckCode and confirms that a green checkmark is shown then Device G knows that the channel is secure
 ```
 
@@ -1128,9 +1142,9 @@ to abort rather than derive a second set of keys for Specter's **Sp**.
 - In step 6, Device S fails closed: either its `PUT` was rejected with `M_CONCURRENT_WRITE`, or the first payload it
 reads is not a **LoginOkMessage** it can open. It aborts, informs the user, and never displays the indicator of success
 or a **CheckCode**.
-- Step 7 is the backstop. Device G will not share any sensitive material until the user enters a **CheckCode**, which
-only a Device S that has verified the channel can display. The user has no code to enter and must cancel the process
-on Device G.
+- Step 7 acts as the backstop. Device G will not write anything further to the rendezvous session until the user enters
+a **CheckCode**, which only a Device S that has verified the channel can display. The user has no code to enter and must
+cancel the process on Device G.
 
 ### Choice of message prefix
 
