@@ -124,10 +124,11 @@ that is what tells it both the homeserver to use and which login protocols the e
 
 In this section the sequence of steps depends on whether the new device generated or scanned the QR code from [MSC4388].
 
-The existing device is always the first to do a `SecureSend`, but the point at which it is able to do so differs. If the
-existing device scanned the QR code then it trusts the secure channel as soon as it has completed step 6 of [MSC4388].
-If instead the existing device generated the QR code then it must first wait for the user to enter the CheckCode as part
-of step 7 of [MSC4388].
+The existing device is always the first to do a `SecureSend`, but the point at which it is able to do so differs. As
+set out in step 7 of [MSC4388], the device which scanned the QR code trusts the secure channel as soon as it has
+completed step 6 of [MSC4388] and may send immediately, whereas the device which generated the QR code MUST NOT write
+to the rendezvous session until the user has entered the CheckCode as part of step 7, although it may receive while it
+waits.
 
 Unfortunately, this can make it hard to read what is going on. Sequence diagrams are included for both variants after
 the steps are described.
@@ -150,6 +151,11 @@ changing the sequence of messages.
 
 The `base_url` in the `m.login.protocols` message is authoritative for the login. The base URL from the QR code
 identifies the rendezvous server for [MSC4388], and the two are not required to be the same.
+
+If the new device generated the QR code then the `m.login.protocols` message may arrive before the user has entered the
+CheckCode as part of step 7 of [MSC4388]. The new device may receive it, but MUST NOT act on its contents, and so MUST
+NOT proceed to step 2 or send `m.login.protocol`, until step 7 of [MSC4388] has completed successfully and it trusts the
+secure channel.
 
 The existing device determines which "login protocols" are available for the new device to use. Currently this can
 only be `device_authorization_grant`, meaning the homeserver supports the
@@ -312,7 +318,7 @@ sequenceDiagram
     #    note over E: Existing device displays checkmark and CheckCode from MSC4388
     #    note over E: 1) Existing device sends m.login.protocols message
     #    E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"})
-    #    note over N: New device waits for user to confirm secure channel from MSC4388 step 7
+    #    note over N: New device waits for user to enter CheckCode and confirm secure channel from MSC4388 step 7.<br>It may receive but MUST NOT send until then
     #    HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"}
     #    note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
     end
@@ -372,7 +378,7 @@ sequenceDiagram
         note over E: Existing device displays checkmark and CheckCode from MSC4388
         note over E: 1) Existing device sends m.login.protocols message
         E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"})
-        note over N: New device waits for user to confirm secure channel from MSC4388 step 7
+        note over N: New device waits for user to enter CheckCode and confirm secure channel from MSC4388 step 7.<br>It may receive but MUST NOT send until then
         HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant"],<br> "base_url": "https://matrix-client.matrix.org"}
         note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
     end
@@ -411,8 +417,12 @@ Then we continue with the actual login:
 
 #### 4. Existing device checks protocol and device_id, and accepts protocol to use
 
-On receipt of the `m.login.protocol` message (by which point the existing device will already have completed step 7 of
-the secure channel establishment, since it did so before sending `m.login.protocols`), the existing device first checks
+Once the existing device receives the `m.login.protocol` message, we know that the secure channel is fully established
+(i.e. that step 7 of the establishment from [MSC4388] has taken place): if the *existing* device generated the QR code,
+it will have performed step 7 before sending `m.login.protocols`; and if the *new* device generated the QR code, it will
+have performed step 7 before replying with `m.login.protocol`.
+
+On receipt of the `m.login.protocol` message, the existing device first checks
 that the requested `protocol` is one that it offered in its `m.login.protocols` message and that it supports. If it is
 not, for example because the new device requested a protocol that the existing device does not recognise, then the
 existing device MUST reject the request with an `m.login.failure` with reason `unsupported_protocol` and stop:
