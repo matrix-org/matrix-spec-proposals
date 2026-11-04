@@ -112,17 +112,13 @@ confirming that the rendezvous server is available by attempting a POST to the c
 
 #### New device scanning the QR code
 
-The homeserver URL is encoded in the QR code, so the new device can do these checks after scanning:
+The QR code contains a [base URL], but this identifies the rendezvous server for [MSC4388], not the homeserver that the
+new device will log in to. The two are not required to be the same, although in practice they usually are, because
+[MSC4388] suggests that a logged in device uses its own homeserver for the rendezvous.
 
-1. That the homeserver is using the OAuth 2.0 API using [server metadata
-   discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery)
-1. That the Device Authorization Grant is available as per [device authorization flow] for the new device to use
-1. That the device either has a static OAuth 2.0 `client_id` or [dynamic client registration] is supported by the
-   homeserver.
-
-These checks only serve to fail fast. The new device still waits for the `m.login.protocols` message from the existing
-device before starting the login, as described in step 1 below, because the QR code does not tell the new device which
-login protocols the existing device supports.
+There are therefore no checks that the new device can usefully perform after scanning. It MUST wait for the
+`m.login.protocols` message from the existing device before starting the login, as described in step 1 below, since
+that is what tells it both the homeserver to use and which login protocols the existing device supports.
 
 ### Login via OAuth 2.0 device authorization flow
 
@@ -146,16 +142,14 @@ with, and which "login protocols" the existing device is offering. Both are conv
 of which device generated the QR code.
 
 The new device MUST wait to receive the `m.login.protocols` message before proceeding to step 2. This applies even when
-the new device scanned the QR code and so already knows the [base URL] of the homeserver: the new device can use the base
-URL from the QR code to perform the ahead-of-time checks described in
-[Discoverability of the capability](#discoverability-of-the-capability), but it does not know which protocols the
-existing device supports until it receives the `m.login.protocols` message. Requiring the message in all cases is what
-allows further login protocols to be added by future MSCs, as discussed in [Alternatives](#alternatives), without
+the new device scanned the QR code and so already has a [base URL] from it (see
+[Discoverability of the capability](#discoverability-of-the-capability)): the new device does not know which protocols
+the existing device supports until it receives the `m.login.protocols` message. Requiring the message in all cases is
+what allows further login protocols to be added by future MSCs, as discussed in [Alternatives](#alternatives), without
 changing the sequence of messages.
 
 The `base_url` in the `m.login.protocols` message is authoritative for the login. The base URL from the QR code
-identifies the rendezvous server for [MSC4388] and, as noted above, may be used for the ahead-of-time checks, but the
-two are not required to be the same.
+identifies the rendezvous server for [MSC4388], and the two are not required to be the same.
 
 The existing device determines which "login protocols" are available for the new device to use. Currently this can
 only be `device_authorization_grant`, meaning the homeserver supports the
