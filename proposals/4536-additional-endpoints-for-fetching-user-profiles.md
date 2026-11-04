@@ -44,9 +44,9 @@ their profile cache for users they have discovered, but have not yet received pr
 
   * `users` - (Required) List of user IDs to query for, minimum 1. The homeserver MUST accept at most 100
     users in one request, responding with `M_BAD_JSON` if the amount is higher.
-  * `fields` - (Optional) List of fields to include in the response. If not
-    given, all profile fields will be returned. The homeserver MUST accept at most 30 field names in one request,
-    responding with `M_BAD_JSON` if the amount is higher.
+  * `fields` - (Optional) List of fields to include in the response. If specified, at least one field name MUST
+    be included. If not specified, all profile fields will be returned. The homeserver MUST accept at most 30 field
+    names in one request, responding with `M_BAD_JSON` if the amount is higher.
 
     Example request body:
     
