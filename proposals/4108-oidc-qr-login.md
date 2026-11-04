@@ -605,7 +605,17 @@ On receipt of an `m.login.success` message, the existing device queries the home
 device online with the corresponding `device_id` (from the `m.login.protocol` message). It does so by calling
 [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
 and expecting to receive an HTTP 200 response. If the device isn't immediately visible, it can repeat the `GET`
-request for up to 10 seconds to allow for any latency, and if no device is found the process should be stopped.
+request for up to 10 seconds to allow for any latency. If no device is found within that time, the existing device
+MUST NOT share any secrets. It sends an `m.login.failure` with reason `device_not_found` and stops:
+
+*Existing device => New device via secure channel*
+
+```json
+{
+    "type": "m.login.failure",
+    "reason": "device_not_found"
+}
+```
 
 #### 2. Existing device shares secrets with new device
 
