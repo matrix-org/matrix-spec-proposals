@@ -65,6 +65,15 @@ their profile cache for users they have discovered, but have not yet received pr
   ```
 - **Response**:
 
+The homeserver SHOULD include all profile information matching the requested users that it knows about locally.
+This SHOULD be a snapshot of the current profile data available. The homeserver MAY silently drop profiles from the
+response that it knows about, but doesn't want to include in the response due to other configuration, for example if
+the server requires users to share rooms to query profiles.
+
+Users that the homeserver has no profile information about, or those that it is going to exclude, MUST be excluded
+from the results, instead of returning an empty object for that user. Special profile fields (for example display name
+or avatar URL), if unset, MUST be excluded from the response object.
+
   ```json
   {
     "@alice:example.com": {
@@ -101,6 +110,10 @@ fields. While at the time of writing this MSC profile fields are considered publ
 information, this may change with future MSCs.
 
 The homeserver SHOULD limit the amount of profiles returned to 100 profiles.
+
+The homeserver SHOULD limit the amount of fields requested in one go to 30. Returned profiles MUST still contain
+all the fields for each profile, even if there are more than 30 for some users, if the request is made
+without a `fields` parameter.
 
 Any profile lookup rate limits or other visibility constraints should be applied to this endpoint as well.
 
