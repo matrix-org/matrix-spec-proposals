@@ -109,9 +109,9 @@ The homeserver MUST check that the user has access to view the profile and/or pr
 fields. While at the time of writing this MSC profile fields are considered public
 information, this may change with future MSCs.
 
-The homeserver SHOULD limit the amount of profiles returned to 100 profiles.
+The homeserver MUST limit the amount of profiles returned to 100 profiles.
 
-The homeserver SHOULD limit the amount of fields requested in one go to 30. Returned profiles MUST still contain
+The homeserver MUST limit the amount of fields requested in one go to 30. Returned profiles MUST still contain
 all the fields for each profile, even if there are more than 30 for some users, if the request is made
 without a `fields` parameter.
 
