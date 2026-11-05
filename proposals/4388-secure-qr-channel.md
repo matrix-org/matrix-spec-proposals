@@ -284,7 +284,7 @@ Content-Type: application/json
 ```
 
 The server MUST perform a compare-and-swap operation by checking that the `sequence_token` matches
-the current sequence token for the session. If the `sequence_token` does not match then the `data` MUST not be
+the current sequence token for the session. If the `sequence_token` does not match then the `data` MUST NOT be
 accepted and the `M_CONCURRENT_WRITE` error is returned. Whether a client can recover from a `M_CONCURRENT_WRITE` is
 determined by the protocol layered on top of the rendezvous session. Where recovery is permitted, the client can do a
 `GET` to fetch the latest data and `sequence_token` and then send again with a new `{txnId}`. During establishment of
@@ -378,7 +378,7 @@ top-level navigation requests and return a `403` HTTP response with error code `
 
 The exact header values to use are an implementation detail for the server implementation.
 
-A future optimisation could be allow the client to "long-poll" by sending the previous `sequence_token` as a query parameter
+A future optimisation could be to allow the client to "long-poll" by sending the previous `sequence_token` as a query parameter
 and then the server returns when there is new data or some timeout has passed.
 
 ### `DELETE /_matrix/client/v1/rendezvous/{rendezvousId}` - cancel a rendezvous session
@@ -425,7 +425,7 @@ sequenceDiagram
   Note over B: Device B resolves the servername to the homeserver
 
   B->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
-  HS->>-B: 200 OK<br>{"sequence_token": "1", "data": "Hello from A"}
+  HS->>-B: 200 OK<br>{"sequence_token": "1", "data": "Hello from A", "expires_in_ms": 300000}
   loop Device A polls the rendezvous session for a new payload
     A->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
     alt is not modified
@@ -459,7 +459,7 @@ sequenceDiagram
 
   note over B: Device B then receives the new payload
   opt modified
-      HS->>B: 200 OK<br>{"sequence_token": "3", "data": "Hello again from B", "expires_in_ms": 300000}
+      HS->>B: 200 OK<br>{"sequence_token": "3", "data": "Hello again from A", "expires_in_ms": 300000}
   end
 
   deactivate B
@@ -509,7 +509,7 @@ of preference:
 Because the rendezvous session protocol allows for the creation of arbitrary channels and storage of arbitrary data, it
 is possible to use it as a denial of service attack surface.
 
-As such, the following standard mitigations such as the following may be deemed appropriate by homeserver
+As such, standard mitigations such as the following may be deemed appropriate by homeserver
 implementations and administrators:
 
 - rate limiting of requests
@@ -889,7 +889,7 @@ creating the **Context_DeviceS_Receive** response context as follows:
 Secret := Context_DeviceS_Send.Export("MATRIX_QR_CODE_LOGIN_RESPONSE", 32)
 Salt := Sp || ResponseNonce
 
-AeadKey_G := HKDF_SHA256(Secret, "key", salt=Salt, size=32)
+AeadKey := HKDF_SHA256(Secret, "key", salt=Salt, size=32)
 AeadNonce := HKDF_SHA256(Secret, "nonce", salt=Salt, size=12)
 ExporterSecret := [0; 32]
 
@@ -1064,36 +1064,36 @@ sequenceDiagram
     note over S: Device S validates QR scanned and the rendezvous session ID
 
     S->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
-    Z->>-S: 200 OK<br>{"sequence_token": "SEQ1", "expires_in_ms": 300000, "data": ""}
+    Z->>-S: 200 OK<br>{"sequence_token": "1", "expires_in_ms": 300000, "data": ""}
     note over S: Device S aborts if the payload is not empty
 
-    note over S: 4) Device S creates context Context_DeviceS_Send and LoginInitiateMessage (sealed using sequence token SEQ1).<br>It sends LoginInitiateMessage via the rendezvous session
-    S->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def/txnS1<br>{"sequence_token": "SEQ1", "data": "<LoginInitiateMessage>"}
-    Z->>-S: 200 OK<br>{"sequence_token": "SEQ2"}
+    note over S: 4) Device S creates context Context_DeviceS_Send and LoginInitiateMessage (sealed using sequence token 1).<br>It sends LoginInitiateMessage via the rendezvous session
+    S->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def/txnS1<br>{"sequence_token": "1", "data": "<LoginInitiateMessage>"}
+    Z->>-S: 200 OK<br>{"sequence_token": "2"}
     note over S: Device S aborts if the PUT is rejected with M_CONCURRENT_WRITE
     deactivate S
 
     G->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
     activate G
-    Z->>-G: 200 OK<br>{"sequence_token": "SEQ2", "expires_in_ms": 300000, "data": "<LoginInitiateMessage>"}
+    Z->>-G: 200 OK<br>{"sequence_token": "2", "expires_in_ms": 300000, "data": "<LoginInitiateMessage>"}
     note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after creating Context_DeviceG_Receive
-    note over G: Device G checks that the plaintext (unsealed using sequence token SEQ1) matches MATRIX_QR_CODE_LOGIN_INITIATE,<br>aborting if the payload cannot be opened or does not match
+    note over G: Device G checks that the plaintext (unsealed using sequence token 1) matches MATRIX_QR_CODE_LOGIN_INITIATE,<br>aborting if the payload cannot be opened or does not match
 
     note over G: Device G creates Context_DeviceG_Send
-    note over G: Device G computes LoginOkMessage (sealed using sequence token SEQ2) and sends to the rendezvous session
+    note over G: Device G computes LoginOkMessage (sealed using sequence token 2) and sends to the rendezvous session
 
-    G->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def/txnG1<br>{"sequence_token": "SEQ2", "data": "<LoginOkMessage>"}
-    Z->>-G: 200 OK<br>{"sequence_token": "SEQ3"}
+    G->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def/txnG1<br>{"sequence_token": "2", "data": "<LoginOkMessage>"}
+    Z->>-G: 200 OK<br>{"sequence_token": "3"}
     note over G: Device G aborts if the PUT is rejected with M_CONCURRENT_WRITE
     deactivate G
 
     activate S
     S->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
-    Z->>-S: 200 OK<br>{"sequence_token": "SEQ3", "expires_in_ms": 300000, "data": "<LoginOkMessage>"}
+    Z->>-S: 200 OK<br>{"sequence_token": "3", "expires_in_ms": 300000, "data": "<LoginOkMessage>"}
 
     note over S: 6) Device S attempts to parse Data as LoginOkMessage
     note over S: 6) Device S creates Context_DeviceS_Receive
-    note over S: Device S checks that the plaintext (unsealed using sequence token SEQ2) matches MATRIX_QR_CODE_LOGIN_OK,<br>aborting if the payload cannot be opened or does not match
+    note over S: Device S checks that the plaintext (unsealed using sequence token 2) matches MATRIX_QR_CODE_LOGIN_OK,<br>aborting if the payload cannot be opened or does not match
 
     note over S: If okay, Device S calculates the CheckCode to be displayed
     note over S: Device S displays a green checkmark, "secure connection established" and the CheckCode
@@ -1255,7 +1255,7 @@ appropriate for a particular deployment scenario, or if a better mechanism becom
 It has been suggested that the "warning" about not using the exporter interface of `Context_DeviceG_Send` could be
 removed.
 
-To do so we could instead initialize `Context_DeviceG_Send`` with some real exporter secret, but that would be more
+To do so we could instead initialize `Context_DeviceG_Send` with some real exporter secret, but that would be more
 expensive and we wouldn't use the exporter interface of the response context.
 
 Another alternative would be to not use the HPKE context for the other direction, but then we would need to reimplement
@@ -1274,7 +1274,7 @@ This was discounted on the basis of wanting to keep the QR reasonably compact.
 
 ## Security considerations
 
-This proposed mechanism has been designed to protects users and their devices from the following threats:
+This proposed mechanism has been designed to protect users and their devices from the following threats:
 
 - A malicious actor who is able to scan the QR code generated by the legitimate user.
 - A malicious actor who can intercept and modify traffic on the application layer, even if protected by encryption like TLS.
