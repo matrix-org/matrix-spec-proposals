@@ -1,4 +1,4 @@
-# MSC4576: Do not allow data publishing on LiveKit transport unless needed
+# MSC4576: Only allow data publishing when also allowing audio/video publishing on LiveKit transports
 
 [MSC4195] introduced a LiveKit-based transport for MatrixRTC. Access to the LiveKit SFU is guarded
 by JWTs. [MSC4195] covers the various JWT properties and related requirements or recommendations in
