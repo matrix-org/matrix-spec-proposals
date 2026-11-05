@@ -990,6 +990,13 @@ A "new payload" here is one whose `sequence_token` differs from the one the devi
 returned by the `POST` in step 2, and for Device S the token returned by its `PUT` in step 4. A poll which returns the
 device's own payload with the same token is not a new payload.
 
+The abort conditions above concern the content of the rendezvous session, not the transport. A `GET` or `PUT` which
+fails with `429 Too Many Requests`, a `5xx` response, a network error or a timeout says nothing about who has written
+to the session, and MUST NOT be treated as a deviation from the expected pattern. The device should retry until it
+gets a definitive response or the session expires. A retried `PUT` MUST reuse the same `{txnId}`, `sequence_token`
+and `data`; in particular the original ciphertext MUST be reused rather than sealed again, since each call to `Seal()`
+advances the HPKE sequence number.
+
 The guidance in the `PUT` section above that a client can `GET` and resend after a `M_CONCURRENT_WRITE` does not apply
 during establishment. Resending cannot succeed: the additional authentication data binds each payload to the sequence
 token it replaces, and the peer opens it against the token it last held, so a payload resent after an intervening write
