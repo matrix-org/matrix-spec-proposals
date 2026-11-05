@@ -80,7 +80,13 @@ their profile cache for users they have discovered, but have not yet received pr
   ```
 - **Error codes**:
 
-  * 400 - Invalid user ID in users list, or missing user list
+  * 400 / M_BAD_JSON:
+    * `users` is empty, malformed (not a list of strings), contains too many items (max 100) or contains
+      an entry that is not a valid MXID.
+    * `fields` is given, but is malformed (not a list of strings), contains too many items (max 30), contains too few
+      items (min 1), a single item is zero length or a single item has a length of over 255 bytes in UTF-8 encoding.
+  * 400 / M_MISSING_PARAM:
+    * Missing `users`.
 
 ### Homeserver implementation details
 
