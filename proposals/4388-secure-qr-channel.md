@@ -245,7 +245,7 @@ Content-Type: application/json
 The server can choose what level of authentication is required to create a rendezvous session. Suitable policies might
 include:
 
-- Requires authenticated user - this would reduce abuse to known users. This should be the default.
+- Requires authenticated user - this would reduce abuse to with known users only able to create a session.
 - Public/open - anyone can create a rendezvous session without an access token. This allows for clients to use this
   server as its default when creating QR codes as a new session (as it doesn't yet know what server the user will
   log in to).
