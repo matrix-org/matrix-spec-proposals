@@ -128,7 +128,7 @@ The `sequence_token` MUST:
 
 ### Expiry
 
-The rendezvous session (i.e. the payload) SHOULD expire after a period of time communicated to clients via the
+The rendezvous session (i.e. the payload) MUST expire after a period of time communicated to clients via the
 `expires_in_ms` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
 the payload MUST fail. The rendezvous session can be manually expired with a `DELETE` call to the rendezvous session.
 
