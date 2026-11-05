@@ -422,8 +422,6 @@ sequenceDiagram
   Note over A: Device A starts polling for new payloads at the<br>rendezvous session using the returned `sequence_token`
   activate A
 
-  Note over B: Device B resolves the servername to the homeserver
-
   B->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
   HS->>-B: 200 OK<br>{"sequence_token": "1", "data": "Hello from A", "expires_in_ms": 300000}
   loop Device A polls the rendezvous session for a new payload
