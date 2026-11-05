@@ -34,7 +34,7 @@ was before your time?).
 - [Nordeck's Whiteboard uses this approach](https://github.com/nordeck/matrix-neoboard/blob/main/docs/model/matrix-events.md#netnordeckwhiteboard-state-event)
   to keep track of the state of the latest whiteboard without revealing the information
   outside the e2ee channel.
-- [FitKo Neo is proposing this approach](https://gitlab.opencode.de/fitko/matrix-g2x/solution-architecture/-/merge_requests/57/diffs#line_a9ecc80c6_A1540)\
+- [FITKO Neo is proposing this approach](https://gitlab.opencode.de/fitko/matrix-g2x/solution-architecture/-/merge_requests/57/diffs#line_a9ecc80c6_A1540)\
   to track channel metadata that needs to stay private
 
 ## Proposal: A linked state event type
@@ -60,7 +60,7 @@ saves the client a network request to fetch the linked event and allows for fast
     "state_key": "someKey",
     "content": {
         "rel_type": "m.state_content",
-        "event_id": "$someEventId:example.org"
+        "event_id": "$someEventIdABCD"
     }
 }
 ```
@@ -73,7 +73,7 @@ saves the client a network request to fetch the linked event and allows for fast
   "state_key": "someKey",
   "content": {
       "rel_type": "m.state_content",
-      "event_id": "$someEventId:example.org"
+      "event_id": "$someEventIdABCD"
   },
   "linked_event": {
     "content": {
@@ -83,7 +83,7 @@ saves the client a network request to fetch the linked event and allows for fast
       "sender_key": "IlRMeOPX2e0MurIyfWEucYBRVOEEUMrOHqn/8mLqMjA",
       "session_id": "X3lUlvLELLYxeTx4yOVu6UDpasGEVO0Jbu+QFnm0cKQ"
     },
-    "event_id": "$someEventId:example.org",
+    "event_id": "$someEventIdABCD",
     "origin_server_ts": 1432735824653,
     "sender": "@alice:example.org",
     "type": "m.room.encrypted",
