@@ -36,7 +36,7 @@ is rejected with the HTTP response of `412 Precondition Failed` and the json bod
 
 ```JSON
 {
-    "": "M_VERSION_MISMATCH",
+    "err": "M_VERSION_MISMATCH",
     "error": "The account data version doesn't match"
 }
 ```
@@ -56,6 +56,10 @@ the upgrade path:
 1. Still allow the old API to be used as is, just assuming that the version always matches. (weak)
 2. Reject requests to the old API for any item that has been updated via the new API (strong)
 3. Allow fetching over the old API for a while, but reject any updates unless they are done with the new API
+
+## Unstable Prefix
+
+Until this MSC is accepted, the path for the server implementation is `/_matrix/client/unstable/msc4573/user/{userId}`.
 
 ## Alternative approaches
 
