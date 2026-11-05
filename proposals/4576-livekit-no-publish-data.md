@@ -40,7 +40,7 @@ None.
 
 Some MatrixRTC applications, such as the voice- and video conferencing application from [MSC4196],
 may not use data tracks. As a result, client implementations for these applications are unlikely to
-visualise data tracks if they occur unexpectly. This makes allowing data publishing, a potential
+visualise data tracks if they occur unexpectedly. This makes allowing data publishing, a potential
 resource abuse vector as malicious users could use data tracks unnoticed by other users.
 
 However, malicious clients can already abuse audio and video tracks to exchange general data
