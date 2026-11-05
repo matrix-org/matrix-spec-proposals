@@ -1121,7 +1121,7 @@ nonce mixed into the response HPKE context derivation.
 
 #### Pure Dolev-Yao attacker
 
-An attacker with control over the network but _not_ present for the QR code scanning cannot thwart the process since
+An attacker with control over the network but _not_ present for the QR code scanning cannot complete a login since
 they are unable to obtain the ephemeral key **Gp** of Device G.
 
 #### Shoulder-surfing attacker (Specter)
