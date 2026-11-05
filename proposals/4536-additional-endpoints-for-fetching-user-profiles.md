@@ -46,7 +46,8 @@ their profile cache for users they have discovered, but have not yet received pr
     users in one request, responding with `M_BAD_JSON` if the amount is higher.
   * `fields` - (Optional) List of fields to include in the response. If specified, at least one field name MUST
     be included. If not specified, all profile fields will be returned. The homeserver MUST accept at most 30 field
-    names in one request, responding with `M_BAD_JSON` if the amount is higher.
+    names in one request, each at most 255 bytes in UTF-8 each, responding with `M_BAD_JSON` if the amount or field
+    length is higher.
 
     Example request body:
     
