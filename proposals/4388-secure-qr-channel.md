@@ -789,6 +789,7 @@ DHKEM(X25519, HKDF-SHA256) with **Sp** as the encapsulated key and **Gs** as the
 **Gs**. Finally it derives an HPKE context **Context_DeviceG_Receive** as follows:
 
 ```
+# Sp is first 32 bytes, and the remainder is the TaggedCiphertext
 (Sp, TaggedCiphertext) := Unpack(LoginInitiateMessage)
 
 SharedSecret := Decap(Sp, Gs)
@@ -882,6 +883,7 @@ It proceeds to derive the HPKE response context by unpacking the base response n
 creating the **Context_DeviceS_Receive** response context as follows:
 
 ```
+# ResponseNonce is first 32 bytes, and the remainder is the TaggedCiphertext
 (ResponseNonce, TaggedCiphertext) := Unpack(LoginOkMessage)
 
 Secret := Context_DeviceS_Send.Export("MATRIX_QR_CODE_LOGIN_RESPONSE", 32)
