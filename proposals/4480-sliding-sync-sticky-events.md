@@ -13,7 +13,8 @@ the common extension semantics of [MSC4508] and has the following request extens
 ``` js
 {
   "enabled": true,
-  "limit": 100, // optional (default 100, min 1): max number of events to return, server MAY override to a lower number
+  "limit": 100, // optional (default 100, min 1): max number of events to return per room
+                // (like `timeline_limit`), server MAY override to a lower number
   "lists": ["rooms", "dms"], // optional, as per MSC4508
   "rooms": ["!abcd:example.com"] // optional, as per MSC4508
 }
@@ -96,8 +97,9 @@ delivered to clients, without any gaps in the pagination, they follow the [MSC45
 Extension: To-Device messages] model for pagination in sliding sync, but without introducing
 an additional per-extension pagination token.
 
-In short: when there are too many sticky events to return in one response, the server returns a
-limited number of the oldest sticky events that have not yet been delivered.
+In short: when a room has more undelivered sticky events than `limit`, the server returns the
+oldest `limit` of them and the rest follow in subsequent responses. The `limit` applies per
+room, like `timeline_limit`, rather than to the response as a whole.
 
 The server tracks this implicitly using the request-/response-wide `pos` token. A request that
 repeats a `pos` returns the same sticky events again, as [MSC4186] requires for the rest of the
@@ -127,9 +129,12 @@ updates.
 
 ## Potential issues
 
-Nothing beyond what’s included in [MSC4354].
+Because `limit` applies per room, the number of sticky events in one response is bounded by
+`limit` times the number of rooms in scope, as for `timeline_limit`. Servers that want a tighter
+bound can cap `limit`.
 
-Notably, the 'flickering' concern from [MSC4354] applies equally to Sliding Sync as it does to v3 Sync.
+Otherwise, the potential issues included in [MSC4354] are relevant here, too. Notably, the
+'flickering' concern from [MSC4354] applies equally to Sliding Sync as it does to v3 Sync.
 
 ## Alternatives
 
