@@ -921,6 +921,10 @@ Apart from this, the endpoints introduced above should be referred to as follows
 - `/_matrix/federation/v1/rtc/livekit/get_token` -> `/_matrix/federation/unstable/io.element.msc4195/rtc/livekit/get_token`
 - `/_matrix/client/v1/rtc/livekit/delegate_delayed_leave` -> `/_matrix/client/unstable/io.element.msc4195/rtc/livekit/delegate_delayed_leave`
 
+Once this MSC is accepted, but before the homeserver advertises the spec version that includes this
+MSC, the homeserver should advertise `org.matrix.msc4195.stable` as an unstable feature flag to let
+clients know that they can use the stable endpoints.
+
 ## Dependencies
 
 This proposal depends on [MSC4143].
