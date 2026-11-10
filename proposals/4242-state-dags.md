@@ -477,10 +477,12 @@ cascading rejection: if A is rejected and B references A, then B is rejected and
 
 #### Out-of-band events changes
 
-A membership event which changes the membership of a user whose server is not in the room (e.g. rescinding an invite)
+A `leave` membership event for a user whose server is not in the room (e.g. rescinding an invite)
 MUST include the target user's current membership event in `prev_state_events`. That server cannot calculate the
 `auth_events` for the event as it does not have the state DAG, so this reference is the only way it can tell that
 the event supersedes the membership it currently holds.
+
+Other membership events MUST NOT include it unless it is already a state forward extremity, else it would be a redundant edge.
 
 #### Faster remote room joins
 
