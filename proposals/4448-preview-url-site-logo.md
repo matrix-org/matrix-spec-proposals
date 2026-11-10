@@ -1,0 +1,98 @@
+# MSC4448: Preview URL Site Logos
+
+Matrix supports generating URL previews via the
+[GET /_matrix/client/v1/media/preview_url](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv1mediapreview_url)
+API.
+
+It can return an image, however currently there is no provision to return a logo identifying the site
+being previewed. A `og:image` property is present, although that usually is reserved for larger preview
+images of the pages content. Implementations such as Synapse may choose to use a site's favicon in place
+of a missing `og:image`, but this leads to imperfect rendering on the client.
+
+![An example of a preview](./images/4448-example.png)
+
+Some clients would prefer to know explicitly if an image provided in the response is a larger image preview
+(such as a photo from an article), separate from the branding logo for the site itself. The example above
+represents where Element Web may render the site logo and a preview image.
+
+Therefore, this proposal suggests an extension to the existing API to provide a site logo in addition to
+other content.
+
+
+## Proposal
+
+Additional fields MAY be provided in the response to `GET /_matrix/client/v1/media/preview_url`:
+
+ - `matrix:site_logo` which is a `mxc://` URI to the site's logo. Omitted if there is no logo.
+ - `matrix:site_logo:size` which is the byte-size of the image. Omitted if there is no logo.
+
+This should ONLY be returned if the query parameter `include=matrix:site_logo` is provided, to prevent
+uninterested client implementations from requesting extra media.
+
+It is left up to the implementation on how to procure the site logo, as the OpenGraph spec does not provide
+one. A reasonable suggestion would be to follow the same method as browsers,
+[as described in the MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel#icon).
+
+The site logo should be downloaded as `og:image` is today.
+
+## Potential issues
+
+### Increased storage cost
+
+As with all implementations that require additional media to be downloaded, this will increase the cost
+of storage cost per site previewed. To help with this, implementations *should* ensure they do not store
+multiple copies of the same image (such as by using a simple hash of the image) in the media repository.
+Additionally, the `include` query parameter ensures that clients do not put strain on the server if they
+do not use the value.
+
+### Standardisation
+
+This introduces a custom field into a spec largely defined outside of Matrix, and could perhaps be floated
+as an extension to the standard itself. For the moment though, it feels fine to experiment at the Matrix layer
+to prove the concept.
+
+### Local URL Previews
+
+This proposal is centred around extending the server-side API to render previews, rather than working to
+make client-side previews easier. There are arguments that client-side previews are the better bet for the
+future of Matrix, however this proposal at least standardises the response body for server-side responses
+which could be used by client-side libraries, so there is still some benefits which aid both approaches.
+
+## Alternatives
+
+### Continue to use `og:image` to store the site logo if there is no alternative image
+
+This is the status quo today with Synapse. The problem with this approach is that it makes it harder
+for clients to avoid rendering huge blurry previews of small icons, or render both a preview image
+and a site logo. 
+
+
+## Security considerations
+
+### Large image downloads
+
+As with all media-based proposals, implementations should take care and place
+sensible limits on how large site logos should be and reject overly large
+file sizes.
+
+## Unstable prefix
+
+Until this proposal completes FCP, the following should be observed:
+
+ - `matrix:site_logo` should be `msc4448:site_logo` 
+ - `matrix:site_logo:size` should be `msc4448:site_logo:size` 
+ - `?include=matrix:site_logo` should be `?msc4448_include=msc4448:site_logo` 
+
+
+Servers may advertise support for the feature by listing `org.matrix.msc4448`
+in the `unstable_features` section of the response to [`GET
+/_matrix/client/versions`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientversions).
+
+Once this proposal completes FCP, servers may advertise support for the
+*stable* identifiers by listing `org.matrix.msc4448.stable`
+in `unstable_features`; clients may use this while they are waiting for the
+server to adopt a version of the spec that includes it.
+
+## Dependencies
+
+None.
