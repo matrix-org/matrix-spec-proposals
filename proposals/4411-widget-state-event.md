@@ -65,6 +65,10 @@ A state event of type `m.widget` whose content does not match the schema above (
 non-string `name` or `url`) is considered a removed widget and MUST NOT be listed or rendered by clients.
 Clients SHOULD set the content to `{}` for removing widgets.
 
+When a client observes removal of a widget or a change to its `url`, it MUST stop the old instance,
+end its Widget API access, and cancel its pending API approvals before loading a replacement.
+A replacement MUST NOT inherit the old instance's active permissions merely because its `state_key` did not change.
+
 #### Power Levels
 
 The default power level system will be used to control who can modify widgets.
@@ -72,6 +76,9 @@ The default power level system will be used to control who can modify widgets.
 If `m.widget` is not listed in `events`, `state_default` applies as for any other state event.
 Since widgets can load arbitrary web content in the room members' clients, room creators SHOULD NOT lower
 this below the level required for other room configuration state events.
+
+Permission to add or edit widget state does not imply or grant approval for the widget to use the Matrix API
+or access device features.
 
 ### Accessing and rendering widgets
 
@@ -111,6 +118,8 @@ camera, encrypted media, media autoplay, screen capture and clipboard read/write
 Clients MUST NOT allow a widget to navigate the client itself (e.g. `allow-top-navigation`).
 Granting a capability in the webview does not bypass the platform's own user prompt (e.g. for camera or
 microphone access); clients MAY additionally prompt the user before granting sensitive capabilities.
+
+These webview settings do not grant Matrix Widget API permissions.
 
 ### Remove `$matrix_widget_id`
 [MSC2774](https://github.com/matrix-org/matrix-spec-proposals/pull/2774) introduced `$matrix_widget_id` and was
@@ -238,11 +247,7 @@ but it does leak metadata.
 ### Misleading widget name
 Users with a high enough power level can lie about the widget name.
 This allows users to trick others into clicking the wrong widget.
-At first sight this might seem like an issue. However, as room members already have access to the encrypted
-messages, this does not allow any attacks beyond what they are already able to do (for example, sharing
-encrypted history with the public).
-
-It can, however, be used to mislead other users.
+A misleading name can also cause users to approve unintended access.
 
 Therefore, this MSC requires clients to show the sender of the widget event and the url (see the proposal
 section).
