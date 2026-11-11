@@ -1,4 +1,4 @@
-# MSCXXXX: Media annotations and universal alt text
+# MSC4581: Media annotations and universal alt text
 
 ## Introduction
 
