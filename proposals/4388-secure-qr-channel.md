@@ -755,7 +755,7 @@ payload, **LoginInitiateMessage**, that Device G can use to confirm that the cha
 
 ```
 Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
-TaggedCiphertext := Context_DeviceS_Send.Seal("MATRIX_QR_CODE_LOGIN_INITIATE", Aad)
+TaggedCiphertext := Context_DeviceS_Send.Seal(Aad, "MATRIX_QR_CODE_LOGIN_INITIATE")
 LoginInitiateMessage := UnpaddedBase64(Sp || TaggedCiphertext)
 ```
 
@@ -815,7 +815,7 @@ receives, whatever it is: Device G MUST NOT skip over a payload that it cannot o
 
 ```
 Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
-Plaintext := Context_DeviceG_Receive.Open(TaggedCiphertext, Aad)
+Plaintext := Context_DeviceG_Receive.Open(Aad, TaggedCiphertext)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_INITIATE":
      FAIL
@@ -848,7 +848,7 @@ string `MATRIX_QR_CODE_LOGIN_OK` that is sealed with the additional authenticati
 
 ```
 Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
-TaggedCiphertext := Context_DeviceG_Send.Seal("MATRIX_QR_CODE_LOGIN_OK", Aad)
+TaggedCiphertext := Context_DeviceG_Send.Seal(Aad, "MATRIX_QR_CODE_LOGIN_OK")
 LoginOkMessage := UnpaddedBase64Encode(ResponseNonce || TaggedCiphertext)
 ```
 
@@ -909,7 +909,7 @@ wait for another (see [Fail-closed behaviour](#fail-closed-behaviour)).
 
 ```
 Aad := EncodeStringAsBytes8(BaseUrl) || EncodeStringAsBytes8(RendezvousId) || EncodeStringAsBytes8(SequenceToken)
-Plaintext := Context_DeviceS_Receive.Open(TaggedCiphertext, Aad)
+Plaintext := Context_DeviceS_Receive.Open(Aad, TaggedCiphertext)
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
      FAIL
