@@ -500,6 +500,9 @@ of preference:
 1. If the client is not logged in and it is known which homeserver the user wants to connect to: try and use that homeserver.
 1. Otherwise use a default server.
 
+A client MUST NOT send its access token to any homeserver other than its own. Consequently, a homeserver that
+requires authentication for `POST /_matrix/client/v1/rendezvous` cannot be used by clients without an account on it.
+
 ### Threat analysis
 
 #### Denial of Service attack surface
