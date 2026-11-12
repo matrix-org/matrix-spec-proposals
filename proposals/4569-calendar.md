@@ -66,8 +66,8 @@ A new state event `m.jscalendar.group` is introduced.
 This event MUST have an empty `state_key`.
 Consequently, a room can only host one `@type:Group` at a time.
 
-The content of this state event contains a `m.jscalendar.group` block. The following properties MUST NOT be included in
-this content block:
+The content of this state event MUST contain a `m.jscalendar.group` content block of the JSCalendar type `@type:Group`.
+The following properties MUST NOT be included in this content block:
 
 - `@type`: This is inferred from the event type.
 - `entries`: This array is derived from `m.jscalendar.event` and `m.jscalendar.task` events.
@@ -105,8 +105,9 @@ To produce a full JSCalendar-compliant `@type:Group` object (e.g., for export), 
 
 The new state events `m.jscalendar.event` and `m.jscalendar.task` are introduced.
 The `state_key` MUST be a random string representing the object's `uid`.
-The content of the state event contains a content block `m.jscalendar.event`/`m.jscalendar.task` matching `@type:Event`/
-`@type:Task`. These content blocks MUST NOT contain the following JSON properties:
+
+The content of the state event MUST contain a `m.jscalendar.event`/`m.jscalendar.task` content block of the JSCalendar
+type `@type:Event`/`@type:Task`. These content blocks MUST NOT contain the following JSON properties:
 
 - `@type`: Inferred from the event type.
 - `uid`: Inferred from the `state_key`.
@@ -151,8 +152,9 @@ Redacting an `m.jscalendar.event` or `m.jscalendar.task` removes it from the `@t
 ### Patching participants via message events
 
 To update participant information (e.g., `participationStatus`) with some room-accessible information, a new message
-event `m.jscalendar.patch` is introduced. It contains the content block `m.jscalendar.patch` of the JSCalendar type
-`PatchObject`.
+event `m.jscalendar.patch` is introduced.
+
+The content of the message event MUST contain a `m.jscalendar.patch` content block of the JSCalendar type `PatchObject`.
 
 This event MUST include a `m.relates_to` relation of type `m.jscalendar.patch` pointing to the target state event. The
 additionally mandatory parameter `sequence` MUST be set based on the patched `@type:event`/`@type:task`.
