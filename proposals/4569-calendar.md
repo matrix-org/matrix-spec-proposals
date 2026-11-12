@@ -342,6 +342,11 @@ unencrypted. Implementers should be aware that calendar metadata (titles, times,
 home server and any room members. [MSC4362](https://github.com/matrix-org/matrix-spec-proposals/pull/4362) would be a
 candidate for encrypting state events.
 
+### Permissions
+
+This proposal does not explicitly define rules who can send an `m.jscalendar.*` event. Instead, standard Matrix power
+levels can be used to give certain users the right to create, edit and moderate `m.jscalendar.*` events.
+
 ## Unstable prefix
 
 To ensure compatibility during development, the following prefixes MUST be used:
