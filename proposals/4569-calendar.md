@@ -52,7 +52,8 @@ considered "empty," and any other calendar-related events MUST NOT be processed 
 Effectively, an `m.calendar` room acts as a container for a `@type:Group`.
 
 This room type does not act as a calendar unconditionally itself. Instead, it just marks the rooms main purpose to
-contain calendar events. Similar to the room type `m.space`, the room can still be used for e.g. sending messages.
+contain calendar events. In contrast to room type `m.space`, `m.calendar` does not limit the usage of the room. For
+example, it can still be used for sending messages.
 
 Clients MUST NOT rely on `m.room.name` or `m.room.topic` for these rooms. Instead, they should use the `title` and
 `description` provided in the `m.jscalendar.group` state event.
