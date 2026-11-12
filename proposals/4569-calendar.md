@@ -341,9 +341,10 @@ requires multiple relations, JSCalendar relations are re-used. This also makes i
 This proposal introduces additional metadata to Matrix rooms. All data defined in this proposal is intended to be
 compatible with current encryption standards. However, because current Matrix implementations do not support the
 encryption of state events or a general way to encrypt account data without new secrets, some data remains
-unencrypted. Implementers should be aware that calendar metadata (titles, times, participants) might be visible to the
-home server and any room members. [MSC4362](https://github.com/matrix-org/matrix-spec-proposals/pull/4362) would be a
-candidate for encrypting state events.
+unencrypted. Implementers should be aware that calendar metadata (titles, times, participants) are mostly visible to and
+forgeable by the home server. This is especially an issue for public homeservers while it may
+be negligible for corporate environments. [MSC4362](https://github.com/matrix-org/matrix-spec-proposals/pull/4362) would
+be a candidate for encrypting state events.
 
 ### Permissions
 
