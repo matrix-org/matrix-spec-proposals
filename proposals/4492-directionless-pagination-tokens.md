@@ -69,6 +69,11 @@ This does not affect the pagination of any other endpoints, such as `/threads` o
 Homeserver implementations differ in how they structure pagination tokens. The rules
 above may drastically break how a homeserver generates pagination tokens.
 
+It removes potential for performance based optimization by giving particular endpoints
+dedicated tokens.
+
+It increases testing burden due to the many permutations of where tokens can be reused.
+
 ### Synapse
 
 Synapse uses a single [`StreamToken`][synapse-streamtoken] type for all pagination
