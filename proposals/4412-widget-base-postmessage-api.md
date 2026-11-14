@@ -2,17 +2,16 @@
 
 Matrix is moving towards less metadata on the server, more encryption, and more complexity on the
 client, which caches and indexes events itself. This makes a full Matrix client (login,
-encryption, event cache, key backup, ...) increasingly
-challenging to implement, and users have to place more trust in the software running it.
+encryption, event cache, key backup, ...) increasingly challenging to implement, and users have to
+place more trust in the software running it.
 
-Widgets provide a way to build shared applications ontop of the federated matrix room data.
-They are a solution to avoid the security and implementation complexity problems of such apps.
+Widgets provide a way to build shared applications on top of the federated Matrix room data.
+They are a solution that avoids the security and implementation complexity problems of such apps.
 
-A widget is a web application that is embedded in a Matrix client (the
-"host") and talks to Matrix through that client instead of being a Matrix client itself. The widget
-API is the interface between the two: a simpler interface than the client-server API.
-The client has already done the heavy lifting. It can be thought of as a client API on top of
-an event cache.
+A widget is a web application that is embedded in a Matrix client (the "host") and talks to Matrix
+through that client instead of being a Matrix client itself. The widget API is the interface
+between the two: a simpler interface than the client-server API, as the client has already done the
+heavy lifting. It can be thought of as a client API on top of an event cache.
 
 This allows niche applications (for example a fitness tracker, an expenses tool or an integration
 with specific hardware such as an X-ray scanner) to integrate with Matrix without requiring users
@@ -37,8 +36,11 @@ Related work:
    receiving Matrix events.
  * [MSC3817](https://github.com/matrix-org/matrix-spec-proposals/pull/3817): widgets creating
    rooms.
- * [The capability naming proposal in the `matrix-widget-sdk`](https://github.com/toger5/matrix-widget-sdk/blob/main/docs/spec-appendix/capability-naming-proposal.md).
- * [The "v2" widget API draft](https://docs.google.com/document/d/1uPF7XWY_dXTKVKV7jZQ2KmsI19wn9-kFRgQ1tFQP7wQ/edit?tab=t.0#heading=h.9rn9lt6ctkgi).
+ * [The capability naming proposal in the `matrix-widget-sdk`][naming].
+ * [The "v2" widget API draft][v2].
+
+[naming]: https://github.com/toger5/matrix-widget-sdk/blob/main/docs/spec-appendix/capability-naming-proposal.md
+[v2]: https://docs.google.com/document/d/1uPF7XWY_dXTKVKV7jZQ2KmsI19wn9-kFRgQ1tFQP7wQ/edit?tab=t.0#heading=h.9rn9lt6ctkgi
 
 ## Proposal
 
@@ -69,7 +71,7 @@ request-response pattern:
  * `response`: the response data. An object is a response if and only if this property is present.
 
 Every request MUST be answered with exactly one response, even if it is just an ack
-(`response: {}`). Consequently exactly two JSON objects are sent per `request_id`: one by the host
+(`response: {}`). Consequently, exactly two JSON objects are sent per `request_id`: one by the host
 and one by the widget.
 
 Actions are not symmetric: the set of actions with `source: "host"` does not need to match the set
@@ -83,26 +85,27 @@ For example:
 ### Action naming
 
 The `action` property has the form `<namespace>.<name>`:
- * The commen namespacing is used (`m` for actions that are part of the spec, unstable prefix for
-   actions only defined as an MSC (for example `org.matrix.msc4412`)). The prefix also allows
-   iterating on them: (see [Evolving actions](#evolving-actions))
- * They use `snake_case` names, do not contain `.` or `:`.
+ * The common namespacing is used: `m` for actions that are part of the spec, and the unstable
+   prefix of the defining MSC (for example `org.matrix.msc4412`) for actions that are only defined
+   in an MSC. The namespace also allows iterating on actions (see
+   [Evolving actions](#evolving-actions)).
+ * The names use `snake_case` and do not contain `.` or `:`.
 
-For consistency they should start with verbs. If fitting, it is recommended to use one of the
-following verbs for actions form the widget (**widget** -> **host**):
+For consistency, names should start with a verb. Where one fits, it is recommended to use one of
+the following verbs for actions sent by the widget (**widget** -> **host**):
 
-| Verb      | Use it when                                                                                | Example                  |
-|-----------|--------------------------------------------------------------------------------------------|--------------------------|
-| `send`    | The widget asks the host to send something Matrix related on its behalf.                   | `m.send_event`           |
-| `request` | The widget requests a change in the host that is not necessarily related to Matrix.        | `m.request_capabilities` |
-| `notify`  | The widget informs the host about its own state. The widget does not expect anything back. | `m.notify_ready`         |
+| Verb      | Use it when                                                                  | Example                  |
+|-----------|------------------------------------------------------------------------------|--------------------------|
+| `send`    | The widget asks the host to send something Matrix related on its behalf.     | `m.send_event`           |
+| `request` | The widget requests a change in the host, not necessarily related to Matrix. | `m.request_capabilities` |
+| `notify`  | The widget informs the host about its own state and expects nothing back.    | `m.notify_ready`         |
 
 Verbs for actions sent by the host (**host** -> **widget**):
 
-| Verb      | Use it when                                                                                        | Example                 |
-|-----------|----------------------------------------------------------------------------------------------------|-------------------------|
-| `update`  | The host tells the widget the current, full state of something. It replaces what was sent before.  | `m.update_capabilities` |
-| `forward` | The host passes on something that happened elsewhere. Every action is a separate occurrence.       | `m.forward_event`       |
+| Verb      | Use it when                                                                   | Example                 |
+|-----------|-------------------------------------------------------------------------------|-------------------------|
+| `update`  | The host sends the current, full state of something, replacing the previous.  | `m.update_capabilities` |
+| `forward` | The host passes on something that happened elsewhere, one action per event.   | `m.forward_event`       |
 
 ### Errors
 
@@ -141,14 +144,15 @@ The following error codes can be returned for every action, in both directions:
 | `m.invalid_request`    | The `request` is missing required properties or contains invalid values.      |
 | `m.unknown`            | The request failed for any other reason.                                      |
 
-MSCs that define actions can define additional error codes with additional properties for their actions.
-For example, an action that results in a request to the homeserver defines an error that carries the error
-response of the homeserver. A receiver that does not recognise a `code` MUST treat it like `m.unknown`.
+MSCs that define actions can define additional error codes with additional properties for their
+actions. For example, an action that results in a request to the homeserver could define an error
+that carries the error response of the homeserver. A receiver that does not recognise a `code` MUST
+treat it like `m.unknown`.
 
 ### Action timeouts
 
-Actions are expected to be answered quickly: between receiving a request and sending the response only
-synchronous computations should be done.
+Actions are expected to be answered quickly: between receiving a request and sending the response,
+only synchronous computations should be done.
 
 If a response takes longer than 10 seconds, the communication should be considered stalled. The
 request is treated as failed. A response that arrives after that is ignored.
@@ -217,9 +221,9 @@ capability = source ":" action [ "." modifier ] [ ":" capability_data ]
 | Part                              | Values               | Description                                                                                                         |
 |-----------------------------------|----------------------|---------------------------------------------------------------------------------------------------------------------|
 | `source`                          | `widget` or `host`   | Who sends the action: the `widget` (a request) or the `host` (a subscription).                                      |
-| `action`                          | `<namespace>.<name>` | The value of the `action` property of the action (see [Action naming](#action-naming)).                     |
-| `modifier`<br>(optional)          | A descriptive word   | Some actions have a finite set of enum cases to modify the capability. Omitted if there is only one.    |
-| `capability_data`<br>(optional)   | Any string           | Additional constraints that cannot be expressed as a finite list. Its format is defined together with the action modifier.    |
+| `action`                          | `<namespace>.<name>` | The value of the `action` property of the action (see [Action naming](#action-naming)).                             |
+| `modifier`<br>(optional)          | A descriptive word   | Some actions have a finite set of enum cases that modify the capability. Omitted if there is only one.              |
+| `capability_data`<br>(optional)   | Any string           | Additional constraints that cannot be expressed as a finite list. Its format is defined together with the modifier. |
 
 `source`, `name` and `modifier` are clearly enumerated strings and do not contain `.` or `:`.
 The `capability_data` is everything after the second `:` and can contain any character,
@@ -263,13 +267,14 @@ The widget sends this action once it is ready to be displayed. The `request` is 
 the response an empty ack.
 
  * A widget that uses the widget API (see [State event](#state-event)) MUST send it. The host ALWAYS
-   shows a loading state in place of the widget until it received this action.
+   shows a loading state in place of the widget until it has received this action.
  * This allows the widget to do work before being displayed, for example asking the host
    which theme or language to use, or fetching events (using actions defined in other MSCs).
- * The client should timeout and show an error if the widget fails to send this action
+ * The client should time out and show an error if the widget fails to send this action
    (recommended: 15 seconds).
- * Widgets should only do initial loading before sending `m.notify_ready`. Longer load processes
-   (a media library, lots of images) should implement their own reactive loading visualisation.
+ * Widgets should only do initial loading before sending `m.notify_ready`. For longer load
+   processes (a media library, lots of images), widgets should implement their own reactive loading
+   visualisation.
 
 #### `m.request_capabilities` (widget -> host)
 
@@ -290,11 +295,11 @@ the response an empty ack.
 ```
 
 The widget requests initial or additional capabilities. A widget can only ever request more
-capabilities, it cannot remove capabilities. Only the host can remove them.
+capabilities; it cannot remove them. Only the host can remove capabilities.
 
-The host acks immediately. The ack only acknowledges that the capabilities were requested, it does
+The host acks immediately. The ack only acknowledges that the capabilities were requested; it does
 not imply that any of them are granted. The host is in full control of which capabilities it
-grants when.
+grants and when.
 
 #### `m.update_capabilities` (host -> widget)
 
@@ -314,16 +319,16 @@ following ways:
    users are not prompted again every time the widget starts.
 
 From then on both sides MUST behave according to the list of allowed capabilities:
-the widget and host stops sending the corresponding actions and the host answers any not allowed
-action them with an `m.missing_capability` error.
+the widget and the host stop sending actions that are not allowed, and the host answers any action
+that is not allowed with an `m.missing_capability` error.
 
 `allowed` is always the full list of capabilities the widget currently has, not only the changes.
 This makes it easy to keep the capability state of both sides in sync:
 
  * **Granting:** if the widget requests more capabilities via `m.request_capabilities`, the host
    sends an update that contains the previously allowed capabilities and the new ones.
- * **Relinquishing:** to remove capabilities from the widget (f. ex.the user revoked a permission),
-   the host sends an update with a reduced `allowed` list.
+ * **Relinquishing:** to remove capabilities from the widget (for example because the user revoked
+   a permission), the host sends an update with a reduced `allowed` list.
 
 ### State event
 
@@ -352,14 +357,14 @@ This replaces `waitForIframeLoad`, which was more confusing.
 
 The action format of this MSC is not compatible with the existing, unspecified widget
 implementations ("legacy widgets"). The first action is always sent by the widget. It is used
-to tell this MSC and legacy apart: legacy actions have an `api` property, this MSC's actions
-have a `source` property instead. A widget MUST NOT switch between the two formats during its
+to tell the format of this MSC and the legacy format apart: legacy actions have an `api` property,
+the actions of this MSC have a `source` property instead. A widget MUST NOT switch between the two formats during its
 lifetime.
 
 A host can keep supporting legacy widgets in two ways:
 
  * **Natively:** the host keeps its existing implementation in parallel to the one of this MSC and
-   picks one based on the first action it receives. (Not recommended)
+   picks one based on the first action it receives. This is not recommended.
  * **Using a compatibility wrapper:** the host only implements this MSC and loads legacy widgets
    through a wrapper widget that translates between the two formats.
 
@@ -373,8 +378,9 @@ relays the actions between the two, translating the action format and the capabi
 
 The transition is expected to work as follows:
  - Hosts implement this MSC and keep supporting legacy widgets in one of the two ways above.
- - Once hosts support this MSC, widgets should start implementing it. (A possible shortcut is
-   to ship wrapped in [`widget-compat-wrapper`](https://github.com/toger5/matrix-widget-sdk/tree/main/packages/widget-compat-wrapper))
+ - Once hosts support this MSC, widgets should start implementing it. A possible shortcut is to
+   ship the legacy widget wrapped in the
+   [`widget-compat-wrapper`](https://github.com/toger5/matrix-widget-sdk/tree/main/packages/widget-compat-wrapper).
  - 12 months later, hosts are allowed to drop the support for legacy widgets.
 
 ## Potential issues
@@ -454,8 +460,8 @@ with the user's Matrix account, so the host MUST enforce them for every action a
 has agreed to.
 
 The host must follow the rules in the [Transport](#transport) section, otherwise one widget could
-impersonate another or receive data intended for another. Widgets must likewise verify that the messages they receive come from their host, using the
-`source` and `origin` of the message event.
+impersonate another or receive data intended for another. Widgets must likewise verify that the
+messages they receive come from their host, using the `source` and `origin` of the message event.
 
 Error messages are sent to untrusted widgets and should not contain information the widget is not
 allowed to access.
