@@ -1,96 +1,83 @@
 # MSC4412: Matrix apps API
 
-This MSC aims to replace the existing attempts to specify the Widget API
-(https://github.com/matrix-org/matrix-spec-proposals/issues/3803).
+This MSC specifies the base of the widget API: the format of the messages ("actions") a widget and
+the Matrix client embedding it (the "host") exchange, the transport they are sent over, and how a
+widget negotiates capabilities with the host. All further functionality is defined by other MSCs on
+top of this one, using capabilities.
 
-Context:
- * [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411): Made in tandem with this MSC
- * https://github.com/matrix-org/matrix-spec-proposals/pull/2871
- * https://github.com/matrix-org/matrix-spec-proposals/pull/2974
- * https://github.com/matrix-org/matrix-spec-proposals/pull/2762 - widget sending matrix events to a room
- * https://github.com/matrix-org/matrix-spec-proposals/issues/3803 / https://docs.google.com/document/d/1uPF7XWY_dXTKVKV7jZQ2KmsI19wn9-kFRgQ1tFQP7wQ/edit?tab=t.0#heading=h.9rn9lt6ctkgi - The "v2" widget API
+It replaces the previous attempts to specify the widget API
+([#3803](https://github.com/matrix-org/matrix-spec-proposals/issues/3803)).
 
-It defines the negotiation between Matrix Client ("Host") and Widget: how the widget loads and
-sets itself up to communicate with the Host.
+Related work:
+ * [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411): made in tandem with
+   this MSC, defines widgets themselves
+ * [MSC2871](https://github.com/matrix-org/matrix-spec-proposals/pull/2871)
+ * [MSC2974](https://github.com/matrix-org/matrix-spec-proposals/pull/2974)
+ * [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762): widgets sending Matrix
+   events to a room
+ * [The "v2" widget API draft](https://docs.google.com/document/d/1uPF7XWY_dXTKVKV7jZQ2KmsI19wn9-kFRgQ1tFQP7wQ/edit?tab=t.0#heading=h.9rn9lt6ctkgi)
 
-The API consists of JSON actions exchanged between the widget and the host. Widgets as specified in
-[MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411) are IFrames, so this MSC
-specifies `postMessage` as the transport for those actions (see [Transport](#transport)).
+## Motivation
 
-The proposed role and motivation for the apps-API is the following.
-Matrix is moving into the following direction:
+Matrix is moving towards:
  - less metadata on the server
  - more complexity on the client
  - more encryption
  - caching and indexing events on the client
 
- Those directions make a proper matrix client harder and harder to implement.
- Building a full client: login, encryption, event-cache, key backup... becomes more chellanging and a there is more trust in the software running it.
+This makes a full Matrix client (login, encryption, event cache, key backup, ...) increasingly
+challenging to implement, and users have to place more trust in the software running it.
 
- With the simplification of the client-server api the apps-API tries to make developing higher level matrix software easier.
- It can be though of as a event-cache client api. Where most of the heavy lifting has already happened.
+The apps-API makes developing higher level Matrix software easier: it is a much simpler interface
+than the client-server API, offered by a client that has already done the heavy lifting. It can be
+thought of as a client API on top of the event cache.
 
- This serves usecases like: Build a niche application (for example a fitness tracker, expenses tool, integration into specific hardware(xray scan)...) integrated in matrix
- but not requiring users to log into a custom matrix client.
+This allows niche applications (for example a fitness tracker, an expenses tool or an integration
+with specific hardware such as an X-ray scanner) to integrate with Matrix without requiring users
+to log into a custom Matrix client.
 
 ## Proposal
 
-The widget and the host will communicate over JSON.
+### Action format
 
-The communication is using a request response pattern.
-Each json object sent from or to the widget is called an action and has the following format:
+The widget and the host communicate by exchanging JSON objects called actions, using a
+request-response pattern:
 
 ```json5
 {
-  source: `widget` | `host`
+  source: "widget" | "host",
   action: "xxx",
   requestId: "1234",
-  request: { [arbitrary object] }
   version: "v1",
-}
-```
-
-```json5
-{
-  source: `widget` | `host`
-  action: "xxx",
-  requestId: "1234",
+  // in a request:
+  request: { [arbitrary object] },
+  // in a response:
   response: { [arbitrary object] },
-  version: "v1",
 }
 ```
-This defines four possible postMessage types:
-  - a toWidget request as
-    - source: host window
-    - `message.response === undefined` and `message.request !== undefined`
-  - a toWidget response as
-    - source: widget window
-    - `message.response !== undefined` and `message.request` can be missing or undefined (it is the implementation's choice: helpful for debugging but not required)
-  - a fromWidget request as
-    - source: widget window
-    - `message.response === undefined` and `message.request !== undefined`
-  - a fromWidget response as
-    - source: host window
-    - `message.response !== undefined` and `message.request` can be missing or undefined (it is the implementation's choice: helpful for debugging but not required)
 
-The requestId needs to be a uuid v4 (this is the version used by other parts of the spec).
-The action combined with the source defines the type of the request data and the response data.
-Examples could be:
- - `action`: `send_event` and `source`:`widget`
-   - This is a request from the widget to ask the host to send an event to the matrix room
- - `action`: `send_event` and `source`:`host`
-   - This is an action sent from the host to the widget containing an event that the host received from the homeserver in the room.
+ * `source`: the side that sent the request. A response carries the same `source` as its request.
+ * `action`: the name of the action. Together with `source` it defines the shape of `request` and
+   `response`.
+ * `requestId`: a UUID v4 (the version used by other parts of the spec), chosen by the requester.
+   The response carries the same `requestId`.
+ * `version`: always `"v1"`.
+ * `request`: the request data. A response does not need to repeat it, but MAY do so (this is
+   helpful for debugging).
+ * `response`: the response data. An object is a response if and only if this field is present.
 
-Actions do not need to be symmetric (The list of possible actions for source: `host` do not be the same as `widget`)
+Every request MUST be answered with exactly one response, even if it is just an ack
+(`response: {}`). Consequently exactly two JSON objects are sent per `requestId`: one by the host
+and one by the widget.
 
-Every time the action is sent (defined by `source` and `action`) the other side has to send a response. Even if its just an ack (`response: {}`).
-Consequently there are always EXACTLY two JSON objects sent with the same `requestId`. (one from the `host` and one from the `widget`)
+Actions are not symmetric: the set of actions with `source: "host"` does not need to match the set
+with `source: "widget"`, and the same `action` can mean different things depending on `source`.
+For example:
+ - `action: "send_event"`, `source: "widget"`: the widget asks the host to send an event to the
+   Matrix room.
+ - `action: "send_event"`, `source: "host"`: the host passes the widget an event it received from
+   the homeserver in the room.
 
-Compared to the currently implemented widget api we remove:
-  * widgetId: Widget IDs are useful at the room level as an identifier for the state event and potentially to the Host to tell its widgets apart, but a widget should not need to care about what its own ID is (keep temporarily in element web for backwards compat).
-  * api: We do need to know the direction as it's not always implicit (because of mobile js injection fun) but renamed to 'source'). `widget` === `fromWidget`, `host` === `toWidget`.
-  * request: From responses, ie. don't repeat the request back in responses, it's not necessary.
-  *
 ### Action naming
 Actions are always `snake_case` for widget actions (we're not changing them, not worth it)
 Actions names should start with a verb.
@@ -285,6 +272,12 @@ only `postMessage`:
    transport. Specifying such transports is left to those MSCs.
 
 ### Previous widget api comparison
+
+#### Action format
+Compared to the currently implemented widget api the action format drops:
+  * `widgetId`: Widget IDs are useful at the room level as an identifier for the state event and potentially to the Host to tell its widgets apart, but a widget should not need to care about what its own ID is (keep temporarily in element web for backwards compat).
+  * `api`: We do need to know the direction as it's not always implicit (because of mobile js injection fun), but it is renamed to `source`. `widget` === `fromWidget`, `host` === `toWidget`.
+  * `request` in responses: repeating the request back in responses is no longer required.
 
 #### Capabilites
 The `request_capabilities` and `update_capabilities` will work as described here, a bit different than the previous MSC:
