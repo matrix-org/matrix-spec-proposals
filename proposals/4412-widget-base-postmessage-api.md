@@ -13,9 +13,9 @@ Context:
 It defines the negotiation between Matrix Client ("Host") and Widget: how the widget loads and
 sets itself up to communicate with the Host.
 
-There can be different kinds of transports using the JSON based api specified in this MSC.
-This MSC uses the api for the widget specified in [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411) which are by nature IFrames
-hence postMessage is used.
+The API consists of JSON actions exchanged between the widget and the host. Widgets as specified in
+[MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411) are IFrames, so this MSC
+specifies `postMessage` as the transport for those actions (see [Transport](#transport)).
 
 The proposed role and motivation for the apps-API is the following.
 Matrix is moving into the following direction:
@@ -62,16 +62,16 @@ Each json object sent from or to the widget is called an action and has the foll
 This defines four possible postMessage types:
   - a toWidget request as
     - source: host window
-    - `message.response === undefined` and `message.data !=== undefined`
+    - `message.response === undefined` and `message.request !== undefined`
   - a toWidget response as
     - source: widget window
-    - `message.response !== undefined` and message data can be missing or undefined (its the implementation choice. Its helpful for debugging but not required)
+    - `message.response !== undefined` and `message.request` can be missing or undefined (it is the implementation's choice: helpful for debugging but not required)
   - a fromWidget request as
     - source: widget window
-    - `message.response === undefined` and `message.data !=== undefined`
+    - `message.response === undefined` and `message.request !== undefined`
   - a fromWidget response as
     - source: host window
-    - `message.response !== undefined` and message data can be missing or undefined (its the implementation choice. Its helpful for debugging but not required)
+    - `message.response !== undefined` and `message.request` can be missing or undefined (it is the implementation's choice: helpful for debugging but not required)
 
 The requestId needs to be a uuid v4 (this is the version used by other parts of the spec).
 The action combined with the source defines the type of the request data and the response data.
@@ -111,15 +111,31 @@ This is expected to be done with two seperate actions.
 For example `request_data` with source `widget` will immediatly get an ack. Then the host will do the user action.
 After the user is done, it will send a new action `update_data` with source `host` which the widget will immediatly ack.
 
-## Transport
-In this MSC we introduce the postMessage transport. Future MSCs might want to introduce other transports.
- * Spec the request-response pattern over PostMessage
-   For requests:
-     * The Host receives a postmessage from the widget's 'Window' object (ie. [`source`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#source) and only sends postmessages to dedicated widgets (no `*` target is allowed)
-     * Matching a request-respone with the correct widget uses fields that cannot be faked:
-       * The host must check the [`source`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#source) and not the origin as multiple widgets may be hosted on the same origin. (makes sure widgetA does not impersonate widgetB)
-       * The host must send a request-response only to the widget that actually should receive it. (makes sure widgetA does not get any data intended for widgetB)
-     * -> no widgetId required in the transport
+### Transport
+Actions are sent using [`window.postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage).
+This is the only transport specified by this MSC.
+
+Widgets are by definition web content embedded in an IFrame
+([MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411)). `postMessage` is the
+mechanism the web platform provides for communication between an embedding window and a
+(cross-origin) IFrame. It needs no additional setup or connection, lets the receiver identify the
+sending window in a way that cannot be faked. A widget therefore only ever needs to implement the
+`postMessage` transport. (A client might bridget to the widget postmessage communication via a
+different tranport as an implementation detail. E.g. App <-`https`-> Widget Web wrapper <-`postMessage`-> widget)
+
+Each action (request or response) is sent as the `message` of exactly one `postMessage` call. The
+following rules apply:
+
+ * The host MUST identify the widget a message came from using the
+   [`source`](https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent/source) (the widget's
+   `Window` object) of the message event. The `origin` alone is not sufficient, as multiple widgets
+   may be hosted on the same origin. This ensures widget A cannot impersonate widget B.
+ * The host MUST send each action only to the `Window` of the widget it is intended for and MUST set
+   the `targetOrigin` to the widget's origin. A `targetOrigin` of `*` MUST NOT be used. This ensures
+   widget A does not receive data intended for widget B.
+ * A response MUST only be sent to the `Window` the corresponding request was received from.
+
+Because the widget is identified by its `Window` object, no `widgetId` is required in the actions.
 
 ### State Event
 This MSC adds a new field to the state event from [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411)
@@ -144,7 +160,7 @@ The new widgetStateEvent will look as following (see [MSC4411](https://github.co
 ```
 
 ### Core Actions
-Implementations of this MSC only require `content_loaded`, `request_capabilites` and `notify_capabilites`: the "fundamental actions" (the ones that will be sent durina all widget livetimes). Any other requests / responses are defined in separate MSCs based on capabilites.
+Implementations of this MSC only require `content_loaded`, `request_capabilities` and `update_capabilities`: the "fundamental actions" (the ones that will be sent durina all widget livetimes). Any other requests / responses are defined in separate MSCs based on capabilites.
 `supported_api_versions` is intentionally dropped.
 
 #### `content_loaded` (`Widget` -> `Host`)
@@ -186,8 +202,8 @@ The host only acknowledged that they were requested but is in full power to defi
 #### `update_capabilities` (`Host` -> `Widget`)
 ```json5
 {
-  source: `widget`
-  action: "request_capabilities",
+  source: `host`
+  action: "update_capabilities",
   requestId: "1234",
   request: {allowed: ["a", "b"]}, // list of capability strings
   // response: {}, // empty response for ack
@@ -199,12 +215,12 @@ Once the host has a set of capabilities the widget should be allowed:
  - clients prompted the user to allow some capabilites
  - clients SHOULD remember already allowed capabilites and grant them on widget start.
 The `Host` will send a capbilities update. This is always the full list of available capabilites.
-If the client request more via `request_capabilites` the host will send an upadete with the preivous allowed
+If the client request more via `request_capabilities` the host will send an upadete with the preivous allowed
 and portentially the new capabilities. This makes it easy to sync the allowed cap. state between the two.
 
 ### Capabilities
 Any other widget actions can be introduced via capabilities, defined in other MSC. They're activated and deactivated by the Widget sending a
-capabilities request (`request_capability` and `update_capability`). Can be at any time, before or after `content_loaded`.
+capabilities request (`request_capabilities` and `update_capabilities`). Can be at any time, before or after `content_loaded`.
 Capability negotiation in the current unspecified widget implementation was initiated by the Host.
 
 A grammar is introduced for capabilties:
@@ -241,23 +257,32 @@ other MSCs with context about capabilties:
 Other context on capabilites:
  * [https://github.com/toger5/matrix-widget-sdk/blob/main/docs/spec-appendix/capability-naming-proposal.md](capability naming proposal in the `matrix-widget-sdk`)
 
-#### Other transports
-This just defines the PostMessage API and nothing else, but other transports could absolutely exist. Widgets (as they are by defintion IFrame based) will only ever need to speak PostMessage API though: any clients not able to embed an IFrame can use any transport to bridge to a browser app which then uses the PostMessage API as an adapter to the Widget. This is not specified in this MSC and consider a implementaion detail for the Host Client.
-
-This api is designed in a way so a future MSC can reuse it to expose a WebApi independent interface to write widget like native apps
-that can communicate over other transports with the host client.
-
-All other actions types are within other capabilities and are defined in other MSCs.
-
 ## Potential issues
 
 None yet
 
 ## Alternatives
 
-We don't add a version field to requests: this might make it more symmetrical to CS API but might
-confuse things if the same action has different meanings depending on version: probably not worth the
-change.
+### No version field
+The `version` field could be left out of the actions, as in the current unspecified implementation.
+A version can confuse things if the same action has different meanings depending on the version.
+We keep it because it lets the host tell the action format of this MSC (`v1`) apart from the
+current implementation (no `version`), which the
+[transition path](#backwards-compatibilty-transition-path) relies on. New functionality is
+expected to be introduced through capabilities rather than by bumping the version.
+
+### Other transports
+The action format itself (the JSON objects, the request-response pattern and the capabilities) does
+not depend on `postMessage`, so other transports could be imagined. This MSC deliberately specifies
+only `postMessage`:
+
+ * Widgets are IFrame based, so they never need to speak anything else. A client that cannot embed
+   an IFrame directly can use any transport it likes to bridge to a browser context, which then acts
+   as a `postMessage` adapter towards the widget. That bridge is an implementation detail of the
+   host and does not need to be specified.
+ * A future MSC could reuse the action format to expose an interface that is independent of web
+   APIs, allowing widget-like native apps to communicate with the host client over another
+   transport. Specifying such transports is left to those MSCs.
 
 ### Previous widget api comparison
 
@@ -275,14 +300,14 @@ The transition path from the unspecified current implementation can be realised 
 
 #### Remove `supported_api_versions`
 In case the reader is familiar with the current unspecced implementation of widgets the following justifies why this action is not needed:
-The `supported_api_versions` are redundant with the capabilities (`request_capabilites` and `notify_capabilites`).
+The `supported_api_versions` are redundant with the capabilities (`request_capabilities` and `update_capabilities`).
 With this proposal the following is true:
  - with the **Core Actions** there will only be `source: widget` request actions. => So the host will never sent request actions but only response actions.
- - The widget can only sent: `request_capabilites` and `content_loaded`
+ - The widget can only sent: `request_capabilities` and `content_loaded`
 This implies the first action will always come from the widget.
 
 Instead of forcing the host to support `supported_api_versions` as a minimal requirment we force the host to implement
-`source:widget,action:request_capabilites` and `source:widget,action:content_loaded`.
+`source:widget,action:request_capabilities` and `source:widget,action:content_loaded`.
 The host responding with no allowed capabilites is equivalent to an empty `supported_api_versions` response.
 The host will only start sending data to the widget if the widget requests a capability.
 So the host does not need to know about what the widget supports.
@@ -290,8 +315,12 @@ Capabilites themselves are versioned. So a widget will only request capabilites 
 
 ## Security considerations
 
-Widgets and Host must verify where the messages are from using the 'origin' and 'source' params
-of the postMessage event.
+The host must follow the rules in the [Transport](#transport) section: it identifies widgets by the
+`source` of the message event (not by `origin` alone) and never sends actions with a `targetOrigin`
+of `*`. Otherwise one widget could impersonate another or receive data intended for another.
+
+Widgets must likewise verify that the messages they receive come from their host, using the
+`source` and `origin` of the message event.
 
 ## Unstable prefix
 
