@@ -10,20 +10,22 @@ It replaces the previous attempts to specify the widget API
 
 Related work:
  * [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411): made in tandem with
-   this MSC, defines widgets themselves
- * [MSC2871](https://github.com/matrix-org/matrix-spec-proposals/pull/2871)
- * [MSC2974](https://github.com/matrix-org/matrix-spec-proposals/pull/2974)
- * [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762): widgets sending Matrix
-   events to a room
- * [The "v2" widget API draft](https://docs.google.com/document/d/1uPF7XWY_dXTKVKV7jZQ2KmsI19wn9-kFRgQ1tFQP7wQ/edit?tab=t.0#heading=h.9rn9lt6ctkgi)
+   this MSC, defines widgets themselves.
+ * [MSC2871](https://github.com/matrix-org/matrix-spec-proposals/pull/2871): telling widgets which
+   capabilities they were approved for.
+ * [MSC2974](https://github.com/matrix-org/matrix-spec-proposals/pull/2974): capabilities
+   re-exchange.
+ * [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762): widgets sending and
+   receiving Matrix events.
+ * [The "v2" widget API draft](https://docs.google.com/document/d/1uPF7XWY_dXTKVKV7jZQ2KmsI19wn9-kFRgQ1tFQP7wQ/edit?tab=t.0#heading=h.9rn9lt6ctkgi).
 
 ## Motivation
 
 Matrix is moving towards:
- - less metadata on the server
- - more complexity on the client
- - more encryption
- - caching and indexing events on the client
+ - less metadata on the server,
+ - more complexity on the client,
+ - more encryption,
+ - caching and indexing events on the client.
 
 This makes a full Matrix client (login, encryption, event cache, key backup, ...) increasingly
 challenging to implement, and users have to place more trust in the software running it.
@@ -64,7 +66,7 @@ request-response pattern:
  * `version`: always `"v1"`.
  * `request`: the request data. A response does not need to repeat it, but MAY do so (this is
    helpful for debugging).
- * `response`: the response data. An object is a response if and only if this field is present.
+ * `response`: the response data. An object is a response if and only if this property is present.
 
 Every request MUST be answered with exactly one response, even if it is just an ack
 (`response: {}`). Consequently exactly two JSON objects are sent per `requestId`: one by the host
@@ -79,36 +81,39 @@ For example:
    the homeserver in the room.
 
 ### Action naming
-Actions are always `snake_case` for widget actions (we're not changing them, not worth it)
-Actions names should start with a verb.
- - `Host` -> `Widget` recommended verbs:
-  - `update`
-  - `forward`
-- `Widget` -> `Host` recommended verbs
-  - `send`
-  - `request`
 
-### Action timouts
-Actions are expected to be responsed quickly. All computation on the widget and host between request and response should be synced.
+Action names are always `snake_case` (as in the existing widget implementations; changing this is
+not worth it) and should start with a verb. The recommended verbs are:
+ - host -> widget: `update`, `forward`.
+ - widget -> host: `send`, `request`.
 
-If a widget api response takes longer then 10s the communication should be considered as stalled: An error should be thrown.
+### Action timeouts
 
-In some cases longer async operations are needed. (user interaction for capabilities/permissions)
-This is expected to be done with two seperate actions.
-For example `request_data` with source `widget` will immediatly get an ack. Then the host will do the user action.
-After the user is done, it will send a new action `update_data` with source `host` which the widget will immediatly ack.
+Actions are expected to be answered quickly: everything the widget or the host does between
+receiving a request and sending the response should be synchronous.
+
+If a response takes longer than 10 seconds, the communication should be considered stalled and the
+request treated as failed.
+
+Longer, asynchronous operations (for example user interaction to approve capabilities) are
+modelled as two separate actions. For example, a `request_something` action with `source: "widget"` is
+acked immediately. The host then performs the user interaction. Once the user is done, the host
+sends a new `update_something` action with `source: "host"`, which the widget acks immediately.
 
 ### Transport
-Actions are sent using [`window.postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage).
+
+Actions are sent using
+[`window.postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage).
 This is the only transport specified by this MSC.
 
-Widgets are by definition web content embedded in an IFrame
+Widgets are by definition web content embedded in an iframe
 ([MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411)). `postMessage` is the
 mechanism the web platform provides for communication between an embedding window and a
-(cross-origin) IFrame. It needs no additional setup or connection, lets the receiver identify the
+(cross-origin) iframe. It needs no additional setup or connection and lets the receiver identify the
 sending window in a way that cannot be faked. A widget therefore only ever needs to implement the
-`postMessage` transport. (A client might bridget to the widget postmessage communication via a
-different tranport as an implementation detail. E.g. App <-`https`-> Widget Web wrapper <-`postMessage`-> widget)
+`postMessage` transport. (A client might bridge to the widget's `postMessage` communication via a
+different transport as an implementation detail, for example:
+app <-`https`-> widget web wrapper <-`postMessage`-> widget.)
 
 Each action (request or response) is sent as the `message` of exactly one `postMessage` call. The
 following rules apply:
@@ -124,16 +129,173 @@ following rules apply:
 
 Because the widget is identified by its `Window` object, no `widgetId` is required in the actions.
 
-### State Event
-This MSC adds a new field to the state event from [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411)
-`usesWidgetAPI`. If this field is set to `true` the host will expect and set up listeners for widget api actions.
-If this field is set to `false` the host will not set up listeners for the widget api and show the IFrame immediatly.
-Now `usesWidgetAPI` will ALWAYS result in the host showing a loading state until it receives the `content_loaded` action.
-In other words: the `content_loaded` action from the widget is always required when a widget uses the widget api.
+### Capabilities
 
-This replaces `waitForIFrameLoaded`, hopefully being less confusing.
+Capabilities are the permission system of the widget API. Every action other than the
+[core actions](#core-actions) is defined by another MSC and requires a capability:
 
-The new widgetStateEvent will look as following (see [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411) for reference)
+ * A widget MUST NOT send an action, and a host MUST NOT act on it, unless the host has granted the
+   corresponding capability.
+ * A host MUST NOT send an action to a widget unless it has granted the corresponding capability.
+
+The widget asks for capabilities with [`request_capabilities`](#request_capabilities-widget---host)
+and the host announces the granted ones with
+[`update_capabilities`](#update_capabilities-host---widget). This can happen at any time, before or
+after `content_loaded`.
+
+#### Capability format
+
+Capabilities are strings that follow these principles:
+ - **Every capability maps to exactly one action.** Actions have only one direction, so a pair of
+   a host -> widget and a widget -> host action needs two capabilities.
+ - **One action can have multiple capabilities.** They are told apart by the **modifier** and the
+   **capability data**.
+ - **Every capability reads as a sentence.** A capability
+   `<source>:<namespace>.<action>.<modifier>:<capability_data>` reads: "the `host` will send / the
+   `widget` is allowed to send `action` actions of the variant `modifier`, constrained to
+   `capability_data`".
+
+```
+capability      = source ":" namespace "." action [ "." modifier ] [ ":" capability_data ]
+
+source          = "widget"               ; the widget sends this action (a request)
+                / "host"                 ; the host sends this action (a subscription)
+namespace       = "m"                    ; stable
+                / "org.matrix.mscXXXX"   ; unstable prefix of the MSC that defines the action
+action          = the name of the action, for example "send_event", "read_events", "forward_event"
+modifier        = a variant of the action, taken from a fixed list defined together with the action.
+                  A descriptive word, for example "state", "timeline", "delayed", "sticky", "room".
+                  Actions with only one variant omit the modifier.
+capability_data = additional constraints that cannot be expressed as a fixed list. Each action (or
+                  each of its modifiers) defines how its capability_data is formatted and
+                  interpreted. Existing examples are event types ("m.room.message#m.text") and
+                  room IDs ("!roomid:server.org").
+```
+
+`source`, `action` and `modifier` are clearly enumerated strings and do not contain `.` or `:`.
+The `capability_data` is everything after the second `:` and can contain any character,
+including `.` and `:`.
+
+Examples:
+ - `host:m.forward_event.timeline:m.room.message#m.text`: "the `host` will send `forward_event`
+   actions of the variant `timeline`, constrained to `m.room.message#m.text`".
+ - `widget:m.send_to_device:m.call.encryption`: "the `widget` is allowed to send `send_to_device`
+   actions, constrained to `m.call.encryption`". `send_to_device` has only one variant, so there is
+   no modifier.
+
+#### Evolving actions
+
+The capabilities make it possible to iterate on an action while staying backwards
+compatible. The namespace is part of what identifies an action: the same action name under two
+different prefixes (for example `m.` and `org.matrix.mscXXXX.`) are two independent actions, and
+each can define its own behavior, modifiers and its own `capability_data` format. A new iteration
+of an action can therefore be introduced under a new prefix next to the existing one:
+
+ * A widget only requests the capabilities it knows about. It can request the capabilities for
+   several iterations of an action and use whichever the host grants.
+ * A host only grants the capabilities it knows about. It can support several iterations of an
+   action for as long as widgets rely on them.
+
+No further version negotiation is required.
+
+Other proposals with context about capabilities:
+ * [MSC2762: Allowing widgets to send/receive events](https://github.com/matrix-org/matrix-spec-proposals/pull/2762).
+ * [MSC3817: Allow widgets to create rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/3817).
+ * [The capability naming proposal in the `matrix-widget-sdk`](https://github.com/toger5/matrix-widget-sdk/blob/main/docs/spec-appendix/capability-naming-proposal.md).
+
+### Core actions
+
+Implementations of this MSC only need to support `content_loaded`, `request_capabilities` and
+`update_capabilities`. These are the fundamental actions that are used during the lifetime of every
+widget and do not require a capability. All other actions are defined in separate MSCs and are
+gated by [capabilities](#capabilities).
+
+The host MUST NOT send an action before it has received the first action from the widget.
+
+#### `content_loaded` (widget -> host)
+
+```json5
+{
+  source: "widget",
+  action: "content_loaded",
+  requestId: "1234",
+  version: "v1",
+  request: {},
+  // response: {}, // empty response as ack
+}
+```
+
+The widget sends this action once it is ready to be displayed:
+
+ * A widget that uses the widget API (see [State event](#state-event)) MUST send it. Until the host
+   receives it, the host does not show the widget and shows a loading state (for example a spinner)
+   in its place.
+ * This allows the widget to do some work before being displayed, for example asking the host
+   which theme or language to use, or fetching events (using actions defined in other MSCs).
+ * If the widget fails to send it before a client configured timeout (10 seconds are recommended),
+   the client should show an error.
+ * Widgets that rely on longer load processes (a media library, lots of images) should send
+   `content_loaded` early and implement their own loading visualisation.
+
+#### `request_capabilities` (widget -> host)
+
+```json5
+{
+  source: "widget",
+  action: "request_capabilities",
+  requestId: "1234",
+  version: "v1",
+  request: {
+    // list of capability strings
+    capabilities: [
+      "widget:m.send_event.timeline:m.room.message",
+      "host:m.forward_event.state:m.room.member",
+    ]
+  },
+  // response: {}, // empty response as ack
+}
+```
+
+The widget requests additional capabilities. A widget can only ever request more capabilities, only
+the host can remove them.
+
+The host acks immediately. The ack only acknowledges that the capabilities were requested, it does
+not imply that any of them are granted. The host is in full control of which capabilities it
+grants.
+
+#### `update_capabilities` (host -> widget)
+
+```json5
+{
+  source: "host",
+  action: "update_capabilities",
+  requestId: "1234",
+  version: "v1",
+  request: {
+    // list of capability strings
+    allowed: ["widget:m.send_event.timeline:m.room.message"]
+  },
+  // response: {}, // empty response as ack
+}
+```
+
+The host tells the widget which capabilities it is granted. The host decides this in any of the
+following ways:
+ - The client allows some capabilities by default in specific cases.
+ - The client prompts the user to allow capabilities.
+ - The client remembers the capabilities that were allowed before. Clients SHOULD do this, so that
+   users are not prompted again every time the widget starts.
+
+`allowed` is always the full list of capabilities the widget currently has, not only the changes.
+If the widget requests more capabilities via `request_capabilities`, the host sends an update that
+contains the previously allowed capabilities and potentially the new ones. This makes it easy to
+keep the capability state of both sides in sync.
+
+### State event
+
+This MSC adds a new property, `usesWidgetAPI`, to the content of the widget state event from
+[MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411):
+
 ```json5
 {
   ...
@@ -141,172 +303,112 @@ The new widgetStateEvent will look as following (see [MSC4411](https://github.co
     name: string
     url: string
     avatar_url?: string
-    usesWidgetAPI?: boolean // DEFAULT false
+    usesWidgetAPI?: boolean // defaults to false
   }
 }
 ```
 
-### Core Actions
-Implementations of this MSC only require `content_loaded`, `request_capabilities` and `update_capabilities`: the "fundamental actions" (the ones that will be sent durina all widget livetimes). Any other requests / responses are defined in separate MSCs based on capabilites.
-`supported_api_versions` is intentionally dropped.
+ * If `usesWidgetAPI` is `true`, the host sets up listeners for widget API actions and ALWAYS shows
+   a loading state until it receives the `content_loaded` action. In other words: `content_loaded`
+   is required from every widget that uses the widget API.
+ * If `usesWidgetAPI` is `false` or missing, the host does not set up listeners for the widget API
+   and shows the iframe immediately.
 
-#### `content_loaded` (`Widget` -> `Host`)
-```json5
-{
-  source: `widget`
-  action: "content_loaded",
-  requestId: "1234",
-  request: {}, // empty object
-  // response: {}, // empty response for ack
-  version: "v1",
-}
-```
+This replaces `waitForIFrameLoaded`, which was more confusing.
 
-This is one of the two always allowed actions a widget can send.
- * `source: widget`
- * Sent once the widget is ready to be displayed
- * Required to be sent form the widget. Before sending this. The client will NOT show the widget.
- * Useful for when the widget wants to do some work before being displayed. eg. asking the host what theme / language it should use or fetching events. These are defined in other MSCs)
- * If (and only if) `usesWidgetAPI` param is in the widget's state event, the Host shows a spinner in place of the widget until it receives this (`content_loaded`).
- * If the widget fails to send this before a client configured timeout (recommended 10s) the client should show an error.
- * Widgets that rely on longer load processes (media library, lots of images) should implement their own loading visalization.
+### Backwards compatibility
 
-#### `request_capabilities` (`Widget` -> `Host`)
-```json5
-{
-  source: `widget`
-  action: "request_capabilities",
-  requestId: "1234",
-  request: {capabilities: ["a", "b"]}, // list of capability strings
-  // response: {}, // empty response for ack
-  version: "v1",
-}
-```
-This requests additional capabilities. The widget can only request more caps (only the host can remove capabilites).
-The host will ack immediately. This does not imply any capabilities are granted/allowed yet.
-The host only acknowledged that they were requested but is in full power to define the list that is approved itself.
-
-#### `update_capabilities` (`Host` -> `Widget`)
-```json5
-{
-  source: `host`
-  action: "update_capabilities",
-  requestId: "1234",
-  request: {allowed: ["a", "b"]}, // list of capability strings
-  // response: {}, // empty response for ack
-  version: "v1",
-}
-```
-Once the host has a set of capabilities the widget should be allowed:
- - clients can decide to allow some capabilites in specific cases by default
- - clients prompted the user to allow some capabilites
- - clients SHOULD remember already allowed capabilites and grant them on widget start.
-The `Host` will send a capbilities update. This is always the full list of available capabilites.
-If the client request more via `request_capabilities` the host will send an upadete with the preivous allowed
-and portentially the new capabilities. This makes it easy to sync the allowed cap. state between the two.
-
-### Capabilities
-Any other widget actions can be introduced via capabilities, defined in other MSC. They're activated and deactivated by the Widget sending a
-capabilities request (`request_capabilities` and `update_capabilities`). Can be at any time, before or after `content_loaded`.
-Capability negotiation in the current unspecified widget implementation was initiated by the Host.
-
-A grammar is introduced for capabilties:
- - **Every capability maps clearly to one action**
-   (Actions have only one direction, a `Host`->`Widget` and `Widget`->`Host` action pair needs two capabilities)
- - **One action can have multiple capabilities.** We call those different **capability modifiers**.
- - **Every capability should read as a sentence:**
-   the widget has the capability: `<source>:m.<action>.<modifier>:<modifier_data>`.\
-   Reads: “the widget has the capability that the `host` will send/`widget` is allowed to
-   send `action` actions with the action modifier constraints `modifier` for `modifier_data`."\
-
-   the widget has the capability: `host:m.forward_event.timeline:m.room.message#m.text`
-   Reads: "the widget has the capability that the `host` will send `forward_event` actions with the action modifier constraints `timeline` for `m.room.message#m.text`."\
-
- #### The Schema
-```
- capability   =  host/widget ":" namespace "." action "." modifier [ ":" modifier_data ]
-
- source        = "widget"                           ; the widget sends this action (a request)
-               / "host"                             ; the host sends this action (a subscription)
- namespace     = "m"                                ; stable
-               / "org.matrix.mscXXXX"               ; unstable prefix of this proposal, one for all
- action        = the action's stable name, a verb, e.g. "send_event", "read_events", "forward_event"
- modifier      = a variant (clearly defined enum) of the action, a descriptive word: "state", "timeline", "delayed", "sticky", "room"
- modifier_data = each action modifier defines its own formatting how the modifier_data is interpreted.
-                 It conatins additional constraints that can be arbitrary data outside the clear modifier enums cases.
-                 as of today: eventTypes:`m.room.message#m.text` and Room Ids `#roomid:server.org` are the only existing examples
-```
-
-other MSCs with context about capabilties:
- * [https://github.com/matrix-org/matrix-spec-proposals/pull/2762](MSC2762: Allowing widgets to send/receive events)
- * [https://github.com/matrix-org/matrix-spec-proposals/pull/3817](MSC3817: Allow widgets to create rooms)
-
-Other context on capabilites:
- * [https://github.com/toger5/matrix-widget-sdk/blob/main/docs/spec-appendix/capability-naming-proposal.md](capability naming proposal in the `matrix-widget-sdk`)
+The transition from the current, unspecified implementation works as follows:
+ - Hosts support the `v1` action format proposed in this MSC in parallel to the existing
+   implementation, whose actions have no `version` property.
+ - The host decides which implementation to use based on the first action it receives. The first
+   action is always sent by the widget.
+ - Widgets MUST NOT switch version during their lifetime.
+ - Once all hosts support both versions, widgets should start implementing `v1`.
+ - 12 months later, hosts are allowed to drop the implementation of the version without a `version`
+   property.
 
 ## Potential issues
 
-None yet
+ * The `v1` action format is not compatible with the existing implementations, so hosts have to
+   maintain two implementations during the transition (see
+   [Backwards compatibility](#backwards-compatibility)).
+ * A widget cannot find out whether a host supports `v1`: there is no version negotiation, and a
+   host that only has the existing implementation will not answer `v1` actions. This is why
+   widgets should only move to `v1` once hosts support it.
 
 ## Alternatives
 
 ### No version field
-The `version` field could be left out of the actions, as in the current unspecified implementation.
-A version can confuse things if the same action has different meanings depending on the version.
-We keep it because it lets the host tell the action format of this MSC (`v1`) apart from the
-current implementation (no `version`), which the
-[transition path](#backwards-compatibilty-transition-path) relies on. New functionality is
-expected to be introduced through capabilities rather than by bumping the version.
+
+The `version` property could be left out of the actions, as in the current unspecified
+implementation. A version can confuse things if the same action has different meanings depending on
+the version. We keep it because it lets the host tell the action format of this MSC (`v1`) apart
+from the current implementation (no `version`), which the
+[transition path](#backwards-compatibility) relies on. New functionality is expected to be
+introduced through capabilities rather than by bumping the version (see
+[Evolving actions](#evolving-actions)).
 
 ### Other transports
+
 The action format itself (the JSON objects, the request-response pattern and the capabilities) does
 not depend on `postMessage`, so other transports could be imagined. This MSC deliberately specifies
 only `postMessage`:
 
- * Widgets are IFrame based, so they never need to speak anything else. A client that cannot embed
-   an IFrame directly can use any transport it likes to bridge to a browser context, which then acts
+ * Widgets are iframe based, so they never need to speak anything else. A client that cannot embed
+   an iframe directly can use any transport it likes to bridge to a browser context, which then acts
    as a `postMessage` adapter towards the widget. That bridge is an implementation detail of the
    host and does not need to be specified.
  * A future MSC could reuse the action format to expose an interface that is independent of web
    APIs, allowing widget-like native apps to communicate with the host client over another
    transport. Specifying such transports is left to those MSCs.
 
-### Previous widget api comparison
+### Comparison with the current widget API
 
 #### Action format
-Compared to the currently implemented widget api the action format drops:
-  * `widgetId`: Widget IDs are useful at the room level as an identifier for the state event and potentially to the Host to tell its widgets apart, but a widget should not need to care about what its own ID is (keep temporarily in element web for backwards compat).
-  * `api`: We do need to know the direction as it's not always implicit (because of mobile js injection fun), but it is renamed to `source`. `widget` === `fromWidget`, `host` === `toWidget`.
+
+Compared to the currently implemented widget API the action format drops:
+  * `widgetId`: widget IDs are useful at the room level as an identifier for the state event and
+    potentially for the host to tell its widgets apart, but a widget should not need to care about
+    its own ID. (Element Web keeps it temporarily for backwards compatibility.)
+  * `api`: the direction still needs to be known as it is not always implicit (because of the
+    JavaScript injection used on mobile), but the property is renamed to `source`.
+    `widget` === `fromWidget`, `host` === `toWidget`.
   * `request` in responses: repeating the request back in responses is no longer required.
 
-#### Capabilites
-The `request_capabilities` and `update_capabilities` will work as described here, a bit different than the previous MSC:
- * [https://github.com/matrix-org/matrix-spec-proposals/pull/2974](MSC2974: Widgets: Capabilities re-exchange)
-#### Backwards compatibilty (transition path)
-The transition path from the unspecified current implementation can be realised as following:
- - clients (hosts) need to support the "v1" action format proposed in this PR. in parallel to the `undefined` version implementations that currently exist.
- - Based on the first action (it always starts from the widget) the client decides what implementation to use.
- - Widgets are not allowed to switch version during their lifetime.
- - Once all hosts support both versions (`undefined`) and `v1` widgets should start implementing `v1`
- - 12 month later hosts are allowed to drop the version (`undefined`) code from their implementations.
+#### Capabilities
 
+ * Capability negotiation was initiated by the host. It is now initiated by the widget.
+ * `request_capabilities` and `update_capabilities` work as described in this MSC, which is a bit
+   different from
+   [MSC2974: Widgets: Capabilities re-exchange](https://github.com/matrix-org/matrix-spec-proposals/pull/2974).
 
-#### Remove `supported_api_versions`
-In case the reader is familiar with the current unspecced implementation of widgets the following justifies why this action is not needed:
-The `supported_api_versions` are redundant with the capabilities (`request_capabilities` and `update_capabilities`).
-With this proposal the following is true:
- - with the **Core Actions** there will only be `source: widget` request actions. => So the host will never sent request actions but only response actions.
- - The widget can only sent: `request_capabilities` and `content_loaded`
-This implies the first action will always come from the widget.
+#### Removal of `supported_api_versions`
 
-Instead of forcing the host to support `supported_api_versions` as a minimal requirment we force the host to implement
-`source:widget,action:request_capabilities` and `source:widget,action:content_loaded`.
-The host responding with no allowed capabilites is equivalent to an empty `supported_api_versions` response.
-The host will only start sending data to the widget if the widget requests a capability.
-So the host does not need to know about what the widget supports.
-Capabilites themselves are versioned. So a widget will only request capabilites which it knows about.
+For readers familiar with the current implementation of widgets, this explains why the
+`supported_api_versions` action is no longer needed: it is redundant with the capabilities.
+
+With this proposal:
+ - The only actions a widget can send without a capability are `content_loaded` and
+   `request_capabilities`.
+ - The only action a host can send without a capability is `update_capabilities`, and it only does
+   so after the widget has requested capabilities.
+
+This implies that the first action always comes from the widget.
+
+Instead of requiring the host to support `supported_api_versions`, the minimal requirement for a
+host is to support `content_loaded` and `request_capabilities`. A host that does not allow any
+capabilities is equivalent to a host that answers `supported_api_versions` with an empty list. The
+host only starts sending data to the widget once the widget has requested a capability, so the host
+does not need to know what the widget supports. Capabilities themselves can be iterated on (see
+[Evolving actions](#evolving-actions)), and a widget only requests capabilities it knows about.
 
 ## Security considerations
+
+Widgets are untrusted web content. Capabilities are the only thing that limits what a widget can do
+with the user's Matrix account, so the host MUST enforce them for every action as described in
+[Capabilities](#capabilities), and should only grant capabilities the user or the client's policy
+has agreed to.
 
 The host must follow the rules in the [Transport](#transport) section: it identifies widgets by the
 `source` of the message event (not by `origin` alone) and never sends actions with a `targetOrigin`
@@ -322,6 +424,7 @@ the identifiers currently in use.
 
 ## Dependencies
 
-[MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411), although would equally work
-with the current "in the wild" implementation of widgets and/or the previous specifications given in
-the context section.
+This MSC builds on [MSC4411](https://github.com/matrix-org/matrix-spec-proposals/pull/4411) (which
+at the time of writing has not yet been accepted into the spec). It would equally work with the
+current "in the wild" implementation of widgets and/or the previous specifications listed under
+related work.
