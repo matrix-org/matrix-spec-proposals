@@ -103,7 +103,7 @@ response it decides to use.
 If a via cannot be contacted for any reason, the server SHOULD treat it as if it returned `M_NOT_FOUND`.
 
 Clients SHOULD show the `via` in their UI when displaying data derived from stripped state, such as a room preview
-before joining, in a manner which indicates that the displayed data was provided by the `via`. This is necessary to
+before joining, in a manner that indicates that the displayed data was provided by the `via`. This is necessary to
 provide accountability and guard against malicious servers returning falsified room previews, as it is impossible to
 validate the `via`’s response without joining the room. If the `via` is the local server, clients MAY show an indicator
 that the preview is trustworthy.
