@@ -11,6 +11,9 @@ permanently, which is behavior often undesirable in large public rooms as it inc
 This proposal introduces a separate map for controlling the power levels required to send state events separately from
 message events, alongside the required changes to [auth rules] and the [redaction algorithm].
 
+**Note:** This proposal has a similar goal to that of [MSC4583], but uses a different mechanism to solve the same
+problem.
+
 **Note:** At the time of writing, [Room Version 12] is the latest room version available. This proposal uses v12 as a
 base room version for ease of reference, but the concepts/changes can apply to future room versions as well.
 
@@ -120,7 +123,7 @@ unprivileged users may send may also be sent as a state event. This proposal exi
 
 ### Global minimum power level to send state
 
-This proposal could be simplified to require one minimum power level to send all state events, no matter what the
+[MSC4583] takes this solution, using one minimum power level to send all state events, no matter what the
 `events` map defines. For example, it could be enforced that to send any state event, even one present in `events`, the
 user must have at least `state_default`.
 
@@ -167,3 +170,4 @@ None.
 [Room Version 12]: https://spec.matrix.org/v1.19/rooms/v12/
 [redaction algorithm]: https://spec.matrix.org/v1.19/rooms/v12/#redactions
 [MSC4304]: https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4304-room-version-12.md
+[MSC4583]: https://github.com/matrix-org/matrix-spec-proposals/pull/4583
