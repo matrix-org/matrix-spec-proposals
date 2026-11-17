@@ -135,10 +135,6 @@ server developers are encouraged to consider the security and user experience tr
 
 ### `POST /_matrix/federation/v1/stripped_state/{room_id}`
 
-| Rate limited | Requires authentication |
-|--------------|-------------------------|
-| Yes          | Optional                |
-
 This endpoint allows servers to ask other servers for a room’s stripped state.
 
 #### Request
