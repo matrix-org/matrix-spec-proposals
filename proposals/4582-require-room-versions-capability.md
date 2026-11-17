@@ -34,7 +34,7 @@ rooms. The `available` property continues to be required as it is today.
   }
 }
 ```
-If `/capabilites` fails to respond or the field is missing, clients MUST not
+If `/capabilities` fails to respond or the field is missing, clients MUST not
 try to guess the room version support and instead fail whatever operation they
 are attempting.
 
