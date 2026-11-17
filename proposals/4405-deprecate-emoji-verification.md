@@ -80,8 +80,8 @@ significant.
 
 ## Proposal
 
-The emoji method of SAS verification is deprecated.  Clients SHOULD only offer
-to use the decimal method.
+The emoji method of SAS verification is deprecated.  Clients SHOULD NOT offer
+to use the emoji method.
 
 ## Potential issues
 
