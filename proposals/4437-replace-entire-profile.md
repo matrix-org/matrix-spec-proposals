@@ -20,7 +20,7 @@ would. The endpoint does not have any unique error cases that aren't already
 returned by the existing profile update endpoint.
 
 The validation above also includes the server forbidding users from changing
-specific fields using capability negotation: if the request contains a different
+specific fields using capability negotiation: if the request contains a different
 value for any field which the user is not allowed to change, then the entire
 request is rejected. This means that fields that aren't set in the current
 profile may not be included in the request at all, and fields that are already
