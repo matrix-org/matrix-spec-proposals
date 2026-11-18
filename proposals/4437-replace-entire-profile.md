@@ -19,6 +19,13 @@ rejected with the same error code as setting that field in an individual request
 would. The endpoint does not have any unique error cases that aren't already
 returned by the existing profile update endpoint.
 
+The validation above also includes the server forbidding users from changing
+specific fields using capability negotation: if the request contains a different
+value for any field which the user is not allowed to change, then the entire
+request is rejected. This means that fields that aren't set in the current
+profile may not be included in the request at all, and fields that are already
+set must be included with the same value in the request.
+
 In addition to validation, the same `m.room.member` updating rules apply, i.e.
 if `displayname` or `avatar_url` have different values than in the old profile,
 new `m.room.member` events are sent to all rooms. If both fields are modified,
