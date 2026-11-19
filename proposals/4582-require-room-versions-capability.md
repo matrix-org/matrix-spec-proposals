@@ -17,8 +17,8 @@ This proposal makes `m.room_versions` a required part of the capabilities respon
 Homeservers MUST include the `m.room_versions` capability in the `capabilities` object returned by
 [`GET /_matrix/client/v3/capabilities`][capabilities].
 
-The capability MUST include the `default` property, giving the room version the server uses for new
-rooms. The `available` property continues to be required as it is today.
+The format of the capability is unchanged. Its `default` and `available` properties are
+[already required][room-versions-schema]. For example:
 
 ```json
 {
@@ -82,8 +82,9 @@ None required. This simply makes an existing field required.
 
 None.
 
-[capabilities]: https://spec.matrix.org/v1.18/client-server-api/#get_matrixclientv3capabilities
-[room-versions-cap]: https://spec.matrix.org/v1.18/client-server-api/#mroom_versions-capability
+[capabilities]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3capabilities
+[room-versions-cap]: https://spec.matrix.org/v1.19/client-server-api/#mroom_versions-capability
+[room-versions-schema]: https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3capabilities_response-200_roomversionscapability
 [js-sdk-fallback]: https://github.com/matrix-org/matrix-js-sdk/blob/develop/src/models/room.ts
 [element-web-fallback]: https://github.com/element-hq/element-web/blob/develop/apps/web/src/createRoom.ts
 [complement-test]: https://github.com/matrix-org/complement/blob/main/tests/csapi/apidoc_server_capabilities_test.go
