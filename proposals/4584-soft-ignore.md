@@ -79,7 +79,7 @@ None have been found so far by this proposal's author.
 
 Using soft-ignores guarantees that an ignored user can't know if they have been ignored, so this prevents leaks. An ignored user may be able to intuit that they have been ignored through attempted communication, but it is likely deniable.
 
-Being able to quickly ignore and unignore users and rooms will be a benefit for user safety. For example, if a room is encountering harmful spam, a user could soft-ignore that room, and then later find it in their soft-ignored rooms list, and unignore it. If someone needs to 'cool down' from a heated conversation, they could soft-ignore the other user temporarily, and then come back when they are more level-headed. Unlike other methods of ignoring, this is instant and instantly reversable, with no potential losses of messages or invites.
+Being able to quickly ignore and unignore users and rooms will be a benefit for user safety. For example, if a room is encountering harmful spam, a user could soft-ignore that room, and then later find it in their soft-ignored rooms list, and unignore it. If someone needs to 'cool down' from a heated conversation, they could soft-ignore the other user temporarily, and then come back when they are more level-headed. Unlike other methods of ignoring, this is instant and instantly reversible, with no potential losses of messages or invites.
 
 ## Unstable Prefix
 
