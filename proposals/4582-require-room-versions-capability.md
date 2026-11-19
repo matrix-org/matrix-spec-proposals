@@ -17,23 +17,6 @@ This proposal makes `m.room_versions` a required part of the capabilities respon
 Homeservers MUST include the `m.room_versions` capability in the `capabilities` object returned by
 [`GET /_matrix/client/v3/capabilities`][capabilities].
 
-The format of the capability is unchanged. Its `default` and `available` properties are
-[already required][room-versions-schema]. For example:
-
-```json
-{
-  "capabilities": {
-    "m.room_versions": {
-      "default": "12",
-      "available": {
-        "11": "stable",
-        "12": "stable",
-        "org.example.custom": "unstable"
-      }
-    }
-  }
-}
-```
 If `/capabilities` fails to respond or the field is missing, clients MUST not
 try to guess the room version support and instead fail whatever operation they
 are attempting.
