@@ -44,7 +44,7 @@ Clients that don't want to know the width of images can still ignore it.
 
 Both `width` and `height` could be set to the actual dimensions of the images. This can cause a poor experience on
 clients that do not yet respect the `data-mx-emoticon` attribute, and is generally worse in terms of backwards
-compatibility.
+compatibility, as inline images could end up rendered notably bigger than intended.
 
 Instead of setting `width`, a new field `aspectRatio`, or two new fields `originalWidth` and `originalHeight`, could be
 introduced. These new fields aren't technically required to achieve this MSC's goal and can thus increase complexity
