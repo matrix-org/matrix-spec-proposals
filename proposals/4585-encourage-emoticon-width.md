@@ -28,8 +28,8 @@ $$
 width = 32 \times \frac{originalWidth}{originalHeight}
 $$
 
-Clients should furthermore round the result to an integer and ensure the value is greater than zero to satisfy the
-expectations of rendering clients.
+Clients should furthermore round the result to an integer and ensure the value is greater than zero (i.e., at least 1)
+to satisfy the expectations of rendering clients.
 Clients rendering the inline image should keep using the same logic for sizing custom emotes as they do today, but can
 now calculate an appropriate aspect ratio ahead of time without waiting for the image to finish downloading and decoding.
 
