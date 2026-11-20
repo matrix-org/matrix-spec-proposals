@@ -90,6 +90,17 @@ Instead of a revision ID, one may decide to compare the whole account data JSON.
   clients may not be interested in persisting the ciphertext, but since the server cannot decrypt the content,
   the actual ciphertext would have to be matched.
 
+Another alternative is formalized in [MSC4573](https://github.com/matrix-org/matrix-spec-proposals/pull/4573) which uses
+[HTTP `ETag` headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag), and has a stronger
+opinion on enforcing clients to be always aware of the latest revision before writing. I believe there are legitimate
+use-cases for clients to set account data without proving knowledge of the previous latest account data first, which is
+why this MSC does not enforce this in the same way. As to using existing HTTP mechanisms rather then building it into
+the Matrix data layer more directly, there may be merits to either approach. This MSC (i.e., MSC4547) prioritizes
+building on top of existing mechanisms used in Matrix rather than depending on an additional transport-layer dependency,
+such that it could be easier to port to different transport layers in the future. In the same way it may also feel more
+natural to implement on clients, as no "new" transport-layer features are needed, e.g. as additional requirement for a
+client's networking library.
+
 
 ## Security considerations
 
