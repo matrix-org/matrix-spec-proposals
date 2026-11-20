@@ -10,7 +10,7 @@ Currently, ignoring a user is done on the server, as per 10.26.3 of the Client-S
 
 A new account data event `m.soft_ignore_config` is introduced.
 
-```json
+```jsonc
 {
   // Global on/off toggle
   "enabled": true,
