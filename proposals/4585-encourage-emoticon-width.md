@@ -8,10 +8,11 @@ encourages the `width` attribute to be omitted when sending inline images with t
 > Clients implementing image pack support SHOULD override this value when rendering based on the user’s font size
 > or other environmental factors. The width attribute SHOULD be omitted to preserve the image’s aspect ratio.
 
-Accordingly, clients that render messages cannot determine the expected aspect ratio of such an emote until the
-download finishes. If the client initially guesses the image's aspect ratio incorrectly, it needs to resize the inline
-content, and thus the message containing it, to preserve the intended image height. Depending on the rendering
-implementation, this approach can also cause glitches or [performance issues](https://github.com/SchildiChat/schildichat-android-next/issues/151).
+Accordingly, clients cannot determine the expected aspect ratio of such an emote until the download finishes.
+If the client initially guesses the image's aspect ratio incorrectly, it needs to resize the inline content,
+and thus the message containing it, to preserve the intended image height.
+Depending on the rendering implementation, this approach can also cause glitches or
+[performance issues](https://github.com/SchildiChat/schildichat-android-next/issues/151).
 
 
 ## Proposal
