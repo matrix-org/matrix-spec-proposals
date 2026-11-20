@@ -37,6 +37,7 @@ now calculate an appropriate aspect ratio ahead of time without waiting for the 
 ## Potential issues
 
 None expected. All fields involved retain their current meaning in the spec.
+Clients that don't want to know the width of images can still ignore it.
 
 
 ## Alternatives
