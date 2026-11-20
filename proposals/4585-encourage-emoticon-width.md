@@ -1,4 +1,4 @@
-# MSC0000: Encourage setting the width attribute when sending custom emotes
+# MSC4585: Encourage setting the width attribute when sending custom emotes
 
 Today, the ["Sending custom emotes" client spec](https://spec.matrix.org/v1.19/client-server-api/#sending-custom-emotes)
 encourages the `width` attribute to be omitted when sending inline images with the `data-mx-emoticon` tag:
