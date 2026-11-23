@@ -35,6 +35,8 @@ the `redact` power level in the room.
   * `M_UNREDACTED_CONTENT_NOT_RECEIVED`: The server never received the
     un-redacted content (this can happen if federation is slow and the event
     was redacted before it reached the server)
+* If the event is not redacted, it is always returned normally. Specifying
+  `include_unredacted_content` doesn't affect the response.
 
 ### Client behavior
 Clients should still always remove content when receiving a redaction event,
@@ -56,12 +58,24 @@ it would have to be added to the event authorization rules, as otherwise
 anyone with enough power to send `m.room.power_levels` could change the level
 for the new key, even if it required a higher level than what the user has.
 
+### Unviewable redactions
+There could be a way for room and/or server admins to send a more permanent
+redaction, which signals that servers shouldn't accept requests to view the
+content and may want to delete the content from the database immediately.
+It is unclear who should be allowed to do this and whether the action should
+be federated, so it is not in scope for this proposal.
+
+Servers can already choose to delete their local copy at any time without a
+specced feature to do that.
+
 ## Potential issues
 * Servers aren't required to keep redacted content for any time, and it would
   be rather confusing UX if the show redacted content button in clients never
   worked.
 * If a server doesn't get the event before it's redacted, the server may never
   get the unredacted content.
+* Both parties in DMs are admins by default, which means both users can view
+  deleted messages.
 
 ## Unstable prefix
 While this MSC is not in a released version of the spec, implementations should
