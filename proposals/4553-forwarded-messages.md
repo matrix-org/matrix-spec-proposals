@@ -130,10 +130,10 @@ If `sender` is absent, the first line starts with `Forwarded message` instead of
 `room_id` or `event_id` is absent, omit ` - view original message: {permalink}`. If all three fields are absent, the
 first line is `Forwarded message`. The presence of `origin_server_ts` does not affect the fallback.
 
-`{sender}` is `m.forwarded.sender`. `{permalink}` is a
-[matrix.to event permalink](https://spec.matrix.org/v1.19/appendices/#matrixto-navigation) built from
-`m.forwarded.room_id` and `m.forwarded.event_id`, each percent-encoded. It SHOULD include `via` parameters so the
-room can be found by users who are not in it.
+`{sender}` is `m.forwarded.sender`. `{permalink}` links to the original event, built from `m.forwarded.room_id` and
+`m.forwarded.event_id`. It is either a [matrix URI](https://spec.matrix.org/v1.19/appendices/#matrix-uri-scheme) or
+a [matrix.to permalink](https://spec.matrix.org/v1.19/appendices/#matrixto-navigation), encoded as that format
+requires. It SHOULD include `via` parameters so the room can be found by users who are not in it.
 
 #### HTML
 
@@ -166,9 +166,9 @@ With none of those three fields:
 <strong>Forwarded message</strong><br><blockquote>{original HTML}</blockquote>
 ```
 
-`{sender permalink}` is a matrix.to link to `m.forwarded.sender`, and `{event permalink}` is the link used in `body`.
-The sender MUST HTML-escape the sender ID, display name, and link attributes. `{original HTML}` is the source's
-`formatted_body` if its `format` is `org.matrix.custom.html`; otherwise it is the source's text or caption,
+`{sender permalink}` links to `m.forwarded.sender` in the same format as `{permalink}`, and `{event permalink}` is the
+link used in `body`. The sender MUST HTML-escape the sender ID, display name, and link attributes. `{original HTML}` is
+the source's `formatted_body` if its `format` is `org.matrix.custom.html`; otherwise it is the source's text or caption,
 HTML-escaped, with line breaks converted to `<br>`.
 
 ### Examples
@@ -178,9 +178,9 @@ A forwarded text message:
 ```json
 {
   "msgtype": "m.text",
-  "body": "Forwarded from @alice:example.org - view original message: https://matrix.to/#/!source%3Aexample.org/%24original%3Aexample.org?via=example.org\nMeeting starts at noon.",
+  "body": "Forwarded from @alice:example.org - view original message: matrix:roomid/source:example.org/e/original:example.org?via=example.org\nMeeting starts at noon.",
   "format": "org.matrix.custom.html",
-  "formatted_body": "<strong>Forwarded from <a href=\"https://matrix.to/#/%40alice%3Aexample.org\">@alice:example.org</a> - <a href=\"https://matrix.to/#/!source%3Aexample.org/%24original%3Aexample.org?via=example.org\">view original message</a></strong><br><blockquote><p>Meeting starts at noon.</p></blockquote>",
+  "formatted_body": "<strong>Forwarded from <a href=\"matrix:u/alice:example.org\">@alice:example.org</a> - <a href=\"matrix:roomid/source:example.org/e/original:example.org?via=example.org\">view original message</a></strong><br><blockquote><p>Meeting starts at noon.</p></blockquote>",
   "m.mentions": {},
   "m.forwarded": {
     "event_id": "$original:example.org",
@@ -224,9 +224,9 @@ A forwarded emote, originally `/me waves` from Alice:
 ```json
 {
   "msgtype": "m.text",
-  "body": "Forwarded from @alice:example.org - view original message: https://matrix.to/#/!source%3Aexample.org/%24emote%3Aexample.org?via=example.org\nAlice waves",
+  "body": "Forwarded from @alice:example.org - view original message: matrix:roomid/source:example.org/e/emote:example.org?via=example.org\nAlice waves",
   "format": "org.matrix.custom.html",
-  "formatted_body": "<strong>Forwarded from <a href=\"https://matrix.to/#/%40alice%3Aexample.org\">@alice:example.org</a> - <a href=\"https://matrix.to/#/!source%3Aexample.org/%24emote%3Aexample.org?via=example.org\">view original message</a></strong><br><blockquote><em><strong><a href=\"https://matrix.to/#/%40alice%3Aexample.org\">Alice</a></strong> waves</em></blockquote>",
+  "formatted_body": "<strong>Forwarded from <a href=\"matrix:u/alice:example.org\">@alice:example.org</a> - <a href=\"matrix:roomid/source:example.org/e/emote:example.org?via=example.org\">view original message</a></strong><br><blockquote><em><strong><a href=\"matrix:u/alice:example.org\">Alice</a></strong> waves</em></blockquote>",
   "m.mentions": {},
   "m.forwarded": {
     "event_id": "$emote:example.org",
@@ -265,9 +265,9 @@ A forwarded file without a caption. The source `body` was a filename, so it move
 {
   "msgtype": "m.file",
   "filename": "agenda.pdf",
-  "body": "Forwarded from @alice:example.org - view original message: https://matrix.to/#/!source%3Aexample.org/%24file%3Aexample.org?via=example.org",
+  "body": "Forwarded from @alice:example.org - view original message: matrix:roomid/source:example.org/e/file:example.org?via=example.org",
   "format": "org.matrix.custom.html",
-  "formatted_body": "<strong>Forwarded from <a href=\"https://matrix.to/#/%40alice%3Aexample.org\">@alice:example.org</a> - <a href=\"https://matrix.to/#/!source%3Aexample.org/%24file%3Aexample.org?via=example.org\">view original message</a></strong>",
+  "formatted_body": "<strong>Forwarded from <a href=\"matrix:u/alice:example.org\">@alice:example.org</a> - <a href=\"matrix:roomid/source:example.org/e/file:example.org?via=example.org\">view original message</a></strong>",
   "url": "mxc://example.org/agenda",
   "m.mentions": {},
   "m.forwarded": {
