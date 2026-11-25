@@ -36,36 +36,56 @@ to narrow that gap with a simple "ping" and "pong" mechanism.
 A new, optionally authenticated, rate-limited federation endpoint is created:
 `POST /_matrix/federation/v1/ping`.
 
+#### Request
+
 The body for this endpoint is defined as follows:
 
 |     Key    |       Type        | Purpose                                                         |
 | ---------- | ---------------   | --------------------------------------------------------------- |
 | `origin`   | optional `string` | The server name of the origin asking this question.             |
-| `question` | `string`          | A random string that uniquely identifies this specific request. |
+| `nonce`    | `string`          | A random string that uniquely identifies this specific request. |
 
-`origin` MUST be omitted if the request is authenticated. It is ignored if it is provided alongside
-an X-Matrix authentication header from which an origin can be extracted.
+`origin` SHOULD be omitted if the request is authenticated. It is ignored if it is provided
+alongside an X-Matrix authentication header from which an origin can be extracted. Otherwise, it
+MUST be provided (so that the receiver knows where to pong to).
 
-The `question` MUST be between 6 and 255 characters. Invalid questions will be rejected with
-`400 / M_INVALID_PARAM`.
+The `nonce` MUST be between 8 and 32 characters. Invalid nonces will be rejected with
+`400 / M_INVALID_PARAM`. The `nonce` SHOULD be generated with enough entropy that inflight
+collisions are unlikely - this could be done by hashing the origin server's name, remote server's
+name, and a random salt.
+
+If a `nonce` is received that already has an outgoing pong request/task, the request should be
+rejected with `409 / M_INVALID_PARAM`.
+
+#### Response
 
 The response body (200 OK) is as follows:
 
 |   Key      |   Type              | Purpose                                                      |
 | ---------- | ------------------- | ------------------------------------------------------------ |
-| `answer`   | `string`            | A unique string that represents the answer to this question. |
-| `details`  | optional `[string]` | Any information the target server believes the origin will be interested in. |
+| `nonce`    | `string`            | The `nonce` of the input.                                    |
+| `details`  | Optional `[string]` | Any errors that may prevent the pong request from arriving.  |
 
-`details` SHOULD contain humanised messages that may be informational for the origin. For example,
-if the remote cannot find signing keys for the origin, it may include a message like
-`"Could not find signing keys for (origin): no DNS records for (origin)"`. Servers SHOULD NOT
-reveal unsanitised error messages to avoid leaking sensitive information.
+<!--
+There's a bit of a race here:
+1. Server A sends a ping
+2. Server B tries to be helpful by ponging immediately
+3. Server A was not listening for the ping yet
+4. Server A drops the ping
+5. Server B reports that the pong could not be sent
+6. Everyone's sad :(
+
+Theoretically an implementation shouldn't pong before the ping has returned, but this can severely
+limit diagnostic capabilities (for example, connection timeouts on the pong request will be lost
+because that info can't be reported to the requester). Maybe an option to hold the ping request
+open until the pong completes could alleviate this?
+-->
 
 All requests, authenticated or not, SHOULD be rate-limited. Authenticated requests MAY use a less
-strict bucket. A recommended rate-limit is 1 ping every 30 seconds (2 pings a minute)
-per requesting origin, as more is unlikely to be necessary.
+strict bucket. Unauthenticated requests SHOULD be throttled harder to negate amplification attacks.
 
-If a request is ratelimited, a standard `429 / M_LIMIT_EXCEEDED` response is returned.
+If a request is ratelimited, a standard `429 / M_LIMIT_EXCEEDED` response is returned. The server
+SHOULD return a `Retry-After` header.
 
 If request authentication is provided, but the signature cannot be verified,
 a standard `401 / M_UNAUTHORIZED` is returned.
@@ -80,15 +100,13 @@ server MAY choose to return another, more distinct error code instead (such as `
 Another authenticated, NOT rate-limited endpoint is introduced to accompany the former:
 `POST /_matrix/federation/v1/pong`.
 
+#### Request
+
 The request body for this endpoint is defined as follows:
 
-| Key        | Type                | Purpose                                                        |
-| ---------- | ------------------- | -------------------------------------------------------------- |
-| `question` | `string`            | Identifies the `answer` provided to the associated `question`. |
-| `details`  | optional `[string]` | Any information the remote server believes the target will be interested in. |
-
-`details` SHOULD contain humanised messages that may be informational for the target. Servers
-SHOULD NOT reveal unsanitised error messages to avoid leaking sensitive information.
+| Key        | Type                | Purpose                                                                        |
+| ---------- | ------------------- | ------------------------------------------------------------------------------ |
+| `nonce`    | `string`            | The same value that accompanied a successful [`/ping`](#ping-endpoint) request |
 
 The response body (200 OK) is an empty object (`{}`).
 
@@ -96,18 +114,20 @@ If authentication fails, the standard `401 / M_UNAUTHORIZED` is returned. There 
 unauthenticated fallback here.
 <!-- TODO: why not? -->
 
-If the question is unrecognized, `404 / M_NOT_FOUND` is returned. This is purely informational.
+If the `nonce` is unrecognized (i.e. the receiving server never sent a pong with the `nonce`),
+`404 / M_NOT_FOUND` is returned. This is purely informational - servers MAY wish to return a
+successful response instead to mask unknown pings.
 
 This endpoint is not rate-limited as it is solely listening for an incoming request with a specific
-key, not creating any new data or requests.
+key, not creating any new data or requests. Rate-limiting on the pong endpoint would not
+meaningfully mitigate any abuse.
 
 ### Running a ping
 
-To initiate a ping, a server first generates a "question". This is a unique random string that will
-identify a ping request. A server SHOULD NOT re-transmit the same question
-(to avoid a stale answer).
+To initiate a ping, a server first generates a nonce. This is a unique random string that will
+identify a ping request. A server SHOULD NOT re-transmit the same nonce.
 
-Server A then sends a question to server B:
+Server A then sends a ping to server B:
 
 ```plain
 POST /_matrix/federation/v1/ping
@@ -115,26 +135,26 @@ Authorization: X-Matrix ...
 Content-Type: application/json
 Host: b.example
 
-{"question": "f47930a1-50d1-43e4-8d63-555940988a7d"}
+{"nonce": "f47930a1-50d1-43e4-8d63-555940988a7d"}
 ```
 
-Server B then receives the request, and verifies the authentication signature.
+Server B then receives the ping, and verifies the authentication signature.
 If signature authentication fails, server B then responds with `401 M_UNAUTHORIZED`. Server A SHOULD
-then retry the request (keeping the same question) without authentication. This enables B to perform
-further diagnostics, potentially revealing why the signature could not be verified.
+then retry the request (keeping the same nonce) without authentication. This enables B to perform
+further diagnostics, potentially revealing why the signature could not be verified. There should be
+feedback to the user initiating the ping on server A that it degraded to an unauthenticated ping.
 
-If the signature check succeeds (or there is none), and this question is new
-(i.e. not a retransmission), server B then generates an "answer". This is just another
-unique string. Server B then responds with this "answer":
+If the signature check succeeds (or there is none), and this nonce is new
+(i.e. not a retransmission), server B returns the nonce to server A (potentially with `details`):
 
 ```plain
 HTTP/1.1 200 OK
 Content-Type: application/json
 
-{"answer": "eb473ab3-98a8-408e-a055-c6e1090e9066"}
+{"nonce": "eb473ab3-98a8-408e-a055-c6e1090e9066"}
 ```
 
-Server B then follows this up with a request to A, confirming the answer:
+Server B then follows this up with a request to A, confirming the connection:
 
 ```plain
 POST /_matrix/federation/v1/pong
@@ -143,17 +163,26 @@ Content-Type: application/json
 Host: a.example
 
 {
-  "question": "eb473ab3-98a8-408e-a055-c6e1090e9066"
+  "nonce": "eb473ab3-98a8-408e-a055-c6e1090e9066"
 }
 ```
 
-Upon receipt, server A sees if it is expecting any answers with the remote's `question`. If it
-is not, `404 / M_NOT_FOUND` is returned. The remote server might then wish to log that it could
-not answer a question. This might also happen before B took too long to answer A.
+> [!IMPORTANT]
+> The order of operations here is important: server A may not be ready to receive a pong from
+> server B until it has received a confirmation that it should expect one (i.e. a `200 OK`
+> response to `/ping`).
+
+Upon receipt, server A sees if it is expecting any answers with the remote's `nonce`. If it
+is not, `404 / M_NOT_FOUND` is returned. Upon receiving a `M_NOT_FOUND`, the ponging server SHOULD
+retry the request at least once after a short delay, in case server A was not yet ready to receive
+the pong.
+
+If a non-200 response is received even after retries, the failed pong request(s) MAY be logged for
+manual investigation, however are ultimately discarded with no way to provide that feedback to
+the pong target.
 
 Otherwise, servers A and B are confirmed to have established functional bi-directional
-federation communication. If there were any problems in the process, more information for the users
-performing these pings may be attached in the appropriate `details` keys.
+federation communication.
 
 ### Fallback behaviour
 
@@ -162,11 +191,15 @@ Servers that want to initiate pings encountering this condition MAY then fall ba
 previous, less reliable behaviours mentioned in this proposal's opening statement. This ensures
 backwards compatibility is maintained, and the endpoints remain optional.
 
+Receiving a response that is not `M_UNRECOGNIZED` to the ping endpoint indicates that it is
+implemented and supported, and consequently behaviour should not degrade.
+
 ### Appropriate use
 
 Servers MUST NOT use this endpoint to determine the "aliveness" of a remote server for routine
 operation. This means pings should NOT be used to determine if a destination has been resolved
-correctly, or if it is online before attempting to send it further requests.
+correctly, or if it is online before attempting to send it further requests. It MUST be a product
+of manual initiation ONLY.
 
 ## Potential issues
 
@@ -198,25 +231,15 @@ several non-server tools that exist for troubleshooting federation problems, inc
 
 And more less-known/home-grown tools that achieve similar things. And outside of dedicated tooling,
 there are several troubleshooting guides with sections dedicated to diagnosing federation problems.
-Connectivity issues are one of the most common problems presented in homeserver support rooms[^1].
+Connectivity issues are one of the most common problems presented in homeserver support rooms[^1],
+and are also one of the leading causes of "unable to decrypt" and "failed to download media" errors.
 
 Even if such a mechanism does not fit directly into the specification, it is clear that some
 formalised connectivity test is desired.
 
 ## Alternatives
 
-*This is where alternative solutions could be listed. There's almost always another way to do things
-and this section gives you the opportunity to highlight why those ways are not as desirable. The
-argument made in this example is that all of the text provided by the template could be integrated
-into the proposals introduction, although with some risk of losing clarity.*
-
-Instead of adding a template to the repository, the assistance it provides could be integrated into
-the proposal process itself. There is an argument to be had that the proposal process should be as
-descriptive as possible, although having even more detail in the proposals introduction could lead to
-some confusion or lack of understanding. Not to mention if the document is too large then potential
-authors could be scared off as the process suddenly looks a lot more complicated than it is. For those
-reasons, this proposal does not consider integrating the template in the proposals introduction a good
-idea.
+None considered outside of the existing ad-hoc implementation behaviours (see above).
 
 ## Security considerations
 
@@ -253,8 +276,8 @@ on a different host (such as Cloudflare).
 
 |            Stable            |                               Unstable                              |
 | ---------------------------- | ------------------------------------------------------------------- |
-| `/_matrix/federation/v1/ping | `/_matrix/federation/unstable/uk.timedout.msc4524.tabletennis/ping` |
-| `/_matrix/federation/v1/pong | `/_matrix/federation/unstable/uk.timedout.msc4524.tabletennis/pong` |
+| `/_matrix/federation/v1/ping` | `/_matrix/federation/unstable/uk.timedout.msc4524.tabletennis/ping` |
+| `/_matrix/federation/v1/pong` | `/_matrix/federation/unstable/uk.timedout.msc4524.tabletennis/pong` |
 
 ## Dependencies
 
