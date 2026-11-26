@@ -86,7 +86,7 @@ Also, provide an informational box with text similar to the following:
 > It will normally be appropriate to skip reauthentication if the user has no
 > existing master signing key. It may also be appropriate to relax the
 > requirement if the user has no alternative: for example, if they have no
-> other devices, and have not set up server-side secret storage.
+> other verified devices, and have not set up server-side secret storage.
 >
 > When deciding whether to skip reauthentication, implementers should take
 > care that the conditions they check cannot be satisfied by an attacker who
