@@ -138,6 +138,13 @@ it is not possible to replace the keys on an existing device
 the only avenue available to the attacker is to create a *new* device -- which
 itself will require authentication via the Authentication Server.
 
+However, this reasoning does not hold for an attacker who tricks the user into
+logging in a malicious client (see [Phishing via a malicious
+client](#phishing-via-a-malicious-client)): such an attacker already has a
+new device, and in an OAuth 2.0 environment the reauthentication step may be
+the only remaining barrier to them resetting the user's cross-signing keys.
+Dropping the requirement entirely would remove that protection.
+
 The wording proposed in this MSC would of course allow implementations to skip
 reauthentication if they so chose.
 
@@ -159,12 +166,18 @@ modifications in future.
 ## Security considerations
 
 The reauthentication requirement on `POST
-/_matrix/client/v3/keys/device_signing/upload` exists to defend against a
-specific threat: an attacker who has obtained a user's access token, but who
-does not have the user's password (or other credentials needed to complete
-reauthentication). This proposal does not change that threat model, but it does
-allow servers to skip that defence in more situations. The following points
-are relevant.
+/_matrix/client/v3/keys/device_signing/upload` exists to defend against the
+following threats:
+
+ 1. An attacker who has obtained a user's access token, but who
+    does not have the user's password (or other credentials needed to complete
+    reauthentication).
+
+ 2. An attacker that manages to trick the user into logging into a malicious
+    client.
+
+This proposal does not change that threat model, but it does allow servers to
+skip that defence in more situations. The following points are relevant.
 
 ### The reauthentication check is a server-side policy
 
@@ -200,7 +213,103 @@ As discussed under [Drop the reauthentication requirement
 altogether](#drop-the-reauthentication-requirement-altogether), an attacker who
 replaces a user's cross-signing keys must still sign a device whose keys they
 control in order to decrypt messages. This significantly limits the impact of
-relaxing the reauthentication requirement.
+relaxing the reauthentication requirement against an attacker who has merely
+stolen an access token.
+
+It does not, however, help against an attacker who persuades the user to log in
+a client under the attacker's control; see below.
+
+### Phishing via a malicious client
+
+Consider an attacker who persuades the victim to follow a link which results in
+the victim logging in a malicious client: for example, by approving an OAuth
+2.0 device authorization grant initiated by the attacker. Unlike the token
+thief considered above, this attacker already has a new device, so the
+requirement to log in a new device provides no protection.
+
+Such a device is not initially cross-signed, so (with clients following
+MSC4153) it will not receive encrypted messages, and the victim's other
+devices may report an unverified login. To make the attack useful, the
+attacker needs their device to be trusted under the victim's identity.
+
+Where the victim has an existing means of verifying a new device, the attacker
+has easier and stealthier options than resetting the cross-signing keys:
+
+ * The malicious client can prompt the victim to verify it from one of their
+   existing devices. Having just logged in, the victim has every reason to
+   expect such a prompt and to accept it. Once verified, the malicious device
+   can request the cross-signing private keys and the key backup decryption
+   key.
+
+ * The malicious client can prompt the victim for their recovery key or
+   passphrase, giving it access to server-side secret storage and hence the
+   same secrets.
+
+Both routes give the attacker access to the victim's message history, and
+neither causes the victim's contacts to see a change of identity. The
+reauthentication requirement on `POST
+/_matrix/client/v3/keys/device_signing/upload` provides no protection against
+either.
+
+However, where the victim has *no* means of verifying a new device (no other
+cross-signed devices, and no server-side secret storage), resetting the
+cross-signing keys is the attacker's only route to a trusted device, and the
+reauthentication requirement is the main remaining barrier. How effective that
+barrier is depends on the authentication method:
+
+ * With password-based User-Interactive Authentication, the malicious client
+   will typically have captured the user's password during login, and can
+   replay it to complete reauthentication. The current requirement provides
+   little protection, and relaxing it makes little difference.
+
+ * With OAuth 2.0 authentication, the client never sees the user's
+   credentials. Reauthentication requires the user to visit the account
+   management UI and explicitly approve the reset of their cross-signing
+   keys. A user who was tricked into "signing in to an app" may well balk at an
+   explicit request to reset their digital identity.
+
+ * Where the malicious client is logged in via a mechanism which also shares
+   the user's secrets with the new device (such as QR code login), the
+   attacker has no need to reset the cross-signing keys, and the
+   reauthentication requirement is irrelevant.
+
+It follows that the circumstances in which the informational text suggests
+relaxing the requirement are exactly those in which, for servers using OAuth
+2.0, reauthentication provides the most meaningful protection against this
+attack.
+
+This means that relaxing the reauthentication check is a trade-off between a
+guard against such a phishing attack, and an improved user experience.
+
+For a user with no means of verification, resetting the cross-signing keys is
+the only way for *any* new login, legitimate or otherwise, to participate fully
+in encrypted conversations; the server cannot distinguish the two cases, and
+the reauthentication prompt is a source of friction for every legitimate user
+in that situation. Conversely, skipping reauthentication removes a distinct,
+explicit consent step which may be the victim's last opportunity to notice the
+attack.
+
+This proposal does not attempt to resolve that trade-off on behalf of server
+implementations, which are better placed to weigh it against their own
+deployment's authentication methods, user base and threat model.
+
+Some factors limit the impact of a successful attack of this kind:
+
+ * Since the victim had no means of verifying a new device, there is no way
+   for the attacker to obtain the key backup decryption key: the attacker gains
+   access only to messages sent after the reset.
+
+ * The identity change will be visible to the victim's contacts (see below).
+
+ * The next time the victim logs in a legitimate device, they too will be
+   unable to verify it, and will likely reset their cross-signing keys again,
+   at which point the attacker's device will no longer be trusted. This may,
+   however, be some time later.
+
+The risk is greater still if a server relaxes the requirement in circumstances
+where the user *does* have an alternative, or bases its decision on state which
+a malicious client can manipulate (see above: note that a phished client has at
+least the capabilities of a stolen access token).
 
 ### Changes in identity are visible
 
