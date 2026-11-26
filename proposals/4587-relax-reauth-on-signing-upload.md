@@ -99,7 +99,8 @@ Also, provide an informational box with text similar to the following:
 
  * The main issue foreseen is that further relaxing the reauthentication
    requirements could lower the bar for an eavesdropper to access encrypted
-   messages. See "Security considerations" for further discussion.
+   messages. See [Security considerations](#security-considerations) for
+   further discussion.
 
  * Making the reauthentication requirement an implementation detail increases
    the risk of new server implementations providing inaccurate or inappropriate
@@ -120,10 +121,14 @@ Also, provide an informational box with text similar to the following:
 
 ### Drop the reauthentication requirement altogether
 
-It is somewhat unclear that the reauthentication check provides any value at
-all. Its intended purpose is to guard against an attacker who has stolen an
-access token but does not know the account password (or, in a hardened OAuth2
-environment, lacks a 2FA token).
+One possibility is to drop the requirement for reauthentication on `POST
+/_matrix/client/v3/keys/device_signing/upload` altogether -- particularly if
+paired with a spec change that explicitly prohibits changing the device keys on
+an existing device and server-side changes to enforce this.
+
+The intended purpose of the check is to guard against an attacker who has stolen
+an access token but does not know the account password (or, in a hardened
+OAuth2 environment, lacks a 2FA token).
 
 However, once an attacker successfully replaces the cross-signing keys for a
 user, they must then upload signed device keys that they control. In practice,
@@ -132,15 +137,6 @@ it is not possible to replace the keys on an existing device
 [matrix-spec#2442](https://github.com/matrix-org/matrix-spec/issues/2442)), so
 the only avenue available to the attacker is to create a *new* device -- which
 itself will require authentication via the Authentication Server.
-
-Further, changes to the cross-signing keys have other protection mechanisms
-within Matrix: for example, other users will be warned of the change in key.
-
-Accordingly, it might be sensible just to drop the requirement for
-reauthentication on `POST /_matrix/client/v3/keys/device_signing/upload`
-altogether -- particularly if paired with a spec change that explicitly
-prohibits changing the device keys on an existing device and server-side
-changes to enforce this.
 
 The wording proposed in this MSC would of course allow implementations to skip
 reauthentication if they so chose.
@@ -214,8 +210,8 @@ clients warn users when the identity of a contact that they have previously
 seen changes, and clients which follow the recommendations of
 [MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153) will
 refuse to send encrypted messages to devices which are not cross-signed by
-the user's current identity. A successful attack therefore will not go
-unnoticed, even if reauthentication is skipped.
+the user's current identity. A successful attack therefore has a good chance of
+being noticed, even if reauthentication is skipped.
 
 ### Default behaviour
 
