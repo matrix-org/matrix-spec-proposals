@@ -87,6 +87,13 @@ Also, provide an informational box with text similar to the following:
 > existing master signing key. It may also be appropriate to relax the
 > requirement if the user has no alternative: for example, if they have no
 > other devices, and have not set up server-side secret storage.
+>
+> When deciding whether to skip reauthentication, implementers should take
+> care that the conditions they check cannot be satisfied by an attacker who
+> holds only an access token. For example, the account data describing
+> server-side secret storage can be deleted without reauthentication, so a
+> server might instead check whether secret storage has *ever* been
+> configured.
 
 ## Potential issues
 
@@ -132,7 +139,8 @@ within Matrix: for example, other users will be warned of the change in key.
 Accordingly, it might be sensible just to drop the requirement for
 reauthentication on `POST /_matrix/client/v3/keys/device_signing/upload`
 altogether -- particularly if paired with a spec change that explicitly
-prohibits changing the device keys on an existing device.
+prohibits changing the device keys on an existing device and server-side
+changes to enforce this.
 
 The wording proposed in this MSC would of course allow implementations to skip
 reauthentication if they so chose.
@@ -154,12 +162,73 @@ modifications in future.
 
 ## Security considerations
 
-Yes. TODO
+The reauthentication requirement on `POST
+/_matrix/client/v3/keys/device_signing/upload` exists to defend against a
+specific threat: an attacker who has obtained a user's access token, but who
+does not have the user's password (or other credentials needed to complete
+reauthentication). This proposal does not change that threat model, but it does
+allow servers to skip that defence in more situations. The following points
+are relevant.
+
+### The reauthentication check is a server-side policy
+
+Reauthentication is enforced by the homeserver, for the benefit of the user. It
+provides no protection against a malicious or compromised homeserver, which can
+already serve arbitrary cross-signing keys to other users. This proposal makes
+no change to the power of a malicious server.
+
+### Conditions for relaxation must not be attacker-controllable
+
+Where a server chooses to skip reauthentication based on the state of the
+user's account, it is important that the attacker under consideration (one
+holding only an access token) cannot manipulate that state to satisfy the
+conditions.
+
+For example, the informational text above suggests that it may be appropriate
+to skip reauthentication if the user has not set up server-side secret
+storage. However, the account data which describes secret storage (such as
+`m.secret_storage.default_key` and the `m.secret_storage.key.*` events) can be
+modified or removed by any client holding an access token, without
+reauthentication. A naive implementation which checks only for the presence of
+this account data could therefore be trivially bypassed: the attacker deletes
+the account data, then replaces the cross-signing keys.
+
+Implementations should consider such risks when designing their heuristics:
+for example, by tracking whether secret storage has *ever* been configured
+rather than whether it is currently configured, or by requiring
+reauthentication if the relevant state has changed recently.
+
+### Replacing the cross-signing keys is not, on its own, sufficient for an attack
+
+As discussed under [Drop the reauthentication requirement
+altogether](#drop-the-reauthentication-requirement-altogether), an attacker who
+replaces a user's cross-signing keys must still sign a device whose keys they
+control in order to decrypt messages. This significantly limits the impact of
+relaxing the reauthentication requirement.
+
+### Changes in identity are visible
+
+A change to a user's cross-signing keys is visible both to the user's own
+existing devices and to other users who share encrypted rooms with them. Many
+clients warn users when the identity of a contact that they have previously
+seen changes, and clients which follow the recommendations of
+[MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153) will
+refuse to send encrypted messages to devices which are not cross-signed by
+the user's current identity. A successful attack therefore will not go
+unnoticed, even if reauthentication is skipped.
+
+### Default behaviour
+
+Because the proposed spec text makes reauthentication optional, a naive new
+server implementation might omit it entirely. The informational text
+recommends that servers default to requiring reauthentication when an existing
+master key is present, and only relax that requirement in specific,
+carefully-considered circumstances. Server implementers should treat that
+recommendation as the secure baseline.
 
 ## Unstable prefix
 
 None required.
-
 
 ## Dependencies
 
