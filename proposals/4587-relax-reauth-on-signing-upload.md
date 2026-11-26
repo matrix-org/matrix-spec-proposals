@@ -90,13 +90,67 @@ Also, provide an informational box with text similar to the following:
 
 ## Potential issues
 
-TODO
+ * The main issue forseen is that further relaxing the reauthentication
+   requirements could lower the bar for an eavesdropper to access encrypted
+   messages. See "Security considerations" for further disucssion.
+
+ * Making the reauthentication requirement an implementation detail increases
+   the risk of new server implementations providing inaccurate or inappropriate
+   security.
+
+ * It is likely that there will be inconsistencies between servers: some will
+   reauthenticate more often than others. This could make it hard to implement
+   a smooth user experience on the client side, since the client won't know in
+   advance exactly what the server will choose to do.
+
+   Indeed, clients implmentations may create a user experience that makes
+   invalid assumptions about how the server will behave. In the worst case, a
+   client implementer may not even realise that reauthentication can sometimes
+   be required: there is therefore a risk of incompatibility between some
+   client and server implemenetations.
 
 ## Alternatives
 
-- Just drop the reauthentication requirement
-- Do nothing
-- Spell it out fully
+### Drop the reauthentication requirement altogether
+
+It is somewhat unclear that the reauthentication check provides any value at
+all. Its intended purpose is to guard against an attacker who has stolen an
+access token but does not know the account password (or, in a hardened OAuth2
+environment, lacks a 2FA token).
+
+However, once an attacker successfully replaces the cross-signing keys for a
+user, they must then upload signed device keys that they control. In practice,
+it is not possible to replace the keys on an existing device
+(see
+[matrix-spec#2442](https://github.com/matrix-org/matrix-spec/issues/2442)), so
+the only avenue available to the attacker is to create a *new* device -- which
+itself will require authentication via the Authentication Server.
+
+Further, changes to the cross-signing keys have other protection mechanisms
+within Matrix: for example, other users will be warned of the change in key.
+
+Accordingly, it might be sensible just to drop the requirement for
+reauthentication on `POST /_matrix/client/v3/keys/device_signing/upload`
+altogether -- particularly if paired with a spec change that explicitly
+prohibits changing the device keys on an existing device.
+
+The wording proposed in this MSC would of course allow implementations to skip
+reauthentication if they so chose.
+
+### Do nothing
+
+Doing nothing means that users have a suboptimal experience (see
+https://github.com/element-hq/element-meta/issues/3372, for example).
+
+### Make the changed reauthentication requirements explicit
+
+Instead of leaving the reauthentication requirements as an implmementation
+decision, we could spell out a modified set of precise conditions under which a
+server should perform a reauthentication.
+
+Our experience shows that it is hard to come up with a one-size-fits-all
+specification, and any such specification would likely be subject to even more
+modifications in future.
 
 ## Security considerations
 
