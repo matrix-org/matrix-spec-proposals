@@ -45,7 +45,7 @@ additional authentication requirements:
    was that all requests must pass through user-interactive authentication.
 
  * This was later relaxed in
-   [MSC3697](https://github.com/matrix-org/matrix-spec-proposals/pull/3967) to
+   [MSC3967](https://github.com/matrix-org/matrix-spec-proposals/pull/3967) to
    allow the upload to take place without re-authentication if there was no
    existing published key.
 
@@ -63,7 +63,7 @@ secret storage](https://spec.matrix.org/v1.19/client-server-api/#storage) (aka
 keys; however under the terms of the current spec the server MUST require the
 user to reauthenticate.
 
-Rather than continue a series of MSCs making amall changes to the
+Rather than continue a series of MSCs making small changes to the
 reauthentication requirements, we propose to make this
 implementation-dependent, and instead provide recommendations to homeserver
 implementers.
@@ -90,9 +90,9 @@ Also, provide an informational box with text similar to the following:
 
 ## Potential issues
 
- * The main issue forseen is that further relaxing the reauthentication
+ * The main issue foreseen is that further relaxing the reauthentication
    requirements could lower the bar for an eavesdropper to access encrypted
-   messages. See "Security considerations" for further disucssion.
+   messages. See "Security considerations" for further discussion.
 
  * Making the reauthentication requirement an implementation detail increases
    the risk of new server implementations providing inaccurate or inappropriate
@@ -103,11 +103,11 @@ Also, provide an informational box with text similar to the following:
    a smooth user experience on the client side, since the client won't know in
    advance exactly what the server will choose to do.
 
-   Indeed, clients implmentations may create a user experience that makes
+   Indeed, client implementations may create a user experience that makes
    invalid assumptions about how the server will behave. In the worst case, a
    client implementer may not even realise that reauthentication can sometimes
    be required: there is therefore a risk of incompatibility between some
-   client and server implemenetations.
+   client and server implementations.
 
 ## Alternatives
 
@@ -144,7 +144,7 @@ https://github.com/element-hq/element-meta/issues/3372, for example).
 
 ### Make the changed reauthentication requirements explicit
 
-Instead of leaving the reauthentication requirements as an implmementation
+Instead of leaving the reauthentication requirements as an implementation
 decision, we could spell out a modified set of precise conditions under which a
 server should perform a reauthentication.
 
