@@ -235,6 +235,15 @@ formatted name will need the same linking treatment those proposals give to `ava
 `m.room.member` events. Until then, authenticated media means any logged-in user can fetch the
 emoji images, as with avatars.
 
+**Room names stay plain text.** This proposal only covers display names. `m.room.name` remains plain
+text, so a room named after a user (for example a bridged user's profile room) still shows any
+`:shortcode:` text literally. A general formatted room name is out of scope: a room name has no
+plain counterpart owned by a single user to check a formatted version against, and it can be changed
+by anyone with sufficient power level. Room types with a clear owner can address this themselves;
+for example, [MSC4501](https://github.com/matrix-org/matrix-spec-proposals/pull/4501) lets clients
+show a profile room's owner's formatted display name in place of a room name that matches the
+owner's plain display name.
+
 ## Alternatives
 
 ### Plain display name plus a shortcode map
