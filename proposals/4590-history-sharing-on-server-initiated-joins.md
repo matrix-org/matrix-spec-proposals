@@ -1,4 +1,4 @@
-# MSCXXXX: Sharing room history on server-initiated joins
+# MSC4590: Sharing room history on server-initiated joins
 
 [MSC4268](https://github.com/matrix-org/matrix-spec-proposals/pull/4268) is now part of the spec
 (see [Sharing keys between users](https://spec.matrix.org/v1.19/client-server-api/#sharing-keys-between-users)).
