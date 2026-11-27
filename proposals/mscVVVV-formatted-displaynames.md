@@ -168,6 +168,51 @@ Clients SHOULD NOT render formatted names, and SHOULD show the plain name instea
 
 Clients SHOULD offer an option to disable formatted display names entirely.
 
+### Per-message profiles
+
+[MSC4144](https://github.com/matrix-org/matrix-spec-proposals/pull/4144) lets a message override the
+sender's display name and avatar through an `m.per_message_profile` object. If MSC4144 is accepted,
+`m.formatted_displayname` MAY also be included in that object, with the same schema and rules as
+everywhere else, checked against the per-message `displayname` rather than the member event's:
+
+```json
+{
+  "msgtype": "m.text",
+  "body": "Hello, World!",
+  "m.per_message_profile": {
+    "id": "blobcat@example.social",
+    "displayname": "Cat :blobcat:",
+    "m.formatted_displayname": {
+      "format": "org.matrix.custom.html",
+      "formatted_body": "<b>Cat</b> <img data-mx-emoticon src=\"mxc://example.org/abc123\" alt=\":blobcat:\" title=\":blobcat:\">"
+    }
+  }
+}
+```
+
+Specifically:
+
+* The consistency rule applies to the per-message `displayname`. A per-message formatted name that
+  doesn't match it is ignored, and the per-message plain `displayname` is shown.
+* `m.formatted_displayname` in a per-message profile is only meaningful alongside a per-message
+  `displayname`. If the per-message `displayname` is omitted, null, or empty, clients ignore any
+  per-message `m.formatted_displayname` and fall back to the member event as MSC4144 describes,
+  including the member event's own `m.formatted_displayname`.
+* The permitted HTML and limits above apply unchanged.
+* As with the rest of the per-message profile, clients include it in `m.new_content` when editing.
+* MSC4144's plain text and HTML fallbacks are unchanged. The HTML fallback continues to use the
+  escaped plain `displayname` with no tags inside it, so clients without support for either
+  proposal see exactly what they see today.
+* MSC4144's impersonation indicator (for example a "via @user:example.com" label) still applies, and
+  is shown next to the formatted name.
+
+This is particularly useful for bridges that don't use appservice puppets, which can carry a remote
+user's custom emoji name on each message.
+
+In encrypted rooms, the formatted name is encrypted along with the rest of the message content, but
+the emoji images it references are ordinary unencrypted `mxc://` media, as with custom emoji in
+message bodies today.
+
 ## Potential issues
 
 **Abuse through imagery.** Custom emoji in names put user-chosen images in many places across a
@@ -189,10 +234,6 @@ but the stale value still takes up space until a supporting client clears or rep
 formatted name will need the same linking treatment those proposals give to `avatar_url` in
 `m.room.member` events. Until then, authenticated media means any logged-in user can fetch the
 emoji images, as with avatars.
-
-**Per-message profiles.** [MSC4144](https://github.com/matrix-org/matrix-spec-proposals/pull/4144)
-defines a per-message `displayname`. A per-message formatted display name would be a natural
-extension, but is left to that proposal or a future one.
 
 ## Alternatives
 
@@ -244,10 +285,15 @@ differently from the plain name it accompanies.
 ## Unstable prefix
 
 Until this proposal is accepted, implementations should use `org.matrix.mscVVVV.formatted_displayname`
-in place of `m.formatted_displayname`, in both profiles and `m.room.member` events.
+in place of `m.formatted_displayname`, in profiles, `m.room.member` events, and per-message profiles
+(which themselves use `com.beeper.per_message_profile` until MSC4144 is accepted).
 
 ## Dependencies
 
 This proposal depends on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)
 (merged) for the profile field, and builds on custom emoticons from
 [MSC2545](https://github.com/matrix-org/matrix-spec-proposals/pull/2545) (merged).
+
+The per-message profile section depends on
+[MSC4144](https://github.com/matrix-org/matrix-spec-proposals/pull/4144) (open). The rest of this
+proposal does not, and can be accepted without it.
