@@ -46,7 +46,7 @@ normal `/_matrix/client/v3/profile/{userId}/{keyName}` endpoints.
 
 **Room membership.** `m.formatted_displayname` is a sibling of `displayname`, and is treated the
 same way. Today, servers replicate the two original profile fields, `displayname` and `avatar_url`,
-into the user's `m.room.member` events. MSC4133 keeps that behaviour for those two fields but
+into the user's `m.room.member` events. MSC4133 keeps that behavior for those two fields but
 excludes newly added profile fields by default, "unless a future proposal creates exceptions for
 specific fields". This proposal adds `m.formatted_displayname` to the set of replicated fields, so
 that it travels everywhere `displayname` does. Specifically:
@@ -122,13 +122,13 @@ Notably excluded, compared to the HTML permitted in messages:
 * **`sup` and `sub`.** These can make rendered text look substantially different from its plain
   text content.
 * **`img` without `data-mx-emoticon`.** Only custom emoji are allowed, not arbitrary images.
-* **Colour** (`span` with `data-mx-color` or `data-mx-bg-color`, and the deprecated `font`). Many
-  clients already colour names, for example by hashing the user ID. A partially coloured formatted
-  name would leave its uncoloured parts either in the client's own name colour or in a plain
-  foreground colour, and neither looks intentional. Name colour is also being addressed separately
+* **Color** (`span` with `data-mx-color` or `data-mx-bg-color`, and the deprecated `font`). Many
+  clients already color names, for example by hashing the user ID. A partially colored formatted
+  name would leave its uncolored parts either in the client's own name color or in a plain
+  foreground color, and neither looks intentional. Name color is also being addressed separately
   by [MSC4522](https://github.com/matrix-org/matrix-spec-proposals/pull/4522) (Username colors),
-  which defines a whole-name colour with light and dark theme variants. Allowing colour here as well
-  would give clients two conflicting sources of colour for the same name. Since `span` has no other
+  which defines a whole-name color with light and dark theme variants. Allowing color here as well
+  would give clients two conflicting sources of color for the same name. Since `span` has no other
   use in a display name, it is not permitted at all.
 
 Clients MUST render inline images at the height of the surrounding text, ignoring any `width` or
@@ -136,7 +136,7 @@ Clients MUST render inline images at the height of the surrounding text, ignorin
 autoplaying them unless the user has opted in).
 
 **Fonts are intentionally out of scope.** The existing message HTML rules have no notion of font
-family (the deprecated `font` tag only ever carried colours), so supporting font choice in names
+family (the deprecated `font` tag only ever carried colors), so supporting font choice in names
 would mean inventing a new attribute and deciding which fonts are allowed. This proposal leaves that
 to a future MSC.
 
@@ -215,7 +215,7 @@ custom emoji: it gives up bold, italics and any other formatting, and any later 
 for those would need a second, separate mechanism. It also gives a client no way to tell an
 intentional `:shortcode:` from the same text appearing literally in a name. The HTML approach covers
 the emoji use case just as well (the consistency rule keeps the plain name identical to what the
-fediverse model would produce) while reusing a format clients already have sanitisers for.
+fediverse model would produce) while reusing a format clients already have sanitizers for.
 
 ### Extensible events `m.text` array
 
