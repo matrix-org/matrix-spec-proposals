@@ -30,7 +30,7 @@ Example:
   "displayname": "Cat :blobcat: Person",
   "m.formatted_displayname": {
     "format": "org.matrix.custom.html",
-    "formatted_body": "<b>Cat</b> <img data-mx-emoticon src=\"mxc://example.org/abc123\" alt=\":blobcat:\" title=\":blobcat:\"> <span data-mx-color=\"#ff8800\">Person</span>"
+    "formatted_body": "<b>Cat</b> <img data-mx-emoticon src=\"mxc://example.org/abc123\" alt=\":blobcat:\" title=\":blobcat:\"> <i>Person</i>"
   }
 }
 ```
@@ -109,7 +109,6 @@ check above to fail; this is intended.
 | `i`, `em` | none |
 | `u` | none |
 | `s`, `del` | none |
-| `span` | `data-mx-color`, `data-mx-bg-color` |
 | `img` | `src` (MUST be an `mxc://` URI), `alt`, `title`, `data-mx-emoticon` (MUST be present) |
 
 Notably excluded, compared to the HTML permitted in messages:
@@ -123,6 +122,14 @@ Notably excluded, compared to the HTML permitted in messages:
 * **`sup` and `sub`.** These can make rendered text look substantially different from its plain
   text content.
 * **`img` without `data-mx-emoticon`.** Only custom emoji are allowed, not arbitrary images.
+* **Colour** (`span` with `data-mx-color` or `data-mx-bg-color`, and the deprecated `font`). Many
+  clients already colour names, for example by hashing the user ID. A partially coloured formatted
+  name would leave its uncoloured parts either in the client's own name colour or in a plain
+  foreground colour, and neither looks intentional. Name colour is also being addressed separately
+  by [MSC4522](https://github.com/matrix-org/matrix-spec-proposals/pull/4522) (Username colors),
+  which defines a whole-name colour with light and dark theme variants. Allowing colour here as well
+  would give clients two conflicting sources of colour for the same name. Since `span` has no other
+  use in a display name, it is not permitted at all.
 
 Clients MUST render inline images at the height of the surrounding text, ignoring any `width` or
 `height` attributes, and SHOULD respect the user's preference for animated images (for example, not
@@ -204,7 +211,7 @@ map from shortcode to image:
 ```
 
 This needs no HTML parsing and is simpler to render safely. It was rejected because it only covers
-custom emoji: it gives up bold, italics, colour and any other formatting, and any later extension
+custom emoji: it gives up bold, italics and any other formatting, and any later extension
 for those would need a second, separate mechanism. It also gives a client no way to tell an
 intentional `:shortcode:` from the same text appearing literally in a name. The HTML approach covers
 the emoji use case just as well (the consistency rule keeps the plain name identical to what the
@@ -233,8 +240,6 @@ differently from the plain name it accompanies.
   However, custom emoji can still contain images of text; clients' existing defences against
   look-alike display names (disambiguation by user ID) continue to apply because they operate on
   the plain name.
-* Colours can be used to make text unreadable or blend into the background. Clients MAY adjust or
-  ignore colours to keep names legible, for example in high contrast themes.
 
 ## Unstable prefix
 
