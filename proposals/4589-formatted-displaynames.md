@@ -1,4 +1,4 @@
-# MSCVVVV: Formatted display names
+# MSC4589: Formatted display names
 
 A user's display name in Matrix is a plain string. Many users want more than that, most commonly
 custom emoji in their name. This is especially common on the fediverse, where Mastodon, Pleroma,
@@ -284,7 +284,7 @@ differently from the plain name it accompanies.
 
 ## Unstable prefix
 
-Until this proposal is accepted, implementations should use `org.matrix.mscVVVV.formatted_displayname`
+Until this proposal is accepted, implementations should use `org.matrix.msc4589.formatted_displayname`
 in place of `m.formatted_displayname`, in profiles, `m.room.member` events, and per-message profiles
 (which themselves use `com.beeper.per_message_profile` until MSC4144 is accepted).
 
