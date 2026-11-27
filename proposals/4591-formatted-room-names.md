@@ -1,4 +1,4 @@
-# MSCSSSS: Formatted room names
+# MSC4591: Formatted room names
 
 Room names in Matrix are plain text. Many communities want more than that, most commonly custom emoji
 in a room's name, and rooms named after people (for example a bridged fediverse user's profile room,
@@ -163,7 +163,7 @@ simply carry its own formatted name.
 
 ## Unstable prefix
 
-Until this proposal is accepted, implementations should use `org.matrix.mscSSSS.formatted_name` in
+Until this proposal is accepted, implementations should use `org.matrix.msc4591.formatted_name` in
 place of `m.formatted_name`, in `m.room.name` content and in directory, hierarchy and room summary
 responses.
 
