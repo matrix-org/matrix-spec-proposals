@@ -58,6 +58,13 @@ that it travels everywhere `displayname` does. Specifically:
 * If [MSC4466](https://github.com/matrix-org/matrix-spec-proposals/pull/4466) is accepted, its
   `propagate_to` parameter applies to `m.formatted_displayname` exactly as it does to `displayname`.
 
+If a future proposal changes how `displayname` is delivered to rooms, for example by moving it out of
+`m.room.member` into a separate event
+([MSC4257](https://github.com/matrix-org/matrix-spec-proposals/pull/4257)) or into server-generated
+synthetic events with per-room overrides in a new state event
+([MSC4218](https://github.com/matrix-org/matrix-spec-proposals/pull/4218)), then
+`m.formatted_displayname` follows `displayname` wherever it goes.
+
 **Per-room names.** As with `displayname` today, a client can set a per-room formatted display name
 by sending an `m.room.member` event with a different `m.formatted_displayname` (and a matching
 `displayname`). Clients can offer this however they like, for example through a rich text composer
