@@ -44,10 +44,12 @@ the source of truth for everything other than visual rendering (see below).
 [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133), set and read with the
 normal `/_matrix/client/v3/profile/{userId}/{keyName}` endpoints.
 
-**Room membership.** MSC4133 states that custom profile fields MUST NOT be replicated into
-`m.room.member` events "unless a future proposal creates exceptions for specific fields". This
-proposal creates that exception for `m.formatted_displayname`: it is propagated into `m.room.member`
-content under exactly the same rules as `displayname`. Specifically:
+**Room membership.** `m.formatted_displayname` is a sibling of `displayname`, and is treated the
+same way. Today, servers replicate the two original profile fields, `displayname` and `avatar_url`,
+into the user's `m.room.member` events. MSC4133 keeps that behaviour for those two fields but
+excludes newly added profile fields by default, "unless a future proposal creates exceptions for
+specific fields". This proposal adds `m.formatted_displayname` to the set of replicated fields, so
+that it travels everywhere `displayname` does. Specifically:
 
 * When the user changes `m.formatted_displayname` in their global profile, the server sends updated
   `m.room.member` events in the same way it does for a `displayname` change.
