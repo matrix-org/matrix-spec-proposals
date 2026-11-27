@@ -78,8 +78,15 @@ Clients MUST compute the *text content* of `formatted_body` as follows:
 2. Replace every permitted `<img>` element with the value of its `alt` attribute.
 3. Concatenate the remaining text nodes, ignoring all tags.
 
-Clients MUST ignore `m.formatted_displayname`, and render the plain `displayname` instead, if this
-text content is not exactly equal to `displayname`.
+Before comparing, clients MUST normalize whitespace in both the text content and `displayname`:
+replace every run of one or more whitespace characters with a single space (U+0020), then remove
+leading and trailing spaces. Clients MUST ignore `m.formatted_displayname`, and render the plain
+`displayname` instead, if the normalized text content is not exactly equal to the normalized
+`displayname`.
+
+Normalization means an image that contributes no text doesn't leave stray spaces behind. For
+example, `Cat <img alt=""> Person` and `<img alt=""> Cat Person` both match a `displayname` of
+`Cat Person`.
 
 This rule means:
 
@@ -89,13 +96,40 @@ This rule means:
 * Clients that don't support this proposal are handled automatically. If a user changes their
   `displayname` from such a client, the old formatted name stops matching and is ignored, with no
   cleanup needed by the server.
-* Using the shortcode as the `alt` text of a custom emoji maps directly onto the fediverse model:
-  an ActivityPub actor's `name` can be used as `displayname` unchanged, and the formatted version is
+### Custom emoji in the plain display name
+
+The `alt` of each inline image decides how that emoji appears in the plain `displayname`. Two forms
+are equally supported, and users can choose either per image:
+
+* **Shortcode** (`alt=":blobcat:"`): the emoji appears in the plain name as its shortcode, e.g.
+  `Cat :blobcat: Person`. Clients without support for this proposal show the shortcode, which keeps
+  the plain name close to the formatted one. This maps directly onto the fediverse model: an
+  ActivityPub actor's `name` can be used as `displayname` unchanged, and the formatted version is
   that name, HTML-escaped, with each `:shortcode:` replaced by an `<img>` whose `alt` is the
   shortcode.
+* **Empty** (`alt=""`): the emoji is left out of the plain name entirely, e.g. `Cat Person`. The
+  plain name stays free of shortcode text, at the cost of clients without support for this proposal
+  not showing that an emoji was there.
 
-Clients SHOULD use the emoji's shortcode, including surrounding colons, as the `alt` of an inline
-image, so that the plain display name stays readable on clients that don't render images.
+An `alt` MAY also be any other text, for example an equivalent Unicode emoji (`alt="🐱"`, giving
+`Cat 🐱 Person`). Clients offering a formatted name editor SHOULD let the user choose between at
+least the shortcode and empty forms.
+
+Whatever the `alt`, clients SHOULD set the image's `title` to its shortcode, including surrounding
+colons. This gives a tooltip on hover, and lets bridges recover the shortcode (for example, to
+produce an ActivityPub `name` and `tag` Emoji) even when it isn't part of the plain name.
+
+Example with empty `alt`:
+
+```json
+{
+  "displayname": "Cat Person",
+  "m.formatted_displayname": {
+    "format": "org.matrix.custom.html",
+    "formatted_body": "<b>Cat</b> <img data-mx-emoticon src=\"mxc://example.org/abc123\" alt=\"\" title=\":blobcat:\"> <i>Person</i>"
+  }
+}
+```
 
 ### Permitted HTML
 
@@ -287,9 +321,12 @@ differently from the plain name it accompanies.
 * Clients MUST apply the permitted tag and attribute list strictly, as for message HTML, to avoid
   HTML injection and cross-site scripting.
 * The consistency rule prevents a formatted name from showing different text from the plain name.
-  However, custom emoji can still contain images of text; clients' existing defences against
+  However, custom emoji can still contain images of text; clients' existing defenses against
   look-alike display names (disambiguation by user ID) continue to apply because they operate on
   the plain name.
+* With an empty `alt`, the plain name gives no indication that the formatted name contains images.
+  This adds no new way to spoof text, since an image of text is equally possible with a shortcode
+  `alt`, and the image limit and the option to disable formatted names still apply.
 
 ## Unstable prefix
 
