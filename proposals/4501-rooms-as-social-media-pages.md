@@ -141,18 +141,14 @@ Like `m.social.profile_room`, `m.social.profile_user_id` is self-asserted; see S
 for how a client can corroborate it.
 
 A profile room is usually named after its owner, so its `m.room.name` is typically the owner's display
-name. `m.room.name` is plain text only, so if the owner has a formatted display name (see
+name. If the owner has a formatted display name (see
 [MSC4589](https://github.com/matrix-org/matrix-spec-proposals/pull/4589)), for example one containing
-custom emoji, the room name would otherwise show its `:shortcode:` text literally. Clients that support
-MSC4589 MAY therefore show the owner's formatted display name in place of a profile room's name, but
-only when the room's `m.room.name` `name` is exactly equal to the owner's plain `displayname`. The owner
-is the user named by `m.social.profile_user_id`, or the room's creator if that event is absent. The
-owner's display name and formatted display name are taken from their `m.room.member` event in the room,
-or from their global profile if they are not a member. Because the formatted name must itself match the
-owner's plain `displayname` (MSC4589's consistency rule), and the room name must equal that same
-`displayname`, this never shows text that the plain room name doesn't already show. If the room name
-differs from the owner's display name, or the owner has no valid formatted display name, clients show
-the plain `m.room.name` as usual.
+custom emoji, a plain room name would show its `:shortcode:` text literally. Clients and bridges that
+set a profile room's name to its owner's display name SHOULD therefore also set the room's formatted
+name ([MSC4591](https://github.com/matrix-org/matrix-spec-proposals/pull/4591)'s `m.formatted_name`,
+inside `m.room.name`) to the owner's formatted display name, and keep the two in sync when the owner's
+name changes. Clients then render the profile room's name like any other formatted room name, with
+no special handling for profile rooms.
 
 ### Profile/Group discoverability
 
@@ -894,7 +890,8 @@ This MSC builds on the following:
   accepted into the spec at the time of writing: used for `m.room.banner` in Profile rooms and Group
   rooms, above. Without it, profile/group rooms still have a name, avatar, and topic, just no banner
   image, so this dependency is not load-bearing for the rest of this proposal.
-- [MSC4589](https://github.com/matrix-org/matrix-spec-proposals/pull/4589) (Formatted display names),
-  not yet accepted: used only to optionally render a profile room's name using its owner's formatted
-  display name. Without it, profile room names are shown as plain text, so this dependency is not
+- [MSC4589](https://github.com/matrix-org/matrix-spec-proposals/pull/4589) (Formatted display names)
+  and [MSC4591](https://github.com/matrix-org/matrix-spec-proposals/pull/4591) (Formatted room names),
+  neither yet accepted: used only so a profile room's name can carry its owner's formatted display
+  name. Without them, profile room names are shown as plain text, so these dependencies are not
   load-bearing either.
